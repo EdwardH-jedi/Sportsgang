@@ -14,6 +14,49 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  integration:
+    name: PostgreSQL and Redis booking journey
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APP_ENV: local
+      SECRET_KEY: ci-test-secret-key-minimum-32-characters
+      POSTGRES_URL: postgresql://protin:protin@localhost:5432/protin_ci
+      REDIS_URL: redis://localhost:6379/0
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: protin
+          POSTGRES_PASSWORD: protin
+          POSTGRES_DB: protin_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U protin -d protin_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+      - name: Install locked dependencies
+        run: uv sync --frozen --dev
+      - name: Migrate a fresh PostgreSQL database
+        run: uv run alembic upgrade head
+      - name: Verify real-service booking flow
+        run: uv run pytest tests_integration -q
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -106,7 +149,7 @@ jobs:
 
   docker-build:
     runs-on: ubuntu-latest
-    needs: [test, typecheck, test-mobile]
+    needs: [test, typecheck, test-mobile, integration]
     steps:
       - uses: actions/checkout@v4
 

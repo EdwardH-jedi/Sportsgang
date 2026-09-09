@@ -124,8 +124,9 @@ defined in the shared-types package.
 
 - Public adoption metrics are not available in the repository, so download counts and
   active-user counts should not be invented or inferred from App Store approval.
-- API tests run against in-memory SQLite, not PostgreSQL, so DB-engine-specific
-  behaviour and the Alembic chain are not exercised in CI.
+- API unit tests run against in-memory SQLite. A separate PostgreSQL/Redis CI
+  integration job exercises the Alembic chain and the booking journey; see
+  [verification scope](VERIFICATION.md). This is not a production load test.
 - Media (profile photos) is stored on local disk; cloud object storage is a
   production TODO.
 - Opponent discovery filters by sport and profile compatibility, not by geographic
