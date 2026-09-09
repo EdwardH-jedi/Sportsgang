@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator
 from unittest.mock import AsyncMock
 
@@ -64,6 +65,12 @@ async def _register(client: AsyncClient, email: str) -> tuple[str, str]:
 
 def _auth(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
+
+
+def _future_booking_times() -> dict[str, str]:
+    """Keep delivery tests valid as the calendar advances."""
+    start = datetime.now(timezone.utc) + timedelta(days=2)
+    return {"starts_at": start.isoformat(), "ends_at": (start + timedelta(hours=1)).isoformat()}
 
 
 # ---------------------------------------------------------------------------
@@ -552,16 +559,16 @@ async def test_process_marks_sent_on_success(client: AsyncClient, monkeypatch: p
     )
     match_id = r.json()["match_id"]
 
-    await client.post(
+    book_r = await client.post(
         "/bookings",
         json={
             "match_id": match_id,
             "sport": "gym",
-            "starts_at": "2026-09-01T09:00:00Z",
-            "ends_at": "2026-09-01T10:00:00Z",
+            **_future_booking_times(),
         },
         headers=_auth(token_a),
     )
+    assert book_r.status_code == 201, book_r.text
 
     proc_r = await client.post("/internal/process-notifications")
     assert proc_r.status_code == 200
@@ -601,16 +608,16 @@ async def test_process_marks_failed_on_delivery_error(client: AsyncClient, monke
     )
     match_id = r.json()["match_id"]
 
-    await client.post(
+    book_r = await client.post(
         "/bookings",
         json={
             "match_id": match_id,
             "sport": "gym",
-            "starts_at": "2026-09-10T09:00:00Z",
-            "ends_at": "2026-09-10T10:00:00Z",
+            **_future_booking_times(),
         },
         headers=_auth(token_a),
     )
+    assert book_r.status_code == 201, book_r.text
 
     proc_r = await client.post("/internal/process-notifications")
     assert proc_r.status_code == 200
@@ -653,16 +660,16 @@ async def test_process_skips_already_sent_events(client: AsyncClient, monkeypatc
     )
     match_id = r.json()["match_id"]
 
-    await client.post(
+    book_r = await client.post(
         "/bookings",
         json={
             "match_id": match_id,
             "sport": "gym",
-            "starts_at": "2026-09-20T09:00:00Z",
-            "ends_at": "2026-09-20T10:00:00Z",
+            **_future_booking_times(),
         },
         headers=_auth(token_a),
     )
+    assert book_r.status_code == 201, book_r.text
 
     await client.post("/internal/process-notifications")
     first_count = call_count

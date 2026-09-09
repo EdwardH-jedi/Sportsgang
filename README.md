@@ -2,6 +2,25 @@
 
 Protin connects players for peer sports matches: find opponents by sport, issue challenges, book nearby courts, and track results through a ranking and honour system. It is a full-stack mobile product — an Expo/React Native app backed by an async FastAPI service — currently supporting gym, golf, tennis, and running in Sydney.
 
+**Released as SportsGang v1.0:** the recorded release history documents App Store
+approval on **13 May 2026**, following an App Completeness review issue that was
+resolved with a reproducible reviewer-data workflow. This is a historical release
+milestone; it does not establish current service availability or user adoption.
+
+[Release history and engineering decisions](docs/PORTFOLIO_FACTS.md) ·
+[Automated checks](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml) ·
+[Local setup](#local-setup)
+
+## Product preview
+
+Recorded iOS release screenshots show the discovery, chat, and booking flows.
+
+<p>
+  <img src="docs/release/screenshots/ios/01-discovery-gym-partners.png" width="230" alt="SportsGang opponent discovery screen">
+  <img src="docs/release/screenshots/ios/03-chat-confirmed-session.png" width="230" alt="Chat with a confirmed sports session">
+  <img src="docs/release/screenshots/ios/05-propose-session-form.png" width="230" alt="Form for proposing a sports session">
+</p>
+
 ## What it does
 
 - **Opponent discovery** — sport-scoped partner feed with compatibility scoring; mutual likes create a match
@@ -49,7 +68,16 @@ Expo mobile app ──HTTP + JWT──▶ FastAPI ──▶ PostgreSQL (async SQ
 
 ## Current state
 
-Pre-release portfolio project: the feature set above is implemented and tested, and it runs locally (Docker for PostgreSQL/Redis, uvicorn and Expo dev servers for the API and app). Staging and release configuration exists — but it has no production users and is not deployed as a live service.
+SportsGang v1.0 passed App Review in May 2026. This repository is the maintained
+Protin engineering portfolio, with a local setup using Docker for PostgreSQL/Redis,
+uvicorn, and Expo. The previously deployed backend is not offered here as an
+always-on public demo; use the screenshots or local setup to review the product.
+Download counts and active-user metrics are not tracked in this repository.
+
+The API unit suite uses in-memory SQLite. The separate PostgreSQL/Redis CI job
+runs the Alembic migration chain and a register → match → booking-confirmation
+flow against disposable services; it does not validate external Apple, Google,
+or Expo delivery services. See [verification scope](docs/VERIFICATION.md).
 
 ---
 
