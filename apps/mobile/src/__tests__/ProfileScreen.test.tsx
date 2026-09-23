@@ -165,17 +165,6 @@ jest.mock('../hooks/useHonorSystem', () => ({
   },
 }));
 
-// ─── Mock useTournamentsAvailable hook ────────────────────────────────────────
-// The real hook does a one-time GET /tournaments?limit=1 probe. Without a
-// dedicated mock, the trailing setState from that probe fires after the
-// test body has finished its synchronous run and emits a React act() warning.
-// The ProfileScreen tests don't care about tournaments availability — keep
-// the stub simple and synchronous.
-
-jest.mock('../hooks/useTournaments', () => ({
-  useTournamentsAvailable: () => ({ available: true, isReady: true }),
-}));
-
 // ─── Mock expo-web-browser ────────────────────────────────────────────────────
 
 const mockOpenAuthSession = jest.fn();

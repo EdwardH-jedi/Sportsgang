@@ -32,7 +32,7 @@ Recorded iOS release screenshots show the discovery, chat, and booking flows.
 - **Bookings** — propose, confirm, decline, cancel, complete, or no-show a session via an explicit state machine
 - **Venues** — nearby court/venue search combining a seeded database with Google Places, deduplicated by name + distance
 - **Battles (group events)** — host or join open sport events with attendance confirmation
-- **Tournaments** — join/leave tournaments, implemented behind a server-side feature flag (off outside local dev)
+- **Tournaments** — backend only: list/detail/join/leave API behind the `TOURNAMENTS_ENABLED` feature flag (off outside local dev); there is no mobile UI
 - **Ranking & honour system** — rank progression from recorded results plus an honour/reputation layer
 - **Accounts & safety** — email/password and Sign in with Apple auth, profile photos, Google Calendar sync, Expo push notifications, reports, blocks, and content moderation
 

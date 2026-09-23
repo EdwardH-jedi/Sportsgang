@@ -87,9 +87,9 @@ defined in the shared-types package.
   distance, name+proximity dedup), lazy place-details lookup, rate limited
 - Battles (group events): create, join/leave, cancel/complete, host- and
   self-reported attendance
-- Tournaments: list, detail, join, leave — behind a server-side feature flag
-  (`TOURNAMENTS_ENABLED`, on by default only in local dev) and not yet wired into
-  the main mobile navigation
+- Tournaments: list, detail, join, leave — backend only, behind a server-side
+  feature flag (`TOURNAMENTS_ENABLED`, on by default only in local dev); the
+  unreachable mobile screens were removed
 - Rank & honour system: rank events from results, honour/reputation endpoints
 - Integrations: Google Calendar OAuth + booking sync, Expo push notifications with a
   background delivery worker
@@ -144,5 +144,4 @@ defined in the shared-types package.
   implemented.
 - Opponent discovery filters by sport and profile compatibility, not by geographic
   proximity (location is used for venue search only).
-- Tournaments are implemented behind a feature flag but are not wired into the main
-  mobile navigation.
+- Tournaments are backend-only (API behind a feature flag); there is no mobile UI.
