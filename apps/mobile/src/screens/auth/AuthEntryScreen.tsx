@@ -1,168 +1,106 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../../theme';
+import { Button, Icon, Screen } from '../../components/ui';
+import { colors, iconSizes, spacing, typography } from '../../theme';
 import type { AuthEntryScreenProps } from '../../navigation/types';
 
 /**
- * SportsGang Welcome / Auth entry.
+ * SportsGang welcome / auth entry.
  *
- * Neon-lime accent on a near-black hero:
- *  - black/dark hero block dominates the screen
- *  - lowercase wordmark sits on the hero
- *  - lime pill primary CTA + outlined ghost CTA stack at the bottom
- *
- * Built entirely with React Native primitives — no gradient library, just
- * two layered fills approximating a top→bottom darken.
+ * Near-black canvas, lime wordmark, a big condensed running-first headline
+ * and two stacked CTAs (primary lime "Get started", secondary "Log in").
+ * No gradients or imagery — typography carries the hero.
  */
 export function AuthEntryScreen({ navigation }: AuthEntryScreenProps) {
   return (
-    <View style={styles.root}>
-      <View style={styles.hero}>
-        {/* Layered overlay so the hero reads as a soft top→bottom darken,
-            without needing a gradient library. */}
-        <View style={styles.heroOverlayTop} />
-        <View style={styles.heroOverlayBottom} />
+    <Screen testID="auth-entry">
+      <View style={styles.content}>
+        <View style={styles.brandRow}>
+          <Icon name="run" size="xl" color={colors.brand} />
+          <Text style={styles.wordmark} accessibilityRole="header">
+            sportsgang
+          </Text>
+        </View>
 
-        <View style={styles.heroContent}>
-          <View style={styles.brandBlock}>
-            <Text style={styles.wordmark}>sportsgang</Text>
+        <View style={styles.hero}>
+          <View style={styles.eyebrowRow}>
+            <Icon name="location" size="sm" color={colors.brand} />
             <Text style={styles.eyebrow}>Sydney</Text>
           </View>
+          <Text style={styles.headline}>Find your run.</Text>
+          <Text style={[styles.headline, styles.headlineAccent]}>Find your people.</Text>
+          <Text style={styles.tagline}>
+            Group runs, running crews and training partners near you.
+          </Text>
+        </View>
 
-          <View style={styles.headlineBlock}>
-            <Text style={styles.headline}>Find your</Text>
-            <Text style={styles.headline}>next game.</Text>
-            <Text style={styles.tagline}>
-              Match, chat, and plan your next session.
-            </Text>
-          </View>
-
-          <View style={styles.actions}>
-            <Pressable
-              style={({ pressed }) => [styles.ctaPrimary, pressed && styles.ctaPrimaryPressed]}
-              onPress={() => navigation.navigate('RegisterScreen')}
-              accessibilityRole="button"
-              accessibilityLabel="Get started"
-            >
-              <Text style={styles.ctaPrimaryText}>Get started</Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [styles.ctaGhost, pressed && styles.ctaGhostPressed]}
-              onPress={() => navigation.navigate('LoginScreen')}
-              accessibilityRole="button"
-              accessibilityLabel="Log in"
-            >
-              <Text style={styles.ctaGhostText}>Log in</Text>
-            </Pressable>
-          </View>
+        <View style={styles.actions}>
+          <Button
+            label="Get started"
+            size="lg"
+            fullWidth
+            trailingIcon="chevron-right"
+            onPress={() => navigation.navigate('RegisterScreen')}
+            accessibilityLabel="Get started"
+          />
+          <Button
+            label="Log in"
+            size="lg"
+            variant="secondary"
+            fullWidth
+            onPress={() => navigation.navigate('LoginScreen')}
+            accessibilityLabel="Log in"
+          />
         </View>
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
+  content: {
     flex: 1,
-    backgroundColor: colors.brandDarkest,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl,
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  wordmark: {
+    ...typography.h1,
+    color: colors.brand,
+    lineHeight: iconSizes.xl + spacing.xs,
   },
   hero: {
     flex: 1,
-    backgroundColor: colors.brandDark,
-    overflow: 'hidden',
-  },
-  heroOverlayTop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '45%',
-    backgroundColor: colors.brandDarkest,
-    opacity: 0.6,
-  },
-  heroOverlayBottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '55%',
-    backgroundColor: colors.brandDarkest,
-    opacity: 0.85,
-  },
-  heroContent: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingTop: spacing.xxxl + spacing.lg,
+    justifyContent: 'flex-end',
     paddingBottom: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-  },
-  brandBlock: {
-    alignItems: 'center',
     gap: spacing.xs,
   },
-  wordmark: {
-    fontSize: 44,
-    fontWeight: '700',
-    letterSpacing: -1.5,
-    color: colors.brand,
+  eyebrowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
   },
   eyebrow: {
     ...typography.label,
-    color: colors.textSecondary,
-  },
-  headlineBlock: {
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingHorizontal: spacing.md,
+    color: colors.brand,
   },
   headline: {
-    fontSize: 40,
-    fontWeight: '700',
-    lineHeight: 46,
-    letterSpacing: -1.5,
-    color: colors.textPrimary,
-    textAlign: 'center',
+    ...typography.display,
+  },
+  headlineAccent: {
+    color: colors.brand,
   },
   tagline: {
     ...typography.bodyLarge,
     color: colors.textSecondary,
-    textAlign: 'center',
-    paddingTop: spacing.sm,
+    marginTop: spacing.md,
   },
   actions: {
-    gap: spacing.sm,
-  },
-  ctaPrimary: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    minHeight: 52,
-    justifyContent: 'center',
-  },
-  ctaPrimaryPressed: {
-    backgroundColor: colors.brandDark,
-  },
-  ctaPrimaryText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-  ctaGhost: {
-    borderWidth: 1,
-    borderColor: 'rgba(198,255,61,0.35)',
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    minHeight: 52,
-    justifyContent: 'center',
-  },
-  ctaGhostPressed: {
-    backgroundColor: 'rgba(198,255,61,0.08)',
-  },
-  ctaGhostText: {
-    ...typography.button,
-    color: colors.brand,
+    gap: spacing.sm + spacing.xs,
   },
 });

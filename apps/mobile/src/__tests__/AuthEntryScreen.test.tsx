@@ -3,7 +3,6 @@
  *
  * Mocks:
  *  - Screen component
- *  - theme
  */
 
 import React from 'react';
@@ -16,25 +15,15 @@ import { AuthEntryScreen } from '../screens/auth/AuthEntryScreen';
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#000', border: '#ccc', surface: '#fff',
-    surfaceElevated: '#f5f5f5', background: '#fafafa', separator: '#e0e0e0',
-    textPrimary: '#000', textSecondary: '#555', textTertiary: '#888',
-    textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -45,12 +34,13 @@ function makeNavigation() {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('AuthEntryScreen', () => {
-  it('renders the headline copy', () => {
+  it('renders the running-first headline copy and wordmark', () => {
     const { getByText } = render(
       <AuthEntryScreen navigation={makeNavigation() as any} route={{} as any} />
     );
-    getByText('Find your');
-    getByText('next game.');
+    getByText('sportsgang');
+    getByText('Find your run.');
+    getByText('Find your people.');
   });
 
   it('renders the sport / city eyebrow', () => {
@@ -64,7 +54,7 @@ describe('AuthEntryScreen', () => {
     const { getByText, queryByText } = render(
       <AuthEntryScreen navigation={makeNavigation() as any} route={{} as any} />
     );
-    getByText('Match, chat, and plan your next session.');
+    getByText('Group runs, running crews and training partners near you.');
     expect(queryByText(/book your next session/i)).toBeNull();
   });
 
@@ -74,6 +64,14 @@ describe('AuthEntryScreen', () => {
     );
     getByText('Get started');
     getByText('Log in');
+  });
+
+  it('exposes Get started and Log in as labelled buttons', () => {
+    const { getByLabelText } = render(
+      <AuthEntryScreen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    expect(getByLabelText('Get started').props.accessibilityRole).toBe('button');
+    expect(getByLabelText('Log in').props.accessibilityRole).toBe('button');
   });
 
   it('navigates to RegisterScreen when Get started is pressed', () => {

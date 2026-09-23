@@ -1,20 +1,13 @@
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Keyboard,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
-import { Screen } from '../../components/Screen';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import { Button, Screen, TextField } from '../../components/ui';
 import { useAuthStore } from '../../stores/auth';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, radii, spacing, touchTarget, typography } from '../../theme';
+import { AuthHeading } from './AuthHeading';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -125,82 +118,70 @@ export function LoginScreen({ navigation }: Props) {
 
   return (
     <Screen padded scroll withKeyboard>
-      <View style={styles.header}>
-        <Text style={styles.wordmark}>sportsgang</Text>
-        <Text style={styles.eyebrow}>Welcome back</Text>
-        <Text style={styles.title}>Log in</Text>
-      </View>
+      <AuthHeading eyebrow="Welcome back" title="Log in" />
 
       <View style={styles.form}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            placeholderTextColor={colors.textTertiary}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            autoComplete="email"
-          />
-        </View>
+        <TextField
+          label="Email"
+          leadingIcon="mail"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          autoComplete="email"
+          inputStyle={singleLineInput}
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Your password"
-            placeholderTextColor={colors.textTertiary}
-            secureTextEntry
-            // Same defenses as RegisterScreen: prevent iOS title-casing
-            // / autocorrect from silently mutating the typed password
-            // before it lands in React state.
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="password"
-            // `current-password` is the AHA-spec value for sign-in flows
-            // and is the React Native canonical token for retrieving an
-            // existing credential. The previous `password` value worked
-            // but is the spec's "any-password" alias — `current-password`
-            // is unambiguous and matches `new-password` on Register.
-            autoComplete="current-password"
-          />
-        </View>
+        <TextField
+          label="Password"
+          leadingIcon="lock"
+          secure
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Your password"
+          // Same defenses as RegisterScreen: prevent iOS title-casing
+          // / autocorrect from silently mutating the typed password
+          // before it lands in React state.
+          autoCapitalize="none"
+          autoCorrect={false}
+          textContentType="password"
+          // `current-password` is the AHA-spec value for sign-in flows
+          // and is the React Native canonical token for retrieving an
+          // existing credential. The previous `password` value worked
+          // but is the spec's "any-password" alias — `current-password`
+          // is unambiguous and matches `new-password` on Register.
+          autoComplete="current-password"
+          inputStyle={singleLineInput}
+        />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <FormErrorBanner message={error} />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.buttonPrimary,
-            (pressed || isLoading) && styles.pressed,
-          ]}
+        <Button
+          label="Log in"
+          size="lg"
+          fullWidth
+          loading={isLoading}
           onPress={handleLogin}
-          disabled={isLoading}
-          accessibilityRole="button"
           accessibilityLabel="Log in"
-        >
-          {isLoading ? (
-            <ActivityIndicator color={colors.textInverse} />
-          ) : (
-            <Text style={styles.buttonPrimaryText}>Log in</Text>
-          )}
-        </Pressable>
+          style={styles.submit}
+        />
 
         {Platform.OS === 'ios' ? (
           <View style={styles.appleSection}>
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+            {/* Apple's own button (HIG-compliant). WHITE style is the
+                variant Apple recommends on dark backgrounds. */}
             <AppleAuthentication.AppleAuthenticationButton
-              buttonType={
-                AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
-              }
-              buttonStyle={
-                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-              }
-              cornerRadius={radii.md}
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+              cornerRadius={radii.lg}
               style={styles.appleButton}
               onPress={handleAppleSignIn}
             />
@@ -209,106 +190,61 @@ export function LoginScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.footer}>
-        <Pressable
+        <Text style={styles.footerText}>Don't have an account?</Text>
+        <Button
+          label="Sign up"
+          variant="ghost"
+          size="sm"
           onPress={() => navigation.replace('RegisterScreen')}
-          accessibilityRole="button"
           accessibilityLabel="Sign up"
-        >
-          <Text style={styles.footerText}>
-            Don't have an account?{' '}
-            <Text style={styles.footerLink}>Sign up</Text>
-          </Text>
-        </Pressable>
+        />
       </View>
     </Screen>
   );
 }
 
+/**
+ * TextField spreads `typography.bodyLarge` (lineHeight 26) into the input.
+ * On a single-line TextInput that lineHeight clips descenders and the "@"
+ * glyph on Android, so auth fields clear it.
+ */
+const singleLineInput = { lineHeight: undefined };
+
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
-    gap: spacing.xs,
-  },
-  wordmark: {
-    fontSize: 28,
-    fontWeight: '700',
-    letterSpacing: -1,
-    color: colors.brand,
-    marginBottom: spacing.md,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.brand,
-    marginBottom: spacing.sm,
-  },
-  title: {
-    ...typography.h1,
-  },
   form: {
-    gap: spacing.md,
+    gap: spacing.md + spacing.xs,
   },
-  field: {
-    gap: spacing.xs,
-  },
-  label: {
-    ...typography.label,
-    color: colors.textSecondary,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    // Use explicit fontSize/fontWeight from the bodyLarge token but omit
-    // lineHeight: setting lineHeight on a single-line TextInput clips
-    // descenders (g, y, p — and the '@' glyph in email addresses) on
-    // Android. The email field is the visible symptom; the workaround
-    // mirrors RegisterScreen / OnboardingStep1.
-    fontSize: typography.bodyLarge.fontSize,
-    fontWeight: typography.bodyLarge.fontWeight,
-    color: colors.textPrimary,
-    backgroundColor: colors.inputBackground,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  buttonPrimary: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    minHeight: 52,
-    justifyContent: 'center',
+  submit: {
     marginTop: spacing.sm,
   },
-  buttonPrimaryText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-  pressed: {
-    opacity: 0.65,
-  },
   appleSection: {
-    marginTop: spacing.md,
+    gap: spacing.md,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm + spacing.xs,
+  },
+  dividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.borderStrong,
+  },
+  dividerText: {
+    ...typography.caption,
   },
   appleButton: {
     width: '100%',
-    height: 52,
+    height: touchTarget + spacing.md - spacing.xs,
   },
   footer: {
-    paddingVertical: spacing.xl,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xl,
   },
   footerText: {
     ...typography.body,
-    color: colors.textSecondary,
-  },
-  footerLink: {
-    color: colors.brand,
-    fontWeight: '600',
   },
 });

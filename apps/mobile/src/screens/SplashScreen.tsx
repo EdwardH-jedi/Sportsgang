@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { useAuthStore } from '../stores/auth';
 import { useProfileStore } from '../stores/profile';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 import type { SplashScreenProps } from '../navigation/types';
 
 /**
@@ -77,9 +77,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wordmark: {
-    fontSize: 28,
-    fontWeight: '700',
+    ...typography.h1,
     color: colors.textInverse,
-    letterSpacing: 10,
+    letterSpacing: 8,
   },
 });
