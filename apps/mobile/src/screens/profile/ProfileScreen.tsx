@@ -301,6 +301,26 @@ export function ProfileScreen() {
             )}
           </View>
 
+          {/* Games & challenges — the former Events tab's entry points:
+              Battles (group games in every sport) and 1-on-1 Challenges. */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Games & challenges</Text>
+            <ListRow
+              icon="battle"
+              title="Battles"
+              subtitle="Casual or ranked group games in your area"
+              accessibilityLabel="Open Battles"
+              onPress={() => navigation.navigate('Battles')}
+            />
+            <ListRow
+              icon="trophy"
+              title="Challenges"
+              subtitle="1-on-1 results that count toward Honor and Rank"
+              accessibilityLabel="Open Challenges"
+              onPress={() => navigation.navigate('Challenges')}
+            />
+          </View>
+
           {/* Guides — how Honor works + safety basics */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Guides</Text>

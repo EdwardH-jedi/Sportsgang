@@ -307,6 +307,24 @@ describe('ProfileScreen', () => {
     expect(queryByLabelText('Edit profile')).toBeNull();
   });
 
+  // ── Games & challenges (former Events tab entry points) ──────────────────
+
+  it('links to Battles and Challenges from Games & challenges', async () => {
+    const { getByText, getByRole } = render(<ProfileScreen />);
+    await waitFor(() => getByText('Games & challenges'));
+    fireEvent.press(getByRole('button', { name: 'Open Battles' }));
+    expect(mockNavigate).toHaveBeenCalledWith('Battles');
+    fireEvent.press(getByRole('button', { name: 'Open Challenges' }));
+    expect(mockNavigate).toHaveBeenCalledWith('Challenges');
+  });
+
+  it('shows the dev-only UI gallery row in development builds', async () => {
+    const { getByRole } = render(<ProfileScreen />);
+    await waitFor(() => getByRole('button', { name: /UI gallery/ }));
+    fireEvent.press(getByRole('button', { name: /UI gallery/ }));
+    expect(mockNavigate).toHaveBeenCalledWith('UiGallery');
+  });
+
   // ── Logout ─────────────────────────────────────────────────────────────────
 
   it('calls logout and resets navigation to AuthEntry when Log out is pressed', async () => {
