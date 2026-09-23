@@ -129,6 +129,20 @@ describe('useChat', () => {
     expect(result.current.error).toBe('Network down');
   });
 
+  it('refresh() clears a previous error once the retry succeeds', async () => {
+    mockGet.mockRejectedValueOnce(new Error('Network down'));
+    const { result } = renderHook(() => useChat({ matchId: 'match-1', token: 't' }));
+    await waitFor(() => expect(result.current.error).toBe('Network down'));
+
+    mockFetches({ messages: [msg1] });
+    await act(async () => {
+      await result.current.refresh();
+    });
+    expect(result.current.error).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.messages).toEqual([msg1]);
+  });
+
   it('sendMessage posts the body and dedupes a WebSocket echo of the same id', async () => {
     mockFetches();
     mockPost.mockResolvedValue(msg2);

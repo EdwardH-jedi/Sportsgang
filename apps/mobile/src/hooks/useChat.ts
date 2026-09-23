@@ -73,8 +73,9 @@ interface UseChatResult {
  * goes through `dedupeMessagesById` so a race between the POST response and
  * the WS echo of the same id can never render a duplicate bubble.
  *
- * Note: `refresh` intentionally does not reset `error` / `isLoading`; this
- * mirrors the behaviour the chat screen shipped with.
+ * `refresh` (initial load and the error view's "Try again") shows the
+ * full-screen loading state and clears any previous error, so a successful
+ * retry always leaves the error view.
  */
 export function useChat({
   matchId,
@@ -115,6 +116,8 @@ export function useChat({
   }, [matchId]);
 
   const refresh = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       // Run both fetches in parallel so a slow /bookings doesn't delay the
       // text history (and vice-versa). Either failing surfaces a single

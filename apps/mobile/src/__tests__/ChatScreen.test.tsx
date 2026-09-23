@@ -520,6 +520,25 @@ describe('ChatScreen', () => {
     expect(mockApiGet).toHaveBeenCalledTimes(4);
   });
 
+  it('leaves the error view after a successful retry (regression)', async () => {
+    // Regression: `refresh` never cleared `error`, so a retry that succeeded
+    // still rendered "Try again" and the conversation never appeared.
+    mockApiGet.mockRejectedValueOnce(new Error('Connection refused'));
+    const { getByText, queryByText } = renderChatScreen();
+    await waitFor(() => getByText('Try again'));
+
+    setupMessagesAndBookingsMock({
+      messages: { items: sampleMessages, total: 2, limit: 100, offset: 0 },
+    });
+    await act(async () => {
+      fireEvent.press(getByText('Try again'));
+    });
+
+    await waitFor(() => getByText('Hey! Want to train tomorrow?'));
+    expect(queryByText('Try again')).toBeNull();
+    expect(queryByText('Connection refused')).toBeNull();
+  });
+
   // ── Send message ───────────────────────────────────────────────────────────
 
   it('sends a message and appends it to the list', async () => {
