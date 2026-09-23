@@ -166,7 +166,7 @@ Detailed area-by-area tables follow.
 | URLs reachable from outside the build environment | configured | Confirmed live by the operator after Netlify deploy. | Re-verify with the §4.8 checklist after any custom-domain switch. |
 | Env example files document the values | configured | `apps/mobile/.env.example`, `apps/mobile/.env.staging.example`, and `.env.example` all carry the three `EXPO_PUBLIC_*_URL` values pointing at the Netlify host. | None. Update together with §4.8 commands if the host changes. |
 | EAS env values pinned (preview + production) | configured | `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_SUPPORT_URL` set on both `preview` and `production` environments via `eas env:create`. Verify with `eas env:list --environment {preview,production}`. | Re-apply with `eas env:update` if the host changes (e.g. custom-domain swap). |
-| Real-device tap-through of all three in-app legal links | verified | 2026-05-05 — operator-confirmed PASS on iPhone via Expo Go / local development run: Privacy → `/privacy/`, Terms → `/terms/`, Support → `/support/` all opened on `https://sportgang.netlify.app/`. No "link unavailable" alert, no 404, no crash. Recorded in `docs/deployment/RELEASE_GATE_CHECKLIST.md` §4.6. | Re-run after the first preview/TestFlight on-device install and after any Netlify host change (custom-domain swap). |
+| Real-device tap-through of all three in-app legal links | verified | 2026-05-05 — operator-confirmed PASS on iPhone via Expo Go / local development run: Privacy → `/privacy/`, Terms → `/terms/`, Support → `/support/` all opened on `https://sportgang.netlify.app/`. No "link unavailable" alert, no 404, no crash. Recorded in `docs/archive/deployment/RELEASE_GATE_CHECKLIST.md` §4.6. | Re-run after the first preview/TestFlight on-device install and after any Netlify host change (custom-domain swap). |
 
 ### 4.5 Reviewer notes / contact / demo account path
 
@@ -347,7 +347,7 @@ If the operator later pins a custom domain (e.g. `https://sportsgang.app/`
 or `sportgang.app` is live until it actually is),
 update the URL list at the top of this checklist, the env example files
 (`apps/mobile/.env.example`, `apps/mobile/.env.staging.example`,
-`.env.example`), `docs/release/APP_STORE_METADATA.md` §8, the EAS env
+`.env.example`), `docs/archive/release/APP_STORE_METADATA.md` §8, the EAS env
 values via `eas env:update`, and re-run this entire checklist.
 
 ### 4.9 Final local iOS screenshot package
@@ -458,13 +458,13 @@ not break local config evaluation; it only throws on
 
 Short pointers only. Do not duplicate content from these here.
 
-- `docs/deployment/APP_STORE_SUBMISSION.md` - field-by-field ASC metadata,
+- `docs/archive/deployment/APP_STORE_SUBMISSION.md` - field-by-field ASC metadata,
   the reviewer notes template, and the screenshot plan. This prep doc does
   not rewrite any of that; if the current submission doc has conflicting
   details about assets, seed script, or placeholder identifiers, treat this
   prep doc as the current source of truth for prep status and update the
   submission doc in a separate slice.
-- `docs/deployment/RELEASE_GATE_CHECKLIST.md` - the go/no-go artifact.
+- `docs/archive/deployment/RELEASE_GATE_CHECKLIST.md` - the go/no-go artifact.
   Section 4 tracks device verification; section 5 tracks Apple-side setup;
   section 6 tracks blockers. This prep doc does not duplicate that tracking;
   it provides a more detailed, prep-focused view of the same items that

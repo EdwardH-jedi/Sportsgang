@@ -161,7 +161,7 @@ The Google Places provider is a *separate* code path. A `403` from
 `places.googleapis.com` (logged as `Google Places non-200 ... status=403`)
 does not affect seed results -- the seed fallback works even when the
 Places key is missing or rejected. See
-`docs/release/GOOGLE_PLACES_RELEASE_QA.md` for the manual Places
+`docs/archive/release/GOOGLE_PLACES_RELEASE_QA.md` for the manual Places
 checklist.
 
 ### Rollback

@@ -301,4 +301,4 @@ can be rendered.
       `places.googleapis.com`, `X-Goog-Api-Key`, or any `AIza`-prefixed
       string (re-grep `apps/mobile/src` before each release build).
 - [ ] The API key is set as a backend Fly secret only (see
-      `docs/release/GOOGLE_PLACES_RELEASE_QA.md` §3).
+      `docs/archive/release/GOOGLE_PLACES_RELEASE_QA.md` §3).

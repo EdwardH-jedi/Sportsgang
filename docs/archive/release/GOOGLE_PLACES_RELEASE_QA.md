@@ -112,7 +112,7 @@ references, or transmits the Places key.
 
 **v1.0 baseline (existing app):**
 
-- `docs/release/APP_PRIVACY_LABEL_DRAFT.md` declares: no automatic
+- `docs/archive/release/APP_PRIVACY_LABEL_DRAFT.md` declares: no automatic
   precise location, no Google Places. Privacy policy mirrors this.
 
 **v1.1 changes that affect this baseline:**
@@ -378,8 +378,8 @@ require code changes from this branch.
 |---|---|---|---|
 | 1 | Privacy Policy §2.4 says "We do **not** collect GPS location." Contradicts v1.1 mobile (`useVenueLocation` calls `Location.getCurrentPositionAsync`). Must be reconciled before App Store submission. | Operator / legal | `docs/legal/PRIVACY_POLICY.md` |
 | 2 | Privacy Policy §4 third-party processors table does not list Google Places. Backend sends search coordinates to Google. | Operator / legal | `docs/legal/PRIVACY_POLICY.md` |
-| 3 | App Privacy Label Draft §2.7 says automatic precise-location detection is "Currently No." Needs to flip to "Yes — foreground only, App Functionality" with legal-approved phrasing. | Operator / legal | `docs/release/APP_PRIVACY_LABEL_DRAFT.md` |
-| 4 | App Privacy Label Draft §6 third-party services table does not list Google Places. | Operator / legal | `docs/release/APP_PRIVACY_LABEL_DRAFT.md` |
+| 3 | App Privacy Label Draft §2.7 says automatic precise-location detection is "Currently No." Needs to flip to "Yes — foreground only, App Functionality" with legal-approved phrasing. | Operator / legal | `docs/archive/release/APP_PRIVACY_LABEL_DRAFT.md` |
+| 4 | App Privacy Label Draft §6 third-party services table does not list Google Places. | Operator / legal | `docs/archive/release/APP_PRIVACY_LABEL_DRAFT.md` |
 | 5 | Open legal question: does sending lat/lng to Google Places require Google Places its own row in §2 of the App Privacy Label, or only in §6 (third-party processors)? Affects label categorisation. | Operator / legal | n/a |
 | 6 | `docs/deployment/RELEASE_RUNBOOK.md:26-27` `fly secrets set` command does not include `GOOGLE_PLACES_API_KEY`. Concrete release-prep gap. | Release runbook owner | `docs/deployment/RELEASE_RUNBOOK.md` |
 
@@ -391,7 +391,7 @@ flagged the gaps; sign-off belongs to operator + legal.
 
 ## 11. Non-blocking follow-ups
 
-- Add `GOOGLE_PLACES_API_KEY` to `docs/staging/ENV_VARS.md` if that
+- Add `GOOGLE_PLACES_API_KEY` to `docs/archive/staging/ENV_VARS.md` if that
   document is treated as the canonical env-var reference.
 - Consider a tiny metric counter (success / cache-hit / failure /
   fallback-empty) emitted from `places.py` so the operator gets an
@@ -413,7 +413,7 @@ flagged the gaps; sign-off belongs to operator + legal.
 |---|---|---|
 | API tests (places + venues) | `python -m pytest apps/api/tests/test_places.py apps/api/tests/test_venues.py -q` | **PASS — 72 / 72** (5.65s) |
 | Mobile typecheck | `npm run typecheck --workspace @protin/mobile` | **PASS** (`tsc --noEmit`, no diagnostics) |
-| Working-tree scope | `git status --short --untracked-files=all` | `M apps/api/tests/test_venues.py` (new safety test for wire-side raw-Google-field denylist) and `?? docs/release/GOOGLE_PLACES_RELEASE_QA.md` (this doc). No generated/cache files. |
+| Working-tree scope | `git status --short --untracked-files=all` | `M apps/api/tests/test_venues.py` (new safety test for wire-side raw-Google-field denylist) and `?? docs/archive/release/GOOGLE_PLACES_RELEASE_QA.md` (this doc). No generated/cache files. |
 
 No shared-types typecheck was run, so no `tsconfig.tsbuildinfo` was
 regenerated.

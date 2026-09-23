@@ -1,10 +1,10 @@
 # Protin — Staging Setup
 
-This guide covers first-time setup of the Protin staging environment on the RX6600 server.
+This guide covers first-time setup of the Protin staging environment on the home staging server.
 
 ## Prerequisites
 
-- Ubuntu 22.04+ (or Debian 12+) on the RX6600
+- Ubuntu 22.04+ (or Debian 12+) on the home staging server
 - Docker Engine 24+ and Docker Compose v2 (`docker compose` — not `docker-compose`)
 - Git
 - The server's LAN IP address (e.g. `192.168.1.x`) — devices testing the app must be on the same network or connected via Tailscale
@@ -40,7 +40,7 @@ Fill in every `<placeholder>` value:
 | `POSTGRES_PASSWORD` | Any strong random string |
 | `SECRET_KEY` | `python3 -c "import secrets; print(secrets.token_hex(32))"` |
 | `GOOGLE_CLIENT_ID/SECRET` | Google Cloud Console — OAuth 2.0 Client (optional) |
-| `GOOGLE_REDIRECT_URI` | Replace `RX6600_IP` with the server's actual LAN IP |
+| `GOOGLE_REDIRECT_URI` | Replace `<staging-host>` with the server's actual LAN IP |
 
 Also update `POSTGRES_URL` so it matches your chosen `POSTGRES_PASSWORD`.
 
@@ -50,7 +50,7 @@ Also update `POSTGRES_URL` so it matches your chosen `POSTGRES_PASSWORD`.
 
 1. In [Google Cloud Console](https://console.cloud.google.com/), go to **APIs & Services → Credentials**.
 2. Create an **OAuth 2.0 Client ID** (Web application).
-3. Add `http://RX6600_IP/users/me/google-calendar/callback` as an Authorised redirect URI.
+3. Add `http://<staging-host>/users/me/google-calendar/callback` as an Authorised redirect URI.
 4. Copy the Client ID and Secret into `.env.staging`.
 
 Skip this step if calendar sync is not needed for the current testing session.
@@ -105,7 +105,7 @@ The script:
 curl http://localhost/health
 
 # From another device on the same LAN
-curl http://RX6600_IP/health
+curl http://<staging-host>/health
 ```
 
 Expected response:
@@ -121,7 +121,7 @@ On the development machine (not the server):
 
 ```bash
 cp apps/mobile/.env.staging.example apps/mobile/.env
-# Edit apps/mobile/.env and set EXPO_PUBLIC_API_URL=http://RX6600_IP
+# Edit apps/mobile/.env and set EXPO_PUBLIC_API_URL=http://<staging-host>
 ```
 
 Then start the Expo dev server — the app will connect to the staging API.

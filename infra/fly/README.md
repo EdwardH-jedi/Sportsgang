@@ -95,7 +95,7 @@ fly certs add api.protin.app --app protin-api
 
 ## Why nginx isn't deployed here
 
-`infra/nginx/*` is retained for the LAN/staging deployment on the RX6600
+`infra/nginx/*` is retained for the LAN/staging deployment on the home staging server
 home server. On Fly, the Anycast edge handles TLS termination, HTTP→HTTPS
 redirects, and request routing — running an extra nginx sidecar would be
 redundant.

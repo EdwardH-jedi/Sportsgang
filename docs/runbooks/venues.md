@@ -6,7 +6,7 @@ provider that backs them.
 
 Companion documents:
 
-- `docs/release/GOOGLE_PLACES_RELEASE_QA.md` — release / privacy QA
+- `docs/archive/release/GOOGLE_PLACES_RELEASE_QA.md` — release / privacy QA
   pass for v1.1.
 - `docs/deployment/RELEASE_RUNBOOK.md` — Fly deploy + venue catalog
   seed.

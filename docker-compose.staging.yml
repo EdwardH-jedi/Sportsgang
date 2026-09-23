@@ -2,7 +2,7 @@
 # Protin — staging docker-compose override
 #
 # Extends the base docker-compose.yml with the API, worker, and nginx
-# services needed for a complete staging deployment on the RX6600 server.
+# services needed for a complete staging deployment on the home staging server.
 #
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # setup-server.sh — First-time Docker Engine setup for Ubuntu 22.04+
 #
-# Target machine: RX6600 staging server running Ubuntu 22.04+
+# Target machine: home staging server running Ubuntu 22.04+
 # Note: nginx runs inside Docker — do NOT install nginx on the host.
 #
 # Usage:

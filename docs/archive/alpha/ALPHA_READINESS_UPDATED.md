@@ -2,7 +2,7 @@
 
 Date: 2026-04-15
 Branch: `feature/wave-8-staging-readiness`
-Supersedes: `docs/alpha/ALPHA_READINESS.md` (2026-03-18)
+Supersedes: `docs/archive/alpha/ALPHA_READINESS.md` (2026-03-18)
 
 This is a re-audit of the Wave 7 readiness doc against shipped code in `apps/`
 after Waves 8–17 (harness, sport expansion, WebSocket chat, matching algorithm,
@@ -42,7 +42,7 @@ verified without a deploy / device.
 
 | # | Item | Status | Notes |
 |---|---|---|---|
-| 3.1 | `.env.staging` populated on RX6600 (SECRET_KEY, POSTGRES_PASSWORD) | UNKNOWN | Cannot inspect server. `.env.staging.example` exists per `docker-compose.staging.yml`. |
+| 3.1 | `.env.staging` populated on the home staging server (SECRET_KEY, POSTGRES_PASSWORD) | UNKNOWN | Cannot inspect server. `.env.staging.example` exists per `docker-compose.staging.yml`. |
 | 3.2 | Google OAuth credentials configured | UNKNOWN | Optional; mobile gracefully no-ops if unset (`ProfileScreen` swallows). |
 | 3.3 | ≥2 test accounts with sport profiles | UNKNOWN | QA precondition; not verifiable in repo. |
 | 3.4 | Physical device for push validation | UNKNOWN | Requires hardware. |
@@ -71,11 +71,11 @@ distribution. **PASS** across the board.
 
 | # | Criterion | Status | Notes |
 |---|---|---|---|
-| 6.1 | RX6600 staging deployed; `/health` returns ok | UNKNOWN | Server-side check. |
+| 6.1 | Home staging server deployed; `/health` returns ok | UNKNOWN | Server-side check. |
 | 6.2 | Two test accounts with full profiles + sport profiles | UNKNOWN | QA precondition. |
 | 6.3 | Mutual match creatable end-to-end on two devices | UNKNOWN | Code path exists; needs device run. |
 | 6.4 | Booking propose → confirm → calendar add | UNKNOWN | Code path exists; needs device run. |
-| 6.5 | `docs/staging/QA_CHECKLIST.md` passes without blockers | UNKNOWN | Not yet executed against this branch. |
+| 6.5 | `docs/archive/staging/QA_CHECKLIST.md` passes without blockers | UNKNOWN | Not yet executed against this branch. |
 
 ## 7. New issues surfaced by this audit (not in original doc)
 
@@ -97,7 +97,7 @@ distribution. **PASS** across the board.
   limitation language, and either narrow the sport list back to gym+golf
   or finish the tennis/running UI rendering in `ProfileScreen.tsx`.
 - **Five UNKNOWN items** are all server/device validations that must be
-  performed by QA on RX6600 against this branch — they are not blockers
+  performed by QA on the home staging server against this branch — they are not blockers
   to declaring the build *ready for QA*, only to declaring alpha *open*.
 
 **Recommendation: GO for QA pass on this branch** once NEW-001 and NEW-002

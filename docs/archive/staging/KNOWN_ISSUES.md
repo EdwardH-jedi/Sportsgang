@@ -1,7 +1,7 @@
 # Protin Staging — Known Issues
 
 Updated: 2026-03-18
-Environment: RX6600 staging
+Environment: home staging server
 
 ---
 

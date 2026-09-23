@@ -6,7 +6,7 @@ Wave: 7 (post-hardening)
 > **SUPERSEDED (2026-04-15)** — This document is frozen at Wave 7 and does
 > not reflect Waves 8–17 (harness, sport expansion, WebSocket chat, matching
 > algorithm, push-notification tests, CI pipeline, ESLint, nginx HTTP-only
-> default). See `docs/alpha/ALPHA_READINESS_UPDATED.md` for the current audit.
+> default). See `docs/archive/alpha/ALPHA_READINESS_UPDATED.md` for the current audit.
 > Kept for historical context only.
 
 ---
@@ -37,7 +37,7 @@ Wave: 7 (post-hardening)
 
 | Item | Who | Notes |
 |---|---|---|
-| `.env.staging` on RX6600 | Infra | Fill SECRET_KEY, POSTGRES_PASSWORD, optionally Google OAuth |
+| `.env.staging` on the home staging server | Infra | Fill SECRET_KEY, POSTGRES_PASSWORD, optionally Google OAuth |
 | Google OAuth credentials | Product | Required for Google Calendar integration only |
 | 2+ test accounts with profiles | QA | Discovery feed requires ≥2 accounts with sport profiles set |
 | Physical device for push | QA | Expo push tokens unavailable on simulator |
@@ -76,11 +76,11 @@ Wave: 7 (post-hardening)
 
 The app is ready for internal alpha testing when:
 
-- [ ] RX6600 staging is deployed and `curl http://SERVER_IP/health` returns `{"status":"ok"}`
+- [ ] The home staging server is deployed and `curl http://SERVER_IP/health` returns `{"status":"ok"}`
 - [ ] Two test accounts exist with complete profiles and sport profiles
 - [ ] A mutual match can be created end-to-end from two devices
 - [ ] A booking can be proposed, confirmed, and added to device calendar
-- [ ] The QA checklist in `docs/staging/QA_CHECKLIST.md` passes without blockers
+- [ ] The QA checklist in `docs/archive/staging/QA_CHECKLIST.md` passes without blockers
 
 ---
 

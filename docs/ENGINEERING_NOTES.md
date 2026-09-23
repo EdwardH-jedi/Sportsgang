@@ -1,9 +1,16 @@
-# Protin — Portfolio Facts
+# SportsGang — Engineering Notes
 
-Grounded reference for talking about this project. Repository claims below are
-verifiable from code, tests, migrations, CI, deploy configuration, and the recorded
-release history. The public App Store name for v1 is **SportsGang**; `Protin` remains
-the repository / technical project name.
+Release timeline, implemented scope, and the engineering decisions behind SportsGang.
+Claims below are verifiable from code, tests, migrations, CI, deploy configuration, and
+the recorded release history.
+
+## Naming: SportsGang and Protin
+
+**SportsGang** is the public product name used on the App Store. **Protin** is the
+internal codename the project started with. It is intentionally kept in technical
+identifiers — the npm workspace packages (`@protin/*`), the Expo slug, the Fly.io app
+names, and the iOS bundle identifier `com.edh1223.protin`, which is permanent once an
+app has been released on the App Store.
 
 ## One-line description
 
@@ -23,7 +30,7 @@ nearby courts, and track results through a ranking and honour system.
 - **Approval:** Apple completed review on 13 May 2026, accepted SportsGang v1.0 for
   iOS, marked it eligible for distribution, and separately confirmed that SportsGang
   had been **approved for distribution**.
-- **App Store record:** `https://apps.apple.com/app/sportsgang/id6767027447`.
+- **App Store record:** <https://apps.apple.com/au/app/sportsgang/id6767027447>.
 - **First commit → App Store approval:** approximately **56 days / 8 weeks**.
 
 The App Store emails confirm approval and distribution eligibility. Download counts,
@@ -33,7 +40,7 @@ repository, so no adoption numbers are claimed here.
 ## Problem / purpose
 
 Finding a workout or sports partner at your level, at a time and venue that works, is
-mostly ad-hoc (group chats, notice boards). Protin makes it a first-class product flow:
+mostly ad-hoc (group chats, notice boards). SportsGang makes it a first-class product flow:
 discover a compatible partner for a specific sport, challenge them, book a venue for
 the session, and build a track record through results, rank, and honour.
 
@@ -108,6 +115,12 @@ defined in the shared-types package.
    review dataset idempotent and future-facing instead of relying on manual database
    edits. The seeded account, discovery feed, matches, chats, and bookings could be
    regenerated before review and verified through the public API.
+5. **Signed OAuth state for Google Calendar linking.** The OAuth callback is reached
+   by a browser redirect from Google, so it cannot carry the user's bearer token. The
+   `state` parameter is therefore a short-lived (10-minute) HS256 JWT bound to the
+   user id, with a random nonce and a dedicated audience so ordinary access tokens
+   cannot be replayed as a state. Forged, tampered or expired states are rejected
+   before any token exchange (`apps/api/app/services/google_calendar.py`).
 
 ## Release / deployment facts
 
@@ -127,53 +140,9 @@ defined in the shared-types package.
 - API unit tests run against in-memory SQLite. A separate PostgreSQL/Redis CI
   integration job exercises the Alembic chain and the booking journey; see
   [verification scope](VERIFICATION.md). This is not a production load test.
-- Media (profile photos) is stored on local disk; cloud object storage is a
-  production TODO.
+- Media (profile photos) is stored on local disk; cloud object storage is not yet
+  implemented.
 - Opponent discovery filters by sport and profile compatibility, not by geographic
   proximity (location is used for venue search only).
 - Tournaments are implemented behind a feature flag but are not wired into the main
   mobile navigation.
-
-## 30-second version
-
-"Protin is a peer sports matchmaking app I built end-to-end: an Expo/React Native
-TypeScript app on top of an async FastAPI backend with PostgreSQL and Redis. You can
-discover opponents by sport, challenge them, book nearby venues, chat, and track
-results through a ranking and honour system. I took the iOS release through Apple App
-Review as SportsGang v1.0; after one App Completeness review issue, I built a
-reproducible production review-data workflow, resubmitted, and the app was approved
-for distribution about eight weeks after the first commit. The repo has around 620
-backend tests and 750 mobile tests with CI covering lint, typecheck, both suites, and
-a Docker build."
-
-## 2-minute technical version
-
-"Protin is a monorepo with three workspaces: an Expo React Native app, a FastAPI
-service, and a shared TypeScript types package that acts as the API contract.
-
-The backend is fully async — SQLAlchemy 2 async sessions over asyncpg, async Redis —
-with 15 Alembic migrations covering the schema history. The domain is modelled around
-matches: a sport-scoped discovery feed with compatibility scoring produces mutual-like
-matches, matches carry chat threads and bookings, and bookings run through an explicit
-finite state machine so every transition and its side effects — like scheduled push
-notifications — are validated in one place. On top of that there are 1-v-1 challenges
-with results, group events with attendance tracking, feature-flagged tournaments,
-and a rank/honour system.
-
-Two integrations I'd highlight are venue search, which merges a seeded database with
-Google Places while deduplicating by name and haversine distance, and Google Calendar
-sync, where OAuth tokens are stored through a field-level encryption type that the app
-refuses to boot without a key outside development.
-
-The release process became an engineering problem too. SportsGang v1.0 went through
-Apple App Review and hit one App Completeness issue because the reviewer account
-landed on an empty production discovery feed. I fixed that by building an idempotent
-production seed for the full reviewer journey — discovery candidates, matches, chat,
-and pending/confirmed bookings — and verified it against the deployed HTTPS API.
-Apple then accepted v1.0 and approved it for distribution on 13 May 2026, roughly 56
-days after the first commit.
-
-Quality-wise, the repository has about 620 pytest tests and roughly 750 Jest tests,
-plus GitHub Actions for linting, typechecking, both suites, and the Docker build.
-I don't claim download or active-user numbers because those metrics are not tracked in
-the repository."

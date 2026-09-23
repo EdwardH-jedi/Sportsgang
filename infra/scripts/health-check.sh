@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# health-check.sh — verify the staging stack is up on the RX6600
+# health-check.sh — verify the staging stack is up on the home staging server
 #
 # Usage (from repo root):
 #   bash infra/scripts/health-check.sh

@@ -2,7 +2,7 @@
 # =============================================================================
 # Protin staging deployment script
 #
-# Runs on the RX6600 server. Assumes:
+# Runs on the home staging server. Assumes:
 #   - Docker and docker compose v2 are installed
 #   - .env.staging is present at the repo root (copied from .env.staging.example)
 #   - The repo is checked out at the path where this script lives

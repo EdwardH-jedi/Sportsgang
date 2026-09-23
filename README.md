@@ -7,7 +7,7 @@ approval on **13 May 2026**, following an App Completeness review issue that was
 resolved with a reproducible reviewer-data workflow. This is a historical release
 milestone; it does not establish current service availability or user adoption.
 
-[Release history and engineering decisions](docs/PORTFOLIO_FACTS.md) ·
+[Release history and engineering decisions](docs/ENGINEERING_NOTES.md) ·
 [Automated checks](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml) ·
 [Local setup](#local-setup)
 

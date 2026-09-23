@@ -58,8 +58,8 @@ Loaded by Expo at start time. Variables **must** have the `EXPO_PUBLIC_` prefix 
 
 | Variable | Local default | Staging value | Description |
 |---|---|---|---|
-| `EXPO_PUBLIC_API_URL` | `http://localhost:8000` | `http://RX6600_IP` | Base URL of the Protin API. No trailing slash. |
-| `EXPO_PUBLIC_GOOGLE_REDIRECT_URI` | `http://localhost:8000/users/me/google-calendar/callback` | `http://RX6600_IP/users/me/google-calendar/callback` | Must match `GOOGLE_REDIRECT_URI` in the API env and in Google Cloud Console. |
+| `EXPO_PUBLIC_API_URL` | `http://localhost:8000` | `http://<staging-host>` | Base URL of the Protin API. No trailing slash. |
+| `EXPO_PUBLIC_GOOGLE_REDIRECT_URI` | `http://localhost:8000/users/me/google-calendar/callback` | `http://<staging-host>/users/me/google-calendar/callback` | Must match `GOOGLE_REDIRECT_URI` in the API env and in Google Cloud Console. |
 
 ---
 

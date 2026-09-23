@@ -24,4 +24,4 @@ a booking; discard the test database afterwards. Do not point it at production.
 These checks do not establish live service availability, production load capacity,
 App Store availability, or Apple/Google/Expo integration success. Recorded iOS
 screenshots and historical release evidence are linked in
-[Portfolio Facts](PORTFOLIO_FACTS.md).
+[Engineering notes](ENGINEERING_NOTES.md).

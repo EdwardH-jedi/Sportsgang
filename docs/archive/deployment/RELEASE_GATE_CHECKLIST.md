@@ -17,7 +17,7 @@ repo today.
 
 For detailed Apple / TestFlight preparation status (configured / blocked /
 Apple-side setup required / verify on real device, with concrete next
-actions), see `docs/deployment/APPLE_TESTFLIGHT_PREP.md`. That prep doc is
+actions), see `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`. That prep doc is
 the source of truth for Apple-side setup detail; this doc is the source of
 truth for the go/no-go gate decision.
 
@@ -116,7 +116,7 @@ mandatory - it is the gap this checklist is here to close.
 
 | Capability | Repo evidence | Does not prove |
 |---|---|---|
-| Staging deploy script and operator wrapper | `infra/scripts/deploy.sh`, `infra/scripts/health-check.sh`, and `infra/scripts/staging-ops.sh` (health / logs / tail / restart / drift / deploy-sanity); staging operator guide in `docs/staging/RUNBOOK.md` | That a reviewer-usable staging environment is currently live |
+| Staging deploy script and operator wrapper | `infra/scripts/deploy.sh`, `infra/scripts/health-check.sh`, and `infra/scripts/staging-ops.sh` (health / logs / tail / restart / drift / deploy-sanity); staging operator guide in `docs/archive/staging/RUNBOOK.md` | That a reviewer-usable staging environment is currently live |
 | Encryption and boot guards | `validate_encryption_config()` in `apps/api/app/core/encryption.py` refuses to start without `FIELD_ENCRYPTION_KEY` in staging or prod; wired in `apps/api/app/main.py` lifespan | That secrets are actually present on the deployed host |
 | Health endpoint | `/health` handler in `apps/api/app/main.py` | That the external hostname is reachable and HTTPS-only at gate time |
 
@@ -262,7 +262,7 @@ in-app links were tap-tested on a real iPhone via Expo Go / local
 development run; all five links opened the expected Netlify pages
 without a "link unavailable" alert, without a 404, and without
 crashing the app. Detailed checklist + failure triage live in
-`docs/deployment/APPLE_TESTFLIGHT_PREP.md` section 4.8.
+`docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` section 4.8.
 
 | Check | Owner | Evidence required | Status / date |
 |---|---|---|---|
@@ -534,7 +534,7 @@ proven here, but claims about them must read as "not yet verified".
 ### Gate 2 - TestFlight
 
 > For detailed Apple-side prep status that feeds into this gate, see
-> `docs/deployment/APPLE_TESTFLIGHT_PREP.md`.
+> `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`.
 
 **Entry intent:** A signed iOS build is in TestFlight, installable by real
 testers, and core flows have been proven on a real iPhone against the
@@ -572,8 +572,8 @@ deployed backend.
 ### Gate 3 - Submission Prep
 
 > For detailed Apple-side prep status that feeds into this gate, see
-> `docs/deployment/APPLE_TESTFLIGHT_PREP.md`. For ASC metadata form values,
-> see `docs/deployment/APP_STORE_SUBMISSION.md`.
+> `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`. For ASC metadata form values,
+> see `docs/archive/deployment/APP_STORE_SUBMISSION.md`.
 
 **Entry intent:** Every user-visible feature is either proven or hidden, App
 Store Connect is complete, and a reviewer can get to the core loop with the
@@ -615,14 +615,14 @@ Short pointers only. Do not duplicate their content here.
 
 - Apple / TestFlight preparation status (configured / blocked / Apple-side
   setup required / verify on real device, with next actions):
-  `docs/deployment/APPLE_TESTFLIGHT_PREP.md`.
+  `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`.
 - Release mechanics (Fly deploy, EAS build, TestFlight promotion, rollback):
   `docs/deployment/RELEASE_RUNBOOK.md`.
 - App Store Connect field-by-field metadata, review notes template, and
-  screenshot plan: `docs/deployment/APP_STORE_SUBMISSION.md`.
-- Staging operations, env vars, QA, and setup: `docs/staging/RUNBOOK.md`,
-  `docs/staging/ENV_VARS.md`, `docs/staging/QA_CHECKLIST.md`,
-  `docs/staging/SETUP.md`, `docs/staging/KNOWN_ISSUES.md`.
+  screenshot plan: `docs/archive/deployment/APP_STORE_SUBMISSION.md`.
+- Staging operations, env vars, QA, and setup: `docs/archive/staging/RUNBOOK.md`,
+  `docs/archive/staging/ENV_VARS.md`, `docs/archive/staging/QA_CHECKLIST.md`,
+  `docs/archive/staging/SETUP.md`, `docs/archive/staging/KNOWN_ISSUES.md`.
 - Legal source-of-truth: `docs/legal/PRIVACY_POLICY.md`,
   `docs/legal/TERMS_OF_SERVICE.md`.
 

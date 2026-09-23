@@ -1,6 +1,6 @@
 # Protin Staging - Operational Runbook
 
-Day-to-day operations on the RX6600 staging server.
+Day-to-day operations on the home staging server.
 
 All commands assume you are in `/opt/protin` (the repo root) on the server.
 

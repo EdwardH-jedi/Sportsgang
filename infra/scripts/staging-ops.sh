@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# staging-ops.sh - operator wrapper for the RX6600 staging stack.
+# staging-ops.sh - operator wrapper for the staging stack on the home staging server.
 #
 # Usage:
 #   bash infra/scripts/staging-ops.sh health

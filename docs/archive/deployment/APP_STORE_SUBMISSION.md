@@ -14,7 +14,7 @@
 > for the App Store Connect submission forms (field values, reviewer-notes
 > copy, screenshot plan). It is not the current prep-status artifact.
 > Current Apple / TestFlight preparation status lives in
-> `docs/deployment/APPLE_TESTFLIGHT_PREP.md`. Where the two conflict,
+> `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`. Where the two conflict,
 > treat APPLE_TESTFLIGHT_PREP.md as the source of truth for *what is
 > configured / blocked right now* and treat this file as the source of
 > truth for *what values go into which ASC form at submission time*.
@@ -23,7 +23,7 @@ Everything you need to fill in App Store Connect, grouped by screen. Pre-filled
 where engineering has a defensible answer; `[BRACKETED]` means you decide.
 
 Companion documents:
-- Current Apple / TestFlight prep status: `docs/deployment/APPLE_TESTFLIGHT_PREP.md`
+- Current Apple / TestFlight prep status: `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md`
 - Build and submit mechanics: `docs/deployment/RELEASE_RUNBOOK.md`
 - Privacy + terms: `docs/legal/PRIVACY_POLICY.md`, `docs/legal/TERMS_OF_SERVICE.md`
 
@@ -53,7 +53,7 @@ Split between what the repo already supports today (no engineering work needed) 
 - `apps/mobile/assets/` does not yet exist in the repo. `app.config.js` directly references `./assets/notification-icon.png` (under the `expo-notifications` plugin) - `eas build` fails on a missing path. App icon, splash image, and Android adaptive-icon foreground are not currently referenced in `app.config.js`, so Expo would fall back to template defaults that will not pass App Store visual review; add them (and the matching `ios.icon`, `android.adaptiveIcon`, `splash.image` keys) before the first production build.
 - `apps/api/scripts/seed_review_data.py` is committed and has been run against the production database on 2026-05-12 (Fly `protin-api`). The reviewer account, five demo discovery candidates (Chris, Kim, Luke, Taylor Kim, Sarah), three mutual matches, two seeded chats, and three bookings (one incoming proposal, one outgoing proposal, one confirmed upcoming session) are live. The script is idempotent and credential-gated on `REVIEWER_EMAIL` / `REVIEWER_PASSWORD` Fly secrets. See section 6 for the demo account contract.
 - `apps/mobile/eas.json` `submit.production.ios.ascAppId` and `appleTeamId` are pinned to the real values (`6767027447` and `37C8A2733Y` respectively) as of 2026-05-07. The earlier `REPLACE_WITH_*` placeholders are gone; `eas submit --platform ios --latest` is unblocked once a production build artifact exists.
-- Hosted URLs for the legal docs are **live** on Netlify at `https://sportgang.netlify.app/{privacy,terms,support}/`, and the matching `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, and `EXPO_PUBLIC_SUPPORT_URL` values are pinned on the EAS `preview` and `production` environments (verify with `eas env:list --environment {preview,production}`). Same values also live in the env example files (`apps/mobile/.env.example`, `apps/mobile/.env.staging.example`, `.env.example`) for local Expo runs. **Privacy / Terms / Support real-device tap-through: PASS — 2026-05-05** (operator-confirmed on iPhone via Expo Go; recorded in `docs/deployment/RELEASE_GATE_CHECKLIST.md` §4.6 and `docs/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8). The same tap-through must be re-run against the actual signed TestFlight build before submission — that re-run remains PENDING.
+- Hosted URLs for the legal docs are **live** on Netlify at `https://sportgang.netlify.app/{privacy,terms,support}/`, and the matching `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, and `EXPO_PUBLIC_SUPPORT_URL` values are pinned on the EAS `preview` and `production` environments (verify with `eas env:list --environment {preview,production}`). Same values also live in the env example files (`apps/mobile/.env.example`, `apps/mobile/.env.staging.example`, `.env.example`) for local Expo runs. **Privacy / Terms / Support real-device tap-through: PASS — 2026-05-05** (operator-confirmed on iPhone via Expo Go; recorded in `docs/archive/deployment/RELEASE_GATE_CHECKLIST.md` §4.6 and `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8). The same tap-through must be re-run against the actual signed TestFlight build before submission — that re-run remains PENDING.
 - Fly secrets: `APPLE_CLIENT_ID=com.edh1223.protin`, `SECRET_KEY`, `FIELD_ENCRYPTION_KEY`. Without these the staging / production API refuses to boot and the `/auth/apple` endpoint returns 503.
 - Screenshots at both required iPhone sizes (section 9), 6 per size.
 - Apple Developer Program enrolment + ASC account (section Prerequisites).
@@ -160,8 +160,8 @@ Recommended conservative age-rating target: **17+** due to user
 profiles, chat, and real-world sports session coordination. Final
 rating must be confirmed in App Store Connect's age-rating
 questionnaire — Apple has not assigned any rating yet. Aligned with
-`docs/release/APP_STORE_METADATA.md` §7 and
-`docs/deployment/APPLE_TESTFLIGHT_PREP.md` §4.3.
+`docs/archive/release/APP_STORE_METADATA.md` §7 and
+`docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` §4.3.
 
 ---
 
@@ -212,7 +212,7 @@ The script is safe to re-run before each App Review window — it upserts users 
 ## 7. Review notes (paste verbatim)
 
 The canonical v1 review-notes block lives in
-`docs/release/APP_STORE_METADATA.md` §9. Paste that block verbatim
+`docs/archive/release/APP_STORE_METADATA.md` §9. Paste that block verbatim
 into the App Store Connect "Notes" field. The metadata doc is kept
 in lockstep with the actual shipped flows (Discovery → Connect →
 Chat → propose a session → Accept/Decline → Events tab → safety
@@ -298,7 +298,7 @@ Full details and rollback in `docs/deployment/RELEASE_RUNBOOK.md`.
 - [x] Apple Developer enrolment complete, Team ID `37C8A2733Y` captured (2026-05-07)
 - [x] ASC App ID `6767027447` captured and pasted into `apps/mobile/eas.json` (2026-05-07)
 - [x] Privacy Policy, Terms of Service, and Support pages hosted on Netlify at `https://sportgang.netlify.app/{privacy,terms,support}/` (open follow-up: optional swap to a final custom domain)
-- [x] `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_SUPPORT_URL` set on EAS preview + production profiles to the Netlify URLs above. Verify with `eas env:list --environment {preview,production}` (see `docs/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8)
+- [x] `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_SUPPORT_URL` set on EAS preview + production profiles to the Netlify URLs above. Verify with `eas env:list --environment {preview,production}` (see `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8)
 - [ ] Legal doc URLs reflected in `apps/mobile/src/lib/legal.ts` defaults if/when the env-driven flow is replaced (env values above are already documented in `apps/mobile/.env.example`, `apps/mobile/.env.staging.example`, and `.env.example`)
 - [ ] `apps/mobile/assets/` created and populated. `notification-icon.png` is hard-required by `app.config.js`; app icon (1024x1024 for iOS), splash image, and Android adaptive-icon foreground need to be added and wired into `app.config.js` for App Store visual review to pass.
 - [ ] `EXPO_PUBLIC_SENTRY_DSN` set for the production `eas build` profile **iff** you want crash reporting at launch. If unset, downgrade the two Sentry rows in section 4 to "No".

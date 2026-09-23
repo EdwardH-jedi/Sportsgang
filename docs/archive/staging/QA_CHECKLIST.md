@@ -122,6 +122,6 @@ App build: ___________
 
 ## Post-QA
 
-- [ ] Log findings in docs/staging/KNOWN_ISSUES.md
+- [ ] Log findings in docs/archive/staging/KNOWN_ISSUES.md
 - [ ] Take note of any crashes with stack traces
 - [ ] Confirm backup script works: `bash infra/scripts/backup.sh`

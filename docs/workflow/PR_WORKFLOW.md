@@ -35,7 +35,7 @@ Every PR follows this sequence before merge:
 2. Fix findings         — address blockers; note intentional skips
 3. Codex final review   — second-pass sign-off
 4. Merge to main
-5. Deploy to RX6600     — run deploy.sh on the server
+5. Deploy to staging    — run deploy.sh on the server
 ```
 
 ### 1. Claude Code Review
@@ -64,14 +64,14 @@ Merge using the platform's merge button (squash or merge commit — team prefere
 
 ### 5. Deploy
 
-On the RX6600:
+On the home staging server:
 ```bash
 git pull
 bash infra/scripts/deploy.sh --build
 curl http://localhost/health
 ```
 
-If health check fails after deploy, see the Rollback section in `docs/staging/RUNBOOK.md`.
+If health check fails after deploy, see the Rollback section in `docs/archive/staging/RUNBOOK.md`.
 
 ---
 

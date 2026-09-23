@@ -174,8 +174,8 @@ Do **not** position the app as 12+. Earlier draft notes carried a 12+
 working assumption based on "Infrequent/Mild" UGC; that has been
 withdrawn as inconsistent with chat + real-world-meet-up coordination.
 The aligned recommendation across this file,
-`docs/deployment/APP_STORE_SUBMISSION.md` §5, and
-`docs/deployment/APPLE_TESTFLIGHT_PREP.md` §4.3 is 17+.
+`docs/archive/deployment/APP_STORE_SUBMISSION.md` §5, and
+`docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` §4.3 is 17+.
 
 Apple has not assigned any rating yet; 17+ is the operator-side
 recommendation pending the App Store Connect questionnaire result.
@@ -231,7 +231,7 @@ eas env:list --environment production
 
 If a custom domain is later pinned, update with `eas env:update` (not
 `:create`) on both environments. Full verification checklist + failure
-triage live in `docs/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8.
+triage live in `docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md` §4.8.
 
 ## 9. Review notes draft (v1 finalized)
 

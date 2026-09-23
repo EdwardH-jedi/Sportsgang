@@ -4,10 +4,10 @@
 
 ## Overview
 
-All development happens on feature branches. `main` is the integration branch that feeds staging on the RX6600. There is no separate `develop` branch — keep the model simple.
+All development happens on feature branches. `main` is the integration branch that feeds the home staging server. There is no separate `develop` branch — keep the model simple.
 
 ```
-feature/...  →  PR  →  main  →  deploy to RX6600 staging
+feature/...  →  PR  →  main  →  deploy to home staging server
 ```
 
 ---
@@ -79,4 +79,4 @@ Hotfixes follow the same flow (`fix/` branch → PR → merge to `main`). There 
 
 1. Cut a `fix/` branch from `main`.
 2. Open a PR, get at minimum a quick Claude Code Review pass.
-3. Merge and deploy immediately via `bash infra/scripts/deploy.sh --build` on the RX6600.
+3. Merge and deploy immediately via `bash infra/scripts/deploy.sh --build` on the home staging server.
