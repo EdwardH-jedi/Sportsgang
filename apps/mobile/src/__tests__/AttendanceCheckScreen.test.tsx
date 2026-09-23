@@ -40,6 +40,7 @@ jest.mock('../hooks/useEvents', () => ({
   }),
 }));
 
+let mockCurrentUserId: string | null = 'host-1';
 jest.mock('../stores/auth', () => ({
   useAuthStore: (selector: (s: { user: { id: string } | null }) => unknown) =>
     selector({ user: mockCurrentUserId ? { id: mockCurrentUserId } : null }),
