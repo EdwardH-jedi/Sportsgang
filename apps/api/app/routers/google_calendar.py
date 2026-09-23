@@ -33,7 +33,9 @@ async def oauth_callback(
     """
     Google redirects here after the user grants consent.
     Stores the tokens and returns a minimal HTML success page.
-    This endpoint is not authenticated — user identity comes from the state parameter.
+    This endpoint is not authenticated (it is reached via a browser redirect), so
+    user identity comes from the signed, short-lived ``state`` issued by /auth-url.
+    Tampered, expired or malformed states are rejected with 400.
     """
     await gcal_service.handle_oauth_callback(db, code, state)
     html = """

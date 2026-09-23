@@ -2,34 +2,44 @@
 Google Calendar integration service.
 
 OAuth flow (mobile-initiated):
-  1. GET /users/me/google-calendar/auth-url  → returns {url} with state=<user_id>
+  1. GET /users/me/google-calendar/auth-url  → returns {url} with a signed state
   2. Mobile opens URL in browser (expo-web-browser)
   3. Google redirects to GET /users/me/google-calendar/callback?code=...&state=...
-  4. API exchanges code for tokens, stores them, returns JSON success
+  4. API verifies the state, exchanges code for tokens, stores them, returns an HTML success page
   5. GET /users/me/google-calendar/status confirms connection
+
+OAuth state:
+  The callback is unauthenticated (it is reached via a browser redirect from
+  Google), so the user identity comes from ``state``. The state is a short-lived
+  HS256 JWT signed with SECRET_KEY that carries the user id, a random nonce and
+  an expiry, plus a dedicated audience so an ordinary access token cannot be
+  replayed as a state. Tampered, expired or malformed states are rejected with
+  400 before any token exchange happens.
 
 Sync:
   - Only confirmed bookings are synced
   - POST /bookings/{id}/sync-google-calendar syncs for the calling user
   - update/cancel propagation via the same sync endpoint (idempotent by sync record)
 
-Production notes:
-  - Encrypt access_token + refresh_token at rest before shipping
+Security notes:
+  - access_token + refresh_token are encrypted at rest via ``EncryptedString``
+    (see app/core/encryption.py and app/models/google_calendar.py)
   - Rotate the OAuth client secret regularly
-  - Validate the state parameter with HMAC in production
 """
 
 from __future__ import annotations
 
-import base64
-from datetime import datetime, timezone
+import secrets
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 import httpx
+import jwt
 from fastapi import HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import security
 from app.core.config import get_settings
 from app.models.booking import Booking
 from app.models.google_calendar import CalendarBookingSync, GoogleCalendarToken
@@ -42,6 +52,10 @@ _GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 _GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 _GOOGLE_CALENDAR_API = "https://www.googleapis.com/calendar/v3"
 _SCOPES = "https://www.googleapis.com/auth/calendar.events"
+
+# OAuth state: signed, expiring, audience-scoped JWT (see module docstring).
+STATE_TTL = timedelta(minutes=10)
+_STATE_AUDIENCE = "google-calendar-oauth-state"
 
 
 # ---------------------------------------------------------------------------
@@ -56,8 +70,7 @@ def build_auth_url(user_id: UUID) -> str:
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Google Calendar integration is not configured on this server.",
         )
-    # state = base64-encoded user_id — not CSRF-safe; replace with signed JWT in production
-    state = base64.urlsafe_b64encode(str(user_id).encode()).decode()
+    state = create_oauth_state(user_id)
     params = (
         f"client_id={settings.google_client_id}"
         f"&redirect_uri={settings.google_redirect_uri}"
@@ -70,10 +83,35 @@ def build_auth_url(user_id: UUID) -> str:
     return f"{_GOOGLE_AUTH_URL}?{params}"
 
 
-def _decode_state(state: str) -> UUID:
+def create_oauth_state(user_id: UUID, *, ttl: timedelta = STATE_TTL) -> str:
+    """Return a signed, expiring OAuth state bound to ``user_id``."""
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user_id),
+        "aud": _STATE_AUDIENCE,
+        "nonce": secrets.token_urlsafe(16),
+        "iat": now,
+        "exp": now + ttl,
+    }
+    return jwt.encode(payload, security.SECRET_KEY, algorithm=security.JWT_ALGORITHM)
+
+
+def verify_oauth_state(state: str) -> UUID:
+    """Verify signature, audience and expiry of an OAuth state; return the user id.
+
+    Signature comparison is constant-time (PyJWT uses ``hmac.compare_digest``).
+    Any failure raises 400 without revealing which check failed.
+    """
     try:
-        return UUID(base64.urlsafe_b64decode(state).decode())
-    except Exception:
+        payload = jwt.decode(
+            state,
+            security.SECRET_KEY,
+            algorithms=[security.JWT_ALGORITHM],
+            audience=_STATE_AUDIENCE,
+            options={"require": ["sub", "aud", "exp", "nonce"]},
+        )
+        return UUID(payload["sub"])
+    except (jwt.PyJWTError, ValueError, TypeError):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid state parameter")
 
 
@@ -87,8 +125,8 @@ async def handle_oauth_callback(
     code: str,
     state: str,
 ) -> GoogleCalendarStatus:
+    user_id = verify_oauth_state(state)
     settings = get_settings()
-    user_id = _decode_state(state)
 
     async with httpx.AsyncClient() as client:
         resp = await client.post(

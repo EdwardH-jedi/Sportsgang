@@ -10,8 +10,12 @@ import base64
 from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock, patch
+from urllib.parse import parse_qs, urlparse
+from uuid import UUID, uuid4
 
+import jwt
 import pytest
+from fastapi import HTTPException
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -33,10 +37,12 @@ def _future_booking_window(*, days_from_now: int = 7, duration_hours: int = 1) -
     return starts_iso, ends_iso
 
 
+from app.core.security import create_access_token
 from app.db.base import Base
 from app.db.redis import get_redis
 from app.db.session import get_db
 from app.main import app
+from app.services.google_calendar import create_oauth_state, verify_oauth_state
 
 from app.models import match, profile, user, chat, booking  # noqa: F401
 from app.models import google_calendar, notification, safety  # noqa: F401
@@ -135,7 +141,7 @@ async def test_auth_url_unconfigured_returns_503(client: AsyncClient) -> None:
 
 async def test_oauth_callback_stores_tokens(client: AsyncClient) -> None:
     _, user_id = await _register(client, "gcal_cb@example.com")
-    state = base64.urlsafe_b64encode(user_id.encode()).decode()
+    state = create_oauth_state(UUID(user_id))
 
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -160,6 +166,117 @@ async def test_oauth_callback_stores_tokens(client: AsyncClient) -> None:
 
     assert r.status_code == 200
     assert "connected" in r.text.lower()
+
+
+# ---------------------------------------------------------------------------
+# OAuth state (signed, expiring) — guards the unauthenticated callback
+# ---------------------------------------------------------------------------
+
+
+def _mock_token_exchange():
+    """Patch settings + httpx so a callback would succeed if the state were accepted."""
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"access_token": "a", "refresh_token": "r", "expires_in": 3600}
+    settings_patch = patch("app.services.google_calendar.get_settings")
+    http_patch = patch("httpx.AsyncClient")
+    return settings_patch, http_patch, mock_response
+
+
+async def _callback_with_state(client: AsyncClient, state: str):
+    settings_patch, http_patch, mock_response = _mock_token_exchange()
+    with settings_patch as mock_settings, http_patch as mock_http:
+        mock_settings.return_value = MagicMock(
+            google_client_id="test-id",
+            google_client_secret="test-secret",
+            google_redirect_uri="http://localhost/callback",
+        )
+        post = AsyncMock(return_value=mock_response)
+        mock_http.return_value.__aenter__ = AsyncMock(return_value=MagicMock(post=post))
+        mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
+        r = await client.get("/users/me/google-calendar/callback", params={"code": "testcode", "state": state})
+    return r, post
+
+
+def test_oauth_state_round_trip() -> None:
+    user_id = uuid4()
+    state = create_oauth_state(user_id)
+    assert verify_oauth_state(state) == user_id
+    # Each state carries a fresh nonce, so two states for the same user differ.
+    assert create_oauth_state(user_id) != state
+
+
+def test_oauth_state_rejects_tampered_payload() -> None:
+    victim, attacker = uuid4(), uuid4()
+    header, payload, signature = create_oauth_state(attacker).split(".")
+    decoded = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)).decode()
+    forged = base64.urlsafe_b64encode(decoded.replace(str(attacker), str(victim)).encode()).decode().rstrip("=")
+    with pytest.raises(HTTPException) as exc:
+        verify_oauth_state(f"{header}.{forged}.{signature}")
+    assert exc.value.status_code == 400
+
+
+def test_oauth_state_rejects_expired() -> None:
+    state = create_oauth_state(uuid4(), ttl=timedelta(seconds=-1))
+    with pytest.raises(HTTPException) as exc:
+        verify_oauth_state(state)
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.parametrize(
+    "state_factory",
+    [
+        # Legacy unsigned format: base64(user_id) — must no longer be accepted.
+        lambda uid: base64.urlsafe_b64encode(str(uid).encode()).decode(),
+        # A regular access token for the same user (same key, wrong audience).
+        lambda uid: create_access_token(str(uid)),
+        # Correct shape but signed with a different key.
+        lambda uid: jwt.encode(
+            {"sub": str(uid), "aud": "google-calendar-oauth-state", "nonce": "n", "exp": 9999999999},
+            "a-different-key-that-is-at-least-32-bytes-long",
+            algorithm="HS256",
+        ),
+        lambda uid: "garbage",
+        lambda uid: "",
+    ],
+    ids=["legacy-base64", "access-token", "wrong-key", "garbage", "empty"],
+)
+def test_oauth_state_rejects_invalid(state_factory) -> None:
+    with pytest.raises(HTTPException) as exc:
+        verify_oauth_state(state_factory(uuid4()))
+    assert exc.value.status_code == 400
+
+
+async def test_oauth_callback_rejects_forged_state_before_token_exchange(client: AsyncClient) -> None:
+    _, user_id = await _register(client, "gcal_forged@example.com")
+    forged = base64.urlsafe_b64encode(user_id.encode()).decode()
+    r, post = await _callback_with_state(client, forged)
+    assert r.status_code == 400
+    post.assert_not_called()
+
+
+async def test_oauth_callback_rejects_expired_state(client: AsyncClient) -> None:
+    _, user_id = await _register(client, "gcal_expired@example.com")
+    expired = create_oauth_state(UUID(user_id), ttl=timedelta(seconds=-1))
+    r, post = await _callback_with_state(client, expired)
+    assert r.status_code == 400
+    post.assert_not_called()
+
+
+async def test_auth_url_state_is_accepted_by_callback(client: AsyncClient) -> None:
+    token, user_id = await _register(client, "gcal_state_rt@example.com")
+    with patch("app.services.google_calendar.get_settings") as mock_settings:
+        mock_settings.return_value = MagicMock(
+            google_client_id="test-client-id",
+            google_client_secret="test-secret",
+            google_redirect_uri="http://localhost/callback",
+        )
+        r = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+    state = parse_qs(urlparse(r.json()["url"]).query)["state"][0]
+    assert verify_oauth_state(state) == UUID(user_id)
+    r, post = await _callback_with_state(client, state)
+    assert r.status_code == 200
+    post.assert_called_once()
 
 
 async def test_sync_booking_requires_confirmed_status(client: AsyncClient) -> None:
@@ -355,7 +472,7 @@ async def test_oauth_callback_stores_encrypted_tokens(client: AsyncClient) -> No
     from app.models.google_calendar import GoogleCalendarToken
 
     _, user_id = await _register(client, "gcal_enc@example.com")
-    state = base64.urlsafe_b64encode(user_id.encode()).decode()
+    state = create_oauth_state(UUID(user_id))
 
     raw_access = "ya29.test-access-encrypted"
     raw_refresh = "1//test-refresh-encrypted"
@@ -384,8 +501,6 @@ async def test_oauth_callback_stores_encrypted_tokens(client: AsyncClient) -> No
     assert r.status_code == 200
 
     async with _TestSession() as session:
-        from uuid import UUID
-
         # ORM-loaded values are decrypted transparently.
         stmt = select(GoogleCalendarToken).where(GoogleCalendarToken.user_id == UUID(user_id))
         row = (await session.execute(stmt)).scalar_one()
