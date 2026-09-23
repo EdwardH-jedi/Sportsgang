@@ -1181,3 +1181,72 @@ describe('NearbyCourtsModal', () => {
     });
   });
 });
+
+// ─── Meeting-spot mode (group runs) ───────────────────────────────────────────
+
+describe('NearbyCourtsModal meeting-spot mode', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockApiGet.mockResolvedValue({ items: [], total: 0 });
+  });
+
+  it('uses meeting-spot copy and offers a Drop pin tab', async () => {
+    const { findByText, getByLabelText, getByText } = render(
+      <NearbyCourtsModal
+        isOpen
+        sport="running"
+        purpose="meeting-spot"
+        onSelect={jest.fn()}
+        onSelectPin={jest.fn()}
+        onSelectManual={jest.fn()}
+        onClose={jest.fn()}
+      />
+    );
+    await findByText('No spots found');
+    getByText('Meeting spot');
+    getByText('Meeting somewhere else?');
+    getByLabelText('Close meeting spot picker');
+    getByLabelText('Drop a pin');
+  });
+
+  it('does not offer Drop pin in the venue picker', async () => {
+    const { findByText, queryByLabelText } = render(
+      <NearbyCourtsModal isOpen sport="tennis" onSelect={jest.fn()} onClose={jest.fn()} />
+    );
+    await findByText('No courts found');
+    expect(queryByLabelText('Drop a pin')).toBeNull();
+  });
+
+  it('drops a pin on the map and returns its coordinate', async () => {
+    const onSelectPin = jest.fn();
+    const onClose = jest.fn();
+    const { findByText, getByLabelText, getByTestId } = render(
+      <NearbyCourtsModal
+        isOpen
+        sport="running"
+        purpose="meeting-spot"
+        lat={-33.89}
+        lng={151.27}
+        onSelect={jest.fn()}
+        onSelectPin={onSelectPin}
+        onClose={onClose}
+      />
+    );
+    await findByText('No spots found');
+    await act(async () => {
+      fireEvent.press(getByLabelText('Drop a pin'));
+    });
+    await findByText('Tap the map where the run starts.');
+    expect(getByLabelText('Use dropped pin').props.accessibilityState?.disabled).toBe(true);
+
+    await act(async () => {
+      fireEvent(getByTestId('pin-drop-map'), 'press', {
+        nativeEvent: { coordinate: { latitude: -33.891, longitude: 151.274 } },
+      });
+    });
+    await findByText('Pin dropped. Drag it to fine-tune.');
+    fireEvent.press(getByLabelText('Use dropped pin'));
+    expect(onSelectPin).toHaveBeenCalledWith({ latitude: -33.891, longitude: 151.274 });
+    expect(onClose).toHaveBeenCalled();
+  });
+});

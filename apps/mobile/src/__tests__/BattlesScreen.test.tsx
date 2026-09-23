@@ -2,11 +2,12 @@
  * BattlesScreen tests
  *
  * Covers: empty state, error/retry, card render, filter switching,
- * navigation to detail and create-game.
+ * navigation to detail and create-game, run-aware copy + run cards.
  */
 
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render as rtlRender } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BattlesScreen } from '../screens/battles/BattlesScreen';
 import type { EventSummary } from '@protin/shared-types';
@@ -57,27 +58,10 @@ jest.mock('@react-navigation/native', () => ({
   },
 }));
 
-jest.mock('../components/Screen', () => {
-  const { View } = require('react-native');
-  return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-  };
-});
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', inputBackground: '#eee',
-    success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
+const metrics = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
 
 function makeNavigation() {
   return {
@@ -110,6 +94,10 @@ function makeEvent(overrides: Partial<EventSummary> = {}): EventSummary {
   };
 }
 
+function render(ui: React.ReactElement) {
+  return rtlRender(<SafeAreaProvider initialMetrics={metrics}>{ui}</SafeAreaProvider>);
+}
+
 describe('BattlesScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -125,8 +113,8 @@ describe('BattlesScreen', () => {
     const { getByText, getByLabelText } = render(
       <BattlesScreen navigation={makeNavigation() as any} route={{} as any} />
     );
-    getByText('THIS WEEK');
-    getByText('Battles');
+    getByText('Games');
+    getByText('Games & group runs');
     getByLabelText('Filter status by Open');
     getByLabelText('Filter mode by Ranked');
     getByLabelText('Filter sport by Basketball');
@@ -293,5 +281,41 @@ describe('BattlesScreen', () => {
     );
     getByText('Completed');
     expect(queryByText('Join')).toBeNull();
+  });
+
+  // ── Run-aware copy ──────────────────────────────────────────────────────
+
+  it('switches to Group runs copy and Host a run when filtered to running', () => {
+    const navigation = makeNavigation();
+    const { getByLabelText, getByText, getAllByLabelText } = render(
+      <BattlesScreen navigation={navigation as any} route={{} as any} />
+    );
+    fireEvent.press(getByLabelText('Filter sport by Run'));
+    getByText('Group runs');
+    getByText('No group runs yet.');
+    fireEvent.press(getAllByLabelText('Host a run')[0]);
+    expect(navigation.navigate).toHaveBeenCalledWith('CreateBattle', { sport: 'running' });
+  });
+
+  it('renders running events as run cards', () => {
+    mockHookState.items = [
+      makeEvent({ id: 'r1', sport: 'running', title: 'Harbour 10k', distanceKm: 10, crewName: 'Harbour Crew' }),
+    ];
+    const navigation = makeNavigation();
+    const { getByLabelText, getByText } = render(
+      <BattlesScreen navigation={navigation as any} route={{} as any} />
+    );
+    getByText('Harbour Crew');
+    getByLabelText('10 km, Distance');
+    fireEvent.press(getByLabelText('Open run Harbour 10k'));
+    expect(navigation.navigate).toHaveBeenCalledWith('BattleDetail', { eventId: 'r1' });
+  });
+
+  it('shows skeletons while the first load is in flight', () => {
+    mockHookState.isLoading = true;
+    const { getByLabelText } = render(
+      <BattlesScreen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    getByLabelText('Loading games');
   });
 });

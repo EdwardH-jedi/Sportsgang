@@ -1,18 +1,18 @@
-import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { HonorBadge } from '../../components/HonorBadge';
-import { Screen } from '../../components/Screen';
+import {
+  Badge,
+  Card,
+  Chip,
+  EmptyState,
+  Header,
+  Screen,
+  Tag,
+  sportIconName,
+} from '../../components/ui';
 import { useEvents } from '../../hooks/useEvents';
 import { useUserHonorSummary } from '../../hooks/useUserHonorSummary';
 import {
@@ -20,10 +20,13 @@ import {
   type EventMode,
   type EventSummary,
   formatEventWhen,
+  isRunningSport,
   sportLabelForBattle,
 } from '../../lib/events';
-import { colors, radii, spacing, typography } from '../../theme';
 import type { BattlesScreenProps } from '../../navigation/types';
+import { colors, layout, spacing, typography } from '../../theme';
+import { RunCard } from '../run/components/RunCard';
+import { RunCardSkeleton } from '../run/components/RunCardSkeleton';
 
 type StatusFilter = 'open' | 'mine' | 'all';
 type ModeFilter = 'all' | EventMode;
@@ -43,6 +46,11 @@ const MODE_CHIPS: { value: ModeFilter; label: string }[] = [
 
 const SPORT_CHIPS = [{ value: 'all' as const, label: 'All' }, ...BATTLE_SPORTS];
 
+/**
+ * Games & group runs list (route `Battles`). Group runs render as run
+ * cards; other sports keep the game card with mode and host honor.
+ * Reached from Profile → Games & challenges.
+ */
 export function BattlesScreen({ navigation }: BattlesScreenProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('open');
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
@@ -70,81 +78,55 @@ export function BattlesScreen({ navigation }: BattlesScreenProps) {
     }
   }, [refresh]);
 
-  const list = useMemo(() => items, [items]);
+  const runsOnly = isRunningSport(sportFilter);
+  const hostLabel = runsOnly ? 'Host a run' : 'Host a game';
+  const openHost = () => {
+    if (sportFilter === 'all') navigation.navigate('CreateBattle');
+    else navigation.navigate('CreateBattle', { sport: sportFilter });
+  };
 
   const renderEmpty = () => {
     if (error) {
       return (
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>Could not load battles</Text>
-          <Text style={styles.emptyBody}>{error}</Text>
-          <Pressable
-            onPress={() => void refresh()}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading battles"
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon="alert"
+          title={runsOnly ? 'Could not load group runs' : 'Could not load games'}
+          message={error}
+          action={{
+            label: 'Try again',
+            icon: 'refresh',
+            onPress: () => void refresh(),
+            accessibilityLabel: 'Retry loading battles',
+          }}
+        />
       );
     }
     return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyTitle}>No games nearby yet.</Text>
-        <Text style={styles.emptyBody}>
-          Start the first one and build your SportsGang.
-        </Text>
-        <Pressable
-          onPress={() => navigation.navigate('CreateBattle')}
-          accessibilityRole="button"
-          accessibilityLabel="Host a game"
-          style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.primaryButtonText}>Host a game</Text>
-        </Pressable>
-      </View>
+      <EmptyState
+        icon={runsOnly ? 'run' : 'battle'}
+        title={runsOnly ? 'No group runs yet.' : 'No games nearby yet.'}
+        message="Start the first one and build your SportsGang."
+        action={{ label: hostLabel, icon: 'plus', onPress: openHost }}
+      />
     );
   };
 
   return (
-    <Screen padded={false}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerEyebrow}>THIS WEEK</Text>
-          <Text style={styles.headerTitle}>Battles</Text>
-        </View>
-        <Pressable
-          onPress={() => navigation.navigate('CreateBattle')}
-          accessibilityRole="button"
-          accessibilityLabel="Host a game"
-          style={({ pressed }) => [styles.hostShortcut, pressed && styles.pressed]}
-        >
-          <Text style={styles.hostShortcutText}>Host</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.filterColumn}>
-        <ChipRow
-          label="Status"
-          chips={STATUS_CHIPS}
-          value={statusFilter}
-          onChange={setStatusFilter}
+    <Screen
+      padded={false}
+      header={
+        <Header
+          title={runsOnly ? 'Group runs' : 'Games'}
+          subtitle={runsOnly ? 'Runs you can join' : 'Games & group runs'}
+          onBack={() => navigation.goBack()}
+          backLabel="Back"
+          actions={[{ icon: 'plus', accessibilityLabel: hostLabel, onPress: openHost }]}
         />
-        <ChipRow
-          label="Mode"
-          chips={MODE_CHIPS}
-          value={modeFilter}
-          onChange={setModeFilter}
-        />
+      }
+    >
+      <View style={styles.filters}>
+        <ChipRow label="Status" chips={STATUS_CHIPS} value={statusFilter} onChange={setStatusFilter} />
+        <ChipRow label="Mode" chips={MODE_CHIPS} value={modeFilter} onChange={setModeFilter} />
         <ChipRow
           label="Sport"
           chips={SPORT_CHIPS}
@@ -153,36 +135,40 @@ export function BattlesScreen({ navigation }: BattlesScreenProps) {
         />
       </View>
 
-      {isLoading && list.length === 0 ? (
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.brand} />
+      {isLoading && items.length === 0 ? (
+        <View style={styles.list} accessibilityLabel="Loading games">
+          <RunCardSkeleton />
+          <View style={styles.separator} />
+          <RunCardSkeleton />
         </View>
       ) : (
         <FlatList
-          data={list}
+          data={items}
           keyExtractor={(e) => e.id}
           contentContainerStyle={styles.list}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={Separator}
           ListEmptyComponent={renderEmpty()}
           refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.brand}
-            />
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={colors.brand} />
           }
-          renderItem={({ item }) => (
-            <BattleCard
-              event={item}
-              onPress={() =>
-                navigation.navigate('BattleDetail', { eventId: item.id })
-              }
-            />
-          )}
+          renderItem={({ item }) =>
+            isRunningSport(item.sport) ? (
+              <RunCard run={item} onPress={() => navigation.navigate('BattleDetail', { eventId: item.id })} />
+            ) : (
+              <BattleCard
+                event={item}
+                onPress={() => navigation.navigate('BattleDetail', { eventId: item.id })}
+              />
+            )
+          }
         />
       )}
     </Screen>
   );
+}
+
+function Separator() {
+  return <View style={styles.separator} />;
 }
 
 // ─── Filter chip row ─────────────────────────────────────────────────────────
@@ -198,49 +184,28 @@ function ChipRow<V extends string>({ label, chips, value, onChange }: ChipRowPro
   return (
     <View style={styles.chipRow}>
       <Text style={styles.chipRowLabel}>{label}</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipScroll}
-      >
-        {chips.map((c) => {
-          const active = c.value === value;
-          return (
-            <Pressable
-              key={c.value}
-              onPress={() => onChange(c.value)}
-              accessibilityRole="button"
-              accessibilityLabel={`Filter ${label.toLowerCase()} by ${c.label}`}
-              style={({ pressed }) => [
-                styles.chip,
-                active && styles.chipActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                {c.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipScroll}>
+        {chips.map((c) => (
+          <Chip
+            key={c.value}
+            label={c.label}
+            size="sm"
+            selected={c.value === value}
+            onPress={() => onChange(c.value)}
+            accessibilityLabel={`Filter ${label.toLowerCase()} by ${c.label}`}
+          />
+        ))}
       </ScrollView>
     </View>
   );
 }
 
-// ─── Battle card ─────────────────────────────────────────────────────────────
+// ─── Game card ───────────────────────────────────────────────────────────────
 
-interface BattleCardProps {
-  event: EventSummary;
-  onPress: () => void;
-}
-
-function BattleCard({ event, onPress }: BattleCardProps) {
+function BattleCard({ event, onPress }: { event: EventSummary; onPress: () => void }) {
   const isFull = event.status === 'full' || event.spotsLeft <= 0;
   const isCancelled = event.status === 'cancelled';
   const isCompleted = event.status === 'completed';
-  // Terminal-state events always show the status label; the detail
-  // screen handles the rest of the lifecycle.
   const ctaLabel = isCancelled
     ? 'Cancelled'
     : isCompleted
@@ -250,9 +215,9 @@ function BattleCard({ event, onPress }: BattleCardProps) {
         : isFull
           ? 'Full'
           : 'Join';
+  const ctaTone = isCancelled || isCompleted || (isFull && !event.hasJoined) ? 'neutral' : event.hasJoined ? 'success' : 'brand';
 
-  // Host honor pill on the card. Cached at the lib layer so duplicate
-  // host_user_ids in the list don't fan out into per-card requests.
+  // Cached at the lib layer, so repeated hosts don't fan out requests.
   const {
     summary: hostSummary,
     isLoading: hostHonorLoading,
@@ -260,16 +225,19 @@ function BattleCard({ event, onPress }: BattleCardProps) {
   } = useUserHonorSummary({ userId: event.hostUserId });
 
   return (
-    <Pressable
+    <Card
       onPress={onPress}
-      accessibilityRole="button"
       accessibilityLabel={`Open battle ${event.title}`}
       testID={`battle-card-${event.id}`}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <View style={styles.cardHeader}>
-        <ModeBadge mode={event.mode} />
-        <Text style={styles.cardSport}>{sportLabelForBattle(event.sport)}</Text>
+        <Badge
+          label={event.mode === 'ranked' ? 'Ranked' : 'Casual'}
+          tone={event.mode === 'ranked' ? 'brand' : 'neutral'}
+          variant={event.mode === 'ranked' ? 'solid' : 'soft'}
+          size="sm"
+        />
+        <Tag label={sportLabelForBattle(event.sport)} icon={sportIconName(event.sport)} size="sm" variant="outline" />
       </View>
       <Text style={styles.cardTitle} numberOfLines={2}>
         {event.title}
@@ -281,26 +249,17 @@ function BattleCard({ event, onPress }: BattleCardProps) {
         {event.locationText}
       </Text>
       <View style={styles.cardHonorRow}>
-        <Text style={styles.cardHonorHost} numberOfLines={1}>
+        <Text style={styles.cardHost} numberOfLines={1}>
           Host - {event.host?.displayName ?? 'SportsGang host'}
         </Text>
-        {/*
-          Hide the pill ONLY on a hard error so a network/server
-          failure isn't mislabelled as "New player". 404 and null
-          userId both yield summary=null with error=null and flow
-          through to the badge's "New player" fallback.
-        */}
+        {/* Hidden only on a hard error so a failure isn't shown as "New player". */}
         {hostHonorError ? null : (
           <HonorBadge
             honorLevel={hostSummary?.honorLevel ?? null}
             honorScore={hostSummary?.honorScore ?? null}
             isLoading={hostHonorLoading && !hostSummary}
             compact
-            accessibilityLabel={
-              hostSummary
-                ? `Host honor ${hostSummary.honorLevel}`
-                : 'Host honor unavailable'
-            }
+            accessibilityLabel={hostSummary ? `Host honor ${hostSummary.honorLevel}` : 'Host honor unavailable'}
           />
         )}
       </View>
@@ -308,158 +267,54 @@ function BattleCard({ event, onPress }: BattleCardProps) {
         <Text style={styles.cardCount}>
           {event.participantCount}/{event.capacity} in
         </Text>
-        <View
-          style={[
-            styles.cta,
-            event.hasJoined && !isCancelled && !isCompleted && styles.ctaJoined,
-            (isCancelled || isCompleted || (isFull && !event.hasJoined)) &&
-              styles.ctaFull,
-          ]}
-        >
-          <Text
-            style={[
-              styles.ctaText,
-              event.hasJoined && !isCancelled && !isCompleted && styles.ctaTextJoined,
-              (isCancelled || isCompleted || (isFull && !event.hasJoined)) &&
-                styles.ctaTextFull,
-            ]}
-          >
-            {ctaLabel}
-          </Text>
-        </View>
+        <Badge label={ctaLabel} tone={ctaTone} variant={ctaTone === 'brand' ? 'solid' : 'soft'} />
       </View>
-    </Pressable>
-  );
-}
-
-function ModeBadge({ mode }: { mode: EventMode }) {
-  const isRanked = mode === 'ranked';
-  return (
-    <View
-      style={[styles.modeBadge, isRanked ? styles.modeBadgeRanked : styles.modeBadgeCasual]}
-    >
-      <Text
-        style={[
-          styles.modeBadgeText,
-          isRanked ? styles.modeBadgeTextRanked : styles.modeBadgeTextCasual,
-        ]}
-      >
-        {isRanked ? 'RANKED' : 'CASUAL'}
-      </Text>
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
+  filters: {
+    paddingHorizontal: layout.screenPadding,
     paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerEyebrow: {
-    ...typography.label,
-    color: colors.brand,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  hostShortcut: {
-    borderRadius: radii.pill,
-    backgroundColor: colors.brand,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-  },
-  hostShortcutText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  filterColumn: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
     gap: spacing.sm,
   },
   chipRow: {
-    gap: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   chipRowLabel: {
     ...typography.label,
-    color: colors.textTertiary,
+    minWidth: spacing.xxl + spacing.sm,
   },
   chipScroll: {
-    gap: spacing.xs,
-    paddingRight: spacing.lg,
-  },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    marginRight: spacing.xs,
-  },
-  chipActive: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
-  },
-  chipText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  chipTextActive: {
-    color: colors.textInverse,
+    gap: spacing.sm,
   },
   list: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxxl,
     flexGrow: 1,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.xxl,
   },
-  separator: { height: spacing.md },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    padding: spacing.md,
-    gap: 4,
+  separator: {
+    height: spacing.md,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  cardSport: {
-    ...typography.label,
-    color: colors.textSecondary,
   },
   cardTitle: {
     ...typography.h3,
-    fontSize: 18,
-    color: colors.textPrimary,
+    marginTop: spacing.sm,
   },
   cardMeta: {
-    ...typography.body,
-    color: colors.textPrimary,
+    ...typography.bodySmall,
+    color: colors.brand,
+    marginTop: spacing.xs,
   },
   cardMetaSecondary: {
-    ...typography.body,
+    ...typography.bodySmall,
     color: colors.textSecondary,
   },
   cardHonorRow: {
@@ -467,116 +322,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.sm,
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
   },
-  cardHonorHost: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+  cardHost: {
+    ...typography.caption,
+    color: colors.textSecondary,
     flexShrink: 1,
   },
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   cardCount: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+    ...typography.statSmall,
   },
-  cta: {
-    backgroundColor: colors.brand,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-  },
-  ctaText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.textInverse,
-  },
-  ctaJoined: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.brand,
-  },
-  ctaTextJoined: {
-    color: colors.brand,
-  },
-  ctaFull: {
-    backgroundColor: colors.border,
-  },
-  ctaTextFull: {
-    color: colors.textTertiary,
-  },
-  modeBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-  },
-  modeBadgeRanked: {
-    borderColor: colors.brand,
-    backgroundColor: colors.brandSoft,
-  },
-  modeBadgeCasual: {
-    borderColor: colors.border,
-    backgroundColor: 'transparent',
-  },
-  modeBadgeText: {
-    ...typography.label,
-    fontSize: 10,
-    letterSpacing: 1.2,
-  },
-  modeBadgeTextRanked: {
-    color: colors.brand,
-  },
-  modeBadgeTextCasual: {
-    color: colors.textSecondary,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  empty: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xxl,
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  emptyBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  primaryButton: {
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: radii.pill,
-    backgroundColor: colors.brand,
-  },
-  primaryButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  pressed: { opacity: 0.65 },
 });

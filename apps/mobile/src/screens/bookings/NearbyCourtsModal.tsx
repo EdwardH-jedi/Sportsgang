@@ -1,25 +1,32 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Linking,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Linking, Modal, StyleSheet, Text, View } from 'react-native';
+import MapView, { Marker, PROVIDER_DEFAULT, type LatLng } from 'react-native-maps';
 
 import { VenueCard } from '../../components/VenueCard';
-import { VenueMapView } from '../../components/VenueMapView';
+import { DARK_MAP_STYLE, PIN_COLORS, VenueMapView } from '../../components/VenueMapView';
+import {
+  Button,
+  Card,
+  Chip,
+  EmptyState,
+  Header,
+  Icon,
+  IconButton,
+  SegmentedControl,
+  TextField,
+  type Segment,
+} from '../../components/ui';
 import { useNearbyVenues } from '../../hooks/useNearbyVenues';
 import type { VenueLocationStatus } from '../../hooks/useVenueLocation';
+import { sportLabel } from '../../lib/sports';
 import { formatVenueLocation } from '../../lib/venueLocation';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, typography } from '../../theme';
 import type { Venue, VenueProviderStatus } from '@protin/shared-types';
 
-type PickerMode = 'list' | 'map';
+type PickerMode = 'list' | 'map' | 'pin';
+
+/** Where the pin-drop map starts without a location fix (Sydney CBD). */
+const PIN_FALLBACK_CENTER: LatLng = { latitude: -33.8688, longitude: 151.2093 };
 
 /**
  * Radius option keys used for the radius chip row. ``'near'`` keeps the
@@ -85,6 +92,14 @@ interface NearbyCourtsModalProps {
   onSelectManual?: (text: string) => void;
   onSelect: (venue: Venue) => void;
   onClose: () => void;
+  /**
+   * `'meeting-spot'` adapts the copy for group runs ("Meeting spot") and,
+   * with `onSelectPin`, adds a "Drop pin" tab so a host can mark a spot
+   * that isn't in the venue catalog. Default `'venue'`.
+   */
+  purpose?: 'venue' | 'meeting-spot';
+  /** Meeting-spot mode: called with the dropped pin (then the modal closes). */
+  onSelectPin?: (pin: LatLng) => void;
 }
 
 function resolveRadiusKm(option: RadiusOption): number | undefined {
@@ -164,6 +179,8 @@ export function NearbyCourtsModal({
   onSelectManual,
   onSelect,
   onClose,
+  purpose = 'venue',
+  onSelectPin,
 }: NearbyCourtsModalProps) {
   // Default to list so every existing test + integration path keeps
   // working unchanged. The user opts into map mode explicitly.
@@ -316,9 +333,132 @@ export function NearbyCourtsModal({
     onClose();
   };
 
+  const handleUsePin = (pin: LatLng) => {
+    if (!onSelectPin) return;
+    onSelectPin(pin);
+    onClose();
+  };
+
+  const isMeetingSpot = purpose === 'meeting-spot';
+  const canDropPin = isMeetingSpot && !!onSelectPin;
+  const segments: Segment<PickerMode>[] = [
+    { value: 'list', label: 'List', icon: 'list', accessibilityLabel: 'Show venue list' },
+    { value: 'map', label: 'Map', icon: 'map', accessibilityLabel: 'Show venue map' },
+  ];
+  if (canDropPin) {
+    segments.push({ value: 'pin', label: 'Drop pin', icon: 'location', accessibilityLabel: 'Drop a pin' });
+  }
+
   const showWiderToggle = enableWiderResults && hasCoords;
   const showManualFooter = !!onSelectManual;
   const manualTrimmedNonEmpty = manualText.trim().length > 0;
+
+  const listBody = isLoading ? (
+    <View style={styles.centred}>
+      <ActivityIndicator color={colors.brand} />
+    </View>
+  ) : error ? (
+    <EmptyState
+      icon="alert"
+      title="Couldn't load venues"
+      message={error}
+      action={{
+        label: 'Try again',
+        icon: 'refresh',
+        onPress: refresh,
+        accessibilityLabel: 'Retry loading courts',
+      }}
+    />
+  ) : venues.length === 0 ? (
+    <EmptyState
+      icon={isMeetingSpot ? 'location' : 'search'}
+      title={isMeetingSpot ? 'No spots found' : 'No courts found'}
+      message={
+        hasCoords && enableWiderResults && radiusOption !== 'wider'
+          ? 'Try expanding your radius, or type a court name below.'
+          : isMeetingSpot
+            ? 'Drop a pin on the map or type the meeting spot below.'
+            : `We don't have any ${sport} venues here yet. Tap the location field below to type one in instead.`
+      }
+    />
+  ) : mode === 'list' ? (
+    <FlatList
+      data={venues}
+      keyExtractor={(v) => v.id}
+      contentContainerStyle={styles.list}
+      ItemSeparatorComponent={ListSeparator}
+      renderItem={({ item }) => (
+        <VenueCard
+          venue={item}
+          onUse={() => handleUse(item)}
+          onOpenBookingUrl={
+            item.isBookable && item.bookingUrl ? () => handleOpenBooking(item) : undefined
+          }
+        />
+      )}
+      ListFooterComponent={
+        hasMore || isLoadingMore ? (
+          <View style={styles.loadMoreRow}>
+            {isLoadingMore ? (
+              <ActivityIndicator color={colors.brand} />
+            ) : (
+              <Button
+                label="Load more"
+                variant="secondary"
+                size="sm"
+                onPress={loadMore}
+                accessibilityLabel="Load more venues"
+              />
+            )}
+          </View>
+        ) : null
+      }
+    />
+  ) : (
+    <View style={styles.mapWrap}>
+      <VenueMapView
+        venues={venues}
+        userLat={lat}
+        userLng={lng}
+        selectedVenueId={mapSelectedVenue?.id ?? null}
+        onMarkerPress={setMapSelectedVenue}
+      />
+      {mapSelectedVenue ? (
+        <Card variant="elevated" style={styles.mapOverlay} testID="map-selected-venue">
+          <View style={styles.mapPreview} accessibilityLabel="Selected venue preview">
+            <View style={styles.mapPreviewText}>
+              <Text style={styles.mapPreviewName} numberOfLines={1}>
+                {mapSelectedVenue.name}
+              </Text>
+              {mapSelectedVenue.area || mapSelectedVenue.address ? (
+                <Text style={styles.mapPreviewArea} numberOfLines={1}>
+                  {formatVenueLocation(mapSelectedVenue)}
+                </Text>
+              ) : null}
+            </View>
+            <Button
+              label={isMeetingSpot ? 'Use this spot' : 'Select this venue'}
+              size="sm"
+              onPress={() => handleUse(mapSelectedVenue)}
+              accessibilityLabel={
+                isMeetingSpot
+                  ? `Use ${mapSelectedVenue.name} as meeting spot`
+                  : `Select ${mapSelectedVenue.name} for session`
+              }
+            />
+          </View>
+        </Card>
+      ) : (
+        <View style={[styles.mapOverlay, styles.mapHint]} pointerEvents="none">
+          <Text style={styles.mapHintText}>
+            {hasCoords
+              ? 'Tap a pin to select a venue.'
+              : 'Tap a pin to select. Map is centred on the Sydney catalog - turn on location for distance sort.'}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
 
   return (
     <Modal
@@ -328,242 +468,79 @@ export function NearbyCourtsModal({
       presentationStyle="pageSheet"
     >
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerCenter}>
-            <Text style={styles.title}>Courts &amp; venues</Text>
-            <Text style={styles.subtitle}>{sport.toUpperCase()}</Text>
-          </View>
-          <Pressable
-            onPress={onClose}
-            accessibilityRole="button"
-            accessibilityLabel="Close courts and venues"
-            style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.closeText}>Close</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.searchRow}>
-          <TextInput
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Search venues (e.g. Bondi tennis)"
-            placeholderTextColor={colors.textTertiary}
-            autoCapitalize="none"
-            autoCorrect={false}
-            maxLength={200}
-            returnKeyType="search"
-            style={styles.searchInput}
-            accessibilityLabel="Search venues"
-          />
-        </View>
-
-        {statusLabel ? (
-          <View style={styles.statusBanner}>
-            <Text
-              style={styles.statusText}
-              accessibilityLabel={`Location status: ${statusLabel}`}
-            >
-              {statusLabel}
-            </Text>
-          </View>
-        ) : null}
-
-        {providerBanner ? (
-          <View
-            style={styles.providerBanner}
-            accessibilityLabel={`Provider status: ${providerBanner}`}
-          >
-            <Text style={styles.providerBannerText}>{providerBanner}</Text>
-          </View>
-        ) : null}
-
-        <View style={styles.modeToggle}>
-          <Pressable
-            onPress={() => setMode('list')}
-            accessibilityRole="button"
-            accessibilityLabel="Show venue list"
-            accessibilityState={{ selected: mode === 'list' }}
-            style={({ pressed }) => [
-              styles.modeChip,
-              mode === 'list' && styles.modeChipActive,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text
-              style={[
-                styles.modeChipText,
-                mode === 'list' && styles.modeChipTextActive,
-              ]}
-            >
-              List
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setMode('map')}
-            accessibilityRole="button"
-            accessibilityLabel="Show venue map"
-            accessibilityState={{ selected: mode === 'map' }}
-            style={({ pressed }) => [
-              styles.modeChip,
-              mode === 'map' && styles.modeChipActive,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text
-              style={[
-                styles.modeChipText,
-                mode === 'map' && styles.modeChipTextActive,
-              ]}
-            >
-              Map
-            </Text>
-          </Pressable>
-        </View>
-
-        {showWiderToggle ? (
-          <View style={styles.radiusToggle}>
-            {RADIUS_CHIPS.map((chip) => {
-              const selected = radiusOption === chip.value;
-              return (
-                <Pressable
-                  key={String(chip.value)}
-                  onPress={() => setRadiusOption(chip.value)}
-                  accessibilityRole="button"
-                  accessibilityLabel={chip.a11yLabel}
-                  accessibilityState={{ selected }}
-                  style={({ pressed }) => [
-                    styles.radiusChip,
-                    selected && styles.radiusChipActive,
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.radiusChipText,
-                      selected && styles.radiusChipTextActive,
-                    ]}
-                  >
-                    {chip.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
-
-        {isLoading ? (
-          <View style={styles.centred}>
-            <ActivityIndicator color={colors.brand} />
-          </View>
-        ) : error ? (
-          <View style={styles.centred}>
-            <Text style={styles.errorText}>{error}</Text>
-            <Pressable
-              onPress={refresh}
-              accessibilityRole="button"
-              accessibilityLabel="Retry loading courts"
-              style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.retryText}>Try again</Text>
-            </Pressable>
-          </View>
-        ) : venues.length === 0 ? (
-          <View style={styles.centred}>
-            <Text style={styles.emptyTitle}>No courts found</Text>
-            <Text style={styles.emptyBody}>
-              {hasCoords && enableWiderResults && radiusOption !== 'wider'
-                ? 'Try expanding your radius, or type a court name below.'
-                : `We don't have any ${sport} venues here yet. Tap the location field below to type one in instead.`}
-            </Text>
-          </View>
-        ) : mode === 'list' ? (
-          <FlatList
-            data={venues}
-            keyExtractor={(v) => v.id}
-            contentContainerStyle={styles.list}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            renderItem={({ item }) => (
-              <VenueCard
-                venue={item}
-                onUse={() => handleUse(item)}
-                onOpenBookingUrl={
-                  item.isBookable && item.bookingUrl ? () => handleOpenBooking(item) : undefined
-                }
-              />
-            )}
-            ListFooterComponent={
-              hasMore || isLoadingMore ? (
-                <View style={styles.loadMoreRow}>
-                  {isLoadingMore ? (
-                    <ActivityIndicator color={colors.brand} />
-                  ) : (
-                    <Pressable
-                      onPress={loadMore}
-                      accessibilityRole="button"
-                      accessibilityLabel="Load more venues"
-                      style={({ pressed }) => [
-                        styles.loadMoreButton,
-                        pressed && styles.pressed,
-                      ]}
-                    >
-                      <Text style={styles.loadMoreText}>Load more</Text>
-                    </Pressable>
-                  )}
-                </View>
-              ) : null
-            }
-          />
-        ) : (
-          <View style={styles.mapWrap}>
-            <VenueMapView
-              venues={venues}
-              userLat={lat}
-              userLng={lng}
-              selectedVenueId={mapSelectedVenue?.id ?? null}
-              onMarkerPress={setMapSelectedVenue}
+        <Header
+          title={isMeetingSpot ? 'Meeting spot' : 'Courts & venues'}
+          subtitle={sportLabel(sport)}
+          right={
+            <IconButton
+              icon="close"
+              onPress={onClose}
+              accessibilityLabel={isMeetingSpot ? 'Close meeting spot picker' : 'Close courts and venues'}
             />
-            {mapSelectedVenue ? (
-              <View style={styles.mapPreview} accessibilityLabel="Selected venue preview">
-                <View style={styles.mapPreviewText}>
-                  <Text style={styles.mapPreviewName} numberOfLines={1}>
-                    {mapSelectedVenue.name}
-                  </Text>
-                  {mapSelectedVenue.area || mapSelectedVenue.address ? (
-                    <Text style={styles.mapPreviewArea} numberOfLines={1}>
-                      {formatVenueLocation(mapSelectedVenue)}
-                    </Text>
-                  ) : null}
-                </View>
-                <Pressable
-                  onPress={() => handleUse(mapSelectedVenue)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Select ${mapSelectedVenue.name} for session`}
-                  style={({ pressed }) => [
-                    styles.mapPreviewButton,
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <Text style={styles.mapPreviewButtonText}>Select this venue</Text>
-                </Pressable>
-              </View>
-            ) : (
-              <View style={styles.mapHint} pointerEvents="none">
-                <Text style={styles.mapHintText}>
-                  {hasCoords
-                    ? 'Tap a pin to select a venue.'
-                    : 'Tap a pin to select. Map is centred on the Sydney catalog - turn on location for distance sort.'}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
+          }
+        />
 
-        {requiresGoogleAttribution ? (
-          <View
-            style={styles.attributionChip}
-            accessibilityLabel="Powered by Google"
-          >
+        <View style={styles.controls}>
+          {mode !== 'pin' ? (
+            <TextField
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder={isMeetingSpot ? 'Search parks and spots' : 'Search venues (e.g. Bondi tennis)'}
+              leadingIcon="search"
+              autoCapitalize="none"
+              autoCorrect={false}
+              maxLength={200}
+              returnKeyType="search"
+              accessibilityLabel="Search venues"
+            />
+          ) : null}
+
+          {statusLabel || providerBanner ? (
+            <View style={styles.banners}>
+              {statusLabel ? (
+                <View style={styles.statusRow}>
+                  <Icon name={hasCoords ? 'my-location' : 'location'} size="xs" color={colors.textSecondary} />
+                  <Text style={styles.statusText} accessibilityLabel={`Location status: ${statusLabel}`}>
+                    {statusLabel}
+                  </Text>
+                </View>
+              ) : null}
+              {providerBanner ? (
+                <View style={styles.statusRow} accessibilityLabel={`Provider status: ${providerBanner}`}>
+                  <Icon name="warning" size="xs" color={colors.warning} />
+                  <Text style={[styles.statusText, styles.providerText]}>{providerBanner}</Text>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+
+          <SegmentedControl
+            segments={segments}
+            value={mode}
+            onChange={setMode}
+            accessibilityLabel="Venue picker view"
+          />
+
+          {showWiderToggle && mode !== 'pin' ? (
+            <View style={styles.radiusRow}>
+              {RADIUS_CHIPS.map((chip) => (
+                <Chip
+                  key={String(chip.value)}
+                  label={chip.label}
+                  size="sm"
+                  selected={radiusOption === chip.value}
+                  onPress={() => setRadiusOption(chip.value)}
+                  accessibilityLabel={chip.a11yLabel}
+                />
+              ))}
+            </View>
+          ) : null}
+        </View>
+
+        {mode === 'pin' ? <PinDropMap lat={lat} lng={lng} onUse={handleUsePin} /> : listBody}
+
+        {requiresGoogleAttribution && mode !== 'pin' ? (
+          <View style={styles.attribution} accessibilityLabel="Powered by Google">
             <Text style={styles.attributionText}>Powered by Google</Text>
             {googleAttributions.length > 0 ? (
               <Text style={styles.thirdPartyAttributionText} numberOfLines={2}>
@@ -573,47 +550,30 @@ export function NearbyCourtsModal({
           </View>
         ) : null}
 
-        {showManualFooter ? (
-          <View
-            style={styles.manualFooter}
-            accessibilityLabel="Manual venue entry"
-          >
-            <Text style={styles.manualLabel}>Can&apos;t find your court?</Text>
+        {showManualFooter && mode !== 'pin' ? (
+          <View style={styles.manualFooter} accessibilityLabel="Manual venue entry">
+            <Text style={styles.manualLabel}>
+              {isMeetingSpot ? 'Meeting somewhere else?' : "Can't find your court?"}
+            </Text>
             <View style={styles.manualRow}>
-              <TextInput
+              <TextField
                 value={manualText}
                 onChangeText={setManualText}
-                placeholder="Type venue or court name"
-                placeholderTextColor={colors.textTertiary}
+                placeholder={isMeetingSpot ? 'e.g. Bondi Pavilion steps' : 'Type venue or court name'}
                 maxLength={200}
                 autoCapitalize="words"
                 autoCorrect={false}
-                style={styles.manualInput}
                 accessibilityLabel="Type venue or court name"
                 returnKeyType="done"
                 onSubmitEditing={handleUseManual}
+                containerStyle={styles.manualInput}
               />
-              <Pressable
+              <Button
+                label={isMeetingSpot ? 'Use this spot' : 'Use this venue'}
                 onPress={handleUseManual}
                 disabled={!manualTrimmedNonEmpty}
-                accessibilityRole="button"
                 accessibilityLabel="Use typed venue"
-                accessibilityState={{ disabled: !manualTrimmedNonEmpty }}
-                style={({ pressed }) => [
-                  styles.manualButton,
-                  !manualTrimmedNonEmpty && styles.manualButtonDisabled,
-                  pressed && manualTrimmedNonEmpty && styles.pressed,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.manualButtonText,
-                    !manualTrimmedNonEmpty && styles.manualButtonTextDisabled,
-                  ]}
-                >
-                  Use this venue
-                </Text>
-              </Pressable>
+              />
             </View>
           </View>
         ) : null}
@@ -622,323 +582,185 @@ export function NearbyCourtsModal({
   );
 }
 
+function ListSeparator() {
+  return <View style={styles.separator} />;
+}
+
+/**
+ * Meeting-spot mode: tap the (dark) map to drop a pin, drag it to
+ * fine-tune, then "Use this spot". The pin is a public meeting point, so
+ * it is sent at full precision (the API keeps 5 dp).
+ */
+function PinDropMap({
+  lat,
+  lng,
+  onUse,
+}: {
+  lat?: number;
+  lng?: number;
+  onUse: (pin: LatLng) => void;
+}) {
+  const [pin, setPin] = useState<LatLng | null>(null);
+  const center =
+    lat !== undefined && lng !== undefined ? { latitude: lat, longitude: lng } : PIN_FALLBACK_CENTER;
+
+  return (
+    <View style={styles.mapWrap}>
+      <MapView
+        provider={PROVIDER_DEFAULT}
+        style={StyleSheet.absoluteFill}
+        initialRegion={{ ...center, latitudeDelta: 0.04, longitudeDelta: 0.04 }}
+        userInterfaceStyle="dark"
+        customMapStyle={DARK_MAP_STYLE}
+        showsUserLocation={false}
+        toolbarEnabled={false}
+        onPress={(e) => setPin(e.nativeEvent.coordinate)}
+        accessibilityLabel="Meeting spot map"
+        testID="pin-drop-map"
+      >
+        {pin ? (
+          <Marker
+            coordinate={pin}
+            draggable
+            onDragEnd={(e) => setPin(e.nativeEvent.coordinate)}
+            pinColor={PIN_COLORS.selected}
+            accessibilityLabel="Dropped pin"
+          />
+        ) : null}
+      </MapView>
+      <Card variant="elevated" style={styles.mapOverlay}>
+        <View style={styles.mapPreview}>
+          <Text style={[styles.mapPreviewText, styles.mapHintText]}>
+            {pin ? 'Pin dropped. Drag it to fine-tune.' : 'Tap the map where the run starts.'}
+          </Text>
+          <Button
+            label="Use this spot"
+            size="sm"
+            disabled={!pin}
+            onPress={() => pin && onUse(pin)}
+            accessibilityLabel="Use dropped pin"
+          />
+        </View>
+      </Card>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
+  controls: {
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
+  },
+  banners: {
+    gap: spacing.xs,
+  },
+  statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  headerCenter: {
-    flex: 1,
-    gap: 2,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    ...typography.label,
-    color: colors.textTertiary,
-  },
-  closeButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  closeText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  searchRow: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-    backgroundColor: colors.surface,
-  },
-  searchInput: {
-    backgroundColor: colors.inputBackground,
-    color: colors.textPrimary,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    fontSize: 15,
-  },
-  statusBanner: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surfaceElevated,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
+    gap: spacing.xs,
   },
   statusText: {
-    ...typography.bodySmall,
+    ...typography.caption,
     color: colors.textSecondary,
+    flexShrink: 1,
   },
-  providerBanner: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surfaceElevated,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
+  providerText: {
+    color: colors.warning,
   },
-  providerBannerText: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  modeToggle: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  modeChip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  modeChipActive: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
-  },
-  modeChipText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  modeChipTextActive: {
-    color: colors.textInverse,
-  },
-  radiusToggle: {
+  radiusRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  radiusChip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  radiusChipActive: {
-    backgroundColor: colors.brandSoft,
-    borderColor: colors.brand,
-  },
-  radiusChipText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  radiusChipTextActive: {
-    color: colors.brand,
-  },
-  mapWrap: {
-    flex: 1,
-  },
-  mapHint: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
-    bottom: spacing.lg,
-    backgroundColor: colors.surface,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  mapHintText: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  mapPreview: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
-    bottom: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.surface,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.brand,
   },
-  mapPreviewText: {
+  centred: {
     flex: 1,
-    gap: 2,
-  },
-  mapPreviewName: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-  },
-  mapPreviewArea: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  mapPreviewButton: {
-    backgroundColor: colors.brand,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.pill,
-  },
-  mapPreviewButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
   },
   list: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.xl,
   },
   separator: {
     height: spacing.md,
   },
   loadMoreRow: {
-    paddingTop: spacing.md,
     alignItems: 'center',
+    paddingVertical: spacing.lg,
   },
-  loadMoreButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.brand,
-  },
-  loadMoreText: {
-    ...typography.button,
-    color: colors.brand,
-    fontSize: 13,
-  },
-  centred: {
+  mapWrap: {
     flex: 1,
-    justifyContent: 'center',
+    marginHorizontal: layout.screenPadding,
+    marginBottom: spacing.md,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceElevated,
+  },
+  mapOverlay: {
+    position: 'absolute',
+    left: spacing.md,
+    right: spacing.md,
+    bottom: spacing.md,
+  },
+  mapPreview: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
     gap: spacing.md,
   },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    textAlign: 'center',
+  mapPreviewText: {
+    flex: 1,
   },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+  mapPreviewName: {
+    ...typography.bodyStrong,
   },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  emptyBody: {
-    ...typography.body,
+  mapPreviewArea: {
+    ...typography.caption,
     color: colors.textSecondary,
-    textAlign: 'center',
   },
-  attributionChip: {
-    // Slim, subdued chip — Google requires the attribution to be
-    // visible whenever Places data is shown, but it must not compete
-    // visually with primary picker actions. Lives above the manual
-    // footer so it appears in a stable position regardless of list/
-    // map/empty/error state.
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: colors.separator,
-    backgroundColor: colors.surfaceElevated,
-    alignItems: 'flex-end',
-    gap: 2,
+  mapHint: {
+    padding: spacing.md,
+    borderRadius: radii.md,
+    backgroundColor: colors.overlay,
+  },
+  mapHintText: {
+    ...typography.bodySmall,
+    color: colors.textPrimary,
+  },
+  attribution: {
+    paddingHorizontal: layout.screenPadding,
+    paddingVertical: spacing.sm,
+    gap: spacing.xs,
   },
   attributionText: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    fontSize: 12,
+    ...typography.caption,
+    color: colors.textSecondary,
   },
   thirdPartyAttributionText: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    fontSize: 12,
-    textAlign: 'right',
+    ...typography.caption,
   },
   manualFooter: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xl,
+    gap: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: colors.separator,
-    backgroundColor: colors.surfaceElevated,
-    gap: spacing.xs,
   },
   manualLabel: {
     ...typography.label,
-    color: colors.textTertiary,
   },
   manualRow: {
     flexDirection: 'row',
-    gap: spacing.sm,
     alignItems: 'center',
+    gap: spacing.sm,
   },
   manualInput: {
     flex: 1,
-    // Use the same input surface every other TextInput in the app uses
-    // (CreateBattle, BookingComposer, Login, Register, EditProfile).
-    backgroundColor: colors.inputBackground,
-    color: colors.textPrimary,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    fontSize: 15,
-  },
-  manualButton: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  manualButtonDisabled: {
-    backgroundColor: colors.border,
-  },
-  manualButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 13,
-  },
-  manualButtonTextDisabled: {
-    color: colors.textTertiary,
-  },
-  pressed: {
-    opacity: 0.65,
   },
 });

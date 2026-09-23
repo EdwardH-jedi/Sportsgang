@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { act, fireEvent, render } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BattleDetailScreen } from '../screens/battles/BattleDetailScreen';
 import type { EventDetail } from '@protin/shared-types';
@@ -64,27 +65,27 @@ jest.mock('../stores/auth', () => ({
     selector({ user: mockCurrentUserId ? { id: mockCurrentUserId } : null }),
 }));
 
-jest.mock('../components/Screen', () => {
-  const { View } = require('react-native');
-  return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-  };
-});
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', inputBackground: '#eee',
-    success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: (cb: () => void) => {
+    const R = require('react');
+    R.useEffect(() => {
+      cb();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
   },
 }));
+
+jest.mock('react-native-maps', () => {
+  const { View } = require('react-native');
+  const MapView = ({ children }: { children: React.ReactNode }) => <View testID="mini-map">{children}</View>;
+  const Marker = () => null;
+  return { __esModule: true, default: MapView, Marker, PROVIDER_DEFAULT: 'default' };
+});
+
+const metrics = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
 
 function makeNavigation() {
   return {
@@ -124,10 +125,12 @@ function renderScreen(detail: EventDetail | null) {
   mockState = { detail, isLoading: detail === null, error: null };
   const navigation = makeNavigation();
   const utils = render(
-    <BattleDetailScreen
-      navigation={navigation as any}
-      route={{ params: { eventId: 'e1' }, key: 'k', name: 'BattleDetail' } as any}
-    />
+    <SafeAreaProvider initialMetrics={metrics}>
+      <BattleDetailScreen
+        navigation={navigation as any}
+        route={{ params: { eventId: 'e1' }, key: 'k', name: 'BattleDetail' } as any}
+      />
+    </SafeAreaProvider>
   );
   return { ...utils, navigation };
 }
@@ -448,5 +451,84 @@ describe('BattleDetailScreen', () => {
     expect(queryByText(/AI moderation/i)).toBeNull();
     expect(queryByText(/leaderboard/i)).toBeNull();
     expect(queryByText(/instant honor/i)).toBeNull();
+  });
+
+  // ── Group-run layout ───────────────────────────────────────────────────
+
+  function runDetail(overrides: Partial<EventDetail> = {}) {
+    return makeDetail({
+      sport: 'running',
+      title: 'Harbour 10k',
+      locationText: 'Opera House steps',
+      distanceKm: 10,
+      paceMinSecPerKm: 300,
+      paceMaxSecPerKm: 330,
+      meetingLat: -33.8568,
+      meetingLng: 151.2153,
+      crewId: 'c1',
+      crewName: 'Harbour Crew',
+      participants: [
+        { userId: 'u1', displayName: 'Ana Lee', joinedAt: '2026-01-01T00:00:00Z' },
+        { userId: 'u2', displayName: 'Ben Ng', joinedAt: '2026-01-01T00:00:00Z' },
+      ],
+      participantCount: 2,
+      ...overrides,
+    });
+  }
+
+  it('shows run stats, the meeting-point map and runners', () => {
+    const { getByLabelText, getByText, getByTestId } = renderScreen(runDetail());
+    getByText('Group run');
+    getByLabelText('10 km, Distance');
+    getByLabelText('Pace 5:00–5:30 /km');
+    getByLabelText('Meeting point map, Opera House steps');
+    getByTestId('mini-map');
+    getByText('Runners');
+    getByLabelText('Ana Lee');
+  });
+
+  it('links to the crew', () => {
+    const { getByLabelText, navigation } = renderScreen(runDetail());
+    fireEvent.press(getByLabelText('Open crew Harbour Crew'));
+    expect(navigation.navigate).toHaveBeenCalledWith('CrewDetail', { crewId: 'c1' });
+  });
+
+  it('uses run wording for join / leave and host controls', () => {
+    const joined = renderScreen(runDetail({ hasJoined: false }));
+    joined.getByLabelText('Join this run');
+    mockCurrentUserId = 'host-1';
+    const host = renderScreen(runDetail());
+    host.getByLabelText('Cancel run');
+    host.getByLabelText('Complete run');
+  });
+
+  it('lets the host edit an open event', () => {
+    mockCurrentUserId = 'host-1';
+    const { getByLabelText, navigation } = renderScreen(runDetail());
+    fireEvent.press(getByLabelText('Edit run'));
+    expect(navigation.navigate).toHaveBeenCalledWith('CreateBattle', { eventId: 'e1' });
+  });
+
+  it('hides edit for non-hosts and closed events', () => {
+    const viewer = renderScreen(runDetail());
+    expect(viewer.queryByLabelText('Edit run')).toBeNull();
+    mockCurrentUserId = 'host-1';
+    const closed = renderScreen(runDetail({ status: 'completed' }));
+    expect(closed.queryByLabelText('Edit run')).toBeNull();
+  });
+
+  it('shows the error state with retry', () => {
+    mockState = { detail: null, isLoading: false, error: 'Network down' };
+    const { getByText, getByLabelText } = render(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <BattleDetailScreen
+          navigation={makeNavigation() as any}
+          route={{ params: { eventId: 'e1' }, key: 'k', name: 'BattleDetail' } as any}
+        />
+      </SafeAreaProvider>
+    );
+    getByText('Network down');
+    fireEvent.press(getByLabelText('Retry loading battle'));
+    expect(mockRefresh).toHaveBeenCalled();
   });
 });

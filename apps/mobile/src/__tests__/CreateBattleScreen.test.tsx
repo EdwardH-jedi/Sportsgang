@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CreateBattleScreen } from '../screens/battles/CreateBattleScreen';
 
@@ -18,15 +19,30 @@ jest.mock('../lib/events', () => {
   return {
     ...actual,
     createEvent: (...args: unknown[]) => mockCreateEvent(...args),
+    updateEvent: (...args: unknown[]) => mockUpdateEvent(...args),
   };
 });
 
-jest.mock('../components/Screen', () => {
-  const { View } = require('react-native');
-  return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-  };
-});
+const mockCrews: { id: string; name: string }[] = [];
+jest.mock('../hooks/useCrews', () => ({
+  useCrews: () => ({ items: mockCrews, total: mockCrews.length, isLoading: false, error: null, refresh: jest.fn() }),
+}));
+
+const mockUpdateEvent = jest.fn();
+let mockEditing: Record<string, unknown> | null = null;
+jest.mock('../hooks/useEvents', () => ({
+  useEventDetail: ({ enabled }: { enabled: boolean }) => ({
+    detail: enabled ? mockEditing : null,
+    isLoading: false,
+    error: null,
+    refresh: jest.fn(),
+  }),
+}));
+
+const metrics = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
 
 // ─── Mock NearbyCourtsModal ──────────────────────────────────────────────────
 
@@ -40,7 +56,7 @@ jest.mock('../screens/bookings/NearbyCourtsModal', () => {
   return {
     NearbyCourtsModal: (props: any) => {
       mockNearbyModalProps(props);
-      const { isOpen, onSelect, onSelectManual, onClose } = props;
+      const { isOpen, onSelect, onSelectManual, onSelectPin, onClose } = props;
       if (!isOpen) return null;
       return (
         <View>
@@ -75,6 +91,17 @@ jest.mock('../screens/bookings/NearbyCourtsModal', () => {
           >
             <Text>pick mock manual</Text>
           </Pressable>
+          {onSelectPin ? (
+            <Pressable
+              accessibilityLabel="mock-pick-pin"
+              onPress={() => {
+                onSelectPin({ latitude: -33.85678, longitude: 151.21534 });
+                onClose();
+              }}
+            >
+              <Text>pick mock pin</Text>
+            </Pressable>
+          ) : null}
         </View>
       );
     },
@@ -100,21 +127,6 @@ jest.mock('expo-location', () => ({
   Accuracy: { Balanced: 3 },
 }));
 
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', inputBackground: '#eee',
-    success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
-
 function makeNavigation() {
   return {
     navigate: jest.fn(),
@@ -123,10 +135,12 @@ function makeNavigation() {
   };
 }
 
-function renderCreateBattle(opts: { navigation?: any } = {}) {
+function renderCreateBattle(opts: { navigation?: any; params?: Record<string, unknown> } = {}) {
   const navigation = opts.navigation ?? makeNavigation();
   const utils = render(
-    <CreateBattleScreen navigation={navigation as any} route={{} as any} />
+    <SafeAreaProvider initialMetrics={metrics}>
+      <CreateBattleScreen navigation={navigation as any} route={{ params: opts.params } as any} />
+    </SafeAreaProvider>
   );
   return { ...utils, navigation };
 }
@@ -134,16 +148,23 @@ function renderCreateBattle(opts: { navigation?: any } = {}) {
 describe('CreateBattleScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCrews.length = 0;
+    mockEditing = null;
   });
 
-  it('renders the Host a game header and subcopy', () => {
-    const { getByText } = renderCreateBattle();
+  it('opens as Host a run by default and Host a game for other sports', () => {
+    const { getByText, getByLabelText } = renderCreateBattle();
+    getByText('Host a run');
+    getByText('Pick a meeting spot, a distance and a pace. Reliable hosts build higher Honor.');
+    fireEvent.press(getByLabelText('Select sport Tennis'));
     getByText('Host a game');
     getByText('Set the details. Reliable hosts build higher Honor.');
   });
 
-  it('renders mode and sport options', () => {
-    const { getByLabelText } = renderCreateBattle();
+  it('renders mode (games only) and sport options', () => {
+    const { getByLabelText, queryByLabelText } = renderCreateBattle();
+    expect(queryByLabelText('Select Casual Game')).toBeNull();
+    fireEvent.press(getByLabelText('Select sport Basketball'));
     getByLabelText('Select Casual Game');
     getByLabelText('Select Ranked Battle');
     getByLabelText('Select sport Basketball');
@@ -156,14 +177,15 @@ describe('CreateBattleScreen', () => {
       (c) => c.props.accessibilityLabel
     );
     expect(sportChips[0]).toBe('Select sport Run');
-    expect(getByLabelText('Game capacity').props.value).toBe('30');
+    expect(getByLabelText('Run capacity').props.value).toBe('30');
     expect(getByLabelText('Choose park, route, or meeting spot')).toBeTruthy();
   });
 
-  it('Create game button stays disabled until title and location are filled', async () => {
+  it('Post run button stays disabled until title and location are filled', async () => {
     const navigation = makeNavigation();
     const { getByLabelText } = renderCreateBattle({ navigation });
-    const cta = getByLabelText('Create game');
+    const cta = getByLabelText('Post run');
+    expect(cta.props.accessibilityState?.disabled).toBe(true);
     await act(async () => {
       fireEvent.press(cta);
     });
@@ -175,11 +197,11 @@ describe('CreateBattleScreen', () => {
     const navigation = makeNavigation();
     const { getByLabelText } = renderCreateBattle({ navigation });
 
-    fireEvent.changeText(getByLabelText('Game title'), 'Friday Run Club');
-    fireEvent.changeText(getByLabelText('Game location'), 'Bondi Court');
+    fireEvent.changeText(getByLabelText('Run title'), 'Friday Run Club');
+    fireEvent.changeText(getByLabelText('Meeting spot'), 'Bondi Court');
 
     await act(async () => {
-      fireEvent.press(getByLabelText('Create game'));
+      fireEvent.press(getByLabelText('Post run'));
     });
 
     expect(mockCreateEvent).toHaveBeenCalledTimes(1);
@@ -335,10 +357,10 @@ describe('CreateBattleScreen', () => {
       // Sport defaults to running — the picker CTA is rendered, but
       // the host can ignore it and type into the free-text field. The
       // payload still uses the existing-compatible locationText shape.
-      fireEvent.changeText(getByLabelText('Game title'), 'Bondi pickup hoops');
-      fireEvent.changeText(getByLabelText('Game location'), 'Bondi Court');
+      fireEvent.changeText(getByLabelText('Run title'), 'Bondi pickup hoops');
+      fireEvent.changeText(getByLabelText('Meeting spot'), 'Bondi Court');
       await act(async () => {
-        fireEvent.press(getByLabelText('Create game'));
+        fireEvent.press(getByLabelText('Post run'));
       });
       const payload = mockCreateEvent.mock.calls[0][0];
       expect(payload.sport).toBe('running');
@@ -487,6 +509,164 @@ describe('CreateBattleScreen', () => {
       });
       const payload = mockCreateEvent.mock.calls[0][0];
       expect(payload.locationText).toBe('My Backyard Court');
+    });
+  });
+
+  // ── Host a run ─────────────────────────────────────────────────────────
+
+  describe('host a run', () => {
+    it('sends crew, pinned meeting point, distance and pace band', async () => {
+      mockCrews.push({ id: 'c1', name: 'Harbour Crew' });
+      mockCreateEvent.mockResolvedValueOnce({ id: 'run-1' });
+      const { getByLabelText, getByText } = renderCreateBattle();
+      fireEvent.changeText(getByLabelText('Run title'), 'Harbour 10k');
+      fireEvent.press(getByLabelText('Crew Harbour Crew'));
+      await act(async () => {
+        fireEvent.press(getByLabelText('Choose park, route, or meeting spot'));
+      });
+      await waitFor(() => {
+        const props = mockNearbyModalProps.mock.calls.at(-1)?.[0];
+        expect(props?.purpose).toBe('meeting-spot');
+        expect(typeof props?.onSelectPin).toBe('function');
+      });
+      await act(async () => {
+        fireEvent.press(getByLabelText('mock-pick-pin'));
+      });
+      getByText('Pinned on the map');
+      fireEvent.changeText(getByLabelText('Meeting spot'), 'Opera House steps');
+      fireEvent.changeText(getByLabelText('Run distance in km'), '10');
+      fireEvent.changeText(getByLabelText('Fastest pace per km'), '5:00');
+      fireEvent.changeText(getByLabelText('Slowest pace per km'), '5:45');
+      await act(async () => {
+        fireEvent.press(getByLabelText('Post run'));
+      });
+      expect(mockCreateEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sport: 'running',
+          mode: 'casual',
+          title: 'Harbour 10k',
+          locationText: 'Opera House steps',
+          crewId: 'c1',
+          meetingLat: -33.85678,
+          meetingLng: 151.21534,
+          distanceKm: 10,
+          paceMinSecPerKm: 300,
+          paceMaxSecPerKm: 345,
+        })
+      );
+    });
+
+    it('a picked venue becomes the meeting point', async () => {
+      mockCreateEvent.mockResolvedValueOnce({ id: 'run-2' });
+      const { getByLabelText } = renderCreateBattle();
+      fireEvent.changeText(getByLabelText('Run title'), 'Bondi loop');
+      await act(async () => {
+        fireEvent.press(getByLabelText('Choose park, route, or meeting spot'));
+      });
+      await act(async () => {
+        fireEvent.press(getByLabelText('mock-pick-venue'));
+      });
+      await act(async () => {
+        fireEvent.press(getByLabelText('Post run'));
+      });
+      const payload = mockCreateEvent.mock.calls[0][0];
+      expect(payload.meetingLat).toBe(-33.89);
+      expect(payload.meetingLng).toBe(151.27);
+      expect(payload.locationText).toBe('Tennis Court Alpha — 1 Beach Rd, Bondi NSW');
+      expect(payload.crewId).toBeUndefined();
+    });
+
+    it('blocks submit on an invalid pace band or distance', async () => {
+      const { getByLabelText, getByText } = renderCreateBattle();
+      fireEvent.changeText(getByLabelText('Run title'), 'Tempo');
+      fireEvent.changeText(getByLabelText('Meeting spot'), 'Park');
+      fireEvent.changeText(getByLabelText('Fastest pace per km'), '6:00');
+      fireEvent.changeText(getByLabelText('Slowest pace per km'), '5:00');
+      getByText('The faster pace must come first.');
+      expect(getByLabelText('Post run').props.accessibilityState?.disabled).toBe(true);
+      fireEvent.changeText(getByLabelText('Slowest pace per km'), '');
+      fireEvent.changeText(getByLabelText('Run distance in km'), '250');
+      getByText('Distance must be 0.5–100 km.');
+      expect(getByLabelText('Post run').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('pre-selects the crew passed from a crew screen', () => {
+      const { getByLabelText } = renderCreateBattle({
+        params: { sport: 'running', crewId: 'c9', crewName: 'Dawn Patrol' },
+      });
+      expect(getByLabelText('Crew Dawn Patrol').props.accessibilityState).toMatchObject({ selected: true });
+    });
+
+    it('opens the date and time sheets', async () => {
+      const { getByLabelText, getByRole } = renderCreateBattle();
+      await act(async () => {
+        fireEvent.press(getByLabelText('Run date'));
+      });
+      getByRole('header', { name: 'Pick a date' });
+      await act(async () => {
+        fireEvent.press(getByLabelText('Run time'));
+      });
+      getByRole('header', { name: 'Start time' });
+    });
+  });
+
+  // ── Edit (PATCH) ───────────────────────────────────────────────────────
+
+  describe('edit mode', () => {
+    beforeEach(() => {
+      mockEditing = {
+        id: 'e7',
+        sport: 'running',
+        mode: 'casual',
+        title: 'Old title',
+        startsAt: '2030-06-01T08:30:00Z',
+        locationText: 'Centennial Park gates',
+        capacity: 12,
+        participantCount: 3,
+        description: null,
+        crewId: null,
+        crewName: null,
+        meetingLat: -33.9,
+        meetingLng: 151.23,
+        distanceKm: 8,
+        paceMinSecPerKm: 330,
+        paceMaxSecPerKm: 360,
+      };
+    });
+
+    it('pre-fills the form and PATCHes the event, then goes back', async () => {
+      mockUpdateEvent.mockResolvedValueOnce({});
+      const navigation = makeNavigation();
+      const { getByLabelText, getByText, queryByLabelText } = renderCreateBattle({
+        navigation,
+        params: { eventId: 'e7' },
+      });
+      getByText('Edit run');
+      expect(queryByLabelText('Select sport Run')).toBeNull();
+      expect(getByLabelText('Run title').props.value).toBe('Old title');
+      expect(getByLabelText('Run distance in km').props.value).toBe('8');
+      expect(getByLabelText('Fastest pace per km').props.value).toBe('5:30');
+      fireEvent.changeText(getByLabelText('Run title'), 'New title');
+      fireEvent.changeText(getByLabelText('Slowest pace per km'), '');
+      await act(async () => {
+        fireEvent.press(getByLabelText('Save changes'));
+      });
+      expect(mockUpdateEvent).toHaveBeenCalledWith(
+        'e7',
+        expect.objectContaining({
+          title: 'New title',
+          locationText: 'Centennial Park gates',
+          capacity: 12,
+          meetingLat: -33.9,
+          meetingLng: 151.23,
+          distanceKm: 8,
+          paceMinSecPerKm: 330,
+          paceMaxSecPerKm: null,
+          crewId: null,
+        })
+      );
+      expect(mockCreateEvent).not.toHaveBeenCalled();
+      expect(navigation.goBack).toHaveBeenCalled();
     });
   });
 });

@@ -1,26 +1,29 @@
-import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
+import {
+  Avatar,
+  Badge,
+  type BadgeTone,
+  Card,
+  Chip,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+} from '../../components/ui';
 import { useEventAttendance, useEventDetail } from '../../hooks/useEvents';
 import {
   type AttendanceEntry,
   type AttendanceStatus,
   attendanceStatusLabel,
   eventHasStarted,
+  eventNoun,
   formatEventWhen,
   sportLabelForBattle,
 } from '../../lib/events';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, spacing, typography } from '../../theme';
 import type { AttendanceCheckScreenProps } from '../../navigation/types';
 
 /**
@@ -106,29 +109,77 @@ export function AttendanceCheckScreen({
     [data]
   );
 
-  return (
-    <Screen padded={false}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Confirm attendance</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
+  const noun = eventNoun(detail?.sport);
 
+  let content: React.ReactNode;
+  if (isLoading && !data) {
+    content = (
+      <View style={styles.centred}>
+        <ActivityIndicator color={colors.brand} />
+      </View>
+    );
+  } else if (error) {
+    content = (
+      <EmptyState
+        icon="alert"
+        title="Couldn't load attendance"
+        message={error}
+        action={{
+          label: 'Try again',
+          icon: 'refresh',
+          onPress: () => void refresh(),
+          accessibilityLabel: 'Retry loading attendance',
+        }}
+      />
+    );
+  } else if (!viewerIsHost) {
+    content = (
+      <View accessibilityLabel="Attendance check is host only">
+        <EmptyState icon="lock" title="Host only" message="Only the event host can mark attendance from here." />
+      </View>
+    );
+  } else if (isCancelled) {
+    content = (
+      <View accessibilityLabel="Attendance check is cancelled">
+        <EmptyState
+          icon="close"
+          title="Event cancelled"
+          message={`Attendance is no longer available for cancelled ${noun}s.`}
+        />
+      </View>
+    );
+  } else if (!attendanceOpen) {
+    content = (
+      <View accessibilityLabel={`Attendance opens after the ${noun} starts`}>
+        <EmptyState icon="clock" title="Not yet" message={`Attendance opens after the ${noun} starts.`} />
+      </View>
+    );
+  } else if (activeItems.length === 0) {
+    content = <EmptyState icon="crew" title="No active participants yet." />;
+  } else {
+    content = (
+      <View style={styles.list}>
+        {activeItems.map((p) => (
+          <ParticipantRow
+            key={p.participantUserId}
+            participant={p}
+            isSaving={savingFor === p.participantUserId}
+            onPick={(c) => void onPick(p.participantUserId, c)}
+          />
+        ))}
+      </View>
+    );
+  }
+
+  return (
+    <Screen
+      padded={false}
+      header={<Header title="Confirm attendance" onBack={() => navigation.goBack()} backLabel="Back" />}
+    >
       <ScrollView contentContainerStyle={styles.scroll}>
         {detail ? (
           <View style={styles.summary}>
-            <Text style={styles.summarySport}>
-              {sportLabelForBattle(detail.sport)}
-            </Text>
+            <Text style={styles.summarySport}>{sportLabelForBattle(detail.sport)}</Text>
             <Text style={styles.summaryTitle} numberOfLines={2}>
               {detail.title}
             </Text>
@@ -139,78 +190,17 @@ export function AttendanceCheckScreen({
         ) : null}
 
         {viewerIsHost && attendanceOpen ? (
-          <View style={styles.warningBox}>
-            <Text style={styles.warningText}>
-              Only mark no-show when the player clearly did not attend.
-            </Text>
-          </View>
+          <Card variant="outline" padding="md">
+            <View style={styles.warningRow}>
+              <Icon name="warning" size="sm" color={colors.warning} />
+              <Text style={styles.warningText}>
+                Only mark no-show when the player clearly did not attend.
+              </Text>
+            </View>
+          </Card>
         ) : null}
 
-        {isLoading && !data ? (
-          <View style={styles.centred}>
-            <ActivityIndicator color={colors.brand} />
-          </View>
-        ) : error ? (
-          <View style={styles.centred}>
-            <Text style={styles.errorText}>{error}</Text>
-            <Pressable
-              onPress={() => void refresh()}
-              accessibilityRole="button"
-              accessibilityLabel="Retry loading attendance"
-              style={({ pressed }) => [
-                styles.retryButton,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.retryText}>Try again</Text>
-            </Pressable>
-          </View>
-        ) : !viewerIsHost ? (
-          <View
-            style={styles.centred}
-            accessibilityLabel="Attendance check is host only"
-          >
-            <Text style={styles.emptyTitle}>Host only</Text>
-            <Text style={styles.emptyText}>
-              Only the event host can mark attendance from here.
-            </Text>
-          </View>
-        ) : isCancelled ? (
-          <View
-            style={styles.centred}
-            accessibilityLabel="Attendance check is cancelled"
-          >
-            <Text style={styles.emptyTitle}>Event cancelled</Text>
-            <Text style={styles.emptyText}>
-              Attendance is no longer available for cancelled games.
-            </Text>
-          </View>
-        ) : !attendanceOpen ? (
-          <View
-            style={styles.centred}
-            accessibilityLabel="Attendance opens after the game starts"
-          >
-            <Text style={styles.emptyTitle}>Not yet</Text>
-            <Text style={styles.emptyText}>
-              Attendance opens after the game starts.
-            </Text>
-          </View>
-        ) : activeItems.length === 0 ? (
-          <View style={styles.centred}>
-            <Text style={styles.emptyText}>No active participants yet.</Text>
-          </View>
-        ) : (
-          <View style={styles.list}>
-            {activeItems.map((p) => (
-              <ParticipantRow
-                key={p.participantUserId}
-                participant={p}
-                isSaving={savingFor === p.participantUserId}
-                onPick={(c) => void onPick(p.participantUserId, c)}
-              />
-            ))}
-          </View>
-        )}
+        {content}
       </ScrollView>
     </Screen>
   );
@@ -222,193 +212,91 @@ interface ParticipantRowProps {
   onPick: (choice: Choice) => void;
 }
 
+const STATUS_TONE: Record<AttendanceStatus, BadgeTone> = {
+  pending: 'neutral',
+  attended: 'success',
+  no_show: 'error',
+  excused: 'warning',
+};
+
 function ParticipantRow({ participant, isSaving, onPick }: ParticipantRowProps) {
+  const status = participant.attendanceStatus as AttendanceStatus;
   return (
-    <View
-      style={styles.row}
-      accessibilityLabel={`Attendance row for ${participant.displayName}`}
-      testID={`attendance-row-${participant.participantUserId}`}
-    >
-      <View style={styles.rowHeader}>
+    <Card testID={`attendance-row-${participant.participantUserId}`}>
+      <View style={styles.rowHeader} accessibilityLabel={`Attendance row for ${participant.displayName}`}>
+        <Avatar name={participant.displayName} size="sm" />
         <Text style={styles.rowName} numberOfLines={1}>
           {participant.displayName}
         </Text>
-        <Text style={styles.rowStatus}>
-          {attendanceStatusLabel(
-            participant.attendanceStatus as AttendanceStatus
-          )}
-        </Text>
+        <Badge label={attendanceStatusLabel(status)} tone={STATUS_TONE[status] ?? 'neutral'} size="sm" />
       </View>
       <View style={styles.choices}>
-        {CHOICES.map((c) => {
-          const active = c.value === participant.attendanceStatus;
-          return (
-            <Pressable
-              key={c.value}
-              onPress={() => onPick(c.value)}
-              disabled={isSaving}
-              accessibilityRole="button"
-              accessibilityLabel={`Mark ${participant.displayName} as ${c.label}`}
-              accessibilityState={{ selected: active, disabled: isSaving }}
-              style={({ pressed }) => [
-                styles.choice,
-                active && styles.choiceActive,
-                pressed && !isSaving && styles.pressed,
-              ]}
-            >
-              <Text
-                style={[styles.choiceText, active && styles.choiceTextActive]}
-              >
-                {c.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+        {CHOICES.map((c) => (
+          <Chip
+            key={c.value}
+            label={c.label}
+            size="sm"
+            selected={c.value === participant.attendanceStatus}
+            disabled={isSaving}
+            onPress={() => onPick(c.value)}
+            accessibilityLabel={`Mark ${participant.displayName} as ${c.label}`}
+          />
+        ))}
       </View>
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
   scroll: {
-    paddingBottom: spacing.xxxl,
-    gap: spacing.md,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.xxl,
+    gap: spacing.lg,
+  },
+  centred: {
+    paddingVertical: spacing.xxl,
+    alignItems: 'center',
   },
   summary: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: 4,
+    gap: spacing.xs,
   },
   summarySport: {
     ...typography.label,
-    color: colors.textSecondary,
+    color: colors.brand,
   },
   summaryTitle: {
-    ...typography.h2,
+    ...typography.h1,
   },
   summaryMeta: {
-    ...typography.body,
+    ...typography.bodySmall,
     color: colors.textSecondary,
   },
-  warningBox: {
-    marginHorizontal: spacing.lg,
-    padding: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceElevated,
+  warningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   warningText: {
     ...typography.bodySmall,
     color: colors.textSecondary,
-  },
-  centred: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-    gap: spacing.md,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    textAlign: 'center',
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
+    flex: 1,
   },
   list: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  row: {
-    padding: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   rowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: spacing.sm,
   },
   rowName: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    fontWeight: '600',
+    ...typography.bodyStrong,
     flex: 1,
-  },
-  rowStatus: {
-    ...typography.label,
-    color: colors.brand,
   },
   choices: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
-  choice: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  choiceActive: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
-  },
-  choiceText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  choiceTextActive: {
-    color: colors.textInverse,
-  },
-  pressed: { opacity: 0.65 },
 });
