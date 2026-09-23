@@ -35,6 +35,8 @@ export interface UserProfile {
   birthYear?: number;      // age display only, not exact DOB
   suburb?: string;         // Sydney suburb
   avatarUrl?: string;
+  /** True once a coarse home location is saved (the coordinates are never returned). */
+  hasHomeLocation?: boolean;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 }
@@ -46,7 +48,16 @@ export interface CreateUserProfileRequest {
   suburb?: string;
 }
 
-export type UpdateUserProfileRequest = Partial<CreateUserProfileRequest>;
+/**
+ * PUT /users/me/profile body when updating. `homeLat`/`homeLng`
+ * (wire: home_lat/home_lng) are write-only: send both, or both null to
+ * clear; omit them to leave the stored value unchanged. The API rounds
+ * them to 2 dp (~1 km) and never returns them to anyone.
+ */
+export type UpdateUserProfileRequest = Partial<CreateUserProfileRequest> & {
+  homeLat?: number | null;
+  homeLng?: number | null;
+};
 
 // ---------------------------------------------------------------------------
 // Identity preferences (who you want to partner with)

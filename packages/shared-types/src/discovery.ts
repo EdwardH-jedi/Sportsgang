@@ -56,6 +56,27 @@ export interface PartnerCard {
     gymName?: string;
     golfClub?: string;
   }>;
+  /**
+   * Coarse distance to this runner's home area (rounded up to 0.5 km,
+   * minimum 1.0). Only set when the feed was requested with lat/lng.
+   */
+  distanceKm?: number | null;
+}
+
+/** GET /discovery query. Wire names: sport, limit, offset, lat, lng, radius_km. */
+export interface DiscoveryQuery {
+  sport: Sport;
+  limit?: number;                   // 1–50, default 20
+  offset?: number;
+  /**
+   * Provide both lat and lng or neither. With them, runners without a
+   * home location or outside radiusKm are excluded and the feed is
+   * ordered nearest first.
+   */
+  lat?: number;
+  lng?: number;
+  /** 1–50, default 10. */
+  radiusKm?: number;
 }
 
 export type DiscoveryFeedResponse = Paginated<PartnerCard>;
