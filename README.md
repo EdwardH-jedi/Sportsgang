@@ -1,14 +1,17 @@
-# Protin
+# SportsGang
 
-Protin connects players for peer sports matches: find opponents by sport, issue challenges, book nearby courts, and track results through a ranking and honour system. It is a full-stack mobile product — an Expo/React Native app backed by an async FastAPI service — currently supporting gym, golf, tennis, and running in Sydney.
+Peer sports matchmaking for iOS — find opponents by sport, challenge them, book nearby courts, and track results through a ranking and honour system.
 
-**Released as SportsGang v1.0:** the recorded release history documents App Store
-approval on **13 May 2026**, following an App Completeness review issue that was
-resolved with a reproducible reviewer-data workflow. This is a historical release
-milestone; it does not establish current service availability or user adoption.
+[![Download on the App Store](https://img.shields.io/badge/App_Store-SportsGang-0D96F6?logo=apple&logoColor=white)](https://apps.apple.com/au/app/sportsgang/id6767027447)
+[![CI](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml/badge.svg)](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml)
+[![License: source-available](https://img.shields.io/badge/license-source--available-lightgrey)](LICENSE)
+
+**Live on the App Store:** [SportsGang](https://apps.apple.com/au/app/sportsgang/id6767027447) — v1.0 approved by Apple App Review on **13 May 2026**, about eight weeks after the first commit.
+
+SportsGang is a full-stack mobile product — an Expo/React Native app backed by an async FastAPI service with PostgreSQL and Redis — currently supporting gym, golf, tennis, and running in Sydney. Protin is the internal codename, kept in package names and the permanent bundle id `com.edh1223.protin`.
 
 [Release history and engineering decisions](docs/ENGINEERING_NOTES.md) ·
-[Automated checks](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml) ·
+[Verification scope](docs/VERIFICATION.md) ·
 [Local setup](#local-setup)
 
 ## Product preview
@@ -59,18 +62,19 @@ Expo mobile app ──HTTP + JWT──▶ FastAPI ──▶ PostgreSQL (async SQ
 - 15 incremental Alembic migrations covering the whole schema history
 - Booking lifecycle modelled as an explicit finite state machine on the service layer
 - Field-level Fernet encryption (AES-CBC + HMAC, `cryptography` library) for stored OAuth tokens, enforced at startup
+- Google Calendar OAuth `state` is a signed, 10-minute, user-bound token, so the unauthenticated callback cannot be used to link another user's account
 - Rate limiting on auth and external-API-backed endpoints (slowapi)
 - Multi-source venue search: seeded venue DB merged with Google Places, haversine dedup, lazy place-details loading
 - Typed mobile API client with JWT handling and snake_case↔camelCase conversion, backed by a shared types package
-- 26 API test files (620 tests, pytest, in-memory SQLite) and 53 mobile test suites (747 tests, Jest + React Native Testing Library)
-- CI: ruff lint/format, ESLint, TypeScript typecheck, both test suites, and a Docker image build on every push
-- Deployment configuration for a staging stack (docker-compose + nginx) and Fly.io (Sydney region, API + worker processes)
+- 26 API test files (631 tests, pytest, in-memory SQLite) and 53 mobile test suites (747 tests, Jest + React Native Testing Library)
+- CI: ruff lint/format, ESLint, TypeScript typecheck, both test suites, a PostgreSQL/Redis integration job, and a Docker image build on every push
+- Deployment configuration for a self-hosted staging stack (docker-compose + nginx) and Fly.io (Sydney region, API + worker processes)
 
 ## Current state
 
-SportsGang v1.0 passed App Review in May 2026. This repository is the maintained
-Protin engineering portfolio, with a local setup using Docker for PostgreSQL/Redis,
-uvicorn, and Expo. The previously deployed backend is not offered here as an
+SportsGang v1.0 passed App Review in May 2026 and is listed on the App Store. This
+repository is the maintained engineering source, with a local setup using Docker for
+PostgreSQL/Redis, uvicorn, and Expo. The production backend is not offered here as an
 always-on public demo; use the screenshots or local setup to review the product.
 Download counts and active-user metrics are not tracked in this repository.
 
@@ -85,26 +89,45 @@ or Expo delivery services. See [verification scope](docs/VERIFICATION.md).
 
 ```
 .
+├── .github/workflows/ci.yml     CI: lint, typecheck, tests, PostgreSQL/Redis job, Docker build
 ├── apps/
-│   ├── api/                  FastAPI service
-│   │   ├── alembic/          database migrations
+│   ├── api/                     FastAPI service (uv project)
+│   │   ├── alembic/             database migrations
 │   │   ├── app/
-│   │   │   ├── core/         config, security
-│   │   │   └── db/           SQLAlchemy engine, Redis client
-│   │   └── tests/
-│   └── mobile/               Expo React Native app
+│   │   │   ├── core/            settings, JWT/password security, field encryption, rate limiting
+│   │   │   ├── db/              SQLAlchemy engine/session, Redis client
+│   │   │   ├── models/          SQLAlchemy ORM models
+│   │   │   ├── routers/         HTTP/WebSocket route handlers by domain
+│   │   │   ├── schemas/         Pydantic request/response models
+│   │   │   ├── services/        domain logic (booking FSM, discovery, venues, integrations)
+│   │   │   └── main.py          app setup, /health, router registration
+│   │   ├── data/                seeded Sydney venue catalog
+│   │   ├── scripts/             seed scripts (venues, bots, review data) and a live venue smoke check
+│   │   ├── tests/               pytest suite (in-memory SQLite)
+│   │   ├── tests_integration/   PostgreSQL + Redis booking journey (CI job)
+│   │   ├── worker.py            Expo push notification worker
+│   │   └── Dockerfile           multi-stage API image (built from the repository root)
+│   └── mobile/                  Expo React Native app
+│       ├── assets/              app icon, splash, notification icon
 │       └── src/
-│           ├── components/   shared UI primitives
-│           ├── navigation/   React Navigation setup
-│           ├── screens/      screen shells by domain
-│           └── theme/        design tokens
+│           ├── __tests__/       Jest + React Native Testing Library suites
+│           ├── components/      shared UI primitives
+│           ├── data/            static reference data
+│           ├── hooks/           data-fetching hooks
+│           ├── lib/             typed API client and domain helpers
+│           ├── navigation/      React Navigation setup
+│           ├── screens/         screens by domain
+│           ├── stores/          Zustand stores
+│           └── theme/           design tokens
 ├── packages/
-│   └── shared-types/         TypeScript type contracts shared with the app
-├── infra/                    nginx config, deploy/backup/health-check scripts
-├── docs/                     release, staging, runbook, and portfolio docs
-├── .env.example              root infrastructure variables (source of truth)
-├── docker-compose.yml        PostgreSQL + Redis
-└── package.json              npm workspace root + infra scripts
+│   └── shared-types/            TypeScript type contracts shared with the app
+├── infra/                       nginx, systemd units, deploy/backup/health-check scripts, Fly.io notes
+├── docs/                        engineering notes, verification scope, runbooks, contracts, archive
+├── .env.example                 root infrastructure variables (source of truth)
+├── docker-compose.yml           local PostgreSQL + Redis
+├── docker-compose.staging.yml   self-hosted staging stack
+├── fly.toml                     Fly.io app config (API + worker processes)
+└── package.json                 npm workspace root + scripts
 ```
 
 ---
@@ -216,8 +239,10 @@ curl http://localhost:8000/health
 Expected response:
 
 ```json
-{"status":"ok","environment":"local","checks":{"db":"ok","redis":"ok"}}
+{"status":"ok","version":"0.1.0","environment":"local","uptime_seconds":12,"checks":{"db":"ok","redis":"ok"}}
 ```
+
+If a dependency is unreachable, the endpoint returns HTTP 503 with `"status":"degraded"`.
 
 If either check shows `"error"`, see [Troubleshooting](#troubleshooting).
 
@@ -269,11 +294,20 @@ npm run mobile:ios         # open iOS simulator
 npm run mobile:web         # open in browser
 ```
 
+### Checks (repository root)
+
+```bash
+npm test                   # mobile Jest suites
+npm run lint               # mobile ESLint
+npm run typecheck          # mobile + shared-types TypeScript
+```
+
 ### API (run from `apps/api`)
 
 ```bash
 uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000   # dev server
 uv run pytest                                                       # test suite
+uv run ruff check . && uv run ruff format --check .                 # lint + format check
 uv run alembic upgrade head                                         # apply migrations
 uv run alembic downgrade -1                                         # roll back one migration
 ```
@@ -303,11 +337,12 @@ docker compose exec redis redis-cli ping
 
 ```bash
 curl http://localhost:8000/health
-# → {"status":"ok","environment":"local","checks":{"db":"ok","redis":"ok"}}
+# → {"status":"ok","version":"0.1.0","environment":"local","uptime_seconds":12,"checks":{"db":"ok","redis":"ok"}}
 ```
 
-Both checks inside `checks` must be `"ok"`. If either is `"error"`, the service
-is running but cannot reach that dependency — see [Troubleshooting](#troubleshooting).
+Both checks inside `checks` must be `"ok"`. If either is `"error"`, the endpoint
+returns HTTP 503 with `"status":"degraded"`: the service is running but cannot reach
+that dependency — see [Troubleshooting](#troubleshooting).
 
 ---
 
@@ -329,14 +364,34 @@ is running but cannot reach that dependency — see [Troubleshooting](#troublesh
 | `REDIS_URL` | `redis://localhost:6379/0` | used by API |
 | `EXPO_PUBLIC_API_URL` | `http://localhost:8000` | API base URL baked into mobile JS bundle |
 
-### `apps/api/.env` — FastAPI runtime only
+### `apps/api/.env` — FastAPI runtime
 
-Subset of the root variables: `APP_ENV`, `API_HOST`, `API_PORT`, `POSTGRES_URL`, `REDIS_URL`.
+The API reads `.env` from its working directory (`apps/api`). Key settings
+(defaults from `apps/api/app/core/config.py`):
 
-### `apps/mobile/.env` — Expo runtime only
+| Variable | Default | Purpose |
+|---|---|---|
+| `APP_ENV` | `local` | `local` / `staging` / `production`; stricter startup checks outside `local` |
+| `POSTGRES_URL` | `postgresql://protin:protin@localhost:5432/protin` | database URL (API and Alembic) |
+| `REDIS_URL` | `redis://localhost:6379/0` | Redis URL |
+| `SECRET_KEY` | `change-me-in-production` | JWT and OAuth-state signing key; the default is refused in staging/production |
+| `FIELD_ENCRYPTION_KEY` | empty | Fernet key for OAuth tokens at rest; required outside local dev (the app refuses to start without it) |
+| `CORS_ORIGINS` | empty | comma-separated allowed origins; empty means `*` (local dev only) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | empty / empty / local callback | Google Calendar OAuth; empty client id disables the integration |
+| `GOOGLE_PLACES_API_KEY` | empty | Google Places (New) venue provider; empty uses the seeded venue catalog only |
+| `APPLE_CLIENT_ID` | empty | Sign in with Apple audience (the iOS bundle id) |
+| `TOURNAMENTS_ENABLED` | on in `local`, off otherwise | tournaments feature flag |
 
-`EXPO_PUBLIC_API_URL` only. The `EXPO_PUBLIC_` prefix is required by Expo to expose
-variables to the JavaScript bundle.
+### `apps/mobile/.env` — Expo runtime
+
+| Variable | Purpose |
+|---|---|
+| `EXPO_PUBLIC_API_URL` | API base URL baked into the JS bundle (default `http://localhost:8000`) |
+| `EXPO_PUBLIC_GOOGLE_REDIRECT_URI` | Google Calendar OAuth callback URL |
+| `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` | optional Google Maps key for the venue map (per-platform `_IOS_` / `_ANDROID_` variants take precedence) |
+| `EXPO_PUBLIC_PRIVACY_URL` / `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_SUPPORT_URL` | legal and support links opened in-app |
+
+The `EXPO_PUBLIC_` prefix is required by Expo to expose variables to the JavaScript bundle.
 
 ---
 
@@ -399,3 +454,9 @@ After `infra:reset`, re-run migrations before starting the API:
 ```bash
 cd apps/api && uv run alembic upgrade head
 ```
+
+---
+
+## License
+
+Proprietary, source-available for portfolio and evaluation purposes only — see [LICENSE](LICENSE).
