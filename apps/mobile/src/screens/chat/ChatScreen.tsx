@@ -18,6 +18,7 @@ import {
   Avatar,
   Button,
   EmptyState,
+  Header,
   Icon,
   IconButton,
   Screen,
@@ -29,7 +30,7 @@ import { useChat } from '../../hooks/useChat';
 import type { ChatMessage } from '../../lib/matches';
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
+import { colors, radii, spacing, touchTarget, typography } from '../../theme';
 import type { ChatScreenProps } from '../../navigation/types';
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
@@ -240,41 +241,37 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   return (
     <Screen padded={false}>
       {/* Header — kept OUTSIDE the KeyboardAvoidingView so it stays anchored
-          at the top regardless of keyboard state. The Header primitive only
-          takes a text title, so the avatar + name bar is composed here. */}
-      <View style={styles.header}>
-        <IconButton
-          icon="back"
-          onPress={() => navigation.goBack()}
-          accessibilityLabel="Back"
-        />
-        <View style={styles.headerIdentity}>
-          <Avatar name={partnerName} size="sm" />
-          <View style={styles.headerText}>
-            <Text style={styles.headerName} numberOfLines={1} accessibilityRole="header">
-              {partnerName}
-            </Text>
-            <Text style={styles.headerSport} numberOfLines={1}>
-              {sportLabel(sport)}
-            </Text>
+          at the top regardless of keyboard state. Identity (avatar + name)
+          goes in the Header's leading slot. */}
+      <Header
+        onBack={() => navigation.goBack()}
+        backLabel="Back"
+        style={styles.header}
+        leading={
+          <View style={styles.headerIdentity}>
+            <Avatar name={partnerName} size="sm" />
+            <View style={styles.headerText}>
+              <Text style={styles.headerName} numberOfLines={1} accessibilityRole="header">
+                {partnerName}
+              </Text>
+              <Text style={styles.headerSport} numberOfLines={1}>
+                {sportLabel(sport)}
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.headerActions}>
-          <IconButton
-            icon="calendar"
-            variant="filled"
-            onPress={() =>
-              navigation.navigate('BookingComposer', { matchId, sport })
-            }
-            accessibilityLabel="Propose a session"
-          />
-          <IconButton
-            icon="more"
-            onPress={openSafetyMenu}
-            accessibilityLabel="More options"
-          />
-        </View>
-      </View>
+        }
+        right={
+          <>
+            <IconButton
+              icon="calendar"
+              variant="filled"
+              onPress={() => navigation.navigate('BookingComposer', { matchId, sport })}
+              accessibilityLabel="Propose a session"
+            />
+            <IconButton icon="more" onPress={openSafetyMenu} accessibilityLabel="More options" />
+          </>
+        }
+      />
 
       {/* Session-planning banner — also kept outside the KAV. The banner
           must not move when the keyboard opens; only the list+composer
@@ -514,10 +511,6 @@ const COMPOSER_MAX_HEIGHT = COMPOSER_HEIGHT + spacing.xxl + spacing.xl + spacing
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: layout.headerHeight,
-    paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
@@ -538,11 +531,6 @@ const styles = StyleSheet.create({
   },
   headerSport: {
     ...typography.caption,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
   },
   planBanner: {
     flexDirection: 'row',

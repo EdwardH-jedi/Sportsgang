@@ -152,7 +152,7 @@ export function MatchesScreen() {
   return (
     <Screen
       padded={false}
-      header={<Header large eyebrow="Your matches" title="Chats" />}
+      header={<Header large title="Chats" />}
     >
       {isLoading ? (
         <ChatListSkeleton />

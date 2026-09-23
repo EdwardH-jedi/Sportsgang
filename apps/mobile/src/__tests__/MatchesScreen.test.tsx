@@ -125,9 +125,11 @@ describe('MatchesScreen', () => {
 
   it('renders the Chats header', async () => {
     mockApiGet.mockResolvedValue(emptyResponse);
-    const { getByText } = render(<MatchesScreen />);
+    const { getByText, queryByText } = render(<MatchesScreen />);
     await waitFor(() => getByText('No matches yet'));
     getByText('Chats');
+    // Top-level tabs share one header pattern: large title, no eyebrow.
+    expect(queryByText('Your matches')).toBeNull();
   });
 
   it('fetches from the correct endpoint on mount', async () => {

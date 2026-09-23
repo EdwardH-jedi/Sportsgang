@@ -201,7 +201,6 @@ export function ProfileScreen() {
                 ]
               : []
           }
-          style={styles.header}
         />
 
         {/* Identity */}
@@ -577,9 +576,6 @@ const AVATAR_XL = 88;
 const styles = StyleSheet.create({
   scroll: {
     paddingBottom: spacing.xxxl,
-  },
-  header: {
-    paddingTop: spacing.sm,
   },
   fill: {
     flex: 1,

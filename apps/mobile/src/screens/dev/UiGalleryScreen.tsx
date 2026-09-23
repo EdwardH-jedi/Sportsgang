@@ -86,7 +86,9 @@ export function UiGalleryScreen({ navigation }: UiGalleryScreenProps) {
           ).map((key) => (
             <View key={key} style={styles.swatchItem}>
               <View style={[styles.swatch, { backgroundColor: colors[key] }]} />
-              <Text style={typography.caption}>{key}</Text>
+              <Text style={styles.swatchLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+                {key}
+              </Text>
             </View>
           ))}
         </View>
@@ -103,7 +105,16 @@ export function UiGalleryScreen({ navigation }: UiGalleryScreenProps) {
         {(['primary', 'secondary', 'ghost', 'destructive'] as const).map((variant) => (
           <View key={variant} style={styles.row}>
             {(['sm', 'md', 'lg'] as const).map((size) => (
-              <Button key={size} label={`${variant} ${size}`} variant={variant} size={size} onPress={() => undefined} />
+              <Button
+                key={size}
+                label={`${variant} ${size}`}
+                variant={variant}
+                size={size}
+                onPress={() => undefined}
+                // Buttons self-align to flex-start; centre them so sm / md / lg
+                // share a centre line (visible with the fill-less ghost).
+                style={styles.centerSelf}
+              />
             ))}
           </View>
         ))}
@@ -389,9 +400,17 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.md,
   },
+  // Three per row on a 375pt phone, wide enough for "surfaceElevated".
   swatchItem: {
-    width: 88,
+    width: 100,
     gap: spacing.xs,
+  },
+  swatchLabel: {
+    ...typography.caption,
+    fontSize: typography.label.fontSize,
+  },
+  centerSelf: {
+    alignSelf: 'center',
   },
   swatch: {
     height: 44,

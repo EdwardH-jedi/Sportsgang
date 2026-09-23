@@ -134,25 +134,30 @@ export function AttendanceCheckScreen({
     );
   } else if (!viewerIsHost) {
     content = (
-      <View accessibilityLabel="Attendance check is host only">
-        <EmptyState icon="lock" title="Host only" message="Only the event host can mark attendance from here." />
-      </View>
+      <EmptyState
+        icon="lock"
+        title="Host only"
+        message="Only the event host can mark attendance from here."
+        accessibilityLabel="Attendance check is host only"
+      />
     );
   } else if (isCancelled) {
     content = (
-      <View accessibilityLabel="Attendance check is cancelled">
-        <EmptyState
-          icon="close"
-          title="Event cancelled"
-          message={`Attendance is no longer available for cancelled ${noun}s.`}
-        />
-      </View>
+      <EmptyState
+        icon="close"
+        title="Event cancelled"
+        message={`Attendance is no longer available for cancelled ${noun}s.`}
+        accessibilityLabel="Attendance check is cancelled"
+      />
     );
   } else if (!attendanceOpen) {
     content = (
-      <View accessibilityLabel={`Attendance opens after the ${noun} starts`}>
-        <EmptyState icon="clock" title="Not yet" message={`Attendance opens after the ${noun} starts.`} />
-      </View>
+      <EmptyState
+        icon="clock"
+        title="Not yet"
+        message={`Attendance opens after the ${noun} starts.`}
+        accessibilityLabel={`Attendance opens after the ${noun} starts`}
+      />
     );
   } else if (activeItems.length === 0) {
     content = <EmptyState icon="crew" title="No active participants yet." />;

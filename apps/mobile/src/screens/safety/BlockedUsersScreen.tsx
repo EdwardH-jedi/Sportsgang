@@ -144,13 +144,12 @@ export function BlockedUsersScreen({ navigation }: BlockedUsersScreenProps) {
           }}
         />
       ) : items.length === 0 ? (
-        <View style={styles.fill} accessibilityLabel="No blocked users">
-          <EmptyState
-            icon="shield"
-            title="No blocked users"
-            message="You haven't blocked anyone yet."
-          />
-        </View>
+        <EmptyState
+          icon="shield"
+          title="No blocked users"
+          message="You haven't blocked anyone yet."
+          accessibilityLabel="No blocked users"
+        />
       ) : (
         <FlatList
           data={items}
@@ -230,9 +229,6 @@ const styles = StyleSheet.create({
   header: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
-  },
-  fill: {
-    flex: 1,
   },
   introRow: {
     flexDirection: 'row',
