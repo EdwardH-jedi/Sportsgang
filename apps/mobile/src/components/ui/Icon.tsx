@@ -1,6 +1,9 @@
 import React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+// Per-set subpath imports: the package barrel pulls in every icon set
+// (and all ~20 icon fonts) — only Feather + MDI should ship.
+import Feather from '@expo/vector-icons/Feather';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { colors, iconSizes, type IconSize } from '../../theme';
 

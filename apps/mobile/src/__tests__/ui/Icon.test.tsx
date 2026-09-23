@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { ICONS, Icon, sportIconName, type IconName } from '../../components/ui/Icon';
 import { colors, iconSizes } from '../../theme';
