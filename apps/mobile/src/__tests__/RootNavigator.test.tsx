@@ -49,13 +49,19 @@ const mockNavRef = (
   }
 ).__mockNavRef;
 
+// Records every root-stack route name so route registration can be asserted.
+const mockStackRoutes: string[] = [];
+
 jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: () => ({
     Navigator: ({ children }: { children: React.ReactNode }) => {
       const { View } = require('react-native');
       return <View>{children}</View>;
     },
-    Screen: () => null,
+    Screen: ({ name }: { name: string }) => {
+      mockStackRoutes.push(name);
+      return null;
+    },
   }),
 }));
 
@@ -86,6 +92,25 @@ jest.mock('../screens/chat/ChatScreen', () => ({ ChatScreen: () => null }));
 jest.mock('../screens/bookings/BookingComposerScreen', () => ({ BookingComposerScreen: () => null }));
 jest.mock('../screens/bookings/BookingDetailScreen', () => ({ BookingDetailScreen: () => null }));
 jest.mock('../screens/safety/ReportScreen', () => ({ ReportScreen: () => null }));
+
+describe('RootNavigator routes', () => {
+  beforeEach(() => {
+    mockStackRoutes.length = 0;
+    mockUseAuthStore.mockReturnValue({ token: null });
+  });
+
+  it('keeps Events reachable as a stack route now that it is not a tab', () => {
+    render(<RootNavigator />);
+    expect(mockStackRoutes).toEqual(
+      expect.arrayContaining(['Main', 'Events', 'Battles', 'Challenges', 'Chat'])
+    );
+  });
+
+  it('registers the UI gallery in development builds', () => {
+    render(<RootNavigator />);
+    expect(mockStackRoutes).toContain('UiGallery');
+  });
+});
 
 describe('RootNavigator auth-adjacent side effects', () => {
   beforeEach(() => {

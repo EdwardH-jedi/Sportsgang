@@ -5,7 +5,6 @@ import {
   createNavigationContainerRef,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthEntryScreen } from '../screens/auth/AuthEntryScreen';
@@ -15,10 +14,7 @@ import { OnboardingStep1Screen } from '../screens/onboarding/OnboardingStep1Scre
 import { OnboardingStep2Screen } from '../screens/onboarding/OnboardingStep2Screen';
 import { OnboardingStep3Screen } from '../screens/onboarding/OnboardingStep3Screen';
 import { OnboardingStep4Screen } from '../screens/onboarding/OnboardingStep4Screen';
-import { DiscoveryScreen } from '../screens/discovery/DiscoveryScreen';
 import { EventsScreen } from '../screens/events/EventsScreen';
-import { MatchesScreen } from '../screens/matches/MatchesScreen';
-import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { ChatScreen } from '../screens/chat/ChatScreen';
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
@@ -38,11 +34,10 @@ import { UiGalleryScreen } from '../screens/dev/UiGalleryScreen';
 
 import { registerForPushNotifications, configureForegroundHandler } from '../lib/notifications';
 import { useAuthStore } from '../stores/auth';
-import { colors } from '../theme';
-import type { MainTabParamList, RootStackParamList } from './types';
+import { MainTabs } from './MainTabs';
+import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<MainTabParamList>();
 
 // Routes that are always safe to remain on without a token. Anything else is
 // treated as authenticated stack and is force-reset to AuthEntry the moment
@@ -55,55 +50,6 @@ const UNAUTH_ROUTES: readonly (keyof RootStackParamList)[] = [
 ];
 
 const navigationRef = createNavigationContainerRef<RootStackParamList>();
-
-function MainTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.separator,
-          borderTopWidth: 1,
-          // Remove platform shadows — let the border do the separation.
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-        tabBarActiveTintColor: colors.brand,
-        tabBarInactiveTintColor: colors.textTertiary,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          letterSpacing: 0.3,
-          marginBottom: 2,
-        },
-        // No tabBarIcon is provided — icons are added once the icon system
-        // is decided. React Navigation v6 has no `tabBarShowIcon` option.
-      }}
-    >
-      <Tab.Screen
-        name="Discovery"
-        component={DiscoveryScreen}
-        options={{ title: 'Discover' }}
-      />
-      <Tab.Screen
-        name="Matches"
-        component={MatchesScreen}
-        options={{ title: 'Matches' }}
-      />
-      <Tab.Screen
-        name="Events"
-        component={EventsScreen}
-        options={{ title: 'Events' }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ title: 'Profile' }}
-      />
-    </Tab.Navigator>
-  );
-}
 
 export function RootNavigator() {
   const { token } = useAuthStore();
@@ -221,6 +167,14 @@ export function RootNavigator() {
           name="Report"
           component={ReportScreen}
           options={{ animation: 'slide_from_bottom' }}
+        />
+        {/* The old Events tab. Its content now lives in Profile (upcoming
+            sessions, Games & challenges); kept registered so nothing is
+            orphaned until the run-first Run tab replaces it. */}
+        <Stack.Screen
+          name="Events"
+          component={EventsScreen}
+          options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name="Battles"

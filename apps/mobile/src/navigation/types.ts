@@ -1,4 +1,5 @@
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 /**
@@ -13,12 +14,15 @@ export type RootStackParamList = {
   OnboardingStep2: undefined;
   OnboardingStep3: undefined;
   OnboardingStep4: undefined;
-  Main: undefined;
+  /** The tab shell. Optionally open a specific tab: `navigate('Main', { screen: 'Matches' })`. */
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
   EditProfile: undefined;
   Chat: { matchId: string; partnerName: string; partnerId: string; sport: string };
   BookingComposer: { matchId: string; sport: string };
   BookingDetail: { bookingId: string };
   Report: { reportedUserId: string; reportedName: string };
+  /** Former Events tab (sessions, pending proposals, battles entry). */
+  Events: undefined;
   Battles: undefined;
   BattleDetail: { eventId: string };
   CreateBattle: undefined;
@@ -48,12 +52,15 @@ export type RootStackParamList = {
 };
 
 /**
- * Main tab bar — core surfaces of the authenticated experience.
+ * Main tab bar — Run / Crews / Chats / Profile. `Matches` and `Profile`
+ * keep their v1 route names (same screens); the Chats tab is `Matches`.
  */
 export type MainTabParamList = {
-  Discovery: undefined;
+  /** Run home. Renders partner discovery until the run-first home lands. */
+  RunHome: undefined;
+  Crews: undefined;
+  /** Chats tab (match list → Chat). */
   Matches: undefined;
-  Events: undefined;
   Profile: undefined;
 };
 
@@ -68,9 +75,12 @@ export type OnboardingStep2ScreenProps = NativeStackScreenProps<RootStackParamLi
 export type OnboardingStep3ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep3'>;
 export type OnboardingStep4ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep4'>;
 
-export type DiscoveryScreenProps = BottomTabScreenProps<MainTabParamList, 'Discovery'>;
+export type RunHomeScreenProps = BottomTabScreenProps<MainTabParamList, 'RunHome'>;
+/** Discovery is rendered by the Run tab for now. */
+export type DiscoveryScreenProps = RunHomeScreenProps;
+export type CrewsScreenProps = BottomTabScreenProps<MainTabParamList, 'Crews'>;
 export type MatchesScreenProps = BottomTabScreenProps<MainTabParamList, 'Matches'>;
-export type EventsScreenProps = BottomTabScreenProps<MainTabParamList, 'Events'>;
+export type EventsScreenProps = NativeStackScreenProps<RootStackParamList, 'Events'>;
 export type ProfileScreenProps = BottomTabScreenProps<MainTabParamList, 'Profile'>;
 export type EditProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
 
