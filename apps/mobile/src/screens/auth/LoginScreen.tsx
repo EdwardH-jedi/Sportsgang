@@ -3,7 +3,7 @@ import { Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 import { FormErrorBanner } from '../../components/FormErrorBanner';
-import { Button, Screen, TextField } from '../../components/ui';
+import { Button, Header, Screen, TextField } from '../../components/ui';
 import { useAuthStore } from '../../stores/auth';
 import { useProfileStore } from '../../stores/profile';
 import { colors, radii, spacing, touchTarget, typography } from '../../theme';
@@ -117,7 +117,12 @@ export function LoginScreen({ navigation }: Props) {
   }
 
   return (
-    <Screen padded scroll withKeyboard>
+    <Screen
+      padded
+      scroll
+      withKeyboard
+      header={<Header onBack={() => navigation.navigate('AuthEntry')} backLabel="Back" />}
+    >
       <AuthHeading eyebrow="Welcome back" title="Log in" />
 
       <View style={styles.form}>
@@ -132,7 +137,6 @@ export function LoginScreen({ navigation }: Props) {
           keyboardType="email-address"
           textContentType="emailAddress"
           autoComplete="email"
-          inputStyle={singleLineInput}
         />
 
         <TextField
@@ -154,7 +158,6 @@ export function LoginScreen({ navigation }: Props) {
           // but is the spec's "any-password" alias — `current-password`
           // is unambiguous and matches `new-password` on Register.
           autoComplete="current-password"
-          inputStyle={singleLineInput}
         />
 
         <FormErrorBanner message={error} />
@@ -208,7 +211,6 @@ export function LoginScreen({ navigation }: Props) {
  * On a single-line TextInput that lineHeight clips descenders and the "@"
  * glyph on Android, so auth fields clear it.
  */
-const singleLineInput = { lineHeight: undefined };
 
 const styles = StyleSheet.create({
   form: {

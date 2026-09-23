@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Button, Header, Icon, Screen, hapticSelection } from '../../components/ui';
-import { colors, radii, spacing, touchTarget, typography } from '../../theme';
+import { Button, Header, Icon, Screen } from '../../components/ui';
+import { colors, radii, spacing, typography } from '../../theme';
 
 export const ONBOARDING_STEPS = 4;
 
@@ -44,7 +44,9 @@ export function OnboardingFrame({
     <Screen
       scroll
       withKeyboard={withKeyboard}
-      header={onBack ? <Header onBack={onBack} backLabel="Back" /> : undefined}
+      // Always render the header row (empty on step 1) so the progress bar
+      // sits at the same height on every step.
+      header={<Header onBack={onBack} backLabel="Back" testID="onboarding-header" />}
       footer={
         <View style={styles.footer}>
           {error ? (
@@ -94,52 +96,24 @@ export function OnboardingFrame({
 export function OnboardingSection({
   title,
   hint,
+  required = false,
   children,
 }: {
   title: string;
   hint?: string;
+  /** Red required marker, matching TextField / Select. */
+  required?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionTitle}>
+        {title}
+        {required ? <Text style={styles.required}> *</Text> : null}
+      </Text>
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
       {children}
     </View>
-  );
-}
-
-export interface ChoiceChipProps {
-  label: string;
-  checked: boolean;
-  onPress: () => void;
-  /** checkbox = multi-select, radio = single-select. */
-  role: 'checkbox' | 'radio';
-}
-
-/**
- * Selectable pill with checkbox / radio semantics (the ui `Chip` is a
- * plain button; onboarding choices need checked state for screen readers).
- */
-export function ChoiceChip({ label, checked, onPress, role }: ChoiceChipProps) {
-  return (
-    <Pressable
-      onPress={() => {
-        hapticSelection();
-        onPress();
-      }}
-      accessibilityRole={role}
-      accessibilityLabel={label}
-      accessibilityState={{ checked }}
-      style={({ pressed }) => [
-        styles.choice,
-        checked ? styles.choiceOn : styles.choiceOff,
-        pressed && !checked && styles.choicePressed,
-      ]}
-    >
-      {checked ? <Icon name="check" size="sm" color={colors.textInverse} /> : null}
-      <Text style={[styles.choiceText, checked && styles.choiceTextOn]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -193,6 +167,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...typography.label,
   },
+  required: {
+    color: colors.error,
+  },
   hint: {
     ...typography.bodySmall,
     color: colors.textSecondary,
@@ -214,32 +191,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-  },
-  choice: {
-    minHeight: touchTarget,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-  },
-  choiceOff: {
-    backgroundColor: colors.surfaceElevated,
-    borderColor: colors.border,
-  },
-  choiceOn: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
-  },
-  choicePressed: {
-    backgroundColor: colors.surfacePressed,
-  },
-  choiceText: {
-    ...typography.buttonSmall,
-    color: colors.textPrimary,
-  },
-  choiceTextOn: {
-    color: colors.textInverse,
   },
 });

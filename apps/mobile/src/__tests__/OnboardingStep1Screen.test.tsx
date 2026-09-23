@@ -13,6 +13,9 @@
  */
 
 import React from 'react';
+import { StyleSheet } from 'react-native';
+
+import { colors } from '../theme';
 import { render as rtlRender, fireEvent, waitFor } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -94,6 +97,27 @@ describe('OnboardingStep1Screen', () => {
       <OnboardingStep1Screen navigation={makeNavigation() as any} route={{} as any} />
     );
     getByText('Step 1 of 4');
+  });
+
+  it('reserves the header row on step 1 so the progress bar does not jump', () => {
+    const { getByTestId, queryByRole } = render(
+      <OnboardingStep1Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    getByTestId('onboarding-header');
+    expect(queryByRole('button', { name: 'Back' })).toBeNull();
+  });
+
+  it('marks Display name required with the shared red marker', () => {
+    const { getAllByText, getByLabelText, getByPlaceholderText } = render(
+      <OnboardingStep1Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    // Display name + Birth year + Suburb all use the same " *" marker.
+    const markers = getAllByText(' *');
+    expect(markers).toHaveLength(3);
+    for (const m of markers) expect(StyleSheet.flatten(m.props.style).color).toBe(colors.error);
+    getByLabelText('Display name');
+    // Single-line input inherits no lineHeight (clips descenders on Android).
+    expect(StyleSheet.flatten(getByPlaceholderText("How you'll appear to others").props.style).lineHeight).toBeUndefined();
   });
 
   it('renders the profile title', () => {

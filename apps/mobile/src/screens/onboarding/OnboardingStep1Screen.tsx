@@ -87,7 +87,8 @@ export function OnboardingStep1Screen({ navigation }: Props) {
       withKeyboard
     >
       <TextField
-        label="Display name *"
+        label="Display name"
+        required
         helper={DISPLAY_NAME_HELPER_TEXT}
         value={displayName}
         onChangeText={(text) => setDisplayName(sanitizeDisplayName(text))}
@@ -110,9 +111,6 @@ export function OnboardingStep1Screen({ navigation }: Props) {
         importantForAutofill="no"
         // Explicit label so iOS heuristics don't weight field position.
         accessibilityLabel="Display name"
-        // The ui TextField applies bodyLarge's lineHeight, which clips
-        // descenders in a single-line TextInput on Android — unset it.
-        inputStyle={styles.singleLineInput}
       />
 
       <View style={styles.field}>
@@ -151,8 +149,5 @@ const styles = StyleSheet.create({
   hint: {
     ...typography.bodySmall,
     color: colors.textSecondary,
-  },
-  singleLineInput: {
-    lineHeight: undefined,
   },
 });

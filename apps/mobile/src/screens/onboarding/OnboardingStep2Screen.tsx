@@ -113,25 +113,36 @@ export function OnboardingStep2Screen({ navigation }: Props) {
       withKeyboard
     >
       <OnboardingSection
-        title="Photos *"
+        title="Photos"
+        required
         hint={`${photos.length} of ${MAX_PHOTOS} selected · at least ${MIN_PHOTOS} required`}
       >
+        {/* Rows of two flex cells: exact to the gutter at any width
+            (percentage widths + a fixed gap never add up to 100%). */}
         <View style={styles.photoGrid}>
-          {slots.map((uri, index) => (
-            <PhotoSlot
-              key={`slot-${index}`}
-              uri={uri}
-              index={index}
-              canAdd={index === photos.length && photos.length < MAX_PHOTOS}
-              onAdd={pickPhoto}
-              onRemove={() => removePhoto(index)}
-            />
+          {[0, 2].map((rowStart) => (
+            <View key={`row-${rowStart}`} style={styles.photoRow}>
+              {slots.slice(rowStart, rowStart + 2).map((uri, i) => {
+                const index = rowStart + i;
+                return (
+                  <PhotoSlot
+                    key={`slot-${index}`}
+                    uri={uri}
+                    index={index}
+                    canAdd={index === photos.length && photos.length < MAX_PHOTOS}
+                    onAdd={pickPhoto}
+                    onRemove={() => removePhoto(index)}
+                  />
+                );
+              })}
+            </View>
           ))}
         </View>
       </OnboardingSection>
 
       <TextField
-        label="Bio *"
+        label="Bio"
+        required
         value={bio}
         onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
         placeholder="Tell people a bit about yourself and how you train..."
@@ -186,12 +197,14 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
 
 const styles = StyleSheet.create({
   photoGrid: {
+    gap: spacing.md,
+  },
+  photoRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.md,
   },
   slot: {
-    width: '47%',
+    flex: 1,
     aspectRatio: 3 / 4,
     borderRadius: radii.lg,
     overflow: 'hidden',

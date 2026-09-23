@@ -97,10 +97,10 @@ describe('OnboardingStep4Screen', () => {
     const { getByRole, getByText, getByPlaceholderText } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
-    expect(getByRole('checkbox', { name: 'Running' }).props.accessibilityState).toEqual({
+    expect(getByRole('checkbox', { name: 'Running' }).props.accessibilityState).toMatchObject({
       checked: true,
     });
-    expect(getByRole('checkbox', { name: 'Gym' }).props.accessibilityState).toEqual({
+    expect(getByRole('checkbox', { name: 'Gym' }).props.accessibilityState).toMatchObject({
       checked: false,
     });
     getByText('Beginner');

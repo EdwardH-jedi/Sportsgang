@@ -116,6 +116,13 @@ describe('LoginScreen', () => {
 
   // ── Rendering ──────────────────────────────────────────────────────────────
 
+  it('has a back affordance to the auth entry screen', () => {
+    const nav = makeNavigation();
+    const { getByRole } = render(<LoginScreen navigation={nav as any} route={{} as any} />);
+    fireEvent.press(getByRole('button', { name: 'Back' }));
+    expect(nav.navigate).toHaveBeenCalledWith('AuthEntry');
+  });
+
   it('renders the title and form labels', () => {
     const { getByText, getAllByText } = render(
       <LoginScreen navigation={makeNavigation() as any} route={{} as any} />

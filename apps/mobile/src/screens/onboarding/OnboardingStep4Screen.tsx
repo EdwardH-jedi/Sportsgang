@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { FitnessLevel, PreferredTime, Sport, UpsertSportProfileRequest } from '@protin/shared-types';
 
-import { Card, Icon, TextField, sportIconName } from '../../components/ui';
+import { Card, Chip, Icon, TextField, sportIconName } from '../../components/ui';
 import { DEFAULT_SPORT, SPORTS, getSport } from '../../lib/sports';
 import { useProfileStore } from '../../stores/profile';
 import { colors, spacing, typography } from '../../theme';
-import { ChoiceChip, ChoiceRow, OnboardingFrame, OnboardingSection } from './OnboardingFrame';
+import { ChoiceRow, OnboardingFrame, OnboardingSection } from './OnboardingFrame';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -128,11 +128,11 @@ export function OnboardingStep4Screen({ navigation }: Props) {
       <OnboardingSection title="Which sports are you into?">
         <ChoiceRow>
           {SPORTS.map(({ id: value, label }) => (
-            <ChoiceChip
+            <Chip
               key={value}
               role="checkbox"
               label={label}
-              checked={selected.has(value)}
+              selected={selected.has(value)}
               onPress={() => toggleSport(value)}
             />
           ))}
@@ -194,11 +194,11 @@ function SportFields({
       <OnboardingSection title="Level">
         <ChoiceRow>
           {LEVELS.map((lv) => (
-            <ChoiceChip
+            <Chip
               key={lv.value}
               role="radio"
               label={lv.label}
-              checked={state.level === lv.value}
+              selected={state.level === lv.value}
               onPress={() => onLevelChange(lv.value)}
             />
           ))}
@@ -208,11 +208,11 @@ function SportFields({
       <OnboardingSection title="Preferred times">
         <ChoiceRow>
           {TIME_SLOTS.map(({ value, label }) => (
-            <ChoiceChip
+            <Chip
               key={value}
               role="checkbox"
               label={label}
-              checked={state.times.includes(value)}
+              selected={state.times.includes(value)}
               onPress={() => onTimeToggle(value)}
             />
           ))}
@@ -227,7 +227,6 @@ function SportFields({
           onChangeText={onVenueChange}
           placeholder={venuePlaceholder}
           autoCapitalize="words"
-          inputStyle={styles.singleLineInput}
         />
       ) : null}
     </View>
@@ -246,10 +245,5 @@ const styles = StyleSheet.create({
   },
   sportFields: {
     gap: spacing.lg,
-  },
-  // The ui TextField's bodyLarge lineHeight clips descenders in
-  // single-line inputs on Android.
-  singleLineInput: {
-    lineHeight: undefined,
   },
 });

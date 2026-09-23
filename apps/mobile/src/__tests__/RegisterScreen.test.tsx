@@ -58,6 +58,13 @@ describe('RegisterScreen', () => {
 
   // ── Rendering ──────────────────────────────────────────────────────────────
 
+  it('has a back affordance to the auth entry screen', () => {
+    const nav = makeNavigation();
+    const { getByRole } = render(<RegisterScreen navigation={nav as any} route={{} as any} />);
+    fireEvent.press(getByRole('button', { name: 'Back' }));
+    expect(nav.navigate).toHaveBeenCalledWith('AuthEntry');
+  });
+
   it('renders the title and form labels', () => {
     const { getByText } = render(
       <RegisterScreen navigation={makeNavigation() as any} route={{} as any} />

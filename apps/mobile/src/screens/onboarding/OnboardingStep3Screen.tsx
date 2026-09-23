@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AgeRangeSelector } from '../../components/AgeRangeSelector';
-import { Button, Card, Icon } from '../../components/ui';
+import { Button, Card, Chip, Icon } from '../../components/ui';
 import { useHomeLocation } from '../../hooks/useHomeLocation';
 import { useProfileStore } from '../../stores/profile';
 import { colors, spacing, typography } from '../../theme';
-import { ChoiceChip, ChoiceRow, OnboardingFrame, OnboardingSection } from './OnboardingFrame';
+import { ChoiceRow, OnboardingFrame, OnboardingSection } from './OnboardingFrame';
 import type { GenderPreference } from '@protin/shared-types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
@@ -101,11 +101,11 @@ export function OnboardingStep3Screen({ navigation }: Props) {
       <OnboardingSection title="I'm open to training with">
         <ChoiceRow>
           {OPEN_TO_OPTIONS.map((opt) => (
-            <ChoiceChip
+            <Chip
               key={opt.value}
               role="checkbox"
               label={opt.label}
-              checked={openTo.includes(opt.value)}
+              selected={openTo.includes(opt.value)}
               onPress={() => toggleOpenTo(opt.value)}
             />
           ))}
@@ -125,11 +125,11 @@ export function OnboardingStep3Screen({ navigation }: Props) {
       <OnboardingSection title="Max distance">
         <ChoiceRow>
           {DISTANCE_OPTIONS.map((km) => (
-            <ChoiceChip
+            <Chip
               key={km}
               role="radio"
               label={`${km} km`}
-              checked={maxDistance === km}
+              selected={maxDistance === km}
               onPress={() => setMaxDistance(km)}
             />
           ))}

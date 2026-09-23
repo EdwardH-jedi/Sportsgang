@@ -4,14 +4,14 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { FormErrorBanner } from '../../components/FormErrorBanner';
 import { Select } from '../../components/Select';
-import { Button, Card, Icon, IconButton, Screen, TextField } from '../../components/ui';
+import { Button, Card, Header, Icon, IconButton, Screen, TextField } from '../../components/ui';
 import { SYDNEY_SUBURB_OPTIONS } from '../../data/sydneySuburbs';
 import {
   DISPLAY_NAME_HELPER_TEXT,
   sanitizeDisplayName,
 } from '../../lib/displayName';
 import { useProfileStore } from '../../stores/profile';
-import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
+import { colors, layout, radii, spacing, typography } from '../../theme';
 import type { EditProfileScreenProps } from '../../navigation/types';
 
 const BIO_MAX = 400;
@@ -126,21 +126,20 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
 
   return (
     <Screen padded={false} withKeyboard>
-      <View style={styles.header}>
-        <Button
-          label="Cancel"
-          variant="ghost"
-          size="sm"
-          onPress={() => navigation.goBack()}
-          disabled={isSaving}
-          accessibilityLabel="Cancel"
-          style={styles.headerSide}
-        />
-        <Text style={styles.title} accessibilityRole="header">
-          Edit profile
-        </Text>
-        <View style={styles.headerSide} />
-      </View>
+      <Header
+        title="Edit profile"
+        leading={
+          <Button
+            label="Cancel"
+            variant="ghost"
+            size="sm"
+            onPress={() => navigation.goBack()}
+            disabled={isSaving}
+            accessibilityLabel="Cancel"
+          />
+        }
+        style={styles.header}
+      />
 
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -173,7 +172,6 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
               importantForAutofill="no"
               // A lineHeight on a single-line TextInput clips descenders
               // and "@" on Android; clear the one TextField spreads in.
-              inputStyle={singleLineInput}
             />
 
             <Select
@@ -339,25 +337,12 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
   return <View style={[styles.slot, styles.slotEmpty]} />;
 }
 
-const singleLineInput = { lineHeight: undefined };
 const BIO_MIN_HEIGHT = spacing.xxxl * 2;
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: layout.headerHeight,
-    paddingHorizontal: spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
-  },
-  headerSide: {
-    minWidth: touchTarget * 2,
-  },
-  title: {
-    ...typography.bodyStrong,
-    fontSize: typography.bodyLarge.fontSize,
   },
   scroll: {
     padding: layout.screenPadding,

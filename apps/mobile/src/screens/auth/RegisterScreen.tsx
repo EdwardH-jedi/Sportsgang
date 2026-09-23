@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 
 import { FormErrorBanner } from '../../components/FormErrorBanner';
-import { Button, Screen, TextField } from '../../components/ui';
+import { Button, Header, Screen, TextField } from '../../components/ui';
 import { openLegal, PRIVACY_URL, TERMS_URL } from '../../lib/legal';
 import { useAuthStore } from '../../stores/auth';
 import { colors, face, spacing, typography } from '../../theme';
@@ -50,7 +50,12 @@ export function RegisterScreen({ navigation }: Props) {
   }
 
   return (
-    <Screen padded scroll withKeyboard>
+    <Screen
+      padded
+      scroll
+      withKeyboard
+      header={<Header onBack={() => navigation.navigate('AuthEntry')} backLabel="Back" />}
+    >
       <AuthHeading eyebrow="Join the gang" title={'Create your\naccount'} />
 
       <View style={styles.form}>
@@ -65,7 +70,6 @@ export function RegisterScreen({ navigation }: Props) {
           keyboardType="email-address"
           textContentType="emailAddress"
           autoComplete="email"
-          inputStyle={singleLineInput}
         />
 
         <TextField
@@ -94,7 +98,6 @@ export function RegisterScreen({ navigation }: Props) {
           textContentType="none"
           autoComplete="off"
           importantForAutofill="no"
-          inputStyle={singleLineInput}
         />
 
         <FormErrorBanner message={error} />
@@ -149,7 +152,6 @@ export function RegisterScreen({ navigation }: Props) {
  * On a single-line TextInput that lineHeight clips descenders (g, y, p) on
  * Android, so auth fields clear it.
  */
-const singleLineInput = { lineHeight: undefined };
 
 const styles = StyleSheet.create({
   form: {

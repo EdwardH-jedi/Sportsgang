@@ -14,6 +14,7 @@
  */
 
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { Alert } from 'react-native';
 import { render as rtlRender, fireEvent, waitFor } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -127,6 +128,15 @@ describe('OnboardingStep2Screen', () => {
     // Slots 2–4 are disabled until the prior slot is filled, so they render
     // but are not pressable add-buttons yet.
     getByLabelText('Bio');
+  });
+
+  it('lays photos out as two equal flex cells per row (no percentage gap maths)', () => {
+    const { getByLabelText, getAllByText } = render(
+      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    expect(StyleSheet.flatten(getByLabelText('Add photo 1').props.style).flex).toBe(1);
+    // Photos + Bio carry the red required marker.
+    expect(getAllByText(' *')).toHaveLength(2);
   });
 
   it('shows selection count hint', () => {
