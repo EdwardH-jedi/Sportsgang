@@ -519,3 +519,48 @@ async def test_oauth_callback_stores_encrypted_tokens(client: AsyncClient) -> No
         ).one()
         assert raw_row[0] != raw_access
         assert raw_row[1] != raw_refresh
+
+
+# ---------------------------------------------------------------------------
+# Calendar event labelling
+# ---------------------------------------------------------------------------
+
+
+def _fake_booking(sport: str):
+    from types import SimpleNamespace
+
+    starts = datetime(2026, 9, 1, 7, 0, tzinfo=timezone.utc)
+    return SimpleNamespace(
+        sport=sport,
+        location="Centennial Park",
+        notes=None,
+        starts_at=starts,
+        ends_at=starts + timedelta(hours=1),
+    )
+
+
+@pytest.mark.parametrize(
+    ("sport", "label"),
+    [
+        ("gym", "Gym"),
+        ("golf", "Golf"),
+        ("tennis", "Tennis"),
+        ("running", "Running"),
+        ("basketball", "Basketball"),
+    ],
+)
+def test_booking_event_summary_uses_the_booking_sport(sport: str, label: str) -> None:
+    """Regression: every non-gym sport used to be labelled "Golf"."""
+    from app.services.google_calendar import _booking_to_event
+
+    body = _booking_to_event(_fake_booking(sport), "Sam")
+    assert body["summary"] == f"{label} session with Sam"
+
+
+def test_sport_label_falls_back_for_unknown_sport() -> None:
+    from app.services.google_calendar import sport_label
+
+    assert sport_label("ultimate_frisbee") == "Ultimate Frisbee"
+    assert sport_label("  Running ") == "Running"
+    assert sport_label("") == "Sport"
+    assert sport_label(None) == "Sport"
