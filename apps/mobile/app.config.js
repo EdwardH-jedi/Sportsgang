@@ -171,9 +171,9 @@ module.exports = () => {
       version: "1.0.0",
       orientation: "portrait",
       userInterfaceStyle: "light",
-      // Placeholder brand icon (lime square + dark "SG"). Final App Store
-      // artwork must replace `assets/icon.png` before public submission;
-      // documented in docs/archive/deployment/APPLE_TESTFLIGHT_PREP.md §4.6.
+      // SportsGang app icon (lime square with a dark "SG" mark). This is the
+      // icon shipped with the v1.0 App Store build; replace `assets/icon.png`
+      // to change the store icon in a future release.
       icon: "./assets/icon.png",
       splash: {
         // Matches `SplashScreen.tsx`'s lime background (theme `brand`).
