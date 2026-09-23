@@ -82,14 +82,6 @@ apps/mobile/**/web-build
 apps/mobile/.pytest_cache/**/*
 
 
-# --- apps/web build outputs ----------------------------------------------
-apps/web/**/node_modules
-apps/web/**/dist
-apps/web/**/.vite
-apps/web/**/*.local
-apps/web/**/.DS_Store
-
-
 # --- Fly metadata --------------------------------------------------------
 # fly.toml is read by flyctl, not by the image; keep it out of the
 # build context so it can't leak into a layer.

@@ -41,8 +41,8 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application source explicitly (NOT `COPY . .`). Each source under
 # `apps/api/` lands directly at WORKDIR so `uvicorn app.main:app` and
 # `python worker.py` resolve from /app at runtime, and the image carries
-# only the API tree — not the entire monorepo (apps/mobile, apps/web,
-# docs, infra, screenshots, etc.).
+# only the API tree — not the entire monorepo (apps/mobile, docs,
+# infra, screenshots, etc.).
 COPY apps/api/app ./app
 COPY apps/api/worker.py ./worker.py
 COPY apps/api/alembic.ini ./alembic.ini
