@@ -694,3 +694,87 @@ async def test_unrelated_user_cannot_mutate_honor_state_via_public_api(
     assert loser_after.streak == loser_streak_before
     assert title_after.current_holder_user_id == title_holder_before
     assert history_count_after == history_count_before
+
+
+# ---------------------------------------------------------------------------
+# Area normalisation — mobile sends lower-case suburb keys, legacy / seed
+# rows are Title Case. Writes normalise, reads compare case-insensitively.
+# ---------------------------------------------------------------------------
+
+
+def test_normalize_area_trims_collapses_and_lowercases() -> None:
+    from app.services.honor_system import normalize_area
+
+    assert normalize_area("  Surry   Hills ") == "surry hills"
+    assert normalize_area("surry hills") == "surry hills"
+    assert normalize_area("NEWTOWN") == "newtown"
+
+
+async def test_legacy_title_case_rows_match_lowercase_area_queries(
+    client: AsyncClient,
+) -> None:
+    await _wipe_state()
+    token, uid = await _register(client, "hs_area_legacy@example.com")
+    _, uid_other = await _register(client, "hs_area_legacy_other@example.com")
+
+    # Seed rows exactly as a v1.0 client / the seed script wrote them.
+    async with _TestSession() as db:
+        db.add(RankProfile(user_id=UUID(uid), sport="running", area="Surry Hills", rating=1234))
+        db.add(
+            HonorTitle(
+                sport="running",
+                area="Surry Hills",
+                title_name="Surry Hills Running Champion",
+                current_holder_user_id=UUID(uid),
+                active=True,
+            )
+        )
+        await db.commit()
+
+    for area in ("surry hills", "Surry Hills", "  SURRY   hills "):
+        me = await client.get("/rankings/me", params={"sport": "running", "area": area}, headers=_auth(token))
+        assert me.status_code == 200, me.text
+        assert me.json()["rating"] == 1234
+        assert me.json()["id"] is not None
+
+        board = await client.get("/rankings", params={"sport": "running", "area": area}, headers=_auth(token))
+        assert board.status_code == 200, board.text
+        assert [row["user_id"] for row in board.json()["items"]] == [uid]
+
+        honor = await client.get("/honors", params={"sport": "running", "area": area}, headers=_auth(token))
+        assert honor.status_code == 200, honor.text
+        assert honor.json() is not None
+        assert honor.json()["current_holder_user_id"] == uid
+
+    # A result recorded with the lower-case key updates the legacy rows
+    # instead of creating case-variant duplicates.
+    await _record_result(winner_user_id=uid_other, loser_user_id=uid, sport="running", area="surry hills")
+    async with _TestSession() as db:
+        profiles = list((await db.execute(select(RankProfile).where(RankProfile.user_id == UUID(uid)))).scalars().all())
+        titles = list((await db.execute(select(HonorTitle).where(HonorTitle.sport == "running"))).scalars().all())
+        other = (await db.execute(select(RankProfile).where(RankProfile.user_id == UUID(uid_other)))).scalar_one()
+    assert len(profiles) == 1
+    assert profiles[0].area == "Surry Hills"
+    assert profiles[0].losses == 1
+    assert len(titles) == 1
+    assert titles[0].current_holder_user_id == UUID(uid_other)
+    # New rows are stored under the normalised key.
+    assert other.area == "surry hills"
+
+
+async def test_new_rows_are_written_with_normalised_area(client: AsyncClient) -> None:
+    await _wipe_state()
+    _, uid_a = await _register(client, "hs_area_new_a@example.com")
+    _, uid_b = await _register(client, "hs_area_new_b@example.com")
+
+    await _record_result(winner_user_id=uid_a, loser_user_id=uid_b, sport="tennis", area="  Bondi   Beach ")
+    await _record_result(winner_user_id=uid_b, loser_user_id=uid_a, sport="tennis", area="bondi beach")
+
+    async with _TestSession() as db:
+        areas = {r.area for r in (await db.execute(select(RankProfile))).scalars().all()}
+        titles = list((await db.execute(select(HonorTitle))).scalars().all())
+    assert areas == {"bondi beach"}
+    assert len(titles) == 1
+    assert titles[0].area == "bondi beach"
+    assert titles[0].title_name == "Bondi Beach Tennis Champion"
+    assert titles[0].current_holder_user_id == UUID(uid_b)

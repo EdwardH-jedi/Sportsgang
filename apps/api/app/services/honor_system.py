@@ -49,6 +49,30 @@ from app.schemas.honor_system import (
 )
 
 # ---------------------------------------------------------------------------
+# Area keys
+# ---------------------------------------------------------------------------
+
+
+def normalize_area(area: str) -> str:
+    """
+    Canonical storage key for an honor ``area``: trimmed, internal
+    whitespace collapsed, lower-cased. ``"  Surry   Hills "`` and
+    ``"surry hills"`` are the same area.
+
+    New rows are written with this key. Rows written before
+    normalisation existed may still hold Title Case (seed data, v1.0
+    clients), so every read compares ``lower(area)`` against the key
+    instead of the raw column — no data-rewriting migration needed.
+    """
+    return " ".join(area.split()).lower()
+
+
+def _area_matches(column, area: str):
+    """Case-insensitive SQL predicate for an area column."""
+    return func.lower(column) == normalize_area(area)
+
+
+# ---------------------------------------------------------------------------
 # RankProfile read / list
 # ---------------------------------------------------------------------------
 
@@ -58,20 +82,28 @@ async def get_or_create_rank_profile(db: AsyncSession, user_id: UUID, sport: str
     Return the existing (user, sport, area) profile or create one at the
     baseline. The caller is responsible for committing; this function
     flushes so the row is queryable in the same transaction.
+
+    Lookup is case-insensitive so a legacy Title Case row is reused
+    rather than shadowed by a new lower-case duplicate; new rows are
+    stored under :func:`normalize_area`.
     """
-    stmt = select(RankProfile).where(
-        RankProfile.user_id == user_id,
-        RankProfile.sport == sport,
-        RankProfile.area == area,
+    stmt = (
+        select(RankProfile)
+        .where(
+            RankProfile.user_id == user_id,
+            RankProfile.sport == sport,
+            _area_matches(RankProfile.area, area),
+        )
+        .order_by(RankProfile.created_at.asc())
     )
-    profile = (await db.execute(stmt)).scalar_one_or_none()
+    profile = (await db.execute(stmt)).scalars().first()
     if profile is not None:
         return profile
 
     profile = RankProfile(
         user_id=user_id,
         sport=sport,
-        area=area,
+        area=normalize_area(area),
         rating=DEFAULT_RATING,
         wins=0,
         losses=0,
@@ -94,12 +126,16 @@ async def get_my_rank_profile(db: AsyncSession, user_id: UUID, sport: str, area:
     :func:`record_match_result_for_honor`, called from a future
     verified-result hook.
     """
-    stmt = select(RankProfile).where(
-        RankProfile.user_id == user_id,
-        RankProfile.sport == sport,
-        RankProfile.area == area,
+    stmt = (
+        select(RankProfile)
+        .where(
+            RankProfile.user_id == user_id,
+            RankProfile.sport == sport,
+            _area_matches(RankProfile.area, area),
+        )
+        .order_by(RankProfile.created_at.asc())
     )
-    profile = (await db.execute(stmt)).scalar_one_or_none()
+    profile = (await db.execute(stmt)).scalars().first()
     if profile is not None:
         return RankProfileRead.model_validate(profile)
 
@@ -131,7 +167,7 @@ async def list_rankings(
     """
     base = (
         select(RankProfile)
-        .where(RankProfile.sport == sport, RankProfile.area == area)
+        .where(RankProfile.sport == sport, _area_matches(RankProfile.area, area))
         .order_by(
             RankProfile.rating.desc(),
             RankProfile.wins.desc(),
@@ -161,20 +197,25 @@ async def list_rankings(
 
 def _default_title_name(sport: str, area: str) -> str:
     """Generate the canonical title name. e.g. ('tennis', 'annandale') ->
-    'Annandale Tennis Champion'."""
-    return f"{area.title()} {sport.title()} Champion"
+    'Annandale Tennis Champion'. Built from the normalised area so
+    ``"surry hills"`` and ``"Surry  Hills"`` resolve to the same title."""
+    return f"{normalize_area(area).title()} {sport.title()} Champion"
 
 
 async def get_or_create_honor_title(db: AsyncSession, sport: str, area: str, title_name: str) -> HonorTitle:
-    stmt = select(HonorTitle).where(
-        HonorTitle.sport == sport,
-        HonorTitle.area == area,
-        HonorTitle.title_name == title_name,
+    stmt = (
+        select(HonorTitle)
+        .where(
+            HonorTitle.sport == sport,
+            _area_matches(HonorTitle.area, area),
+            HonorTitle.title_name == title_name,
+        )
+        .order_by(HonorTitle.created_at.asc())
     )
-    title = (await db.execute(stmt)).scalar_one_or_none()
+    title = (await db.execute(stmt)).scalars().first()
     if title is not None:
         return title
-    title = HonorTitle(sport=sport, area=area, title_name=title_name, active=True)
+    title = HonorTitle(sport=sport, area=normalize_area(area), title_name=title_name, active=True)
     db.add(title)
     await db.flush()
     await db.refresh(title)
@@ -190,12 +231,16 @@ async def get_current_honor(db: AsyncSession, sport: str, area: str) -> HonorTit
     Read-only: we deliberately do NOT auto-create here so the response
     accurately reflects the "no title yet" state for fresh areas.
     """
-    stmt = select(HonorTitle).where(
-        HonorTitle.sport == sport,
-        HonorTitle.area == area,
-        HonorTitle.title_name == _default_title_name(sport, area),
+    stmt = (
+        select(HonorTitle)
+        .where(
+            HonorTitle.sport == sport,
+            _area_matches(HonorTitle.area, area),
+            HonorTitle.title_name == _default_title_name(sport, area),
+        )
+        .order_by(HonorTitle.created_at.asc())
     )
-    title = (await db.execute(stmt)).scalar_one_or_none()
+    title = (await db.execute(stmt)).scalars().first()
     if title is None:
         return None
     return HonorTitleRead.model_validate(title)
@@ -289,12 +334,16 @@ async def record_match_result_for_honor(
 
     # Title + history -----------------------------------------------------
     canonical_name = _default_title_name(sport, area)
-    title_stmt = select(HonorTitle).where(
-        HonorTitle.sport == sport,
-        HonorTitle.area == area,
-        HonorTitle.title_name == canonical_name,
+    title_stmt = (
+        select(HonorTitle)
+        .where(
+            HonorTitle.sport == sport,
+            _area_matches(HonorTitle.area, area),
+            HonorTitle.title_name == canonical_name,
+        )
+        .order_by(HonorTitle.created_at.asc())
     )
-    title = (await db.execute(title_stmt)).scalar_one_or_none()
+    title = (await db.execute(title_stmt)).scalars().first()
 
     transferred = False
     history_row: HonorHistory | None = None
@@ -303,7 +352,7 @@ async def record_match_result_for_honor(
         # First match ever for this (sport, area) — inaugurate the title.
         title = HonorTitle(
             sport=sport,
-            area=area,
+            area=normalize_area(area),
             title_name=canonical_name,
             current_holder_user_id=winner_user_id,
             active=True,
