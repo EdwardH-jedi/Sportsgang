@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { api, BASE_URL } from '../lib/api';
+import { type Coords, roundCoord } from '../lib/location';
 import { DEFAULT_SPORT, type Sport } from '../lib/sports';
 
 // Discovery card photos are served as relative paths (`/media/...`) by the
@@ -28,6 +29,8 @@ export interface PartnerCard {
     gymName?: string;
     golfClub?: string;
   }[];
+  /** Coarse distance (km) — only when the feed was requested with coords. */
+  distanceKm?: number | null;
 }
 
 interface ActionResponse {
@@ -50,18 +53,42 @@ export interface UseDiscoveryReturn {
 
 const PAGE_LIMIT = 20;
 
-export function useDiscovery(): UseDiscoveryReturn {
+export interface UseDiscoveryArgs {
+  /**
+   * Geo mode: with coords the feed only contains runners within
+   * `radiusKm` of this point, nearest first, each with `distanceKm`.
+   * Coordinates are rounded to 2 dp before they are sent.
+   */
+  coords?: Coords | null;
+  /** 1–50 km (API default 10). Only applies with coords. */
+  radiusKm?: number;
+}
+
+export function discoveryPath(sport: Sport, coords?: Coords | null, radiusKm?: number): string {
+  let path = `/discovery?sport=${sport}&limit=${PAGE_LIMIT}`;
+  if (coords) {
+    path += `&lat=${roundCoord(coords.lat)}&lng=${roundCoord(coords.lng)}`;
+    if (radiusKm !== undefined) path += `&radius_km=${radiusKm}`;
+  }
+  return path;
+}
+
+export function useDiscovery({ coords = null, radiusKm }: UseDiscoveryArgs = {}): UseDiscoveryReturn {
   const [partners, setPartners] = useState<PartnerCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sport, setSportState] = useState<Sport>(DEFAULT_SPORT);
 
+  const lat = coords?.lat;
+  const lng = coords?.lng;
+
   async function fetchPartners(selectedSport: Sport) {
     setIsLoading(true);
     setError(null);
     try {
+      const geo = lat !== undefined && lng !== undefined ? { lat, lng } : null;
       const data = await api.get<{ items: PartnerCard[] }>(
-        `/discovery?sport=${selectedSport}&limit=${PAGE_LIMIT}`
+        discoveryPath(selectedSport, geo, radiusKm)
       );
       if (!data || !Array.isArray((data as { items?: unknown }).items)) {
         throw new Error(
@@ -93,7 +120,9 @@ export function useDiscovery(): UseDiscoveryReturn {
 
   useEffect(() => {
     fetchPartners(sport);
-  }, [sport]);
+    // fetchPartners reads lat/lng/radiusKm from this render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sport, lat, lng, radiusKm]);
 
   function setSport(s: Sport) {
     setSportState(s);

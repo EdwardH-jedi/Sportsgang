@@ -7,6 +7,7 @@
  */
 
 import { api } from './api';
+import { roundCoord } from './location';
 import { getSport, sportLabel } from './sports';
 import type {
   AttendanceEntry,
@@ -18,9 +19,12 @@ import type {
   EventMode,
   HostAttendanceUpdateRequest,
   SelfAttendanceRequest,
+  UpdateEventRequest,
 } from '@protin/shared-types';
 
 export type {
+  UpdateEventRequest,
+  GroupRunFields,
   CreateEventRequest,
   EventDetail,
   EventListResponse,
@@ -44,15 +48,33 @@ export interface ListEventsParams {
   mode?: EventMode;
   limit?: number;
   offset?: number;
+  /** Only runs of this crew. */
+  crewId?: string;
+  /** Meeting-point geo filter; send both or neither (rounded to 2 dp). */
+  lat?: number;
+  lng?: number;
+  radiusKm?: number;
+  /** ISO-8601: starts_at >= from. */
+  from?: string;
+  /** ISO-8601: starts_at < to. */
+  to?: string;
 }
 
-function buildQuery(params: ListEventsParams): string {
+export function buildEventQuery(params: ListEventsParams): string {
   const qs = new URLSearchParams();
   if (params.mine) qs.set('mine', 'true');
   if (params.sport) qs.set('sport', params.sport);
   if (params.mode) qs.set('mode', params.mode);
   if (params.limit !== undefined) qs.set('limit', String(params.limit));
   if (params.offset !== undefined) qs.set('offset', String(params.offset));
+  if (params.crewId) qs.set('crew_id', params.crewId);
+  if (params.lat !== undefined && params.lng !== undefined) {
+    qs.set('lat', String(roundCoord(params.lat)));
+    qs.set('lng', String(roundCoord(params.lng)));
+    if (params.radiusKm !== undefined) qs.set('radius_km', String(params.radiusKm));
+  }
+  if (params.from) qs.set('from', params.from);
+  if (params.to) qs.set('to', params.to);
   const out = qs.toString();
   return out ? `?${out}` : '';
 }
@@ -60,7 +82,7 @@ function buildQuery(params: ListEventsParams): string {
 export async function listEvents(
   params: ListEventsParams = {}
 ): Promise<EventListResponse> {
-  return api.get<EventListResponse>(`/events${buildQuery(params)}`);
+  return api.get<EventListResponse>(`/events${buildEventQuery(params)}`);
 }
 
 export async function getEvent(eventId: string): Promise<EventDetail> {
@@ -69,6 +91,17 @@ export async function getEvent(eventId: string): Promise<EventDetail> {
 
 export async function createEvent(body: CreateEventRequest): Promise<EventDetail> {
   return api.post<EventDetail>('/events', body);
+}
+
+/**
+ * Host-only partial update (PATCH /events/{id}); open/full events only.
+ * Sport, mode and visibility are fixed at creation.
+ */
+export async function updateEvent(
+  eventId: string,
+  body: UpdateEventRequest
+): Promise<EventDetail> {
+  return api.patch<EventDetail>(`/events/${eventId}`, body);
 }
 
 export async function joinEvent(eventId: string): Promise<EventDetail> {
@@ -177,6 +210,16 @@ export const SPORT_CAPACITY_DEFAULTS: Record<string, number> = {
   badminton: 4,
   tennis: 2,
 };
+
+/** Group runs are events with sport "running". */
+export function isRunningSport(sport: string | null | undefined): boolean {
+  return sport === 'running';
+}
+
+/** User-facing noun: "run" for running, "game" for everything else. */
+export function eventNoun(sport: string | null | undefined): 'run' | 'game' {
+  return isRunningSport(sport) ? 'run' : 'game';
+}
 
 export function sportLabelForBattle(sport: string): string {
   const found = BATTLE_SPORTS.find((s) => s.value === sport);

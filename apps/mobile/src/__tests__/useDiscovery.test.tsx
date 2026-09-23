@@ -198,3 +198,37 @@ describe('jest-native matchers are loaded', () => {
     expect(probe).toHaveTextContent('hello world');
   });
 });
+
+// ─── Geo mode (run-first Runners) ─────────────────────────────────────────────
+
+describe('useDiscovery geo mode', () => {
+  it('sends lat/lng rounded to 2 dp plus radius_km when coords are given', async () => {
+    mockGet.mockResolvedValue({ items: [{ ...partnerA, distanceKm: 2 }] });
+
+    const { result } = renderHook(() =>
+      useDiscovery({ coords: { lat: -33.87654, lng: 151.20712 }, radiusKm: 15 })
+    );
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/discovery?sport=running&limit=20&lat=-33.88&lng=151.21&radius_km=15'
+    );
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.partners[0].distanceKm).toBe(2);
+  });
+
+  it('refetches when the coordinates change', async () => {
+    mockGet.mockResolvedValue({ items: [] });
+    const { rerender } = renderHook(
+      ({ coords }: { coords: { lat: number; lng: number } | null }) => useDiscovery({ coords }),
+      { initialProps: { coords: null as { lat: number; lng: number } | null } }
+    );
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
+    expect(mockGet).toHaveBeenLastCalledWith('/discovery?sport=running&limit=20');
+
+    rerender({ coords: { lat: -33.9, lng: 151.25 } });
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+    expect(mockGet).toHaveBeenLastCalledWith(
+      '/discovery?sport=running&limit=20&lat=-33.9&lng=151.25'
+    );
+  });
+});
