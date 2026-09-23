@@ -26,16 +26,32 @@ jest.mock('../lib/api', () => ({
 // ─── Mock navigation ──────────────────────────────────────────────────────────
 
 const mockNavigate = jest.fn();
+// Re-focus hooks registered by the useFocusEffect stub. `mockEmitFocus()`
+// simulates the user coming back to the tab: it runs the LATEST callback the
+// screen passed, exactly like React Navigation does on a focus event.
+const mockFocusListeners: (() => void)[] = [];
+function mockEmitFocus() {
+  mockFocusListeners.forEach((fn) => fn());
+}
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({ navigate: mockNavigate }),
-  // The screen calls useFocusEffect to refetch on tab return; simplest stub
-  // is to fire the effect once on mount and treat it as a no-op cleanup.
+  // The screen calls useFocusEffect to refetch on tab return; the stub fires
+  // the effect once on mount and registers a listener for later re-focus.
   useFocusEffect: (cb: () => void | (() => void)) => {
     const React = require('react');
+    const latest = React.useRef(cb);
+    latest.current = cb;
     React.useEffect(() => {
+      const listener = () => {
+        latest.current();
+      };
+      mockFocusListeners.push(listener);
       const cleanup = cb();
-      return typeof cleanup === 'function' ? cleanup : undefined;
+      return () => {
+        mockFocusListeners.splice(mockFocusListeners.indexOf(listener), 1);
+        if (typeof cleanup === 'function') cleanup();
+      };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
   },
@@ -237,6 +253,47 @@ describe('MatchesScreen', () => {
     });
 
     await waitFor(() => getByText('Jordan Lee'));
+  });
+
+  // ── Refresh on tab focus ─────────────────────────────────────────────────
+
+  it('re-fetches silently when the tab regains focus (regression)', async () => {
+    // Regression: the focus callback read a stale `isLoading === true` from
+    // the first render, so returning to the tab never refreshed previews.
+    mockApiGet.mockResolvedValue({ items: [makeMatch()], total: 1, limit: 50, offset: 0 });
+    const { getByText, UNSAFE_queryAllByType } = render(<MatchesScreen />);
+    await waitFor(() => getByText('Jordan Lee'));
+    // First focus (mount) must not double the initial fetch.
+    expect(mockApiGet).toHaveBeenCalledTimes(1);
+
+    mockApiGet.mockResolvedValue({
+      items: [makeMatch({ partner: { userId: 'p9', displayName: 'Riley Chen', suburb: 'Glebe', sportProfiles: [] } })],
+      total: 1,
+      limit: 50,
+      offset: 0,
+    });
+    await act(async () => {
+      mockEmitFocus();
+    });
+
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
+    await waitFor(() => getByText('Riley Chen'));
+    // Silent: the list is never replaced by the full-screen spinner.
+    const { ActivityIndicator } = require('react-native');
+    expect(UNSAFE_queryAllByType(ActivityIndicator)).toHaveLength(0);
+  });
+
+  it('keeps the list on screen when a focus refresh fails', async () => {
+    mockApiGet.mockResolvedValueOnce({ items: [makeMatch()], total: 1, limit: 50, offset: 0 });
+    const { getByText, queryByText } = render(<MatchesScreen />);
+    await waitFor(() => getByText('Jordan Lee'));
+    mockApiGet.mockRejectedValueOnce(new Error('Offline'));
+    await act(async () => {
+      mockEmitFocus();
+    });
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
+    getByText('Jordan Lee');
+    expect(queryByText('Try again')).toBeNull();
   });
 
   // ── Last-message preview ─────────────────────────────────────────────────

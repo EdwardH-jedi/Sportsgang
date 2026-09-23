@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -101,6 +101,7 @@ export function MatchesScreen() {
     error,
     refresh: fetchMatches,
     pullToRefresh: handleRefresh,
+    revalidate,
   } = useMatches();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
 
@@ -108,15 +109,20 @@ export function MatchesScreen() {
   // returns from a chat. Cheaper than wiring a per-match WebSocket
   // subscription into the list, and matches the existing pull-to-refresh
   // contract — the preview is at most one round-trip stale.
+  //
+  // Skip the very first focus — useMatches already fires the initial fetch.
+  // A ref (not the `isLoading` flag) decides this: the memoised callback
+  // would otherwise capture the first render's `isLoading === true` forever
+  // and the focus refresh would never run.
+  const didMountRef = useRef(false);
   useFocusEffect(
     useCallback(() => {
-      // Skip the focus refetch on the very first mount — useMatches
-      // already fires the initial fetch.
-      if (!isLoading) {
-        void fetchMatches();
+      if (!didMountRef.current) {
+        didMountRef.current = true;
+        return;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchMatches])
+      void revalidate();
+    }, [revalidate])
   );
 
   return (

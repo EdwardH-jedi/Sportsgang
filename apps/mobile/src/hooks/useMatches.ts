@@ -11,15 +11,21 @@ interface UseMatchesResult {
   error: string | null;
   refresh: () => Promise<void>;
   pullToRefresh: () => Promise<void>;
+  /**
+   * Background re-fetch (tab focus): no spinner, list stays on screen.
+   * Failures are swallowed so a flaky focus refresh never replaces a
+   * rendered list with the error view.
+   */
+  revalidate: () => Promise<void>;
 }
 
 /**
  * The caller's matches (mutual likes) with last-message previews.
  *
- * Two refresh flavours mirror the Matches tab: `refresh` flips the
- * full-screen `isLoading` state (initial load, retry, tab focus) while
- * `pullToRefresh` only drives the RefreshControl spinner so the list stays
- * on screen.
+ * Three refresh flavours mirror the Matches tab: `refresh` flips the
+ * full-screen `isLoading` state (initial load, retry), `pullToRefresh` only
+ * drives the RefreshControl spinner, and `revalidate` (tab focus) re-fetches
+ * silently so the list stays on screen.
  */
 export function useMatches(): UseMatchesResult {
   const [items, setItems] = useState<MatchSummary[]>([]);
@@ -53,9 +59,27 @@ export function useMatches(): UseMatchesResult {
     }
   }, []);
 
+  const revalidate = useCallback(async () => {
+    try {
+      const data = await listMatches();
+      setItems(data.items);
+      setError(null);
+    } catch {
+      // Keep whatever is on screen; the user can pull to refresh.
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { items, isLoading, isRefreshing, error, refresh, pullToRefresh };
+  return {
+    items,
+    isLoading,
+    isRefreshing,
+    error,
+    refresh,
+    pullToRefresh,
+    revalidate,
+  };
 }

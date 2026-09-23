@@ -5,6 +5,7 @@
  *  - error surface on failure
  *  - refresh() re-fetches through the loading flag
  *  - pullToRefresh() re-fetches through the isRefreshing flag only
+ *  - revalidate() re-fetches silently and never surfaces an error
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react-native';
@@ -63,6 +64,27 @@ describe('useMatches', () => {
     expect(result.current.error).toBeNull();
     expect(result.current.items).toEqual([match]);
     expect(mockGet).toHaveBeenCalledTimes(2);
+  });
+
+  it('revalidate() re-fetches without loading flags and swallows failures', async () => {
+    mockGet.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
+    const { result } = renderHook(() => useMatches());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    mockGet.mockResolvedValueOnce({ items: [match], total: 1, limit: 50, offset: 0 });
+    await act(async () => {
+      await result.current.revalidate();
+    });
+    expect(result.current.items).toEqual([match]);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.isRefreshing).toBe(false);
+
+    mockGet.mockRejectedValueOnce(new Error('offline'));
+    await act(async () => {
+      await result.current.revalidate();
+    });
+    expect(result.current.items).toEqual([match]);
+    expect(result.current.error).toBeNull();
   });
 
   it('pullToRefresh() uses isRefreshing and leaves isLoading alone', async () => {
