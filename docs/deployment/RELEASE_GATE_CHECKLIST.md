@@ -293,7 +293,7 @@ unaffected by mobile state.
 | Messages from the partner render left / dark | mobile | operator-confirmed PASS | [x] PASS — 2026-05-06 |
 | Account switching no longer flips every message to "current user" rendering | mobile | operator-confirmed PASS | [x] PASS — 2026-05-06 |
 | Backend `messages.sender_id` matches the bearer used at POST time | api | Codex direct DB check confirming sender_id per token | [x] PASS — 2026-05-06 |
-| Deterministic Chris/Sarah local seed reset script exists | api | `apps/api/scripts/reset_chris_sarah_chat_seed.py` (commit `553adda`) | [x] PASS — 2026-05-06 |
+| Deterministic Chris/Sarah local seed reset script exists | api | local-only QA seed reset script (commit `553adda`; since removed from the repository) | [x] PASS — 2026-05-06 |
 
 Key commits backing this row: `77d92f8` (chat message ownership
 alignment), `c0a5dce` (hydrate auth user after login), `10fd959` (auth

@@ -25,19 +25,17 @@ web-build/
 resume/
 .DS_Store
 
-# Claude Code — per-developer local state (do not commit)
-.claude/settings.local.json
-.claude/scheduled_tasks.lock
-
-# Codex Stop-hook review reports (generated)
+# AI assistant / agent local files (kept on the developer machine, not tracked)
+.claude/
+.codex/
+AGENTS.md
+CLAUDE.md
+SKILLS.md
 reviews/
+runs/
 
-# Claude Code — run archive (per-developer local; README only is tracked)
-runs/*
-!runs/README.md
-
-# Claude Code — hook state (session → run-file mapping)
-.claude/tmp/
+# TypeScript incremental build info
+*.tsbuildinfo
 
 # Local development artifacts
 apps/api/.venv_win/

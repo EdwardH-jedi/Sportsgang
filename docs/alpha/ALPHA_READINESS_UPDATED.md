@@ -21,7 +21,7 @@ verified without a deploy / device.
 | 1.1 | Register + login with persistent JWT sessions | PASS | `apps/api/app/routers/auth.py` (register/login/me); `apps/mobile/src/stores/auth.ts` |
 | 1.2 | Profile setup (display name, age, suburb, bio) | PASS | `apps/api/app/routers/users.py` upserts `UserProfile`; `apps/mobile/src/screens/onboarding/*` |
 | 1.3 | Identity preferences (gender, sport prefs) | PASS | `users.py` `/me/identity-preferences` |
-| 1.4 | Sport profiles for **gym and golf** | FAIL — scope drift | `OnboardingStep3Screen.tsx` and `DiscoveryScreen.tsx` ship **gym/golf/tennis/running**. CLAUDE.md says gym+golf only. `ProfileScreen` still hard-codes `sport === 'gym' ? 'Gym' : 'Golf'` so tennis/running render incorrectly. Either narrow back or close the rendering gap before alpha. |
+| 1.4 | Sport profiles for **gym and golf** | FAIL — scope drift | `OnboardingStep3Screen.tsx` and `DiscoveryScreen.tsx` ship **gym/golf/tennis/running**. The original scope was gym+golf only. `ProfileScreen` still hard-codes `sport === 'gym' ? 'Gym' : 'Golf'` so tennis/running render incorrectly. Either narrow back or close the rendering gap before alpha. |
 | 1.5 | Discovery feed with Like / Pass / Save | PASS | `routers/discovery.py`, `useDiscovery.ts`, `DiscoveryScreen.tsx` |
 | 1.6 | Bidirectional block filter in discovery | UNKNOWN | Block endpoints exist (`routers/safety.py`); confirm `services/discovery.py` joins on both directions of `blocks` (not re-read this audit). |
 | 1.7 | Mutual match creation + match list | PASS | `routers/matches.py`, `MatchesScreen.tsx` |
@@ -81,11 +81,11 @@ distribution. **PASS** across the board.
 
 | ID | Severity | Issue |
 |---|---|---|
-| NEW-001 | Medium | Sport scope drift: tennis/running shipped in onboarding/discovery but `ProfileScreen.tsx` only labels gym/golf and CLAUDE.md restricts scope to gym+golf. Either gate behind a flag or finish the UI before alpha. |
+| NEW-001 | Medium | Sport scope drift: tennis/running shipped in onboarding/discovery but `ProfileScreen.tsx` only labels gym/golf and the original scope was gym+golf only. Either gate behind a flag or finish the UI before alpha. |
 | NEW-002 | Low | `KNOWN_ISSUES.md` NB-004 ("Chat does not auto-refresh") is now incorrect — WebSocket is wired. Update or delete. |
 | NEW-003 | Low | `ALPHA_READINESS.md` "Wave 7 improvements summary" is frozen at Wave 7; Waves 8–17 changes (WebSocket, matching algorithm, CI, ESLint, nginx HTTP-only) are unrecorded. |
-| NEW-004 | Low (pre-prod) | `models/google_calendar.py` stores tokens in plaintext (per `PROJECT_STATUS.md`); acceptable for alpha but must be encrypted before production. |
-| NEW-005 | Low | `apps/mobile/src/lib/api.ts` debug logs noted in `PROJECT_STATUS.md`; verify removed before broader alpha distribution. |
+| NEW-004 | Low (pre-prod) | `models/google_calendar.py` stores tokens in plaintext; acceptable for alpha but must be encrypted before production. |
+| NEW-005 | Low | `apps/mobile/src/lib/api.ts` debug logs; verify removed before broader alpha distribution. |
 
 ## 8. Go / no-go summary
 

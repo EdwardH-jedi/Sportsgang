@@ -78,5 +78,5 @@ Resolve conflicts locally before the PR is opened. Do not merge `main` into your
 Hotfixes follow the same flow (`fix/` branch → PR → merge to `main`). There is no separate hotfix branch. If staging is broken and you need to move fast:
 
 1. Cut a `fix/` branch from `main`.
-2. Open a PR, get at minimum a quick Claude Code Review pass (see `CODE_REVIEW.md`).
+2. Open a PR, get at minimum a quick Claude Code Review pass.
 3. Merge and deploy immediately via `bash infra/scripts/deploy.sh --build` on the RX6600.

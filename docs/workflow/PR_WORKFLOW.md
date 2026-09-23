@@ -40,7 +40,7 @@ Every PR follows this sequence before merge:
 
 ### 1. Claude Code Review
 
-Run Claude Code Review on the open PR. See `CODE_REVIEW.md` for how to do this and what to look for.
+Run Claude Code Review on the open PR and triage its findings as blocking, advisory or style.
 
 ### 2. Fix findings
 
