@@ -2,26 +2,12 @@ import { create } from 'zustand';
 import type {
   IdentityPreferences,
   SetIdentityPreferencesRequest,
-  Sport,
   SportProfile,
   UpsertSportProfileRequest,
   UserProfile,
 } from '@protin/shared-types';
 
 import { api, BASE_URL } from '../lib/api';
-
-export type SportType = Sport;
-
-export const SPORT_LABELS: Record<SportType, string> = {
-  gym: 'Gym',
-  golf: 'Golf',
-  tennis: 'Tennis',
-  running: 'Running',
-};
-
-export function sportLabel(sport: string): string {
-  return SPORT_LABELS[sport as SportType] ?? sport.charAt(0).toUpperCase() + sport.slice(1);
-}
 
 interface ProfilePhotoResponse {
   id: string;

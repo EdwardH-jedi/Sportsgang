@@ -7,6 +7,7 @@
  */
 
 import { api } from './api';
+import { getSport, sportLabel } from './sports';
 import type {
   AttendanceEntry,
   AttendanceListResponse,
@@ -149,17 +150,20 @@ export function attendanceStatusLabel(s: AttendanceStatus): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Battle sport options. Keep in sync with the brief. Backend stores
- * sport as freeform lowercase string, so adding more here doesn't
- * require a migration.
+ * Battle sport options. Wider than the partner-matching registry in
+ * lib/sports — the backend stores battle sport as a freeform lowercase
+ * string, so adding more here doesn't require a migration. Sports that
+ * also exist in the registry reuse its copy (chips use the compact
+ * `shortLabel`, e.g. "Run"). Running is first, and so is the host form's
+ * default.
  */
 export const BATTLE_SPORTS = [
+  { value: 'running', label: getSport('running').shortLabel },
   { value: 'basketball', label: 'Basketball' },
   { value: 'soccer', label: 'Soccer' },
-  { value: 'running', label: 'Run' },
-  { value: 'golf', label: 'Golf' },
+  { value: 'golf', label: getSport('golf').shortLabel },
   { value: 'badminton', label: 'Badminton' },
-  { value: 'tennis', label: 'Tennis' },
+  { value: 'tennis', label: getSport('tennis').shortLabel },
 ] as const;
 
 export type BattleSportValue = (typeof BATTLE_SPORTS)[number]['value'];
@@ -176,7 +180,7 @@ export const SPORT_CAPACITY_DEFAULTS: Record<string, number> = {
 
 export function sportLabelForBattle(sport: string): string {
   const found = BATTLE_SPORTS.find((s) => s.value === sport);
-  return found ? found.label : sport.charAt(0).toUpperCase() + sport.slice(1);
+  return found ? found.label : sportLabel(sport);
 }
 
 /** Compact "Sat 17 May · 09:00" style. */

@@ -21,8 +21,8 @@ import {
   fetchUpcomingSessions,
   type Session,
 } from '../../lib/sessions';
+import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { sportLabel } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 

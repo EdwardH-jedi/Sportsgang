@@ -11,7 +11,7 @@ import {
 
 import { Screen } from '../../components/Screen';
 import { useTournamentDetail } from '../../hooks/useTournaments';
-import { sportLabel } from '../../stores/profile';
+import { sportLabel } from '../../lib/sports';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { TournamentDetailScreenProps } from '../../navigation/types';
 

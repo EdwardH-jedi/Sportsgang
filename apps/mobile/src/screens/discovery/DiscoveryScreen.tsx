@@ -20,7 +20,7 @@ import { Screen } from '../../components/Screen';
 import { useDiscovery, PartnerCard } from '../../hooks/useDiscovery';
 import { useRankSummary } from '../../hooks/useRankSummary';
 import { useUserHonorSummary } from '../../hooks/useUserHonorSummary';
-import { SPORT_LABELS, sportLabel } from '../../stores/profile';
+import { SPORTS, isSport, getSport, sportLabel } from '../../lib/sports';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -70,15 +70,13 @@ function MatchBanner({ visible }: { visible: boolean }) {
  * (always near-black) — the fade between is faked with stacked
  * semi-transparent fills, no gradient library required.
  */
-const SPORT_HERO_PALETTE: Record<string, { top: string; bottom: string }> = {
-  gym:     { top: '#A8E61A', bottom: '#0A0A0A' }, // electric lime (brand)
-  golf:    { top: '#1FAA59', bottom: '#0A0A0A' }, // forest green
-  tennis:  { top: '#F5A524', bottom: '#0A0A0A' }, // amber / clay-court
-  running: { top: '#2EB6FF', bottom: '#0A0A0A' }, // sky-blue
-};
+const HERO_BOTTOM = '#0A0A0A';
 
 function getSportHeroPalette(sport: string) {
-  return SPORT_HERO_PALETTE[sport] ?? SPORT_HERO_PALETTE.gym;
+  // Top colours live in the sport registry; unknown sports fall back to
+  // the gym entry's electric lime (the brand colour).
+  const top = getSport(isSport(sport) ? sport : 'gym').heroColor;
+  return { top, bottom: HERO_BOTTOM };
 }
 
 function CardHero({
@@ -387,7 +385,7 @@ export function DiscoveryScreen() {
 
       {/* Sport toggle — pill chips */}
       <View style={styles.sportToggle}>
-        {(['gym', 'golf', 'tennis', 'running'] as const).map((s) => (
+        {SPORTS.map(({ id: s, label }) => (
           <Pressable
             key={s}
             style={({ pressed }) => [
@@ -397,7 +395,7 @@ export function DiscoveryScreen() {
             ]}
             onPress={() => setSport(s)}
             accessibilityRole="tab"
-            accessibilityLabel={SPORT_LABELS[s]}
+            accessibilityLabel={label}
             accessibilityState={{ selected: sport === s }}
           >
             <Text
@@ -406,7 +404,7 @@ export function DiscoveryScreen() {
                 sport === s && styles.sportTabTextActive,
               ]}
             >
-              {SPORT_LABELS[s]}
+              {label}
             </Text>
           </Pressable>
         ))}

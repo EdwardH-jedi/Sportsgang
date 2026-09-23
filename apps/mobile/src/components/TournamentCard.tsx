@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { sportLabel } from '../stores/profile';
+import { sportLabel } from '../lib/sports';
 import { colors, radii, spacing, typography } from '../theme';
 import type { TournamentSummary } from '@protin/shared-types';
 

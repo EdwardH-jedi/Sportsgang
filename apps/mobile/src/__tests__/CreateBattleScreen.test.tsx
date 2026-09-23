@@ -150,6 +150,16 @@ describe('CreateBattleScreen', () => {
     getByLabelText('Select sport Tennis');
   });
 
+  it('lists Run first and defaults to it with the running capacity', () => {
+    const { getByLabelText, getAllByLabelText } = renderCreateBattle();
+    const sportChips = getAllByLabelText(/^Select sport /).map(
+      (c) => c.props.accessibilityLabel
+    );
+    expect(sportChips[0]).toBe('Select sport Run');
+    expect(getByLabelText('Game capacity').props.value).toBe('30');
+    expect(getByLabelText('Choose park, route, or meeting spot')).toBeTruthy();
+  });
+
   it('Create game button stays disabled until title and location are filled', async () => {
     const navigation = makeNavigation();
     const { getByLabelText } = renderCreateBattle({ navigation });
@@ -165,7 +175,7 @@ describe('CreateBattleScreen', () => {
     const navigation = makeNavigation();
     const { getByLabelText } = renderCreateBattle({ navigation });
 
-    fireEvent.changeText(getByLabelText('Game title'), 'Friday Hoops');
+    fireEvent.changeText(getByLabelText('Game title'), 'Friday Run Club');
     fireEvent.changeText(getByLabelText('Game location'), 'Bondi Court');
 
     await act(async () => {
@@ -174,10 +184,10 @@ describe('CreateBattleScreen', () => {
 
     expect(mockCreateEvent).toHaveBeenCalledTimes(1);
     const payload = mockCreateEvent.mock.calls[0][0];
-    expect(payload.title).toBe('Friday Hoops');
+    expect(payload.title).toBe('Friday Run Club');
     expect(payload.locationText).toBe('Bondi Court');
     expect(payload.mode).toBe('casual');
-    expect(payload.sport).toBe('basketball');
+    expect(payload.sport).toBe('running');
     expect(payload.visibility).toBe('public');
     expect(payload.capacity).toBeGreaterThan(0);
     expect(navigation.replace).toHaveBeenCalledWith('BattleDetail', {
@@ -209,14 +219,14 @@ describe('CreateBattleScreen', () => {
       expect(getByLabelText('Choose court or venue')).toBeTruthy();
     });
 
-    it('shows the venue picker for basketball (default sport) — bug fix', () => {
+    it('shows the venue picker for basketball — bug fix', () => {
       // Pre-fix this screen gated the picker behind a hardcoded set of
       // {gym, golf, tennis, running}, so basketball hosts only saw the
       // free-text input. Backend accepts any sport string; the modal's
       // manual-venue footer covers the "no seed data" case, so the
       // picker now renders for every sport.
       const { getByLabelText } = renderCreateBattle();
-      // Basketball is BATTLE_SPORTS[0] — default selection on mount.
+      fireEvent.press(getByLabelText('Select sport Basketball'));
       expect(getByLabelText('Choose court, field, or venue')).toBeTruthy();
       // Free-text fallback is also still present below it.
       expect(getByLabelText('Game location')).toBeTruthy();
@@ -322,7 +332,7 @@ describe('CreateBattleScreen', () => {
     it('still allows submit using only the free-text input (picker is optional)', async () => {
       mockCreateEvent.mockResolvedValueOnce({ id: 'event-no-picker' });
       const { getByLabelText } = renderCreateBattle();
-      // Sport defaults to basketball — the picker CTA is rendered, but
+      // Sport defaults to running — the picker CTA is rendered, but
       // the host can ignore it and type into the free-text field. The
       // payload still uses the existing-compatible locationText shape.
       fireEvent.changeText(getByLabelText('Game title'), 'Bondi pickup hoops');
@@ -331,14 +341,14 @@ describe('CreateBattleScreen', () => {
         fireEvent.press(getByLabelText('Create game'));
       });
       const payload = mockCreateEvent.mock.calls[0][0];
-      expect(payload.sport).toBe('basketball');
+      expect(payload.sport).toBe('running');
       expect(payload.locationText).toBe('Bondi Court');
     });
 
     it('basketball: selecting a venue from the picker populates locationText', async () => {
       mockCreateEvent.mockResolvedValueOnce({ id: 'event-basketball-venue' });
       const { getByLabelText } = renderCreateBattle();
-      // Stay on basketball (default).
+      fireEvent.press(getByLabelText('Select sport Basketball'));
       fireEvent.changeText(getByLabelText('Game title'), 'Bondi pickup hoops');
       await act(async () => {
         fireEvent.press(getByLabelText('Choose court, field, or venue'));
@@ -360,6 +370,7 @@ describe('CreateBattleScreen', () => {
     it('basketball: manual venue fallback from the picker populates locationText', async () => {
       mockCreateEvent.mockResolvedValueOnce({ id: 'event-basketball-manual' });
       const { getByLabelText } = renderCreateBattle();
+      fireEvent.press(getByLabelText('Select sport Basketball'));
       fireEvent.changeText(getByLabelText('Game title'), 'Driveway hoops');
       await act(async () => {
         fireEvent.press(getByLabelText('Choose court, field, or venue'));

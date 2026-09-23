@@ -2,7 +2,7 @@
  * useDiscovery hook tests
  *
  * Covers:
- *  - Initial fetch on mount with the default sport (gym)
+ *  - Initial fetch on mount with the default sport (running — registry first)
  *  - Refetch when setSport is called
  *  - recordAction posts correct payload and removes the partner locally
  *  - Error state when the API rejects
@@ -70,7 +70,7 @@ describe('useDiscovery', () => {
     const { result } = renderHook(() => useDiscovery());
 
     expect(result.current.isLoading).toBe(true);
-    expect(mockGet).toHaveBeenCalledWith('/discovery?sport=gym&limit=20');
+    expect(mockGet).toHaveBeenCalledWith('/discovery?sport=running&limit=20');
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.partners).toEqual([partnerA, partnerB]);
@@ -108,7 +108,7 @@ describe('useDiscovery', () => {
     expect(mockPost).toHaveBeenCalledWith('/discovery/actions', {
       targetUserId: 'user-a',
       action: 'like',
-      sport: 'gym',
+      sport: 'running',
     });
   });
 
@@ -179,7 +179,7 @@ describe('useDiscovery', () => {
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockGet).toHaveBeenCalledWith('/discovery?sport=gym&limit=20');
+    expect(mockGet).toHaveBeenCalledWith('/discovery?sport=running&limit=20');
     expect(result.current.partners).toEqual([partnerA, partnerB]);
   });
 });

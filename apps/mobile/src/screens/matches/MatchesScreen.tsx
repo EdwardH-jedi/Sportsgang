@@ -15,8 +15,8 @@ import { Screen } from '../../components/Screen';
 import { useMatches } from '../../hooks/useMatches';
 import type { MatchSummary as Match } from '../../lib/matches';
 import { formatPreviewTimestamp, previewText } from '../../lib/messages';
+import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { sportLabel } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 

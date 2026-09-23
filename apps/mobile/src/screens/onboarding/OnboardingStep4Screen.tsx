@@ -10,6 +10,7 @@ import {
 import type { FitnessLevel, PreferredTime, Sport, UpsertSportProfileRequest } from '@protin/shared-types';
 
 import { Screen } from '../../components/Screen';
+import { DEFAULT_SPORT, SPORTS, getSport } from '../../lib/sports';
 import { useProfileStore } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -33,20 +34,6 @@ const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
   { value: 'flexible', label: 'Flexible' },
 ];
 
-interface SportConfig {
-  value: Sport;
-  label: string;
-  venueLabel?: string;
-  venuePlaceholder?: string;
-}
-
-const SPORT_CONFIG: SportConfig[] = [
-  { value: 'gym', label: 'Gym', venueLabel: 'Gym name (optional)', venuePlaceholder: 'e.g. Fitness First Surry Hills' },
-  { value: 'golf', label: 'Golf', venueLabel: 'Golf club (optional)', venuePlaceholder: 'e.g. Royal Sydney Golf Club' },
-  { value: 'tennis', label: 'Tennis', venueLabel: 'Tennis club (optional)', venuePlaceholder: 'e.g. White City Tennis Club' },
-  { value: 'running', label: 'Running', venueLabel: 'Regular route (optional)', venuePlaceholder: 'e.g. Centennial Park loop' },
-];
-
 interface SportFormState {
   level: Level;
   times: TimeSlot[];
@@ -60,16 +47,15 @@ const DEFAULT_SPORT_STATE: SportFormState = {
 };
 
 function makeInitialStates(): Record<Sport, SportFormState> {
-  return {
-    gym: { ...DEFAULT_SPORT_STATE },
-    golf: { ...DEFAULT_SPORT_STATE },
-    tennis: { ...DEFAULT_SPORT_STATE },
-    running: { ...DEFAULT_SPORT_STATE },
-  };
+  return Object.fromEntries(
+    SPORTS.map(({ id }) => [id, { ...DEFAULT_SPORT_STATE }])
+  ) as Record<Sport, SportFormState>;
 }
 
 export function OnboardingStep4Screen({ navigation }: Props) {
-  const [selected, setSelected] = useState<Set<Sport>>(new Set());
+  // Running-first: the registry's default sport starts pre-selected so the
+  // common case is one tap; users can still deselect it.
+  const [selected, setSelected] = useState<Set<Sport>>(() => new Set([DEFAULT_SPORT]));
   const [sportStates, setSportStates] = useState<Record<Sport, SportFormState>>(makeInitialStates);
   const [goals, setGoals] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -108,12 +94,15 @@ export function OnboardingStep4Screen({ navigation }: Props) {
       await Promise.all(
         [...selected].map((sport) => {
           const state = sportStates[sport];
+          // Only sports with a backend venue column persist the venue text.
+          const venueField = getSport(sport).venueField;
+          const venue = state.venueName.trim() || undefined;
           const profile: UpsertSportProfileRequest = {
             sport,
             level: state.level,
             preferredTimes: state.times,
-            gymName: sport === 'gym' ? state.venueName.trim() || undefined : undefined,
-            golfClub: sport === 'golf' ? state.venueName.trim() || undefined : undefined,
+            gymName: venueField === 'gymName' ? venue : undefined,
+            golfClub: venueField === 'golfClub' ? venue : undefined,
             goals: goalsValue,
           };
           return upsertSportProfile(profile);
@@ -150,7 +139,7 @@ export function OnboardingStep4Screen({ navigation }: Props) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Which sports are you into?</Text>
         <View style={styles.toggleRow}>
-          {SPORT_CONFIG.map(({ value, label }) => {
+          {SPORTS.map(({ id: value, label }) => {
             const isOn = selected.has(value);
             return (
               <Pressable
@@ -175,8 +164,8 @@ export function OnboardingStep4Screen({ navigation }: Props) {
       </View>
 
       {/* Per-sport detail sections */}
-      {SPORT_CONFIG.filter(({ value }) => selected.has(value)).map(
-        ({ value, label, venueLabel, venuePlaceholder }, idx) => (
+      {SPORTS.filter(({ id }) => selected.has(id)).map(
+        ({ id: value, label, venueLabel, venuePlaceholder }, idx) => (
           <View key={value}>
             {idx > 0 && <View style={styles.divider} />}
             <View style={styles.sportBlock}>

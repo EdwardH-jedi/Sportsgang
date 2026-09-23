@@ -336,6 +336,18 @@ describe('DiscoveryScreen', () => {
     getByLabelText('Golf');
   });
 
+  it('renders the sport tabs from the registry, running first', () => {
+    setupDiscovery({ partners: [], sport: 'running' });
+    const { getAllByRole, getByLabelText } = render(<DiscoveryScreen />);
+    expect(getAllByRole('tab').map((t) => t.props.accessibilityLabel)).toEqual([
+      'Running',
+      'Gym',
+      'Tennis',
+      'Golf',
+    ]);
+    expect(getByLabelText('Running').props.accessibilityState).toEqual({ selected: true });
+  });
+
   it('calls setSport with "golf" when the Golf tab is pressed', () => {
     setupDiscovery({ partners: [], sport: 'gym' });
     const { getByLabelText } = render(<DiscoveryScreen />);

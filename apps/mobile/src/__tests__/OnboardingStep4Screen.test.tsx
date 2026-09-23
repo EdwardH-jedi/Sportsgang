@@ -76,14 +76,40 @@ describe('OnboardingStep4Screen', () => {
     getByText('Step 4 of 4');
   });
 
-  it('renders all four sport options', () => {
-    const { getByRole } = render(
+  it('renders all four sport options, running first', () => {
+    const { getByRole, getAllByRole } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
     getByRole('checkbox', { name: 'Gym' });
     getByRole('checkbox', { name: 'Golf' });
     getByRole('checkbox', { name: 'Tennis' });
     getByRole('checkbox', { name: 'Running' });
+    // The first four checkboxes are the sport toggles (time-slot checkboxes
+    // for the pre-selected sport follow).
+    expect(
+      getAllByRole('checkbox')
+        .slice(0, 4)
+        .map((c) => c.props.accessibilityLabel)
+    ).toEqual([
+      'Running',
+      'Gym',
+      'Tennis',
+      'Golf',
+    ]);
+  });
+
+  it('pre-selects Running and shows its detail fields', () => {
+    const { getByRole, getByText, getByPlaceholderText } = render(
+      <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    expect(getByRole('checkbox', { name: 'Running' }).props.accessibilityState).toEqual({
+      checked: true,
+    });
+    expect(getByRole('checkbox', { name: 'Gym' }).props.accessibilityState).toEqual({
+      checked: false,
+    });
+    getByText('Beginner');
+    getByPlaceholderText('e.g. Centennial Park loop');
   });
 
   it('renders the Let\'s go button', () => {
@@ -96,9 +122,10 @@ describe('OnboardingStep4Screen', () => {
   // ── Validation ─────────────────────────────────────────────────────────────
 
   it('shows error when no sport is selected', async () => {
-    const { getByText } = render(
+    const { getByRole, getByText } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
+    fireEvent.press(getByRole('checkbox', { name: 'Running' })); // deselect default
     fireEvent.press(getByText("Let's go"));
     await waitFor(() => getByText('Please select at least one sport.'));
     expect(mockUpsertSportProfile).not.toHaveBeenCalled();
@@ -110,6 +137,7 @@ describe('OnboardingStep4Screen', () => {
     const { getByRole, getByText } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
+    fireEvent.press(getByRole('checkbox', { name: 'Running' })); // deselect default
     fireEvent.press(getByRole('checkbox', { name: 'Gym' }));
     getByText('Beginner');
     getByText('Intermediate');
@@ -120,6 +148,7 @@ describe('OnboardingStep4Screen', () => {
     const { getByRole, queryByText } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
+    fireEvent.press(getByRole('checkbox', { name: 'Running' })); // deselect default
     fireEvent.press(getByRole('checkbox', { name: 'Gym' }));
     fireEvent.press(getByRole('checkbox', { name: 'Gym' })); // deselect
     expect(queryByText('Beginner')).toBeNull();
@@ -129,6 +158,7 @@ describe('OnboardingStep4Screen', () => {
     const { getByRole, getByText } = render(
       <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
     );
+    fireEvent.press(getByRole('checkbox', { name: 'Running' })); // deselect default
     fireEvent.press(getByRole('checkbox', { name: 'Golf' }));
     getByText('Morning');
     getByText('Afternoon');
@@ -144,6 +174,7 @@ describe('OnboardingStep4Screen', () => {
     const { getByRole, getByText } = render(
       <OnboardingStep4Screen navigation={nav as any} route={{} as any} />
     );
+    fireEvent.press(getByRole('checkbox', { name: 'Running' })); // deselect default
     fireEvent.press(getByRole('checkbox', { name: 'Gym' }));
     fireEvent.press(getByText("Let's go"));
     await waitFor(() => {
@@ -152,6 +183,20 @@ describe('OnboardingStep4Screen', () => {
         expect.objectContaining({ sport: 'gym', level: 'beginner' })
       );
     });
+  });
+
+  it('submits the default Running profile without any extra taps', async () => {
+    mockUpsertSportProfile.mockResolvedValue(undefined);
+    const { getByText } = render(
+      <OnboardingStep4Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    fireEvent.press(getByText("Let's go"));
+    await waitFor(() => {
+      expect(mockUpsertSportProfile).toHaveBeenCalledTimes(1);
+    });
+    expect(mockUpsertSportProfile).toHaveBeenCalledWith(
+      expect.objectContaining({ sport: 'running', gymName: undefined, golfClub: undefined })
+    );
   });
 
   it('calls upsertSportProfile for each selected sport', async () => {
@@ -163,10 +208,12 @@ describe('OnboardingStep4Screen', () => {
     fireEvent.press(getByRole('checkbox', { name: 'Gym' }));
     fireEvent.press(getByRole('checkbox', { name: 'Golf' }));
     fireEvent.press(getByText("Let's go"));
+    // Running is pre-selected, so Gym + Golf make three profiles.
     await waitFor(() => {
-      expect(mockUpsertSportProfile).toHaveBeenCalledTimes(2);
+      expect(mockUpsertSportProfile).toHaveBeenCalledTimes(3);
     });
     const sports = mockUpsertSportProfile.mock.calls.map((c: any[]) => c[0].sport);
+    expect(sports).toContain('running');
     expect(sports).toContain('gym');
     expect(sports).toContain('golf');
   });
@@ -174,10 +221,10 @@ describe('OnboardingStep4Screen', () => {
   it('navigates to Main after successful submission', async () => {
     mockUpsertSportProfile.mockResolvedValue(undefined);
     const nav = makeNavigation();
-    const { getByRole, getByText } = render(
+    const { getByText } = render(
       <OnboardingStep4Screen navigation={nav as any} route={{} as any} />
     );
-    fireEvent.press(getByRole('checkbox', { name: 'Running' }));
+    // Running is pre-selected — no sport tap needed.
     fireEvent.press(getByText("Let's go"));
     await waitFor(() => {
       expect(nav.replace).toHaveBeenCalledWith('Main');

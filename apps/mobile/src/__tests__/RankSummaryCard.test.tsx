@@ -3,7 +3,6 @@
  *
  * Mocks:
  *  - theme — keep token surface tiny
- *  - stores/profile — sportLabel
  */
 
 import React from 'react';
@@ -27,10 +26,6 @@ jest.mock('../theme', () => ({
   typography: {
     h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
   },
-}));
-
-jest.mock('../stores/profile', () => ({
-  sportLabel: (s: string) => (s === 'gym' ? 'Gym' : s.charAt(0).toUpperCase() + s.slice(1)),
 }));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

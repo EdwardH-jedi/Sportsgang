@@ -5,7 +5,6 @@
  *  - apps/mobile/src/lib/sessions (fetchUpcomingSessions, fetchPendingSessions,
  *    acceptSession, declineSession)
  *  - apps/mobile/src/stores/auth (useAuthStore)
- *  - apps/mobile/src/stores/profile (sportLabel)
  *  - @react-navigation/native (useNavigation + useFocusEffect stub)
  *  - components/Screen
  *  - theme
@@ -37,20 +36,6 @@ let mockCurrentUserId: string | null = 'me-1';
 jest.mock('../stores/auth', () => ({
   useAuthStore: (selector: (s: { user: { id: string } | null }) => unknown) =>
     selector({ user: mockCurrentUserId ? { id: mockCurrentUserId } : null }),
-}));
-
-// ─── Mock profile store (sportLabel only) ─────────────────────────────────────
-
-jest.mock('../stores/profile', () => ({
-  sportLabel: (sport: string) => {
-    const labels: Record<string, string> = {
-      gym: 'Gym',
-      golf: 'Golf',
-      tennis: 'Tennis',
-      running: 'Running',
-    };
-    return labels[sport] ?? sport.charAt(0).toUpperCase() + sport.slice(1);
-  },
 }));
 
 // ─── Mock navigation ─────────────────────────────────────────────────────────

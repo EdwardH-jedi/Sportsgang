@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { api, BASE_URL } from '../lib/api';
+import { DEFAULT_SPORT, type Sport } from '../lib/sports';
 
 // Discovery card photos are served as relative paths (`/media/...`) by the
 // API. RN's <Image> needs absolute URIs, so we expand them at the data
@@ -38,8 +39,8 @@ export interface UseDiscoveryReturn {
   partners: PartnerCard[];
   isLoading: boolean;
   error: string | null;
-  sport: 'gym' | 'golf' | 'tennis' | 'running';
-  setSport: (s: 'gym' | 'golf' | 'tennis' | 'running') => void;
+  sport: Sport;
+  setSport: (s: Sport) => void;
   recordAction: (
     targetUserId: string,
     action: 'like' | 'pass' | 'save'
@@ -53,9 +54,9 @@ export function useDiscovery(): UseDiscoveryReturn {
   const [partners, setPartners] = useState<PartnerCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sport, setSportState] = useState<'gym' | 'golf' | 'tennis' | 'running'>('gym');
+  const [sport, setSportState] = useState<Sport>(DEFAULT_SPORT);
 
-  async function fetchPartners(selectedSport: 'gym' | 'golf' | 'tennis' | 'running') {
+  async function fetchPartners(selectedSport: Sport) {
     setIsLoading(true);
     setError(null);
     try {
@@ -94,7 +95,7 @@ export function useDiscovery(): UseDiscoveryReturn {
     fetchPartners(sport);
   }, [sport]);
 
-  function setSport(s: 'gym' | 'golf' | 'tennis' | 'running') {
+  function setSport(s: Sport) {
     setSportState(s);
   }
 

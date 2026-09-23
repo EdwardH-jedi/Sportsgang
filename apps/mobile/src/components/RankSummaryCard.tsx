@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { sportLabel } from '../stores/profile';
+import { sportLabel } from '../lib/sports';
 import { colors, radii, spacing, typography } from '../theme';
 import type { RankSummary, RankTier, SportRankSummary } from '@protin/shared-types';
 

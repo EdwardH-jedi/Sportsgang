@@ -12,6 +12,9 @@ import type { ISODateString, UUID } from './common';
 // Shared enums
 // ---------------------------------------------------------------------------
 
+// Backend contract for partner-matching sports. Display order (running
+// first), labels and per-sport copy live in the mobile registry
+// (apps/mobile/src/lib/sports.ts) — change metadata there, not these ids.
 export type Sport = 'gym' | 'golf' | 'tennis' | 'running';
 
 export type FitnessLevel = 'beginner' | 'intermediate' | 'advanced';
