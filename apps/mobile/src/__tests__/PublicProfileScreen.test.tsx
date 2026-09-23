@@ -141,13 +141,13 @@ describe('PublicProfileScreen', () => {
   it('renders Honor summary from /rank/users/{id}', () => {
     const { getByText } = renderScreen();
     getByText('Trusted');
-    getByText('- 126');
+    getByText('· 126');
     // Stats:
     getByText('Gang Score');
     getByText('Completed games');
     getByText('No-shows');
     // Sport levels render too.
-    getByText('Lv 1 - 30 XP');
+    getByText('Lv 1 · 30 XP');
   });
 
   it('falls back to "New player" when summary is null (404 / no data)', () => {

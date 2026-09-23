@@ -17,6 +17,7 @@ import {
   ListRow,
   Screen,
   StatBlock,
+  StatRow,
   sportIconName,
 } from '../../components/ui';
 import { useEventDetail } from '../../hooks/useEvents';
@@ -289,23 +290,25 @@ export function BattleDetailScreen({ navigation, route }: BattleDetailScreenProp
           <Text style={styles.location}>{detail.locationText}</Text>
         </View>
 
-        <View style={styles.stats}>
+        <StatRow style={styles.stats} testID="detail-stats">
           {isRun ? (
-            <>
-              <StatBlock value={km || '–'} unit={km ? 'km' : undefined} label="Distance" size="lg" accent />
-              <StatBlock
-                value={paceValue ?? 'Any'}
-                unit={paceValue ? '/km' : undefined}
-                label="Pace"
-                size="lg"
-                accessibilityLabel={`Pace ${paceBandText(detail.paceMinSecPerKm, detail.paceMaxSecPerKm) ?? 'any'}`}
-              />
-            </>
+            <StatBlock value={km || '–'} unit={km ? 'km' : undefined} label="Distance" size="lg" accent />
           ) : (
             <StatBlock value={`${detail.participantCount}/${detail.capacity}`} label="Players" size="lg" accent />
           )}
           <StatBlock value={isFull ? 0 : detail.spotsLeft} label="Spots left" size="lg" />
-        </View>
+          {/* Pace last: the band is the widest value, so when the row wraps
+              it takes the second line on its own. */}
+          {isRun ? (
+            <StatBlock
+              value={paceValue ?? 'Any'}
+              unit={paceValue ? '/km' : undefined}
+              label="Pace"
+              size="lg"
+              accessibilityLabel={`Pace ${paceBandText(detail.paceMinSecPerKm, detail.paceMaxSecPerKm) ?? 'any'}`}
+            />
+          ) : null}
+        </StatRow>
       </View>
 
       {isRun && hasMeetingPoint(detail) ? (
@@ -514,8 +517,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   stats: {
-    flexDirection: 'row',
-    gap: spacing.xl,
     marginTop: spacing.md,
   },
   section: {

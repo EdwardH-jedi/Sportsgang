@@ -310,7 +310,12 @@ export function CreateBattleScreen({ navigation, route }: CreateBattleScreenProp
         {!isEdit ? (
           <View style={styles.field}>
             <Text style={styles.fieldLabel}>Sport</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.chipScroll}
+              contentContainerStyle={styles.chipRow}
+            >
               {BATTLE_SPORTS.map((s) => (
                 <Chip
                   key={s.value}
@@ -360,7 +365,12 @@ export function CreateBattleScreen({ navigation, route }: CreateBattleScreenProp
         {isRun && crewOptions.length > 0 ? (
           <View style={styles.field}>
             <Text style={styles.fieldLabel}>Crew (optional)</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.chipScroll}
+              contentContainerStyle={styles.chipRow}
+            >
               <Chip label="No crew" selected={crewId === null} onPress={() => setCrewId(null)} />
               {crewOptions.map((c) => (
                 <Chip
@@ -607,8 +617,14 @@ const styles = StyleSheet.create({
   fieldLabel: {
     ...typography.label,
   },
+  // Chip rows bleed to the screen edge and re-inset their content, so the
+  // row scrolls off-screen instead of being clipped inside the gutter.
+  chipScroll: {
+    marginHorizontal: -layout.screenPadding,
+  },
   chipRow: {
     gap: spacing.sm,
+    paddingHorizontal: layout.screenPadding,
   },
   modeRow: {
     flexDirection: 'row',

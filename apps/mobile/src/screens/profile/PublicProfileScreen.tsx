@@ -146,6 +146,7 @@ export function PublicProfileScreen({
                 <StatBlock label="Gang Score" value={summary.gangScore} size="sm" style={styles.stat} />
                 <StatBlock
                   label="Completed games"
+                  labelLines={2}
                   value={summary.completedGamesCount}
                   size="sm"
                   style={styles.stat}
@@ -161,7 +162,7 @@ export function PublicProfileScreen({
                     <Icon name={sportIconName(s.sport)} size="sm" color={colors.textSecondary} />
                     <Text style={styles.sportName}>{capitalize(s.sport)}</Text>
                     <Text style={styles.sportLevel}>
-                      Lv {s.level} - {s.xp} XP
+                      Lv {s.level} · {s.xp} XP
                     </Text>
                   </View>
                 ))}

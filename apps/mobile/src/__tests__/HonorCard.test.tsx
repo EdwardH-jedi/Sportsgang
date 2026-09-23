@@ -60,9 +60,9 @@ describe('HonorCard', () => {
     getByText('102');
     getByText('Regular');
     getByText('25');
-    // Stats grid:
-    getByText('Completed games');
-    getByText('Hosted games');
+    // Stats grid: short captions that fit three-up, full names for screen readers.
+    getByText('Completed');
+    getByText('Hosted');
     getByText('No-shows');
   });
 
@@ -104,5 +104,16 @@ describe('HonorCard', () => {
       'Honor reflects attendance, fair play, and reliable hosting.'
     );
     getByText('Gang Score reflects your activity and contribution.');
+  });
+
+  it('keeps the stat captions short enough to sit three-up without colliding', () => {
+    const { getByText, getByLabelText } = render(<HonorCard summary={makeSummary()} />);
+    for (const caption of ['Completed', 'Hosted', 'No-shows']) {
+      const text = getByText(caption);
+      expect(caption.length).toBeLessThanOrEqual(9);
+      expect(text.props.numberOfLines).toBe(2);
+    }
+    getByLabelText('Completed games: 2');
+    getByLabelText('Hosted games: 1');
   });
 });

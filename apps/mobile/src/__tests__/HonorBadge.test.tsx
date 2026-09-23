@@ -16,17 +16,16 @@ describe('HonorBadge', () => {
     getByText('Trusted');
   });
 
-  it('renders level and score in full mode with an ASCII hyphen separator', () => {
+  it('renders level and score in full mode with the app-wide middle dot', () => {
     const { getByText, queryByText } = render(
       <HonorBadge honorLevel="Trusted" honorScore={126} />
     );
     getByText('Trusted');
-    getByText('- 126');
-    // Regression guard: the previous middle-dot separator mojibaked to
-    // "쨌" in some encodings. Pin that nothing in the rendered tree
-    // includes either the middle dot or the mojibake artifact.
-    expect(queryByText(/·/)).toBeNull();
+    getByText('\u00B7 126');
+    // Regression guard: the middle dot once mojibaked to "쨌" in some
+    // encodings; the source now writes it as an escape.
     expect(queryByText(/쨌/)).toBeNull();
+    expect(queryByText(/- 126/)).toBeNull();
   });
 
   it('hides the score in compact mode', () => {
@@ -34,7 +33,7 @@ describe('HonorBadge', () => {
       <HonorBadge honorLevel="Trusted" honorScore={126} compact />
     );
     getByText('Trusted');
-    expect(queryByText('- 126')).toBeNull();
+    expect(queryByText('\u00B7 126')).toBeNull();
   });
 
   it('renders the New player fallback when summary unavailable', () => {

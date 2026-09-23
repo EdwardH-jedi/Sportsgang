@@ -250,7 +250,7 @@ function BattleCard({ event, onPress }: { event: EventSummary; onPress: () => vo
       </Text>
       <View style={styles.cardHonorRow}>
         <Text style={styles.cardHost} numberOfLines={1}>
-          Host - {event.host?.displayName ?? 'SportsGang host'}
+          Host · {event.host?.displayName ?? 'SportsGang host'}
         </Text>
         {/* Hidden only on a hard error so a failure isn't shown as "New player". */}
         {hostHonorError ? null : (

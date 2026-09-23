@@ -3,8 +3,8 @@
  * dissolved crew), owner edit / delete / host a run, states.
  */
 import React from 'react';
-import { Alert } from 'react-native';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { Alert, StyleSheet } from 'react-native';
+import { act, fireEvent, render, within } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { CrewDetail } from '@protin/shared-types';
 
@@ -103,6 +103,14 @@ describe('CrewDetailScreen', () => {
     getByLabelText('Olly Owner, owner');
     getByText('Mia Member');
     getByText('No runs scheduled yet');
+  });
+
+  it('wraps its stats and centres the Owner badge on the member row', () => {
+    const { getByTestId } = renderScreen(makeCrew());
+    expect(StyleSheet.flatten(getByTestId('crew-stats').props.style).flexWrap).toBe('wrap');
+    const trailing = getByTestId('member-u1-trailing');
+    expect(StyleSheet.flatten(trailing.props.style).justifyContent).toBe('center');
+    expect(within(trailing).getByText('Owner')).toBeTruthy();
   });
 
   it('lists upcoming runs as run cards that open the run', () => {

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { HonorLevel } from '../lib/rank';
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, face, radii, spacing, typography } from '../theme';
 import { Icon } from './ui/Icon';
 
 /**
@@ -11,6 +11,11 @@ import { Icon } from './ui/Icon';
  */
 const GLYPH = spacing.sm + spacing.xs;
 const HIGH_LEVELS: readonly HonorLevel[] = ['Trusted', 'Captain', 'Legend'];
+/**
+ * The app-wide "·" separator, written as an escape so a mis-encoded save
+ * can't turn it into mojibake (it once rendered as "쨌").
+ */
+const MIDDOT = '\u00B7';
 
 interface HonorBadgeProps {
   /** Honor level. Omit when the summary is unavailable to render the fallback. */
@@ -89,7 +94,7 @@ export function HonorBadge({
       <Icon name="award" size={GLYPH} color={accent} />
       <Text style={[styles.text, { color: accent }]}>{honorLevel}</Text>
       {showScore ? (
-        <Text style={[styles.score, { color: accent }]}>- {honorScore}</Text>
+        <Text style={[styles.score, { color: accent }]}>{`${MIDDOT} ${honorScore}`}</Text>
       ) : null}
     </View>
   );
@@ -113,16 +118,18 @@ const styles = StyleSheet.create({
   pillMuted: {
     borderColor: colors.border,
   },
+  // Sentence case ("Regular · 104"), matching the "·" meta lines around it.
   text: {
-    ...typography.label,
+    ...typography.caption,
+    ...face('semibold', '600'),
   },
   textMuted: {
-    ...typography.label,
+    ...typography.caption,
     color: colors.textTertiary,
   },
   score: {
-    ...typography.label,
-    letterSpacing: 0,
+    ...typography.caption,
+    ...face('semibold', '600'),
     fontVariant: ['tabular-nums'],
   },
 });

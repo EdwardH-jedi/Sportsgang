@@ -13,6 +13,7 @@ import {
   ListRow,
   Screen,
   StatBlock,
+  StatRow,
 } from '../../components/ui';
 import { useCrew } from '../../hooks/useCrew';
 import { isLastOwnerError } from '../../lib/crews';
@@ -186,8 +187,11 @@ export function CrewDetailScreen({ navigation, route }: CrewDetailScreenProps) {
           <Text style={styles.area}>{crew.homeArea}</Text>
         </View>
         {crew.description ? <Text style={styles.description}>{crew.description}</Text> : null}
-        <View style={styles.stats}>
+        <StatRow style={styles.stats} testID="crew-stats">
+          {/* Pace last: a band like "5:00–6:00 /km" is the widest value, so
+              when the row wraps it takes the second line on its own. */}
           <StatBlock value={crew.memberCount} label={crew.memberCount === 1 ? 'Member' : 'Members'} size="lg" accent />
+          <StatBlock value={crew.upcomingRuns.length} label="Upcoming" size="lg" />
           <StatBlock
             value={pace ?? 'Any'}
             unit={pace ? '/km' : undefined}
@@ -195,8 +199,7 @@ export function CrewDetailScreen({ navigation, route }: CrewDetailScreenProps) {
             size="lg"
             accessibilityLabel={`Pace ${paceBandText(crew.paceMinSecPerKm, crew.paceMaxSecPerKm) ?? 'any'}`}
           />
-          <StatBlock value={crew.upcomingRuns.length} label="Upcoming" size="lg" />
-        </View>
+        </StatRow>
       </View>
 
       <View style={styles.section}>
@@ -216,6 +219,8 @@ export function CrewDetailScreen({ navigation, route }: CrewDetailScreenProps) {
             leading={<Avatar name={m.displayName} uri={m.avatarUrl} size="sm" ring={m.role === 'owner'} />}
             trailing={m.role === 'owner' ? <Badge label="Owner" tone="brand" size="sm" /> : undefined}
             accessibilityLabel={`${m.displayName}${m.role === 'owner' ? ', owner' : ''}`}
+            style={styles.memberRow}
+            testID={`member-${m.userId}`}
           />
         ))}
       </View>
@@ -301,8 +306,6 @@ const styles = StyleSheet.create({
     ...typography.body,
   },
   stats: {
-    flexDirection: 'row',
-    gap: spacing.xl,
     marginTop: spacing.md,
   },
   section: {
@@ -317,6 +320,11 @@ const styles = StyleSheet.create({
   },
   caption: {
     ...typography.caption,
+  },
+  // The section already insets by the screen gutter; line avatars up with
+  // the stack above instead of indenting them a second time.
+  memberRow: {
+    paddingHorizontal: 0,
   },
   runs: {
     gap: spacing.md,

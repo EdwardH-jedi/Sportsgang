@@ -101,8 +101,9 @@ export function HonorCard({ summary, isLoading = false, error }: HonorCardProps)
       </Text>
 
       <View style={styles.statsGrid}>
-        <Stat label="Completed games" value={summary.completedGamesCount} />
-        <Stat label="Hosted games" value={summary.hostedGamesCount} />
+        {/* Short captions: three cells share a card row on a 375pt phone. */}
+        <Stat label="Completed" a11yLabel="Completed games" value={summary.completedGamesCount} />
+        <Stat label="Hosted" a11yLabel="Hosted games" value={summary.hostedGamesCount} />
         <Stat label="No-shows" value={summary.noShowCount} />
       </View>
 
@@ -135,14 +136,15 @@ function CardTitle() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({ label, a11yLabel, value }: { label: string; a11yLabel?: string; value: number }) {
   return (
     <StatBlock
       value={value}
       label={label}
+      labelLines={2}
       size="sm"
       align="center"
-      accessibilityLabel={`${label}: ${value}`}
+      accessibilityLabel={`${a11yLabel ?? label}: ${value}`}
       style={styles.statCell}
     />
   );

@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -314,8 +315,7 @@ describe('BattleDetailScreen', () => {
   it('renders the host Honor badge in the host section', () => {
     const { getByText } = renderScreen(makeDetail());
     getByText('Captain');
-    // ASCII hyphen separator (not the middle-dot that mojibakes).
-    getByText('- 170');
+    getByText('· 170');
   });
 
   it('falls back to "New player" when host honor summary is null', () => {
@@ -485,6 +485,13 @@ describe('BattleDetailScreen', () => {
     getByTestId('mini-map');
     getByText('Runners');
     getByLabelText('Ana Lee');
+  });
+
+  it('wraps the run stats instead of clipping "Spots left" behind a wide pace band', () => {
+    const { getByTestId, getByLabelText } = renderScreen(runDetail());
+    const row = StyleSheet.flatten(getByTestId('detail-stats').props.style);
+    expect(row.flexWrap).toBe('wrap');
+    expect(StyleSheet.flatten(getByLabelText('6, Spots left').props.style).minWidth).toBe(0);
   });
 
   it('links to the crew', () => {
