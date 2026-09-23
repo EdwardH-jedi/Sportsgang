@@ -1,26 +1,17 @@
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-import { Screen } from '../../components/Screen';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
 import { Select } from '../../components/Select';
+import { Button, Card, Icon, IconButton, Screen, TextField } from '../../components/ui';
 import { SYDNEY_SUBURB_OPTIONS } from '../../data/sydneySuburbs';
 import {
   DISPLAY_NAME_HELPER_TEXT,
   sanitizeDisplayName,
 } from '../../lib/displayName';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { EditProfileScreenProps } from '../../navigation/types';
 
 const BIO_MAX = 400;
@@ -134,80 +125,74 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
   const newPhotoSlots = Array.from({ length: MAX_PHOTOS }, (_, i) => newPhotos[i] ?? null);
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} withKeyboard>
+      <View style={styles.header}>
+        <Button
+          label="Cancel"
+          variant="ghost"
+          size="sm"
+          onPress={() => navigation.goBack()}
+          disabled={isSaving}
+          accessibilityLabel="Cancel"
+          style={styles.headerSide}
+        />
+        <Text style={styles.title} accessibilityRole="header">
+          Edit profile
+        </Text>
+        <View style={styles.headerSide} />
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            accessibilityRole="button"
-            accessibilityLabel="Cancel"
-            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-            disabled={isSaving}
-          >
-            <Text style={styles.backButtonText}>Cancel</Text>
-          </Pressable>
-          <Text style={styles.title}>Edit profile</Text>
-          <View style={styles.backButton} />
-        </View>
+        {/* Section: Basic info */}
+        <Section title="Basic info">
+          <Card padding="lg" style={styles.cardBody}>
+            <TextField
+              label="Display name *"
+              accessibilityLabel="Display name"
+              helper={DISPLAY_NAME_HELPER_TEXT}
+              value={displayName}
+              onChangeText={(text) => setDisplayName(sanitizeDisplayName(text))}
+              placeholder="How you'll appear to others"
+              autoCapitalize="words"
+              autoCorrect={false}
+              spellCheck={false}
+              // Mirror OnboardingStep1's displayName defenses. iOS
+              // Password Autofill paints the field yellow and captures
+              // keystrokes if a credential-save overlay is still alive
+              // when this input mounts. `textContentType="name"` is the
+              // strongest non-credential iOS semantic and breaks the
+              // association. Android side: matching `autoComplete="name"`
+              // + `importantForAutofill="no"` so no autofill source can
+              // write to the native input without firing onChangeText.
+              textContentType="name"
+              autoComplete="name"
+              importantForAutofill="no"
+              // A lineHeight on a single-line TextInput clips descenders
+              // and "@" on Android; clear the one TextField spreads in.
+              inputStyle={singleLineInput}
+            />
 
-        <View style={styles.form}>
-          {/* Section: Basic info */}
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Basic info</Text>
+            <Select
+              label="Your Sydney suburb"
+              required
+              value={suburb}
+              onChange={setSuburb}
+              placeholder="Select your suburb"
+              options={SYDNEY_SUBURB_OPTIONS}
+              searchable
+              modalTitle="Sydney suburb"
+              accessibilityLabel="Sydney suburb"
+            />
+          </Card>
+        </Section>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>
-                Display name<Text style={styles.required}> *</Text>
-              </Text>
-              <TextInput
-                style={styles.input}
-                value={displayName}
-                onChangeText={(text) =>
-                  setDisplayName(sanitizeDisplayName(text))
-                }
-                placeholder="How you'll appear to others"
-                placeholderTextColor={colors.textTertiary}
-                autoCapitalize="words"
-                autoCorrect={false}
-                spellCheck={false}
-                // Mirror OnboardingStep1's displayName defenses. iOS
-                // Password Autofill paints the field yellow and captures
-                // keystrokes if a credential-save overlay is still alive
-                // when this input mounts. `textContentType="name"` is the
-                // strongest non-credential iOS semantic and breaks the
-                // association. Android side: matching `autoComplete="name"`
-                // + `importantForAutofill="no"` so no autofill source can
-                // write to the native input without firing onChangeText.
-                textContentType="name"
-                autoComplete="name"
-                importantForAutofill="no"
-                accessibilityLabel="Display name"
-              />
-              <Text style={styles.helperText}>{DISPLAY_NAME_HELPER_TEXT}</Text>
-            </View>
-
-            <View style={styles.field}>
-              <Select
-                label="Your Sydney suburb"
-                required
-                value={suburb}
-                onChange={setSuburb}
-                placeholder="Select your suburb"
-                options={SYDNEY_SUBURB_OPTIONS}
-                searchable
-                modalTitle="Sydney suburb"
-                accessibilityLabel="Sydney suburb"
-              />
-            </View>
-          </View>
-
-          {/* Section: Photos */}
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Photos</Text>
+        {/* Section: Photos */}
+        <Section title="Photos">
+          <Card padding="lg" style={styles.cardBody}>
             {!replaceMode ? (
               <>
                 {photoUris.length > 0 ? (
@@ -225,18 +210,18 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
                 ) : (
                   <Text style={styles.helperText}>No photos saved yet.</Text>
                 )}
-                <Pressable
+                <Button
+                  label="Replace photos"
+                  variant="secondary"
+                  leadingIcon="image"
+                  fullWidth
                   onPress={() => {
                     setReplaceMode(true);
                     setError(null);
                   }}
-                  accessibilityRole="button"
-                  accessibilityLabel="Replace photos"
-                  style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
                   disabled={isSaving}
-                >
-                  <Text style={styles.secondaryButtonText}>Replace photos</Text>
-                </Pressable>
+                  accessibilityLabel="Replace photos"
+                />
                 <Text style={styles.helperText}>
                   Replacing photos uploads a fresh {MIN_PHOTOS}-{MAX_PHOTOS} set from your library.
                 </Text>
@@ -258,57 +243,59 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
                     />
                   ))}
                 </View>
-                <Pressable
+                <Button
+                  label="Keep current photos"
+                  variant="ghost"
+                  fullWidth
                   onPress={cancelReplaceMode}
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancel photo replacement"
-                  style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
                   disabled={isSaving}
-                >
-                  <Text style={styles.secondaryButtonText}>Keep current photos</Text>
-                </Pressable>
+                  accessibilityLabel="Cancel photo replacement"
+                />
               </>
             )}
-          </View>
+          </Card>
+        </Section>
 
-          {/* Section: Bio */}
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Bio</Text>
-            <TextInput
-              style={styles.bioInput}
-              value={bio}
-              onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
-              placeholder="Tell partners a bit about yourself..."
-              placeholderTextColor={colors.textTertiary}
-              multiline
-              numberOfLines={5}
-              textAlignVertical="top"
-              accessibilityLabel="Bio"
-            />
-            <Text style={styles.charCount}>{bio.length} / {BIO_MAX}</Text>
-          </View>
+        {/* Section: Bio */}
+        <Section title="Bio">
+          <TextField
+            value={bio}
+            onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
+            placeholder="Tell partners a bit about yourself..."
+            multiline
+            numberOfLines={5}
+            minHeight={BIO_MIN_HEIGHT}
+            textAlignVertical="top"
+            accessibilityLabel="Bio"
+          />
+          <Text style={styles.charCount}>{bio.length} / {BIO_MAX}</Text>
+        </Section>
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.saveButton,
-              (pressed || isSaving) && styles.saveButtonPressed,
-            ]}
-            onPress={handleSave}
-            disabled={isSaving}
-            accessibilityRole="button"
-            accessibilityLabel="Save profile"
-          >
-            {isSaving ? (
-              <ActivityIndicator color={colors.textInverse} />
-            ) : (
-              <Text style={styles.saveButtonText}>Save</Text>
-            )}
-          </Pressable>
-        </View>
+        <FormErrorBanner message={error} />
       </ScrollView>
+
+      <View style={styles.footer}>
+        <Button
+          label="Save"
+          size="lg"
+          fullWidth
+          loading={isSaving}
+          onPress={handleSave}
+          accessibilityLabel="Save profile"
+        />
+      </View>
     </Screen>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        {title}
+      </Text>
+      {children}
+    </View>
   );
 }
 
@@ -325,26 +312,26 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
     return (
       <View style={styles.slot}>
         <Image source={{ uri }} style={styles.slotImage} resizeMode="cover" />
-        <Pressable
-          style={styles.removeButton}
+        <IconButton
+          icon="close"
+          size="sm"
+          variant="filled"
           onPress={onRemove}
-          accessibilityRole="button"
           accessibilityLabel={`Remove photo ${index + 1}`}
-        >
-          <Text style={styles.removeButtonText}>×</Text>
-        </Pressable>
+          style={styles.removeButton}
+        />
       </View>
     );
   }
   if (canAdd) {
     return (
       <Pressable
-        style={({ pressed }) => [styles.slot, styles.slotAdd, pressed && styles.pressed]}
+        style={({ pressed }) => [styles.slot, styles.slotAdd, pressed && styles.slotPressed]}
         onPress={onAdd}
         accessibilityRole="button"
         accessibilityLabel={`Add photo ${index + 1}`}
       >
-        <Text style={styles.slotAddPlus}>+</Text>
+        <Icon name="plus" size="lg" color={colors.brand} />
         <Text style={styles.slotAddLabel}>Add photo</Text>
       </Pressable>
     );
@@ -352,209 +339,108 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
   return <View style={[styles.slot, styles.slotEmpty]} />;
 }
 
+const singleLineInput = { lineHeight: undefined };
+const BIO_MIN_HEIGHT = spacing.xxxl * 2;
+
 const styles = StyleSheet.create({
-  scroll: {
-    paddingBottom: spacing.xxxl,
-    backgroundColor: colors.surfaceElevated,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    backgroundColor: colors.surfaceElevated,
+    minHeight: layout.headerHeight,
+    paddingHorizontal: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  headerSide: {
+    minWidth: touchTarget * 2,
   },
   title: {
-    ...typography.h3,
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
+    fontSize: typography.bodyLarge.fontSize,
   },
-  backButton: {
-    minWidth: 64,
+  scroll: {
+    padding: layout.screenPadding,
+    paddingBottom: spacing.xxl,
+    gap: spacing.xl,
   },
-  backButtonText: {
-    ...typography.body,
-    color: colors.brand,
-    fontWeight: '600',
-  },
-  form: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    shadowColor: colors.brandDarkest,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
-    gap: spacing.md,
+  section: {
+    gap: spacing.sm + spacing.xs,
   },
   sectionTitle: {
-    ...typography.h3,
-    fontSize: 17,
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  field: {
-    gap: spacing.xs,
-  },
-  label: {
     ...typography.label,
-    color: colors.textSecondary,
-  },
-  required: {
-    color: colors.error,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    // Explicit fontSize/fontWeight only — spreading bodyLarge brings
-    // lineHeight 26 which clips descenders on a single-line TextInput
-    // on Android. Mirrors OnboardingStep1 / RegisterScreen.
-    fontSize: typography.bodyLarge.fontSize,
-    fontWeight: typography.bodyLarge.fontWeight,
-    color: colors.textPrimary,
-    backgroundColor: colors.inputBackground,
-  },
-  bioInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    minHeight: 120,
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    backgroundColor: colors.inputBackground,
-  },
-  charCount: {
-    ...typography.bodySmall,
     color: colors.textTertiary,
-    textAlign: 'right',
+  },
+  cardBody: {
+    gap: spacing.md + spacing.xs,
   },
   helperText: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
+    color: colors.textSecondary,
+  },
+  charCount: {
+    ...typography.caption,
+    alignSelf: 'flex-end',
+  },
+  footer: {
+    paddingHorizontal: layout.screenPadding,
+    paddingVertical: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
+    backgroundColor: colors.background,
   },
   previewGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.sm,
   },
   previewThumb: {
-    width: 72,
-    height: 72,
+    width: '23%',
+    aspectRatio: 3 / 4,
     borderRadius: radii.md,
-    backgroundColor: colors.inputBackground,
-    borderWidth: 1,
-    borderColor: colors.brandSoft,
+    backgroundColor: colors.surfaceHigh,
   },
   editGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginVertical: spacing.sm,
   },
   slot: {
     width: '48%',
-    aspectRatio: 1,
-    borderRadius: radii.lg,
+    aspectRatio: 3 / 4,
+    borderRadius: radii.md,
     overflow: 'hidden',
-    backgroundColor: colors.inputBackground,
+    backgroundColor: colors.surfaceHigh,
   },
   slotImage: {
     width: '100%',
     height: '100%',
   },
   slotAdd: {
-    borderWidth: 2,
-    borderColor: colors.brand,
-    borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.xs,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.brandMuted,
     backgroundColor: colors.brandSoft,
+  },
+  slotPressed: {
+    backgroundColor: colors.surfacePressed,
+  },
+  slotAddLabel: {
+    ...typography.caption,
+    color: colors.brand,
   },
   slotEmpty: {
     borderWidth: 1,
-    borderColor: colors.separator,
-    backgroundColor: colors.inputBackground,
-    opacity: 0.5,
-  },
-  slotAddPlus: {
-    ...typography.h1,
-    color: colors.brand,
-    fontSize: 36,
-    lineHeight: 40,
-  },
-  slotAddLabel: {
-    ...typography.bodySmall,
-    color: colors.brand,
-    fontWeight: '600',
+    borderStyle: 'dashed',
+    borderColor: colors.border,
+    backgroundColor: 'transparent',
   },
   removeButton: {
     position: 'absolute',
     top: spacing.xs,
     right: spacing.xs,
-    width: 28,
-    height: 28,
-    borderRadius: radii.full,
-    backgroundColor: 'rgba(15,23,42,0.65)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  removeButtonText: {
-    // Hardcoded white: the removeButton background is a fixed dark dot,
-    // independent of theme `textInverse`.
-    color: '#FFFFFF',
-    fontSize: 20,
-    lineHeight: 22,
-  },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-    backgroundColor: colors.brandSoft,
-  },
-  secondaryButtonText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  saveButton: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-    marginTop: spacing.md,
-  },
-  saveButtonPressed: {
-    opacity: 0.65,
-  },
-  saveButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-  pressed: {
-    opacity: 0.65,
   },
 });

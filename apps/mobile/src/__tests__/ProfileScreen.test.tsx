@@ -7,7 +7,6 @@
  *  - ../lib/api       (api.get, api.delete)
  *  - expo-web-browser (WebBrowser.openAuthSessionAsync)
  *  - ../components/Screen
- *  - ../theme
  */
 
 import React from 'react';
@@ -97,9 +96,11 @@ jest.mock('../hooks/useRankSummary', () => ({
 // Same isolation pattern as useRankSummary above — the HonorCard component
 // is unit-tested on its own; here we just stub the data path.
 
+let mockHonorSummary: Record<string, unknown> | null = null;
+
 jest.mock('../hooks/useHonorSummary', () => ({
   useHonorSummary: () => ({
-    summary: null,
+    summary: mockHonorSummary,
     isLoading: false,
     error: null,
     refresh: jest.fn(),
@@ -178,7 +179,13 @@ jest.mock('expo-web-browser', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
 
@@ -191,6 +198,7 @@ describe('ProfileScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProfile = null;
+    mockHonorSummary = null;
     mockSportProfiles = [];
     mockRankSummary = null;
     mockRankLoading = false;
@@ -204,11 +212,10 @@ describe('ProfileScreen', () => {
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
-  it('shows a loading indicator while fetchProfile is pending', () => {
+  it('shows a loading skeleton while fetchProfile is pending', () => {
     mockFetchProfile.mockReturnValue(new Promise(() => {}));
-    const { UNSAFE_queryAllByType } = render(<ProfileScreen />);
-    const { ActivityIndicator } = require('react-native');
-    expect(UNSAFE_queryAllByType(ActivityIndicator).length).toBeGreaterThan(0);
+    const { getByLabelText } = render(<ProfileScreen />);
+    getByLabelText('Loading profile');
   });
 
   // ── Profile loaded ─────────────────────────────────────────────────────────
@@ -231,14 +238,55 @@ describe('ProfileScreen', () => {
     await waitFor(() => getByText('Early morning gym sessions only.'));
   });
 
-  it('renders sport profiles with capitalised level', async () => {
+  it('renders sport profiles as badges with capitalised level', async () => {
     mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
-    mockSportProfiles = [{ sport: 'gym', level: 'intermediate' }];
+    mockSportProfiles = [
+      { sport: 'running', level: 'intermediate' },
+      { sport: 'gym', level: 'beginner' },
+    ];
     const { getByText } = render(<ProfileScreen />);
     await waitFor(() => {
-      getByText('Gym');
-      getByText('Intermediate');
+      getByText('Running · Intermediate');
+      getByText('Gym · Beginner');
     });
+  });
+
+  it('shows a stats row from the Honor summary and upcoming count', async () => {
+    mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+    mockHonorSummary = {
+      honorScore: 72,
+      honorLevel: 'Trusted',
+      gangScore: 30,
+      completedGamesCount: 12,
+      hostedGamesCount: 2,
+      noShowCount: 0,
+      sportLevels: [],
+    };
+    const { findByLabelText } = render(<ProfileScreen />);
+    await findByLabelText('12, Completed');
+    await findByLabelText('72, Honor');
+    await findByLabelText('0, Upcoming');
+  });
+
+  it('does not invent stats when the Honor summary is unavailable', async () => {
+    mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+    const { findByLabelText } = render(<ProfileScreen />);
+    await findByLabelText('–, Completed');
+    await findByLabelText('–, Honor');
+  });
+
+  it('opens the Crews tab from Your crews', async () => {
+    mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+    const { findByLabelText } = render(<ProfileScreen />);
+    fireEvent.press(await findByLabelText('Your crews'));
+    expect(mockNavigate).toHaveBeenCalledWith('Main', { screen: 'Crews' });
+  });
+
+  it('opens Blocked users from the safety section', async () => {
+    mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+    const { findByLabelText } = render(<ProfileScreen />);
+    fireEvent.press(await findByLabelText('Blocked users'));
+    expect(mockNavigate).toHaveBeenCalledWith('BlockedUsers');
   });
 
   // ── Empty / not-yet-created profile ───────────────────────────────────────
