@@ -149,15 +149,20 @@ let mockMyTitles: {
   updatedAt: string;
 }[] = [];
 
+const mockUseHonorSystem = jest.fn();
+
 jest.mock('../hooks/useHonorSystem', () => ({
-  useHonorSystem: () => ({
-    rank: mockLocalRank,
-    localChampion: mockLocalChampion,
-    myTitles: mockMyTitles,
-    isLoading: false,
-    error: null,
-    refresh: jest.fn(),
-  }),
+  useHonorSystem: (args: unknown) => {
+    mockUseHonorSystem(args);
+    return {
+      rank: mockLocalRank,
+      localChampion: mockLocalChampion,
+      myTitles: mockMyTitles,
+      isLoading: false,
+      error: null,
+      refresh: jest.fn(),
+    };
+  },
 }));
 
 // ─── Mock useTournamentsAvailable hook ────────────────────────────────────────
@@ -575,8 +580,50 @@ describe('ProfileScreen', () => {
   //   * no Honor System mutation endpoint is called from Profile.
 
   describe('local rank section', () => {
-    it('renders the Local Rank section with empty-state copy for a new user', async () => {
+    it('scopes the Honor System to the primary sport and suburb area', async () => {
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Balmain East', bio: null };
+      mockSportProfiles = [
+        { sport: 'tennis', level: 'intermediate' },
+        { sport: 'running', level: 'beginner' },
+      ];
+      const { findByText } = render(<ProfileScreen />);
+      await findByText('Balmain East Tennis Rank');
+      expect(mockUseHonorSystem).toHaveBeenLastCalledWith({
+        sport: 'tennis',
+        area: 'balmain east',
+        enabled: true,
+      });
+      // The old hard-coded MVP scope must be gone.
+      expect(mockUseHonorSystem).not.toHaveBeenCalledWith(
+        expect.objectContaining({ area: 'annandale' })
+      );
+    });
+
+    it('falls back to running when the user has no sport profiles', async () => {
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Newtown', bio: null };
+      mockSportProfiles = [];
+      const { findByText } = render(<ProfileScreen />);
+      await findByText('Newtown Running Rank');
+      expect(mockUseHonorSystem).toHaveBeenLastCalledWith({
+        sport: 'running',
+        area: 'newtown',
+        enabled: true,
+      });
+    });
+
+    it('skips the Honor System fetch and hides the section without a suburb', async () => {
       mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+      const { findByText, queryByLabelText } = render(<ProfileScreen />);
+      await findByText('Jordan Lee');
+      expect(queryByLabelText('Local rank section')).toBeNull();
+      expect(mockUseHonorSystem).toHaveBeenLastCalledWith(
+        expect.objectContaining({ enabled: false })
+      );
+    });
+
+    it('renders the Local Rank section with empty-state copy for a new user', async () => {
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Annandale', bio: null };
+      mockSportProfiles = [{ sport: 'tennis', level: 'beginner' }];
       // Default mocks: rank null + no titles.
       const { findByLabelText, findByText } = render(<ProfileScreen />);
       await findByLabelText('Local rank section');
@@ -587,7 +634,8 @@ describe('ProfileScreen', () => {
     });
 
     it('renders rating / wins / streak when the user has activity', async () => {
-      mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Annandale', bio: null };
+      mockSportProfiles = [{ sport: 'tennis', level: 'beginner' }];
       mockLocalRank = {
         id: 'rp-1',
         userId: 'u-1',
@@ -608,7 +656,8 @@ describe('ProfileScreen', () => {
     });
 
     it('renders the local champion row when a holder exists', async () => {
-      mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Annandale', bio: null };
+      mockSportProfiles = [{ sport: 'tennis', level: 'beginner' }];
       mockLocalRank = {
         id: 'rp-1',
         userId: 'u-1',
@@ -641,7 +690,8 @@ describe('ProfileScreen', () => {
       // ProfileScreen must not call POST/PUT/PATCH/DELETE against the
       // Honor System routes. The public API is read-only and there is
       // no mutation surface on this screen.
-      mockProfile = { displayName: 'Jordan Lee', suburb: null, bio: null };
+      mockProfile = { displayName: 'Jordan Lee', suburb: 'Annandale', bio: null };
+      mockSportProfiles = [{ sport: 'tennis', level: 'beginner' }];
       const { findByLabelText } = render(<ProfileScreen />);
       await findByLabelText('Local rank section');
 

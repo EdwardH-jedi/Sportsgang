@@ -18,6 +18,7 @@ import { useDeleteAccount } from '../../hooks/useAccount';
 import { useHonorSummary } from '../../hooks/useHonorSummary';
 import { useHonorSystem } from '../../hooks/useHonorSystem';
 import { useUpcomingSessions } from '../../hooks/useUpcomingSessions';
+import { areaFromSuburb, primarySport } from '../../lib/honorSystem';
 import { openLegal, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../../lib/legal';
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
@@ -48,19 +49,25 @@ export function ProfileScreen() {
     isLoading: honorLoading,
     error: honorError,
   } = useHonorSummary();
-  // Honor System (local champion titles) read-only surface. The
-  // (sport, area) pair here is a temporary MVP default — replace with
-  // the user's selected sport/location context once Profile exposes a
-  // "primary sport + area" preference. The backend GET /rankings/me is
-  // read-only and returns the default rank row without persisting, so
-  // a brand-new user safely lands on the empty state.
+  // Honor System (local champion titles) read-only surface, scoped to the
+  // user's primary sport (first sport profile, else the registry default)
+  // and their suburb as the area key. No fetch until the profile has a
+  // suburb. The backend GET /rankings/me is read-only and returns the
+  // default rank row without persisting, so a brand-new user safely lands
+  // on the empty state.
+  const honorSport = primarySport(sportProfiles);
+  const honorArea = areaFromSuburb(profile?.suburb);
   const {
     rank: localRank,
     localChampion,
     myTitles,
     isLoading: localRankLoading,
     error: localRankError,
-  } = useHonorSystem({ sport: 'tennis', area: 'annandale' });
+  } = useHonorSystem({
+    sport: honorSport,
+    area: honorArea ?? '',
+    enabled: honorArea !== null,
+  });
   // Local guard so a double-tap or repeat confirmation cannot fire
   // DELETE /auth/me twice. Also blocks Log out while a delete is mid-flight.
   // A ref (not state) is required because Alert button onPress callbacks close
@@ -228,15 +235,18 @@ export function ProfileScreen() {
               error={honorError}
             />
 
-            <LocalRankSection
-              sport="tennis"
-              area="annandale"
-              rank={localRank}
-              localChampion={localChampion}
-              myTitles={myTitles}
-              isLoading={localRankLoading}
-              error={localRankError}
-            />
+            {honorArea !== null && profile.suburb ? (
+              <LocalRankSection
+                sport={honorSport}
+                // Display form (e.g. "Balmain East"); the hook gets the key.
+                area={profile.suburb.trim()}
+                rank={localRank}
+                localChampion={localChampion}
+                myTitles={myTitles}
+                isLoading={localRankLoading}
+                error={localRankError}
+              />
+            ) : null}
 
             {profile.bio ? (
               <View style={styles.card}>

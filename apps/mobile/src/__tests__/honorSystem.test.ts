@@ -113,3 +113,24 @@ describe('honor system API client', () => {
     }
   });
 });
+
+describe('honor system scope helpers', () => {
+  it('areaFromSuburb lowercases and collapses whitespace', () => {
+    expect(honorSystem.areaFromSuburb('Annandale')).toBe('annandale');
+    expect(honorSystem.areaFromSuburb('  Balmain   East ')).toBe('balmain east');
+  });
+
+  it('areaFromSuburb returns null without a usable suburb', () => {
+    expect(honorSystem.areaFromSuburb(null)).toBeNull();
+    expect(honorSystem.areaFromSuburb(undefined)).toBeNull();
+    expect(honorSystem.areaFromSuburb('   ')).toBeNull();
+  });
+
+  it('primarySport picks the first sport profile, else running', () => {
+    expect(
+      honorSystem.primarySport([{ sport: 'golf' }, { sport: 'running' }])
+    ).toBe('golf');
+    expect(honorSystem.primarySport([])).toBe('running');
+    expect(honorSystem.primarySport(null)).toBe('running');
+  });
+});

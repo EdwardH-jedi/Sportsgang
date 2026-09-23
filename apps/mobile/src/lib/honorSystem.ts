@@ -12,6 +12,7 @@
  */
 
 import { api } from './api';
+import { DEFAULT_SPORT } from './sports';
 import type {
   HonorTitleRead,
   RankProfileRead,
@@ -24,6 +25,30 @@ export type {
   RankingEntry,
   RankingListResponse,
 } from '@protin/shared-types';
+
+/**
+ * Honor System `area` key for a profile suburb.
+ *
+ * The backend matches `area` verbatim (no normalisation) and derives the
+ * title name with Python's `str.title()` ("annandale" → "Annandale Tennis
+ * Champion"), so the canonical key is the lowercased suburb name with
+ * whitespace collapsed — e.g. "Balmain East" → "balmain east". Returns
+ * null when there is no usable suburb.
+ */
+export function areaFromSuburb(suburb: string | null | undefined): string | null {
+  const normalized = (suburb ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+  return normalized.length > 0 ? normalized : null;
+}
+
+/**
+ * The signed-in user's primary sport for Honor System surfaces: the first
+ * sport profile they saved, else the registry default (running).
+ */
+export function primarySport(
+  sportProfiles: readonly { sport: string }[] | null | undefined
+): string {
+  return sportProfiles?.[0]?.sport ?? DEFAULT_SPORT;
+}
 
 function buildQuery(params: Record<string, string>): string {
   const usp = new URLSearchParams();
