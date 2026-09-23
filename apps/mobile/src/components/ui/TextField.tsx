@@ -9,13 +9,15 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, iconSizes, radii, spacing, typography } from '../../theme';
 import { Icon, type IconName } from './Icon';
 import { IconButton } from './IconButton';
 
 export interface TextFieldProps extends Omit<TextInputProps, 'style' | 'secureTextEntry'> {
   /** Visible label above the input; also the default accessibility label. */
   label?: string;
+  /** Appends the red required marker (" *") to the visible label. */
+  required?: boolean;
   /** Hint below the input (hidden while an error shows). */
   helper?: string;
   /** Error text below the input; turns the border red and is announced. */
@@ -30,10 +32,14 @@ export interface TextFieldProps extends Omit<TextInputProps, 'style' | 'secureTe
   disabled?: boolean;
 }
 
+/** Diameter of the `sm` IconButton used for the show / hide toggle. */
+const TRAILING_BUTTON = 32;
+
 /** Labelled text input with helper / error text, focus ring and secure toggle. */
 export const TextField = forwardRef<TextInput, TextFieldProps>(function TextField(
   {
     label,
+    required = false,
     helper,
     error,
     secure = false,
@@ -62,11 +68,14 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
       {label ? (
         <Text style={styles.label} nativeID={testID ? `${testID}-label` : undefined}>
           {label}
+          {required ? <Text style={styles.required}> *</Text> : null}
         </Text>
       ) : null}
       <View
+        testID={testID ? `${testID}-field` : undefined}
         style={[
           styles.field,
+          secure && styles.fieldWithTrailing,
           { borderColor },
           multiline && { minHeight, alignItems: 'flex-start' },
           disabled && styles.disabled,
@@ -142,6 +151,9 @@ const styles = StyleSheet.create({
   label: {
     ...typography.label,
   },
+  required: {
+    color: colors.error,
+  },
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -149,16 +161,31 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: 1,
     backgroundColor: colors.inputBackground,
-    paddingHorizontal: spacing.md - 2,
+    paddingHorizontal: spacing.md,
     gap: spacing.sm,
+  },
+  /**
+   * The reveal IconButton (sm, 32pt) centres a 16pt glyph, so trim the
+   * right padding by its inner inset: the glyph then sits 16pt from the
+   * edge, mirroring a leading icon.
+   */
+  fieldWithTrailing: {
+    paddingRight: spacing.md - (TRAILING_BUTTON - iconSizes.sm) / 2,
   },
   input: {
     ...typography.bodyLarge,
+    // No lineHeight on a single-line input: Android clips descenders when
+    // a TextInput's lineHeight exceeds its font box. Multiline restores it.
+    lineHeight: undefined,
     flex: 1,
+    // Allow the input to shrink so trailing controls stay inside the field
+    // (web inputs otherwise keep an intrinsic min width).
+    minWidth: 0,
     paddingVertical: spacing.sm + 4,
     color: colors.textPrimary,
   },
   multiline: {
+    lineHeight: typography.bodyLarge.lineHeight,
     textAlignVertical: 'top',
   },
   leadingIconTop: {

@@ -18,6 +18,11 @@ export interface StatBlockProps {
   icon?: IconName;
   /** Lime value for the headline stat. */
   accent?: boolean;
+  /**
+   * Lines the label may wrap to (default 1). Use 2 in narrow grids
+   * instead of letting a long label run into its neighbour.
+   */
+  labelLines?: 1 | 2;
   /** Defaults to "value unit, label" (e.g. "5.2 km, Distance"). */
   accessibilityLabel?: string;
   testID?: string;
@@ -40,6 +45,7 @@ export function StatBlock({
   align = 'left',
   icon,
   accent = false,
+  labelLines = 1,
   accessibilityLabel,
   testID,
   style,
@@ -58,7 +64,7 @@ export function StatBlock({
     >
       <View style={[styles.valueRow, centered && styles.centeredRow]}>
         <Text
-          style={[VALUE_STYLE[size], accent && styles.accent]}
+          style={[VALUE_STYLE[size], styles.value, accent && styles.accent]}
           numberOfLines={1}
           adjustsFontSizeToFit
           minimumFontScale={0.7}
@@ -69,7 +75,10 @@ export function StatBlock({
       </View>
       <View style={[styles.labelRow, centered && styles.centeredRow]}>
         {icon ? <Icon name={icon} size="xs" color={colors.textTertiary} /> : null}
-        <Text style={styles.label} numberOfLines={1}>
+        <Text
+          style={[styles.label, size === 'sm' && styles.labelSm, centered && styles.labelCentered]}
+          numberOfLines={labelLines}
+        >
           {label}
         </Text>
       </View>
@@ -77,9 +86,40 @@ export function StatBlock({
   );
 }
 
+export interface StatRowProps {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  testID?: string;
+}
+
+/**
+ * Row of StatBlocks that never clips: blocks keep their natural width and
+ * wrap onto a second line when a wide value (a pace band like
+ * "5:30–6:00 /km") leaves no room for the next one.
+ */
+export function StatRow({ children, style, testID }: StatRowProps) {
+  return (
+    <View style={[styles.row, style]} testID={testID}>
+      {children}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     gap: 2,
+    // Let a block shrink inside a row instead of pushing siblings off-screen.
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: spacing.xl,
+    rowGap: spacing.md,
+  },
+  value: {
+    flexShrink: 1,
   },
   centered: {
     alignItems: 'center',
@@ -110,5 +150,13 @@ const styles = StyleSheet.create({
   label: {
     ...typography.label,
     color: colors.textTertiary,
+    flexShrink: 1,
+  },
+  /** Tighter tracking so small-grid captions ("No-shows") fit their cell. */
+  labelSm: {
+    letterSpacing: 0.6,
+  },
+  labelCentered: {
+    textAlign: 'center',
   },
 });

@@ -9,7 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { colors, face, radii } from '../../theme';
+import { avatarColors, colors, face, radii, spacing } from '../../theme';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -35,6 +35,19 @@ export function initialsFor(name: string): string {
   const first = parts[0][0] ?? '';
   const last = parts.length > 1 ? parts[parts.length - 1][0] ?? '' : '';
   return (first + last).toUpperCase();
+}
+
+/**
+ * Stable initials fill for a person: a small string hash into the
+ * `avatarColors` token palette, so the same name always gets the same tint
+ * and neighbours in a stack usually differ.
+ */
+export function avatarColorFor(name: string): string {
+  let hash = 0;
+  for (const ch of name.trim().toLowerCase()) {
+    hash = (hash * 31 + (ch.codePointAt(0) ?? 0)) | 0;
+  }
+  return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
 /** Round profile image with an initials fallback (also used on load error). */
@@ -74,7 +87,12 @@ export function Avatar({
         <View
           style={[
             styles.fallback,
-            { width: ring ? inner : d, height: ring ? inner : d, borderRadius: d / 2 },
+            {
+              width: ring ? inner : d,
+              height: ring ? inner : d,
+              borderRadius: d / 2,
+              backgroundColor: avatarColorFor(name),
+            },
           ]}
         >
           <Text style={[styles.initials, { fontSize: Math.max(10, Math.round(d * 0.38)) }]}>
@@ -112,12 +130,29 @@ export interface AvatarGroupProps {
   size?: AvatarSize;
   /** Total member count when `people` is a preview slice. */
   total?: number;
+  /**
+   * Colour of the separating ring around each avatar — match the surface
+   * the group sits on (default `colors.background`).
+   */
+  ringColor?: string;
   testID?: string;
 }
 
+/** Width of the separating ring around each stacked avatar. */
+const STACK_RING = 2;
+
 /** Overlapping avatar stack with a "+N" counter (crew members). */
-export function AvatarGroup({ people, max = 4, size = 'sm', total, testID }: AvatarGroupProps) {
+export function AvatarGroup({
+  people,
+  max = 4,
+  size = 'sm',
+  total,
+  ringColor = colors.background,
+  testID,
+}: AvatarGroupProps) {
   const d = SIZES[size];
+  const outer = d + STACK_RING * 2;
+  const overlap = -Math.round(d * 0.3);
   const shown = people.slice(0, max);
   const count = total ?? people.length;
   const extra = count - shown.length;
@@ -133,19 +168,35 @@ export function AvatarGroup({ people, max = 4, size = 'sm', total, testID }: Ava
       {shown.map((p, i) => (
         <View
           key={`${p.name}-${i}`}
-          style={[styles.groupItem, { marginLeft: i === 0 ? 0 : -d * 0.3, zIndex: shown.length - i }]}
+          style={[
+            styles.groupItem,
+            { borderColor: ringColor, marginLeft: i === 0 ? 0 : overlap, zIndex: shown.length - i },
+          ]}
         >
           <Avatar name={p.name} uri={p.uri} size={size} />
         </View>
       ))}
       {extra > 0 ? (
+        // Drawn last and above the stack so the "+N" is never tucked under
+        // the previous avatar.
         <View
+          testID={testID ? `${testID}-more` : undefined}
           style={[
             styles.more,
-            { width: d, height: d, borderRadius: d / 2, marginLeft: -d * 0.3 },
+            {
+              minWidth: outer,
+              height: outer,
+              borderRadius: outer / 2,
+              borderColor: ringColor,
+              marginLeft: overlap,
+              zIndex: shown.length + 1,
+            },
           ]}
         >
-          <Text style={[styles.moreText, { fontSize: Math.max(10, Math.round(d * 0.34)) }]}>
+          <Text
+            style={[styles.moreText, { fontSize: Math.max(10, Math.round(d * 0.34)) }]}
+            numberOfLines={1}
+          >
             +{extra}
           </Text>
         </View>
@@ -179,15 +230,14 @@ const styles = StyleSheet.create({
   },
   groupItem: {
     borderRadius: radii.full,
-    borderWidth: 2,
-    borderColor: colors.background,
+    borderWidth: STACK_RING,
   },
   more: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surfaceElevated,
-    borderWidth: 2,
-    borderColor: colors.background,
+    paddingHorizontal: spacing.xs,
+    backgroundColor: colors.surfaceHigh,
+    borderWidth: STACK_RING,
   },
   moreText: {
     ...face('semibold', '600'),

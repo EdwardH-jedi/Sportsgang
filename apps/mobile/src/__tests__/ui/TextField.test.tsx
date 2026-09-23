@@ -69,3 +69,26 @@ describe('TextField', () => {
     expect(ref.current).toBeTruthy();
   });
 });
+
+describe('TextField polish', () => {
+  it('marks required fields with the red asterisk and keeps a clean accessible name', () => {
+    const { getByText, getByLabelText } = render(<TextField label="Display name" required />);
+    expect(StyleSheet.flatten(getByText(' *').props.style).color).toBe(colors.error);
+    expect(getByLabelText('Display name')).toBeTruthy();
+  });
+
+  it('single-line inputs carry no lineHeight; multiline keeps it', () => {
+    const { getByLabelText, rerender } = render(<TextField label="Email" />);
+    expect(StyleSheet.flatten(getByLabelText('Email').props.style).lineHeight).toBeUndefined();
+    rerender(<TextField label="Email" multiline />);
+    expect(StyleSheet.flatten(getByLabelText('Email').props.style).lineHeight).toBeGreaterThan(0);
+  });
+
+  it('pads the reveal toggle so its glyph mirrors a leading icon inset', () => {
+    const { getByTestId } = render(<TextField label="Password" secure leadingIcon="lock" testID="pw" />);
+    const style = StyleSheet.flatten(getByTestId('pw-field').props.style);
+    expect(style.paddingHorizontal).toBe(16);
+    // 32pt button centring a 16pt glyph: 8 + 8 = 16 from the edge.
+    expect(style.paddingRight).toBe(8);
+  });
+});

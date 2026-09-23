@@ -53,6 +53,12 @@ export interface BottomSheetProps {
   title?: string;
   /** Custom content for the drag area (below the title). */
   header?: React.ReactNode;
+  /**
+   * Space kept clear below the content. Defaults to the bottom safe-area
+   * inset; pass 0 for a non-modal sheet whose parent already ends above
+   * the home indicator (e.g. inside a tab screen, above the tab bar).
+   */
+  bottomInset?: number;
   /** Screen-reader name of the sheet (default: title or "Sheet"). */
   accessibilityLabel?: string;
   testID?: string;
@@ -92,6 +98,7 @@ export function BottomSheet({
   dismissible,
   title,
   header,
+  bottomInset,
   accessibilityLabel,
   testID = 'bottom-sheet',
 }: BottomSheetProps) {
@@ -303,7 +310,12 @@ export function BottomSheet({
             {header}
           </View>
         </GestureDetector>
-        <View style={[styles.content, { paddingBottom: insets.bottom }]}>{children}</View>
+        <View
+          style={[styles.content, { paddingBottom: bottomInset ?? insets.bottom }]}
+          testID={`${testID}-content`}
+        >
+          {children}
+        </View>
       </Animated.View>
     </View>
   );

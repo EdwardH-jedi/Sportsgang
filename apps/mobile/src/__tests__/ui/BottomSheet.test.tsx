@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
@@ -163,5 +163,16 @@ describe('BottomSheet (modal)', () => {
     );
     fireEvent.press(backdrop(utils));
     expect(onClose).not.toHaveBeenCalled();
+  });
+});
+
+describe('BottomSheet bottom inset', () => {
+  it('can drop the safe-area padding when it already sits above a tab bar', () => {
+    const { getByTestId } = render(
+      <BottomSheet snapPoints={[100]} bottomInset={0}>
+        <Text>Runs</Text>
+      </BottomSheet>
+    );
+    expect(StyleSheet.flatten(getByTestId('bottom-sheet-content').props.style).paddingBottom).toBe(0);
   });
 });

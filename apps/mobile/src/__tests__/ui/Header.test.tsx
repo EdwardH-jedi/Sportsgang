@@ -50,3 +50,27 @@ describe('Header', () => {
     expect(getByText('R')).toBeTruthy();
   });
 });
+
+describe('Header slots', () => {
+  it('renders a leading slot next to the back button', () => {
+    const { getByText, getByRole } = render(
+      <Header title="Edit profile" leading={<Text>Cancel</Text>} />
+    );
+    expect(getByText('Cancel')).toBeTruthy();
+    expect(getByRole('header', { name: 'Edit profile' })).toBeTruthy();
+  });
+
+  it('renders an identity bar when there is a leading block but no title', () => {
+    const { getByText, getByRole } = render(
+      <Header onBack={jest.fn()} backLabel="Back" leading={<Text>Mia Chen</Text>} />
+    );
+    expect(getByText('Mia Chen')).toBeTruthy();
+    expect(getByRole('button', { name: 'Back' })).toBeTruthy();
+  });
+
+  it('large headers keep the action row height even without actions', () => {
+    const { getByTestId } = render(<Header large title="Chats" testID="hdr" />);
+    // Bar row + title: the bar is always present so titles align across tabs.
+    expect(getByTestId('hdr').children).toHaveLength(2);
+  });
+});

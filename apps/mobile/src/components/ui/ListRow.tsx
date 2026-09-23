@@ -7,6 +7,8 @@ import { Icon, type IconName } from './Icon';
 export interface ListRowProps {
   title: string;
   subtitle?: string;
+  /** Lines the subtitle may take before truncating (default 2). */
+  subtitleLines?: number;
   /** Leading icon in a tinted square. */
   icon?: IconName;
   iconColor?: string;
@@ -33,6 +35,7 @@ export interface ListRowProps {
 export function ListRow({
   title,
   subtitle,
+  subtitleLines = 2,
   icon,
   iconColor,
   leading,
@@ -64,7 +67,7 @@ export function ListRow({
           {title}
         </Text>
         {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={2}>
+          <Text style={styles.subtitle} numberOfLines={subtitleLines}>
             {subtitle}
           </Text>
         ) : null}
@@ -74,7 +77,13 @@ export function ListRow({
           {value}
         </Text>
       ) : null}
-      {trailing}
+      {/* Wrapped so self-aligning content (Badge / Chip use alignSelf
+          'flex-start') still centres on the row instead of riding high. */}
+      {trailing ? (
+        <View style={styles.trailing} testID={testID ? `${testID}-trailing` : undefined}>
+          {trailing}
+        </View>
+      ) : null}
       {showChevron ? <Icon name="chevron-right" size="md" color={colors.textTertiary} /> : null}
     </View>
   );
@@ -139,6 +148,9 @@ const styles = StyleSheet.create({
   subtitle: {
     ...typography.bodySmall,
     color: colors.textSecondary,
+  },
+  trailing: {
+    justifyContent: 'center',
   },
   value: {
     ...typography.body,

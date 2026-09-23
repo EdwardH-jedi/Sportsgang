@@ -72,3 +72,17 @@ export const surfaceLevels = {
 } as const;
 
 export type SurfaceLevel = keyof typeof surfaceLevels;
+
+/**
+ * Initials-avatar fills. Deep, low-saturation tints so stacked avatars read
+ * as different people while off-white initials keep AA contrast. Picked per
+ * person by a stable name hash (`avatarColorFor` in components/ui/Avatar).
+ */
+export const avatarColors = [
+  '#2B3A14', // lime
+  '#163744', // teal
+  '#35214A', // violet
+  '#46301A', // amber
+  '#173A2A', // green
+  '#46202A', // rose
+] as const;

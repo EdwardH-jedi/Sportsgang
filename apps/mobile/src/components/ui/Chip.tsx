@@ -16,6 +16,12 @@ export interface ChipProps {
   icon?: IconName;
   disabled?: boolean;
   size?: 'sm' | 'md';
+  /**
+   * Choice semantics. Default 'button' (filters, actions). 'checkbox' for
+   * multi-select and 'radio' for single-select choices: announced with a
+   * checked state and a check glyph when selected.
+   */
+  role?: 'button' | 'checkbox' | 'radio';
   accessibilityLabel?: string;
   testID?: string;
   style?: StyleProp<ViewStyle>;
@@ -31,16 +37,19 @@ export function Chip({
   icon,
   disabled = false,
   size = 'md',
+  role = 'button',
   accessibilityLabel,
   testID,
   style,
 }: ChipProps) {
+  const isChoice = role !== 'button';
+  const glyph: IconName | undefined = icon ?? (isChoice && selected ? 'check' : undefined);
   const { animatedStyle, onPressIn, onPressOut, pressed } = usePressScale();
   const fg = selected ? colors.textInverse : colors.textPrimary;
   const height = HEIGHT[size];
   const content = (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' ? 'xs' : 'sm'} color={selected ? fg : colors.textSecondary} /> : null}
+      {glyph ? <Icon name={glyph} size={size === 'sm' ? 'xs' : 'sm'} color={selected ? fg : colors.textSecondary} /> : null}
       <Text style={[styles.label, { color: fg }]} numberOfLines={1}>
         {label}
       </Text>
@@ -72,9 +81,9 @@ export function Chip({
       onPressOut={onPressOut}
       disabled={disabled}
       hitSlop={{ top: slop, bottom: slop, left: 2, right: 2 }}
-      accessibilityRole="button"
+      accessibilityRole={role}
       accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ selected, disabled }}
+      accessibilityState={isChoice ? { checked: selected, disabled } : { selected, disabled }}
       testID={testID}
       style={[
         surface,

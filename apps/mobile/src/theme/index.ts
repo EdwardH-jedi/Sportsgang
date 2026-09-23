@@ -4,6 +4,7 @@
  * Import everything from `../theme`:
  *
  *   colors / surfaceLevels  — colour values (unchanged v1 tokens + additions)
+ *   avatarColors            — initials-avatar fills (picked by name hash)
  *   spacing / radii         — layout scale
  *   elevation               — iOS shadow + Android elevation presets
  *   motion                  — durations, easing curves, spring configs
@@ -13,7 +14,7 @@
  * Rules: screens never hard-code colours or sizes; use these tokens and the
  * primitives in `components/ui`.
  */
-export { colors, surfaceLevels } from './colors';
+export { avatarColors, colors, surfaceLevels } from './colors';
 export type { SurfaceLevel } from './colors';
 export { fonts, face, typography } from './typography';
 export type { FontToken, TypographyVariant } from './typography';

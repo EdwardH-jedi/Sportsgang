@@ -27,6 +27,12 @@ export interface HeaderProps {
   actions?: readonly HeaderAction[];
   /** Custom right-side content (rendered after `actions`). */
   right?: React.ReactNode;
+  /**
+   * Custom left-side content, rendered after the back button: a text
+   * action ("Cancel") or an identity block (avatar + name). With no
+   * `title` the leading block takes the free width.
+   */
+  leading?: React.ReactNode;
   /** Large condensed title for top-level screens; compact centred bar otherwise. */
   large?: boolean;
   testID?: string;
@@ -46,6 +52,7 @@ export function Header({
   backLabel = 'Go back',
   actions = [],
   right,
+  leading,
   large = false,
   testID,
   style,
@@ -78,14 +85,17 @@ export function Header({
     ) : null;
 
   if (large) {
+    // The bar row is always rendered (even empty) so large titles sit at
+    // the same height on every top-level screen, with or without actions.
     return (
       <View style={[styles.large, style]} testID={testID}>
-        {back || trailing ? (
-          <View style={styles.bar}>
-            <View style={styles.side}>{back}</View>
-            <View style={[styles.side, styles.sideRight]}>{trailing}</View>
+        <View style={styles.bar}>
+          <View style={styles.side}>
+            {back}
+            {leading}
           </View>
-        ) : null}
+          <View style={[styles.side, styles.sideRight]}>{trailing}</View>
+        </View>
         {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
         {title ? (
           <Text style={styles.largeTitle} accessibilityRole="header" numberOfLines={2}>
@@ -97,9 +107,28 @@ export function Header({
     );
   }
 
+  const hasTitle = Boolean(title || subtitle);
+
+  if (!hasTitle && leading) {
+    // Identity bar (e.g. Chat): back · leading block (fills) · actions.
+    return (
+      <View style={[styles.bar, styles.compact, style]} testID={testID}>
+        {back}
+        <View style={styles.leadingFill}>{leading}</View>
+        {trailing}
+      </View>
+    );
+  }
+
+  // Equal-flex sides keep the title optically centred even when the two
+  // sides hold content of different widths (a "Cancel" text button vs one
+  // icon).
   return (
     <View style={[styles.bar, styles.compact, style]} testID={testID}>
-      <View style={styles.side}>{back}</View>
+      <View style={[styles.side, styles.sideFlex]}>
+        {back}
+        {leading}
+      </View>
       <View style={styles.center}>
         {title ? (
           <Text style={styles.title} accessibilityRole="header" numberOfLines={1}>
@@ -112,7 +141,7 @@ export function Header({
           </Text>
         ) : null}
       </View>
-      <View style={[styles.side, styles.sideRight]}>{trailing}</View>
+      <View style={[styles.side, styles.sideFlex, styles.sideRight]}>{trailing}</View>
     </View>
   );
 }
@@ -131,12 +160,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  sideFlex: {
+    flex: 1,
+    flexBasis: 0,
+  },
   sideRight: {
     justifyContent: 'flex-end',
     marginLeft: 'auto',
   },
   center: {
+    flexShrink: 1,
+    alignItems: 'center',
+  },
+  leadingFill: {
     flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
     alignItems: 'center',
   },
   actions: {

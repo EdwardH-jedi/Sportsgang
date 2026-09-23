@@ -56,3 +56,22 @@ describe('Chip', () => {
     expect(h + node.props.hitSlop.top + node.props.hitSlop.bottom).toBeGreaterThanOrEqual(44);
   });
 });
+
+describe('Chip choice roles', () => {
+  it('checkbox chips expose checked state and show a check when selected', () => {
+    const { getByRole, getByTestId, rerender, queryByTestId } = render(
+      <Chip label="Men" role="checkbox" selected onPress={jest.fn()} />
+    );
+    const chip = getByRole('checkbox', { name: 'Men' });
+    expect(chip.props.accessibilityState).toMatchObject({ checked: true });
+    expect(getByTestId('icon-check', { includeHiddenElements: true })).toBeTruthy();
+    rerender(<Chip label="Men" role="checkbox" selected={false} onPress={jest.fn()} />);
+    expect(getByRole('checkbox', { name: 'Men' }).props.accessibilityState).toMatchObject({ checked: false });
+    expect(queryByTestId('icon-check', { includeHiddenElements: true })).toBeNull();
+  });
+
+  it('radio chips use the radio role', () => {
+    const { getByRole } = render(<Chip label="Beginner" role="radio" selected onPress={jest.fn()} />);
+    expect(getByRole('radio', { name: 'Beginner' })).toBeTruthy();
+  });
+});

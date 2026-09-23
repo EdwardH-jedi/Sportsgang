@@ -22,6 +22,11 @@ export interface EmptyStateProps {
   secondaryAction?: EmptyStateAction;
   /** Tighter spacing for use inside cards / sheets. */
   compact?: boolean;
+  /**
+   * Screen-reader summary of the whole block. Without actions the block is
+   * then read as one element; with actions the buttons stay focusable.
+   */
+  accessibilityLabel?: string;
   testID?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -34,11 +39,18 @@ export function EmptyState({
   action,
   secondaryAction,
   compact = false,
+  accessibilityLabel,
   testID,
   style,
 }: EmptyStateProps) {
+  const hasActions = Boolean(action || secondaryAction);
   return (
-    <View style={[styles.container, compact && styles.compact, style]} testID={testID}>
+    <View
+      style={[styles.container, compact && styles.compact, style]}
+      accessible={accessibilityLabel ? !hasActions : undefined}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+    >
       {icon ? (
         <View style={[styles.iconWrap, compact && styles.iconWrapCompact]}>
           <Icon name={icon} size={compact ? 'lg' : 'xl'} color={colors.brand} />
@@ -48,7 +60,7 @@ export function EmptyState({
         {title}
       </Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}
-      {action || secondaryAction ? (
+      {hasActions ? (
         <View style={styles.actions}>
           {action ? (
             <Button

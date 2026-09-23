@@ -34,3 +34,18 @@ describe('EmptyState', () => {
     expect(queryByRole('button')).toBeNull();
   });
 });
+
+describe('EmptyState accessibility label', () => {
+  it('reads as one element with the given label when it has no actions', () => {
+    const { getByLabelText } = render(<EmptyState title="Host only" accessibilityLabel="Attendance check is host only" />);
+    expect(getByLabelText('Attendance check is host only').props.accessible).toBe(true);
+  });
+
+  it('keeps action buttons reachable when labelled', () => {
+    const { getByLabelText, getByRole } = render(
+      <EmptyState title="Oops" accessibilityLabel="Load failed" action={{ label: 'Retry', onPress: jest.fn() }} />
+    );
+    expect(getByLabelText('Load failed').props.accessible).toBe(false);
+    expect(getByRole('button', { name: 'Retry' })).toBeTruthy();
+  });
+});

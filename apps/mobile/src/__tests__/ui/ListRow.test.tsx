@@ -51,3 +51,17 @@ describe('ListRow', () => {
     expect(getByRole('button', { name: 'Open help' })).toBeTruthy();
   });
 });
+
+describe('ListRow layout options', () => {
+  it('subtitleLines controls how far the subtitle may run', () => {
+    const { getByText, rerender } = render(<ListRow title="Mia" subtitle="Long message" />);
+    expect(getByText('Long message').props.numberOfLines).toBe(2);
+    rerender(<ListRow title="Mia" subtitle="Long message" subtitleLines={3} />);
+    expect(getByText('Long message').props.numberOfLines).toBe(3);
+  });
+
+  it('centres trailing content vertically in its own slot', () => {
+    const { getByTestId } = render(<ListRow title="Edward" trailing={<Text>Owner</Text>} testID="row" />);
+    expect(StyleSheet.flatten(getByTestId('row-trailing').props.style).justifyContent).toBe('center');
+  });
+});

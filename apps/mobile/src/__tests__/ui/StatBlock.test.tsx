@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render } from '@testing-library/react-native';
 
-import { StatBlock } from '../../components/ui';
+import { StatBlock, StatRow } from '../../components/ui';
 import { colors, fonts, typography } from '../../theme';
 
 describe('StatBlock', () => {
@@ -43,5 +43,34 @@ describe('StatBlock', () => {
     );
     expect(getByLabelText('Pace 5 minutes 12 per km')).toBeTruthy();
     expect(getByTestId('icon-pace', { includeHiddenElements: true })).toBeTruthy();
+  });
+});
+
+describe('StatBlock in tight rows', () => {
+  it('can shrink inside a row instead of overflowing it', () => {
+    const { getByLabelText } = render(<StatBlock value="5:30–6:00" unit="/km" label="Pace" />);
+    const style = StyleSheet.flatten(getByLabelText('5:30–6:00 /km, Pace').props.style);
+    expect(style.minWidth).toBe(0);
+    expect(style.flexShrink).toBe(1);
+  });
+
+  it('lets the label wrap to two lines when asked', () => {
+    const { getByText, rerender } = render(<StatBlock value={3} label="Completed games" />);
+    expect(getByText('Completed games').props.numberOfLines).toBe(1);
+    rerender(<StatBlock value={3} label="Completed games" labelLines={2} />);
+    expect(getByText('Completed games').props.numberOfLines).toBe(2);
+  });
+
+  it('StatRow wraps its blocks rather than clipping the last one', () => {
+    const { getByTestId } = render(
+      <StatRow testID="row">
+        <StatBlock value="7" unit="km" label="Distance" size="lg" />
+        <StatBlock value="5:30–6:00" unit="/km" label="Pace" size="lg" />
+        <StatBlock value="8" label="Spots left" size="lg" />
+      </StatRow>
+    );
+    const style = StyleSheet.flatten(getByTestId('row').props.style);
+    expect(style.flexDirection).toBe('row');
+    expect(style.flexWrap).toBe('wrap');
   });
 });

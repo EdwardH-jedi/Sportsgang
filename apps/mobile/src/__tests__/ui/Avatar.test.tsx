@@ -2,8 +2,8 @@ import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Avatar, AvatarGroup, initialsFor } from '../../components/ui';
-import { colors } from '../../theme';
+import { Avatar, AvatarGroup, avatarColorFor, initialsFor } from '../../components/ui';
+import { avatarColors, colors } from '../../theme';
 
 describe('Avatar', () => {
   it('computes initials', () => {
@@ -65,5 +65,34 @@ describe('AvatarGroup', () => {
     const { queryByText, getByLabelText } = render(<AvatarGroup people={people.slice(0, 1)} />);
     expect(queryByText(/^\+/)).toBeNull();
     expect(getByLabelText('1 member')).toBeTruthy();
+  });
+});
+
+describe('Avatar initials palette', () => {
+  it('picks a stable fill from the avatarColors tokens', () => {
+    expect(avatarColors).toContain(avatarColorFor('Mia Chen'));
+    expect(avatarColorFor('Mia Chen')).toBe(avatarColorFor('  mia chen '));
+    const fills = new Set(['Mia Chen', 'Tom Walker', 'Priya Nair', 'Jack O’Brien', 'Sofia Rossi', 'Liam Park'].map(avatarColorFor));
+    expect(fills.size).toBeGreaterThan(1);
+  });
+
+  it('uses the name fill behind the initials', () => {
+    const { getByText } = render(<Avatar name="Tom Walker" />);
+    const fallback = getByText('TW').parent?.parent;
+    expect(StyleSheet.flatten(fallback?.props.style).backgroundColor).toBe(avatarColorFor('Tom Walker'));
+  });
+});
+
+describe('AvatarGroup stacking', () => {
+  const people = ['A B', 'C D', 'E F', 'G H', 'I J', 'K L'].map((name) => ({ name }));
+
+  it('draws the "+N" counter above every avatar with a ring in the surface colour', () => {
+    const { getByTestId, getByText } = render(
+      <AvatarGroup people={people} max={3} total={21} ringColor={colors.surface} testID="grp" />
+    );
+    expect(getByText('+18')).toBeTruthy();
+    const more = StyleSheet.flatten(getByTestId('grp-more').props.style);
+    expect(more.zIndex).toBeGreaterThan(3);
+    expect(more.borderColor).toBe(colors.surface);
   });
 });
