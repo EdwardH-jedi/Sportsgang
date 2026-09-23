@@ -168,6 +168,25 @@ describe('BookingDetailScreen', () => {
     });
   });
 
+  it.each([
+    ['running', 'Running'],
+    ['tennis', 'Tennis'],
+    ['golf', 'Golf'],
+    ['gym', 'Gym'],
+  ])('labels a %s session as %s (not the old gym/golf-only ternary)', async (sport, label) => {
+    mockApiGet.mockResolvedValue(makeBooking({ sport }));
+    const { getByText, queryByText } = render(
+      <BookingDetailScreen
+        route={makeRoute() as any}
+        navigation={makeNavigation() as any}
+      />
+    );
+    await waitFor(() => getByText(label));
+    if (sport === 'running' || sport === 'tennis') {
+      expect(queryByText('Golf')).toBeNull();
+    }
+  });
+
   it('displays the correct status label for "proposed"', async () => {
     mockApiGet.mockResolvedValue(makeBooking({ status: 'proposed' }));
     const { getByText } = render(

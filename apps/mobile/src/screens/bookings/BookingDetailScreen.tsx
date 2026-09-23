@@ -13,6 +13,7 @@ import {
 import { Screen } from '../../components/Screen';
 import { useBooking } from '../../hooks/useBookings';
 import type { BookingAction } from '../../lib/sessions';
+import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { BookingDetailScreenProps } from '../../navigation/types';
@@ -142,10 +143,7 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
         {/* Details */}
         <View style={styles.section}>
           <DetailRow label="With" value={booking.partner.displayName} />
-          <DetailRow
-            label="Sport"
-            value={booking.sport === 'gym' ? 'Gym' : 'Golf'}
-          />
+          <DetailRow label="Sport" value={sportLabel(booking.sport)} />
           <DetailRow label="Starts" value={formatDateTime(booking.startsAt)} />
           <DetailRow label="Ends" value={formatDateTime(booking.endsAt)} />
           {booking.venue ? (
