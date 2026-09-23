@@ -1,18 +1,12 @@
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Keyboard,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import { Button, Screen, TextField } from '../../components/ui';
 import { openLegal, PRIVACY_URL, TERMS_URL } from '../../lib/legal';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, face, spacing, typography } from '../../theme';
+import { AuthHeading } from './AuthHeading';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -57,77 +51,63 @@ export function RegisterScreen({ navigation }: Props) {
 
   return (
     <Screen padded scroll withKeyboard>
-      <View style={styles.header}>
-        <Text style={styles.wordmark}>sportsgang</Text>
-        <Text style={styles.eyebrow}>Find sports partners</Text>
-        <Text style={styles.title}>Create your{'\n'}account</Text>
-      </View>
+      <AuthHeading eyebrow="Join the gang" title={'Create your\naccount'} />
 
       <View style={styles.form}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            placeholderTextColor={colors.textTertiary}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            autoComplete="email"
-          />
-        </View>
+        <TextField
+          label="Email"
+          leadingIcon="mail"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          autoComplete="email"
+          inputStyle={singleLineInput}
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Min. 8 characters"
-            placeholderTextColor={colors.textTertiary}
-            secureTextEntry
-            // V1 trade-off: opt this field fully out of iOS Strong
-            // Password / Password Autofill. The previous attempt
-            // (textContentType="newPassword") engaged iOS Strong Password
-            // and the resulting autofill overlay carried into the next
-            // screen, painting the OnboardingStep1 displayName field
-            // yellow and capturing keystrokes. We accept the trade-off
-            // that iOS will not auto-save this credential to the
-            // keychain — Login still works fine for manual or autofilled
-            // existing passwords (those properties are unchanged). The
-            // five "off" signals below are belt-and-braces; iOS honours
-            // textContentType="none" + autoComplete="off" together as
-            // the strongest opt-out for a secureTextEntry field.
-            autoCapitalize="none"
-            autoCorrect={false}
-            spellCheck={false}
-            textContentType="none"
-            autoComplete="off"
-            importantForAutofill="no"
-          />
-        </View>
+        <TextField
+          label="Password"
+          leadingIcon="lock"
+          secure
+          helper="At least 8 characters."
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Min. 8 characters"
+          // V1 trade-off: opt this field fully out of iOS Strong
+          // Password / Password Autofill. The previous attempt
+          // (textContentType="newPassword") engaged iOS Strong Password
+          // and the resulting autofill overlay carried into the next
+          // screen, painting the OnboardingStep1 displayName field
+          // yellow and capturing keystrokes. We accept the trade-off
+          // that iOS will not auto-save this credential to the
+          // keychain — Login still works fine for manual or autofilled
+          // existing passwords (those properties are unchanged). The
+          // five "off" signals below are belt-and-braces; iOS honours
+          // textContentType="none" + autoComplete="off" together as
+          // the strongest opt-out for a secureTextEntry field.
+          autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
+          textContentType="none"
+          autoComplete="off"
+          importantForAutofill="no"
+          inputStyle={singleLineInput}
+        />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <FormErrorBanner message={error} />
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.buttonPrimary,
-            (pressed || isLoading) && styles.pressed,
-          ]}
+        <Button
+          label="Create account"
+          size="lg"
+          fullWidth
+          loading={isLoading}
           onPress={handleRegister}
-          disabled={isLoading}
-          accessibilityRole="button"
           accessibilityLabel="Create account"
-        >
-          {isLoading ? (
-            <ActivityIndicator color={colors.textInverse} />
-          ) : (
-            <Text style={styles.buttonPrimaryText}>Create account</Text>
-          )}
-        </Pressable>
+          style={styles.submit}
+        />
 
         <Text style={styles.legalText}>
           By creating an account you agree to our{' '}
@@ -151,107 +131,50 @@ export function RegisterScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.footer}>
-        <Pressable
+        <Text style={styles.footerText}>Already have an account?</Text>
+        <Button
+          label="Log in"
+          variant="ghost"
+          size="sm"
           onPress={() => navigation.replace('LoginScreen')}
-          accessibilityRole="button"
           accessibilityLabel="Log in"
-        >
-          <Text style={styles.footerText}>
-            Already have an account?{' '}
-            <Text style={styles.footerLink}>Log in</Text>
-          </Text>
-        </Pressable>
+        />
       </View>
     </Screen>
   );
 }
 
+/**
+ * TextField spreads `typography.bodyLarge` (lineHeight 26) into the input.
+ * On a single-line TextInput that lineHeight clips descenders (g, y, p) on
+ * Android, so auth fields clear it.
+ */
+const singleLineInput = { lineHeight: undefined };
+
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
-    gap: spacing.xs,
-  },
-  wordmark: {
-    fontSize: 28,
-    fontWeight: '700',
-    letterSpacing: -1,
-    color: colors.brand,
-    marginBottom: spacing.md,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.brand,
-    marginBottom: spacing.sm,
-  },
-  title: {
-    ...typography.h1,
-  },
   form: {
-    gap: spacing.md,
+    gap: spacing.md + spacing.xs,
   },
-  field: {
-    gap: spacing.xs,
-  },
-  label: {
-    ...typography.label,
-    color: colors.textSecondary,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    // Use explicit fontSize/fontWeight from the bodyLarge token but omit
-    // lineHeight: setting lineHeight on a TextInput clips descenders (g, y, p)
-    // on Android and is unnecessary since TextInput is single-line here.
-    fontSize: typography.bodyLarge.fontSize,
-    fontWeight: typography.bodyLarge.fontWeight,
-    color: colors.textPrimary,
-    backgroundColor: colors.inputBackground,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  buttonPrimary: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    minHeight: 52,
-    justifyContent: 'center',
+  submit: {
     marginTop: spacing.sm,
-  },
-  buttonPrimaryText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-  pressed: {
-    opacity: 0.65,
   },
   legalText: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
     textAlign: 'center',
-    marginTop: spacing.md,
   },
   legalLink: {
+    ...typography.bodySmall,
+    ...face('semibold', '600'),
     color: colors.brand,
-    fontWeight: '600',
   },
   footer: {
-    paddingVertical: spacing.xl,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xl,
   },
   footerText: {
     ...typography.body,
-    color: colors.textSecondary,
-  },
-  footerLink: {
-    color: colors.brand,
-    fontWeight: '600',
   },
 });

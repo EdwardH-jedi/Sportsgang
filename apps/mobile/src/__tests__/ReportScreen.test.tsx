@@ -28,36 +28,15 @@ jest.mock('../lib/api', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000',
-    brand: '#000',
-    border: '#ccc',
-    surface: '#fff',
-    surfaceElevated: '#f5f5f5',
-    background: '#fafafa',
-    separator: '#e0e0e0',
-    textPrimary: '#000',
-    textSecondary: '#555',
-    textTertiary: '#888',
-    textInverse: '#fff',
-    success: '#0f0',
-    error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: {
-    xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48,
-  },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -110,6 +89,18 @@ describe('ReportScreen', () => {
     );
     const btn = getByLabelText('Submit report');
     expect(btn.props.accessibilityState?.disabled ?? btn.props.disabled).toBeTruthy();
+  });
+
+  it('exposes reasons as radios and marks the chosen one selected', () => {
+    const { getByLabelText } = render(
+      <ReportScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+    );
+    const spam = getByLabelText('Spam');
+    expect(spam.props.accessibilityRole).toBe('radio');
+    expect(spam.props.accessibilityState).toMatchObject({ selected: false });
+    fireEvent.press(spam);
+    expect(getByLabelText('Spam').props.accessibilityState).toMatchObject({ selected: true });
+    expect(getByLabelText('Other').props.accessibilityState).toMatchObject({ selected: false });
   });
 
   it('Submit report button is enabled after selecting a reason', () => {

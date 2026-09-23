@@ -1,7 +1,8 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { sportLabel } from '../lib/sports';
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, radii, spacing, touchTarget, typography } from '../theme';
+import { Badge, Button, Card, Icon, sportIconName, type BadgeTone, type IconName } from './ui';
 
 /**
  * In-chat session proposal card.
@@ -92,13 +93,13 @@ export function SessionProposalCard({
   let title: string;
   let subtitle: string | null = null;
   let pillText: string | null = null;
-  let pillColor: string = colors.textSecondary;
+  let pillTone: BadgeTone = 'neutral';
 
   if (status === 'proposed') {
     if (isProposer) {
       title = 'Session proposal sent';
       pillText = 'AWAITING CONFIRMATION';
-      pillColor = colors.textSecondary;
+      pillTone = 'warning';
     } else {
       title = 'Session proposal';
       subtitle = `${partnerName} proposed a session`;
@@ -106,11 +107,11 @@ export function SessionProposalCard({
   } else if (status === 'confirmed') {
     title = 'Session confirmed';
     pillText = 'CONFIRMED';
-    pillColor = colors.success;
+    pillTone = 'success';
   } else if (status === 'declined') {
     title = 'Session declined';
     pillText = 'DECLINED';
-    pillColor = colors.error;
+    pillTone = 'error';
   } else {
     // Defensive default — older or unknown statuses just render as "Session"
     // with no pill rather than blowing up the chat. Tap-through still works.
@@ -121,36 +122,29 @@ export function SessionProposalCard({
   const showActionButtons = status === 'proposed' && !isProposer;
 
   return (
-    <Pressable
+    <Card
       onPress={onView}
-      accessibilityRole="button"
       accessibilityLabel={`Open ${title.toLowerCase()}`}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={styles.card}
     >
-      {/* Title gets its own row at full width — keeping the title and the
-          status pill on the same line was forcing "Session proposal" to
-          truncate to "Session pro..." on screenshot-narrow phones because
-          the long "AWAITING CONFIRMATION" pill ate the row width. */}
-      <Text style={styles.title}>{title}</Text>
-      {pillText ? (
-        <View style={styles.statusRow}>
-          <View style={[styles.statusPill, { borderColor: pillColor }]}>
-            <Text style={[styles.statusPillText, { color: pillColor }]}>
-              {pillText}
-            </Text>
-          </View>
+      <View style={styles.headRow}>
+        <View style={styles.sportIcon}>
+          <Icon name={sportIconName(proposal.sport)} size="md" color={colors.brand} />
         </View>
-      ) : null}
-      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        {/* Title keeps the full row width — the status pill sits on its
+            own line so a long "AWAITING CONFIRMATION" never truncates
+            "Session proposal" on narrow phones. */}
+        <View style={styles.headText}>
+          <Text style={styles.title}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        </View>
+      </View>
+      {pillText ? <Badge label={pillText} tone={pillTone} size="sm" /> : null}
 
       <View style={styles.detailBlock}>
-        <Text style={styles.detail}>{sportText}</Text>
-        <Text style={styles.detail}>{formatTimeRange(proposal.startsAt, proposal.endsAt)}</Text>
-        {venue ? (
-          <Text style={styles.detail} numberOfLines={2}>
-            {venue}
-          </Text>
-        ) : null}
+        <DetailRow icon={sportIconName(proposal.sport)} text={sportText} />
+        <DetailRow icon="calendar" text={formatTimeRange(proposal.startsAt, proposal.endsAt)} />
+        {venue ? <DetailRow icon="location" text={venue} lines={2} /> : null}
         {proposal.notes ? (
           <Text style={styles.notes} numberOfLines={3}>
             {proposal.notes}
@@ -160,94 +154,88 @@ export function SessionProposalCard({
 
       {showActionButtons ? (
         <View style={styles.actions}>
-          <Pressable
+          <Button
+            label="Accept"
+            size="md"
+            loading={isActing}
             onPress={(e) => {
-              // stopPropagation prevents the card-wide tap handler from
-              // also firing when the user taps Accept. The event object
-              // is optional at runtime (some test renderers omit it), so
-              // call defensively.
+              // stopPropagation keeps the card-wide tap (open detail) from
+              // also firing. The event is optional in some test renderers.
               e?.stopPropagation?.();
               if (!isActing) void onAccept();
             }}
-            disabled={isActing}
-            accessibilityRole="button"
             accessibilityLabel="Accept session proposal"
-            style={({ pressed }) => [
-              styles.actionButton,
-              styles.actionPrimary,
-              (pressed || isActing) && styles.pressed,
-            ]}
-          >
-            {isActing ? (
-              <ActivityIndicator color={colors.textInverse} />
-            ) : (
-              <Text style={styles.actionPrimaryText}>Accept</Text>
-            )}
-          </Pressable>
-          <Pressable
+            style={styles.action}
+          />
+          <Button
+            label="Decline"
+            size="md"
+            variant="secondary"
+            disabled={isActing}
             onPress={(e) => {
               e?.stopPropagation?.();
               if (!isActing) void onDecline();
             }}
-            disabled={isActing}
-            accessibilityRole="button"
             accessibilityLabel="Decline session proposal"
-            style={({ pressed }) => [
-              styles.actionButton,
-              styles.actionGhost,
-              (pressed || isActing) && styles.pressed,
-            ]}
-          >
-            <Text style={styles.actionGhostText}>Decline</Text>
-          </Pressable>
+            style={styles.action}
+          />
         </View>
       ) : null}
-    </Pressable>
+    </Card>
+  );
+}
+
+function DetailRow({ icon, text, lines = 1 }: { icon: IconName; text: string; lines?: number }) {
+  return (
+    <View style={styles.detailRow}>
+      <Icon name={icon} size="sm" color={colors.textTertiary} />
+      <Text style={styles.detail} numberOfLines={lines}>
+        {text}
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
     alignSelf: 'stretch',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    borderRadius: radii.lg,
-    padding: spacing.md,
-    gap: spacing.xs,
+    gap: spacing.sm,
+  },
+  headRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm + spacing.xs,
+  },
+  sportIcon: {
+    width: touchTarget - spacing.xs,
+    height: touchTarget - spacing.xs,
+    borderRadius: radii.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headText: {
+    flex: 1,
+    gap: spacing.xs / 2,
   },
   title: {
     ...typography.h3,
-    color: colors.textPrimary,
   },
   subtitle: {
     ...typography.body,
-    color: colors.textSecondary,
-  },
-  // Status pill row sits on its own line so "AWAITING CONFIRMATION" never
-  // squeezes the title. `alignItems: 'flex-start'` keeps the pill at its
-  // intrinsic width — it never stretches to fill the row.
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  statusPill: {
-    borderWidth: 1,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-  },
-  statusPillText: {
-    ...typography.label,
-    letterSpacing: 0.6,
   },
   detailBlock: {
-    paddingTop: spacing.xs,
-    gap: 2,
+    gap: spacing.xs + spacing.xs / 2,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   detail: {
     ...typography.body,
     color: colors.textPrimary,
+    flex: 1,
   },
   notes: {
     ...typography.bodySmall,
@@ -258,31 +246,10 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: spacing.sm,
-    paddingTop: spacing.sm,
+    paddingTop: spacing.xs,
   },
-  actionButton: {
+  action: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: radii.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.md,
+    alignSelf: 'auto',
   },
-  actionPrimary: {
-    backgroundColor: colors.brand,
-  },
-  actionPrimaryText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  actionGhost: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  actionGhostText: {
-    ...typography.button,
-    color: colors.textPrimary,
-  },
-  pressed: { opacity: 0.65 },
 });

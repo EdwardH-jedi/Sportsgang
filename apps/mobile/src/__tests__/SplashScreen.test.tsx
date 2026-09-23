@@ -14,7 +14,6 @@
  *  - stores/profile (useProfileStore.getState)
  *  - expo-status-bar (the native StatusBar schedules updates that never
  *    flush under fake timers)
- *  - theme
  */
 
 import React from 'react';
@@ -46,22 +45,6 @@ jest.mock('../stores/profile', () => ({
   useProfileStore: Object.assign(jest.fn(() => ({})), {
     getState: (...args: unknown[]) => mockProfileGetState(...args),
   }),
-}));
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#000', border: '#ccc', surface: '#fff',
-    surfaceElevated: '#f5f5f5', background: '#fafafa', separator: '#e0e0e0',
-    textPrimary: '#000', textSecondary: '#555', textTertiary: '#888',
-    textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
 }));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

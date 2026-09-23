@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
+import {
+  Button,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+  Skeleton,
+} from '../../components/ui';
 import {
   type BlockResponse,
   listBlockedUsers,
   unblockUser,
 } from '../../lib/safety';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { BlockedUsersScreenProps } from '../../navigation/types';
 
 /**
@@ -96,54 +95,68 @@ export function BlockedUsersScreen({ navigation }: BlockedUsersScreenProps) {
   };
 
   return (
-    <Screen padded={false}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.backText}>{'<'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Blocked Users</Text>
-        </View>
-        <View style={styles.headerSpacer} />
+    <Screen
+      padded={false}
+      header={
+        <Header
+          title="Blocked Users"
+          onBack={() => navigation.goBack()}
+          backLabel="Back"
+          style={styles.header}
+        />
+      }
+    >
+      <View style={styles.introRow}>
+        <Icon name="info" size="sm" color={colors.textTertiary} />
+        <Text style={styles.intro}>
+          People you block are restricted from supported interactions such as
+          joining your games where supported.
+        </Text>
       </View>
 
-      <Text style={styles.intro}>
-        People you block are restricted from supported interactions such as
-        joining your games where supported.
-      </Text>
-
       {isLoading ? (
-        <View style={styles.centered} accessibilityLabel="Loading blocked users">
-          <ActivityIndicator color={colors.brand} />
+        <View
+          style={styles.list}
+          accessible
+          accessibilityLabel="Loading blocked users"
+          accessibilityState={{ busy: true }}
+        >
+          {[0, 1, 2].map((i) => (
+            <View key={i} style={styles.row}>
+              <Skeleton circle height={touchTarget} />
+              <View style={styles.rowText}>
+                <Skeleton width="60%" height={spacing.md} />
+                <Skeleton width="35%" height={spacing.sm + spacing.xs} />
+              </View>
+            </View>
+          ))}
         </View>
       ) : error ? (
-        <View style={styles.centered}>
-          <Text style={styles.errorText}>{error}</Text>
-          <Pressable
-            onPress={() => void load()}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading blocked users"
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon="alert"
+          title="Couldn't load blocked users"
+          message={error}
+          action={{
+            label: 'Try again',
+            icon: 'refresh',
+            onPress: () => void load(),
+            accessibilityLabel: 'Retry loading blocked users',
+          }}
+        />
       ) : items.length === 0 ? (
-        <View style={styles.centered} accessibilityLabel="No blocked users">
-          <Text style={styles.emptyTitle}>No blocked users</Text>
-          <Text style={styles.emptyBody}>You haven't blocked anyone yet.</Text>
+        <View style={styles.fill} accessibilityLabel="No blocked users">
+          <EmptyState
+            icon="shield"
+            title="No blocked users"
+            message="You haven't blocked anyone yet."
+          />
         </View>
       ) : (
         <FlatList
           data={items}
           keyExtractor={(b) => b.id}
           contentContainerStyle={styles.list}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={RowSeparator}
           renderItem={({ item }) => (
             <BlockRow
               block={item}
@@ -156,6 +169,10 @@ export function BlockedUsersScreen({ navigation }: BlockedUsersScreenProps) {
       )}
     </Screen>
   );
+}
+
+function RowSeparator() {
+  return <View style={styles.separator} />;
 }
 
 interface BlockRowProps {
@@ -172,6 +189,9 @@ function BlockRow({ block, isUnblocking, error, onUnblock }: BlockRowProps) {
       style={styles.row}
       accessibilityLabel={`Blocked user ${block.blockedId}`}
     >
+      <View style={styles.rowIcon}>
+        <Icon name="block" size="md" color={colors.textSecondary} />
+      </View>
       <View style={styles.rowText}>
         <Text style={styles.rowTitle} numberOfLines={1}>
           {block.blockedId}
@@ -179,23 +199,14 @@ function BlockRow({ block, isUnblocking, error, onUnblock }: BlockRowProps) {
         {dateLabel ? <Text style={styles.rowMeta}>{dateLabel}</Text> : null}
         {error ? <Text style={styles.rowErrorText}>{error}</Text> : null}
       </View>
-      <Pressable
+      <Button
+        label="Unblock"
+        variant="secondary"
+        size="sm"
+        loading={isUnblocking}
         onPress={onUnblock}
-        disabled={isUnblocking}
-        accessibilityRole="button"
         accessibilityLabel={`Unblock ${block.blockedId}`}
-        accessibilityState={{ disabled: isUnblocking }}
-        style={({ pressed }) => [
-          styles.unblockButton,
-          pressed && !isUnblocking && styles.pressed,
-        ]}
-      >
-        {isUnblocking ? (
-          <ActivityIndicator color={colors.brand} />
-        ) : (
-          <Text style={styles.unblockText}>Unblock</Text>
-        )}
-      </Pressable>
+      />
     </View>
   );
 }
@@ -217,114 +228,58 @@ function formatBlockedDate(iso?: string): string | null {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
-  intro: {
-    ...typography.body,
-    color: colors.textSecondary,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-  },
-  centered: {
+  fill: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
   },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
+  introRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    paddingHorizontal: layout.screenPadding,
+    paddingVertical: spacing.md,
   },
-  emptyBody: {
-    ...typography.body,
+  intro: {
+    ...typography.bodySmall,
     color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    textAlign: 'center',
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
+    flex: 1,
   },
   list: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.xxl,
   },
-  separator: { height: spacing.sm },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    backgroundColor: colors.surface,
     gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  rowIcon: {
+    width: touchTarget,
+    height: touchTarget,
+    borderRadius: radii.full,
+    backgroundColor: colors.surfaceHigh,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rowText: {
     flex: 1,
-    gap: 2,
+    gap: spacing.xs / 2,
   },
   rowTitle: {
-    ...typography.body,
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
   },
   rowMeta: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+    ...typography.caption,
   },
   rowErrorText: {
     ...typography.bodySmall,
     color: colors.error,
   },
-  unblockButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.brand,
-    backgroundColor: 'transparent',
-    minWidth: 88,
-    alignItems: 'center',
-  },
-  unblockText: {
-    ...typography.button,
-    fontSize: 13,
-    color: colors.brand,
-  },
-  pressed: { opacity: 0.65 },
 });

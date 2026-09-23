@@ -1,21 +1,24 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
 import { ChallengeStatusBadge } from '../../components/ChallengeStatusBadge';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import {
+  Button,
+  Card,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+  Skeleton,
+  sportIconName,
+  type IconName,
+} from '../../components/ui';
 import { useChallengeDetail } from '../../hooks/useChallenges';
 import { sportLabelForBattle } from '../../lib/events';
 import { isChallengeTerminal } from '../../lib/challenges';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { ChallengeDetailScreenProps } from '../../navigation/types';
 
 type WinnerChoice = 'me' | 'opponent';
@@ -123,12 +126,28 @@ export function ChallengeDetailScreen({
     }
   }, [acting, winnerChoice, currentUserId, opponentId, submitResult]);
 
+  const header = (
+    <Header
+      title="Challenge"
+      onBack={() => navigation.goBack()}
+      backLabel="Back"
+      style={styles.header}
+    />
+  );
+
   if (isLoading && !detail) {
     return (
-      <Screen padded={false}>
-        <Header onBack={() => navigation.goBack()} />
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.brand} />
+      <Screen padded={false} header={header}>
+        <View
+          style={styles.scroll}
+          accessible
+          accessibilityLabel="Loading challenge"
+          accessibilityState={{ busy: true }}
+          testID="challenge-loading"
+        >
+          <Skeleton width="50%" height={spacing.xxl} />
+          <Skeleton width="30%" height={spacing.md} />
+          <Skeleton height={spacing.xxxl * 2} radius={radii.lg} />
         </View>
       </Screen>
     );
@@ -136,20 +155,18 @@ export function ChallengeDetailScreen({
 
   if (error && !detail) {
     return (
-      <Screen padded={false}>
-        <Header onBack={() => navigation.goBack()} />
-        <View style={styles.errorBox}>
-          <Text style={styles.errorTitle}>Could not load challenge</Text>
-          <Text style={styles.errorBody}>{error}</Text>
-          <Pressable
-            onPress={() => void refresh()}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading challenge"
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+      <Screen padded={false} header={header}>
+        <EmptyState
+          icon="alert"
+          title="Could not load challenge"
+          message={error}
+          action={{
+            label: 'Try again',
+            icon: 'refresh',
+            onPress: () => void refresh(),
+            accessibilityLabel: 'Retry loading challenge',
+          }}
+        />
       </Screen>
     );
   }
@@ -164,95 +181,96 @@ export function ChallengeDetailScreen({
   const theyWonLabel = isChallenger ? 'Opponent' : 'Challenger';
 
   return (
-    <Screen padded={false}>
-      <Header onBack={() => navigation.goBack()} />
-
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.heroRow}>
-          <Text style={styles.hero}>{sportLabel.toUpperCase()}</Text>
-          <ChallengeStatusBadge status={detail.status} />
+    <Screen padded={false} header={header}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.hero}>
+          <View style={styles.heroTop}>
+            <View style={styles.sportIcon}>
+              <Icon name={sportIconName(detail.sport)} size="lg" color={colors.brand} />
+            </View>
+            <ChallengeStatusBadge status={detail.status} />
+          </View>
+          <Text style={styles.heroTitle} accessibilityRole="header">
+            {sportLabel}
+          </Text>
+          <View style={styles.areaRow}>
+            <Icon name="location" size="sm" color={colors.textSecondary} />
+            <Text style={styles.area}>{detail.area}</Text>
+          </View>
         </View>
 
-        <Text style={styles.area}>{detail.area}</Text>
-
-        <View style={styles.metaBlock}>
-          <MetaRow label="You are" value={isChallenger ? 'Challenger' : isOpponent ? 'Opponent' : 'Viewer'} />
-          {detail.note ? <MetaRow label="Note" value={detail.note} /> : null}
-          <MetaRow label="Created" value={formatChallengeWhen(detail.createdAt)} />
+        <Card padding="none">
+          <MetaRow
+            icon="profile"
+            label="You are"
+            value={isChallenger ? 'Challenger' : isOpponent ? 'Opponent' : 'Viewer'}
+          />
+          {detail.note ? <MetaRow icon="edit" label="Note" value={detail.note} /> : null}
+          <MetaRow icon="calendar" label="Created" value={formatChallengeWhen(detail.createdAt)} />
           {detail.acceptedAt ? (
-            <MetaRow label="Accepted" value={formatChallengeWhen(detail.acceptedAt)} />
+            <MetaRow icon="check" label="Accepted" value={formatChallengeWhen(detail.acceptedAt)} />
           ) : null}
           {detail.verifiedAt ? (
-            <MetaRow label="Verified" value={formatChallengeWhen(detail.verifiedAt)} />
+            <MetaRow
+              icon="check-circle"
+              label="Verified"
+              value={formatChallengeWhen(detail.verifiedAt)}
+            />
           ) : null}
-        </View>
+        </Card>
 
         {/* Status-driven section */}
         {detail.status === 'pending' && isOpponent && !terminal ? (
           <View style={styles.actionsBlock}>
             <Text style={styles.actionsTitle}>Respond to this challenge</Text>
-            <Pressable
+            <Button
+              label="Accept"
+              size="lg"
+              fullWidth
+              leadingIcon="check"
               onPress={handleAccept}
               disabled={acting}
-              accessibilityRole="button"
               accessibilityLabel="Accept challenge"
-              accessibilityState={{ disabled: acting }}
-              style={({ pressed }) => [
-                styles.primaryButton,
-                acting && styles.buttonDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.primaryButtonText}>Accept</Text>
-            </Pressable>
-            <Pressable
+            />
+            <Button
+              label="Decline"
+              variant="secondary"
+              fullWidth
               onPress={handleDecline}
               disabled={acting}
-              accessibilityRole="button"
               accessibilityLabel="Decline challenge"
-              accessibilityState={{ disabled: acting }}
-              style={({ pressed }) => [
-                styles.secondaryButton,
-                acting && styles.buttonDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.secondaryButtonText}>Decline</Text>
-            </Pressable>
+            />
           </View>
         ) : null}
 
         {detail.status === 'pending' && isChallenger && !terminal ? (
           <View style={styles.actionsBlock}>
-            <Text style={styles.waitingCopy}>
-              Waiting for opponent to accept or decline.
-            </Text>
-            <Pressable
+            <View style={styles.waitingRow}>
+              <Icon name="clock" size="sm" color={colors.textSecondary} />
+              <Text style={styles.waitingCopy}>
+                Waiting for opponent to accept or decline.
+              </Text>
+            </View>
+            <Button
+              label="Cancel challenge"
+              variant="destructive"
+              fullWidth
               onPress={handleCancel}
               disabled={acting}
-              accessibilityRole="button"
               accessibilityLabel="Cancel challenge"
-              accessibilityState={{ disabled: acting }}
-              style={({ pressed }) => [
-                styles.secondaryButton,
-                acting && styles.buttonDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.secondaryButtonText}>Cancel challenge</Text>
-            </Pressable>
+            />
           </View>
         ) : null}
 
         {detail.status === 'accepted' && isParticipant ? (
           submittedLocally ? (
-            <View style={styles.statusBlock} accessibilityLabel="Awaiting opponent result">
-              <Text style={styles.statusTitle}>Result submitted</Text>
-              <Text style={styles.statusBody}>
-                Waiting for your opponent to submit. Verified once both
-                results match.
-              </Text>
-            </View>
+            <StatusBlock
+              icon="clock"
+              tone="neutral"
+              title="Result submitted"
+              body="Waiting for your opponent to submit. Verified once both results match."
+              accessibilityLabel="Awaiting opponent result"
+            />
           ) : (
             <ResultForm
               youWonLabel={youWonLabel}
@@ -267,85 +285,99 @@ export function ChallengeDetailScreen({
         ) : null}
 
         {detail.status === 'verified' ? (
-          <View style={styles.statusBlock} accessibilityLabel="Result verified">
-            <Text style={styles.statusTitle}>Result verified</Text>
-            <Text style={styles.statusBody}>
-              Both players submitted matching results. This counted toward Honor
-              and Rank.
-            </Text>
-          </View>
+          <StatusBlock
+            icon="check-circle"
+            tone="success"
+            title="Result verified"
+            body="Both players submitted matching results. This counted toward Honor and Rank."
+            accessibilityLabel="Result verified"
+          />
         ) : null}
 
         {detail.status === 'disputed' ? (
-          <View style={styles.statusBlock} accessibilityLabel="Result disputed">
-            <Text style={styles.statusTitle}>Result disputed</Text>
-            <Text style={styles.statusBody}>
-              The two submissions did not match. Honor and Rank are not
-              changed for disputed challenges.
-            </Text>
-          </View>
+          <StatusBlock
+            icon="alert"
+            tone="error"
+            title="Result disputed"
+            body="The two submissions did not match. Honor and Rank are not changed for disputed challenges."
+            accessibilityLabel="Result disputed"
+          />
         ) : null}
 
         {detail.status === 'declined' ? (
-          <View style={styles.statusBlock} accessibilityLabel="Challenge declined">
-            <Text style={styles.statusTitle}>Challenge declined</Text>
-          </View>
+          <StatusBlock
+            icon="close"
+            tone="neutral"
+            title="Challenge declined"
+            accessibilityLabel="Challenge declined"
+          />
         ) : null}
 
         {detail.status === 'cancelled' ? (
-          <View style={styles.statusBlock} accessibilityLabel="Challenge cancelled">
-            <Text style={styles.statusTitle}>Challenge cancelled</Text>
-          </View>
+          <StatusBlock
+            icon="close"
+            tone="neutral"
+            title="Challenge cancelled"
+            accessibilityLabel="Challenge cancelled"
+          />
         ) : null}
 
         {!isParticipant ? (
-          <View style={styles.statusBlock}>
-            <Text style={styles.statusTitle}>View only</Text>
-            <Text style={styles.statusBody}>
-              You are not a participant in this challenge.
-            </Text>
-          </View>
+          <StatusBlock
+            icon="eye"
+            tone="neutral"
+            title="View only"
+            body="You are not a participant in this challenge."
+          />
         ) : null}
       </ScrollView>
     </Screen>
   );
 }
 
-interface HeaderProps {
-  onBack: () => void;
-}
-
-function Header({ onBack }: HeaderProps) {
-  return (
-    <View style={styles.header}>
-      <Pressable
-        onPress={onBack}
-        accessibilityRole="button"
-        accessibilityLabel="Back"
-        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-      >
-        <Text style={styles.backText}>{'←'}</Text>
-      </Pressable>
-      <View style={styles.headerCenter}>
-        <Text style={styles.headerEyebrow}>CHALLENGE</Text>
-        <Text style={styles.headerTitle}>Detail</Text>
-      </View>
-      <View style={styles.headerSpacer} />
-    </View>
-  );
-}
-
 interface MetaRowProps {
+  icon: IconName;
   label: string;
   value: string;
 }
 
-function MetaRow({ label, value }: MetaRowProps) {
+function MetaRow({ icon, label, value }: MetaRowProps) {
   return (
     <View style={styles.metaRow}>
+      <Icon name={icon} size="sm" color={colors.textTertiary} />
       <Text style={styles.metaLabel}>{label}</Text>
       <Text style={styles.metaValue}>{value}</Text>
     </View>
+  );
+}
+
+const TONE_COLOR = {
+  neutral: colors.textSecondary,
+  success: colors.success,
+  error: colors.error,
+} as const;
+
+function StatusBlock({
+  icon,
+  tone,
+  title,
+  body,
+  accessibilityLabel,
+}: {
+  icon: IconName;
+  tone: keyof typeof TONE_COLOR;
+  title: string;
+  body?: string;
+  accessibilityLabel?: string;
+}) {
+  return (
+    <Card variant="elevated" accessibilityLabel={accessibilityLabel} style={styles.statusBlock}>
+      <Icon name={icon} size="lg" color={TONE_COLOR[tone]} />
+      <View style={styles.statusText}>
+        <Text style={styles.statusTitle}>{title}</Text>
+        {body ? <Text style={styles.statusBody}>{body}</Text> : null}
+      </View>
+    </Card>
   );
 }
 
@@ -375,75 +407,71 @@ function ResultForm({
         Result is verified when both players submit matching results.
       </Text>
 
-      <View style={styles.choiceRow}>
-        <ChoicePill
+      <View style={styles.choiceRow} accessibilityRole="radiogroup">
+        <ChoiceOption
           selected={choice === 'me'}
           onPress={() => onChoose('me')}
-          label={`I won (${youWonLabel})`}
+          title="I won"
+          caption={youWonLabel}
           accessibilityLabel="I won"
         />
-        <ChoicePill
+        <ChoiceOption
           selected={choice === 'opponent'}
           onPress={() => onChoose('opponent')}
-          label={`They won (${theyWonLabel})`}
+          title="They won"
+          caption={theyWonLabel}
           accessibilityLabel="They won"
         />
       </View>
 
       {error ? (
-        <Text style={styles.formError} accessibilityLabel="Submit result error">
-          {error}
-        </Text>
+        <View accessibilityLabel="Submit result error">
+          <FormErrorBanner message={error} />
+        </View>
       ) : null}
 
-      <Pressable
+      <Button
+        label={submitting ? 'Submitting...' : 'Submit result'}
+        size="lg"
+        fullWidth
+        loading={submitting}
+        disabled={choice === null}
         onPress={onSubmit}
-        disabled={submitting || choice === null}
-        accessibilityRole="button"
         accessibilityLabel="Submit result"
-        accessibilityState={{ disabled: submitting || choice === null }}
-        style={({ pressed }) => [
-          styles.primaryButton,
-          (submitting || choice === null) && styles.buttonDisabled,
-          pressed && choice !== null && styles.pressed,
-        ]}
-      >
-        <Text style={styles.primaryButtonText}>
-          {submitting ? 'Submitting...' : 'Submit result'}
-        </Text>
-      </Pressable>
+      />
     </View>
   );
 }
 
-interface ChoicePillProps {
+interface ChoiceOptionProps {
   selected: boolean;
   onPress: () => void;
-  label: string;
+  title: string;
+  caption: string;
   accessibilityLabel: string;
 }
 
-function ChoicePill({ selected, onPress, label, accessibilityLabel }: ChoicePillProps) {
+/** Radio option for the result form (two large selectable tiles). */
+function ChoiceOption({ selected, onPress, title, caption, accessibilityLabel }: ChoiceOptionProps) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="radio"
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, checked: selected }}
       style={({ pressed }) => [
-        styles.choicePill,
-        selected && styles.choicePillActive,
-        pressed && styles.pressed,
+        styles.choice,
+        selected && styles.choiceActive,
+        pressed && !selected && styles.choicePressed,
       ]}
     >
-      <Text
-        style={[
-          styles.choicePillText,
-          selected && styles.choicePillTextActive,
-        ]}
-      >
-        {label}
-      </Text>
+      <Icon
+        name={selected ? 'check-circle' : 'trophy'}
+        size="md"
+        color={selected ? colors.brand : colors.textTertiary}
+      />
+      <Text style={[styles.choiceTitle, selected && styles.choiceTitleActive]}>{title}</Text>
+      <Text style={styles.choiceCaption}>{caption}</Text>
     </Pressable>
   );
 }
@@ -465,204 +493,125 @@ function formatChallengeWhen(iso: string): string {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backText: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 2,
-  },
-  headerSpacer: {
-    width: 36,
-  },
-  headerEyebrow: {
-    ...typography.label,
-    color: colors.textTertiary,
-    letterSpacing: 1.4,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  errorBox: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xxl,
-    gap: spacing.sm,
-  },
-  errorTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  errorBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.brand,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
-  },
   scroll: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
+    padding: layout.screenPadding,
+    paddingBottom: spacing.xxl,
     gap: spacing.lg,
   },
-  heroRow: {
+  hero: {
+    gap: spacing.xs,
+  },
+  heroTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: spacing.sm,
   },
-  hero: {
-    ...typography.label,
-    color: colors.brand,
-    letterSpacing: 1.4,
+  sportIcon: {
+    width: touchTarget + spacing.xs,
+    height: touchTarget + spacing.xs,
+    borderRadius: radii.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTitle: {
+    ...typography.h1,
+  },
+  areaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   area: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  metaBlock: {
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.separator,
+    ...typography.body,
   },
   metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 2,
+    alignItems: 'flex-start',
+    gap: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + spacing.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
   },
   metaLabel: {
-    ...typography.bodySmall,
+    ...typography.label,
     color: colors.textTertiary,
+    flex: 1,
+    paddingTop: spacing.xs / 2,
   },
   metaValue: {
-    ...typography.bodySmall,
+    ...typography.body,
     color: colors.textPrimary,
-    flexShrink: 1,
+    flex: 2,
     textAlign: 'right',
-    marginLeft: spacing.md,
   },
   actionsBlock: {
-    gap: spacing.sm,
+    gap: spacing.sm + spacing.xs,
   },
   actionsTitle: {
     ...typography.h3,
-    color: colors.textPrimary,
   },
   helpCopy: {
     ...typography.bodySmall,
     color: colors.textSecondary,
   },
+  waitingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   waitingCopy: {
     ...typography.body,
-    color: colors.textSecondary,
-  },
-  choiceRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    flexWrap: 'wrap',
-  },
-  choicePill: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  choicePillActive: {
-    borderColor: colors.brand,
-    backgroundColor: colors.brandSoft,
-  },
-  choicePillText: {
-    ...typography.button,
-    color: colors.textSecondary,
-    fontSize: 13,
-  },
-  choicePillTextActive: {
-    color: colors.brand,
-  },
-  primaryButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: radii.pill,
-    backgroundColor: colors.brand,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  secondaryButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    ...typography.button,
-    color: colors.textPrimary,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  formError: {
-    ...typography.bodySmall,
-    color: colors.error,
+    flex: 1,
   },
   statusBlock: {
-    padding: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceElevated,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+  },
+  statusText: {
+    flex: 1,
     gap: spacing.xs,
   },
   statusTitle: {
     ...typography.h3,
-    color: colors.textPrimary,
   },
   statusBody: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
+    ...typography.body,
+  },
+  choiceRow: {
+    flexDirection: 'row',
+    gap: spacing.sm + spacing.xs,
+  },
+  choice: {
+    flex: 1,
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    minHeight: touchTarget * 2,
+  },
+  choiceActive: {
+    borderColor: colors.brand,
+    backgroundColor: colors.brandSoft,
+  },
+  choicePressed: {
+    backgroundColor: colors.surfacePressed,
+  },
+  choiceTitle: {
+    ...typography.bodyStrong,
+  },
+  choiceTitleActive: {
+    color: colors.brand,
+  },
+  choiceCaption: {
+    ...typography.caption,
   },
 });

@@ -1,21 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
 import { ChallengeStatusBadge } from '../../components/ChallengeStatusBadge';
+import {
+  Card,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+  Skeleton,
+  sportIconName,
+} from '../../components/ui';
 import { useChallenges } from '../../hooks/useChallenges';
 import { useAuthStore } from '../../stores/auth';
 import { sportLabelForBattle } from '../../lib/events';
 import { isChallengeTerminal, type ChallengeRead } from '../../lib/challenges';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, typography } from '../../theme';
 import type { ChallengeListScreenProps } from '../../navigation/types';
 
 type SectionKey = 'incoming' | 'active' | 'done';
@@ -100,12 +100,29 @@ export function ChallengeListScreen({ navigation }: ChallengeListScreenProps) {
     }
   }, [refresh]);
 
+  const header = (
+    <Header
+      large
+      eyebrow="1-on-1"
+      title="Challenges"
+      onBack={() => navigation.goBack()}
+      backLabel="Back"
+    />
+  );
+
   if (isLoading && items.length === 0 && !error) {
     return (
-      <Screen padded={false}>
-        <Header onBack={() => navigation.goBack()} />
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.brand} />
+      <Screen padded={false} header={header}>
+        <View
+          style={styles.scroll}
+          accessible
+          accessibilityLabel="Loading challenges"
+          accessibilityState={{ busy: true }}
+          testID="challenges-loading"
+        >
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} height={spacing.xxxl + spacing.xl} radius={radii.lg} />
+          ))}
         </View>
       </Screen>
     );
@@ -113,28 +130,24 @@ export function ChallengeListScreen({ navigation }: ChallengeListScreenProps) {
 
   if (error && items.length === 0) {
     return (
-      <Screen padded={false}>
-        <Header onBack={() => navigation.goBack()} />
-        <View style={styles.errorBox}>
-          <Text style={styles.errorTitle}>Could not load challenges</Text>
-          <Text style={styles.errorBody}>{error}</Text>
-          <Pressable
-            onPress={() => void refresh()}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading challenges"
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+      <Screen padded={false} header={header}>
+        <EmptyState
+          icon="alert"
+          title="Could not load challenges"
+          message={error}
+          action={{
+            label: 'Try again',
+            icon: 'refresh',
+            onPress: () => void refresh(),
+            accessibilityLabel: 'Retry loading challenges',
+          }}
+        />
       </Screen>
     );
   }
 
   return (
-    <Screen padded={false}>
-      <Header onBack={() => navigation.goBack()} />
-
+    <Screen padded={false} header={header}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -146,10 +159,13 @@ export function ChallengeListScreen({ navigation }: ChallengeListScreenProps) {
           />
         }
       >
-        <Text style={styles.intro}>
-          Challenge results are verified when both players submit matching
-          outcomes.
-        </Text>
+        <View style={styles.introRow}>
+          <Icon name="shield" size="sm" color={colors.textTertiary} />
+          <Text style={styles.intro}>
+            Challenge results are verified when both players submit matching
+            outcomes.
+          </Text>
+        </View>
 
         {SECTIONS.map((section) => (
           <Section
@@ -166,30 +182,6 @@ export function ChallengeListScreen({ navigation }: ChallengeListScreenProps) {
   );
 }
 
-interface HeaderProps {
-  onBack: () => void;
-}
-
-function Header({ onBack }: HeaderProps) {
-  return (
-    <View style={styles.header}>
-      <Pressable
-        onPress={onBack}
-        accessibilityRole="button"
-        accessibilityLabel="Back"
-        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-      >
-        <Text style={styles.backText}>{'←'}</Text>
-      </Pressable>
-      <View style={styles.headerCenter}>
-        <Text style={styles.headerEyebrow}>1-ON-1</Text>
-        <Text style={styles.headerTitle}>Challenges</Text>
-      </View>
-      <View style={styles.headerSpacer} />
-    </View>
-  );
-}
-
 interface SectionProps {
   title: string;
   emptyCopy: string;
@@ -201,7 +193,12 @@ interface SectionProps {
 function Section({ title, emptyCopy, items, currentUserId, onOpen }: SectionProps) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle} accessibilityRole="header">
+          {title}
+        </Text>
+        {items.length > 0 ? <Text style={styles.sectionCount}>{items.length}</Text> : null}
+      </View>
       {items.length === 0 ? (
         <Text style={styles.emptyText}>{emptyCopy}</Text>
       ) : (
@@ -233,20 +230,30 @@ function ChallengeCard({ challenge, currentUserId, onPress }: ChallengeCardProps
   const when = formatChallengeWhen(challenge.createdAt);
 
   return (
-    <Pressable
+    <Card
       onPress={onPress}
-      accessibilityRole="button"
       accessibilityLabel={`Open challenge in ${sportLabel}`}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={styles.card}
     >
       <View style={styles.cardTop}>
-        <Text style={styles.cardSport}>{sportLabel.toUpperCase()}</Text>
+        <View style={styles.sportRow}>
+          <Icon name={sportIconName(challenge.sport)} size="sm" color={colors.brand} />
+          <Text style={styles.cardSport}>{sportLabel}</Text>
+        </View>
         <ChallengeStatusBadge status={challenge.status} />
       </View>
       <Text style={styles.cardRole}>{roleLabel}</Text>
-      <Text style={styles.cardArea}>{challenge.area}</Text>
-      <Text style={styles.cardMeta}>{when}</Text>
-    </Pressable>
+      <View style={styles.metaRow}>
+        <Icon name="location" size="xs" color={colors.textTertiary} />
+        <Text style={styles.cardArea}>{challenge.area}</Text>
+        {when ? (
+          <>
+            <Icon name="calendar" size="xs" color={colors.textTertiary} />
+            <Text style={styles.cardMeta}>{when}</Text>
+          </>
+        ) : null}
+      </View>
+    </Card>
   );
 }
 
@@ -261,133 +268,76 @@ function formatChallengeWhen(iso: string): string {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backText: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 2,
-  },
-  headerSpacer: {
-    width: 36,
-  },
-  headerEyebrow: {
-    ...typography.label,
-    color: colors.textTertiary,
-    letterSpacing: 1.4,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  errorBox: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xxl,
-    gap: spacing.sm,
-  },
-  errorTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  errorBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.brand,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.brand,
-  },
   scroll: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    gap: spacing.lg,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.xxl,
+    gap: spacing.xl,
+  },
+  introRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
   },
   intro: {
     ...typography.bodySmall,
     color: colors.textSecondary,
+    flex: 1,
   },
   section: {
+    gap: spacing.sm + spacing.xs,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   sectionTitle: {
     ...typography.h3,
-    color: colors.textPrimary,
+  },
+  sectionCount: {
+    ...typography.statSmall,
+    color: colors.brand,
   },
   list: {
     gap: spacing.sm,
   },
   emptyText: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
   },
   card: {
-    padding: spacing.md,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 4,
+    gap: spacing.xs + spacing.xs / 2,
   },
   cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    gap: spacing.sm,
+  },
+  sportRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + spacing.xs / 2,
   },
   cardSport: {
     ...typography.label,
     color: colors.brand,
-    letterSpacing: 1.2,
   },
   cardRole: {
-    ...typography.body,
-    color: colors.textPrimary,
-    fontWeight: '600',
+    ...typography.bodyStrong,
+    fontSize: typography.bodyLarge.fontSize,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flexWrap: 'wrap',
   },
   cardArea: {
     ...typography.bodySmall,
     color: colors.textSecondary,
+    marginRight: spacing.sm,
   },
   cardMeta: {
-    ...typography.label,
-    color: colors.textTertiary,
-    letterSpacing: 0.6,
+    ...typography.bodySmall,
   },
 });

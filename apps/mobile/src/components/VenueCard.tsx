@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing, typography } from '../theme';
+import { Icon } from './ui/Icon';
 import type { Venue } from '@protin/shared-types';
 
 interface VenueCardProps {
@@ -23,7 +24,6 @@ function formatDistance(km: number | null | undefined): string | null {
  */
 export function VenueCard({ venue, onUse, onOpenBookingUrl }: VenueCardProps) {
   const distance = formatDistance(venue.distanceKm);
-  const sportLabel = venue.sportTags.join(' • ').toUpperCase();
   const showBookingCta = venue.isBookable && !!venue.bookingUrl && !!onOpenBookingUrl;
 
   return (
@@ -32,12 +32,26 @@ export function VenueCard({ venue, onUse, onOpenBookingUrl }: VenueCardProps) {
         <Text style={styles.name} numberOfLines={2}>
           {venue.name}
         </Text>
-        {distance ? <Text style={styles.distance}>{distance}</Text> : null}
+        {distance ? (
+          <View style={styles.distanceRow}>
+            <Icon name="distance" size={GLYPH} color={colors.brand} />
+            <Text style={styles.distance}>{distance}</Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.metaRow}>
-        <Text style={styles.sportPill}>{sportLabel}</Text>
-        {venue.area ? <Text style={styles.area}>{venue.area}</Text> : null}
+        {venue.sportTags.map((tag) => (
+          <View key={tag} style={styles.tag}>
+            <Text style={styles.tagText}>{tag.toUpperCase()}</Text>
+          </View>
+        ))}
+        {venue.area ? (
+          <View style={styles.areaRow}>
+            <Icon name="location" size={GLYPH} color={colors.textTertiary} />
+            <Text style={styles.area}>{venue.area}</Text>
+          </View>
+        ) : null}
       </View>
 
       {venue.address ? (
@@ -57,8 +71,9 @@ export function VenueCard({ venue, onUse, onOpenBookingUrl }: VenueCardProps) {
           onPress={onUse}
           accessibilityRole="button"
           accessibilityLabel={`Use ${venue.name} for session`}
-          style={({ pressed }) => [styles.useButton, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.useButton, pressed && styles.useButtonPressed]}
         >
+          <Icon name="check" size={GLYPH} color={colors.textInverse} />
           <Text style={styles.useButtonText}>Use for session</Text>
         </Pressable>
 
@@ -67,9 +82,10 @@ export function VenueCard({ venue, onUse, onOpenBookingUrl }: VenueCardProps) {
             onPress={onOpenBookingUrl}
             accessibilityRole="link"
             accessibilityLabel={`Open booking for ${venue.name}`}
-            style={({ pressed }) => [styles.linkButton, pressed && styles.pressed]}
+            style={({ pressed }) => [styles.linkButton, pressed && styles.linkButtonPressed]}
           >
             <Text style={styles.linkButtonText}>Open booking</Text>
+            <Icon name="external-link" size={GLYPH} color={colors.brand} />
           </Pressable>
         ) : null}
       </View>
@@ -77,13 +93,19 @@ export function VenueCard({ venue, onUse, onOpenBookingUrl }: VenueCardProps) {
   );
 }
 
+/**
+ * Icon size in points, built from spacing rather than an `iconSizes`
+ * token: NearbyCourtsModal's tests mock only part of the theme.
+ */
+const GLYPH = spacing.md;
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radii.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
+    borderColor: colors.separator,
+    padding: spacing.md,
     gap: spacing.sm,
   },
   header: {
@@ -97,8 +119,14 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     flex: 1,
   },
+  distanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingTop: spacing.xs,
+  },
   distance: {
-    ...typography.label,
+    ...typography.statSmall,
     color: colors.brand,
   },
   metaRow: {
@@ -107,14 +135,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  sportPill: {
-    ...typography.label,
-    color: colors.textInverse,
-    backgroundColor: colors.brand,
+  tag: {
+    backgroundColor: colors.brandSoft,
+    borderRadius: radii.pill,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radii.sm,
-    overflow: 'hidden',
+    paddingVertical: spacing.xs / 2,
+  },
+  tagText: {
+    ...typography.label,
+    color: colors.brand,
+  },
+  areaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   area: {
     ...typography.bodySmall,
@@ -137,24 +171,34 @@ const styles = StyleSheet.create({
   },
   useButton: {
     flex: 1,
+    flexDirection: 'row',
+    gap: spacing.sm,
     backgroundColor: colors.brand,
     borderRadius: radii.md,
-    paddingVertical: spacing.sm,
+    minHeight: spacing.xxl - spacing.xs,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  useButtonPressed: {
+    backgroundColor: colors.brandDark,
   },
   useButtonText: {
-    ...typography.button,
+    ...typography.buttonSmall,
     color: colors.textInverse,
   },
   linkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
+    minHeight: spacing.xxl - spacing.xs,
+    borderRadius: radii.md,
+  },
+  linkButtonPressed: {
+    backgroundColor: colors.brandSoft,
   },
   linkButtonText: {
-    ...typography.button,
+    ...typography.buttonSmall,
     color: colors.brand,
-  },
-  pressed: {
-    opacity: 0.65,
   },
 });

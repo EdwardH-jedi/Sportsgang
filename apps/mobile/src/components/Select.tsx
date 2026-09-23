@@ -12,6 +12,14 @@ import {
 } from 'react-native';
 
 import { colors, radii, spacing, typography } from '../theme';
+import { Icon } from './ui/Icon';
+
+/**
+ * Icon size in points. Kept numeric (built from spacing) rather than an
+ * `iconSizes` token: Select is rendered by onboarding screens whose tests
+ * mock only colors / spacing / radii / typography.
+ */
+const GLYPH = spacing.md + spacing.xs;
 
 export type SelectOption = { value: string; label: string };
 
@@ -90,6 +98,7 @@ export function Select({
         >
           {selectedLabel ?? placeholder}
         </Text>
+        <Icon name="chevron-down" size={GLYPH} color={colors.textTertiary} />
       </Pressable>
 
       <Modal
@@ -104,16 +113,20 @@ export function Select({
             {modalTitle ? <Text style={styles.sheetTitle}>{modalTitle}</Text> : null}
 
             {searchable ? (
-              <TextInput
-                value={query}
-                onChangeText={setQuery}
-                placeholder="Search"
-                placeholderTextColor={colors.textTertiary}
-                style={styles.searchInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                accessibilityLabel="Search options"
-              />
+              <View style={styles.searchField}>
+                <Icon name="search" size={GLYPH} color={colors.textTertiary} />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder="Search"
+                  placeholderTextColor={colors.textTertiary}
+                  style={styles.searchInput}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  accessibilityLabel="Search options"
+                  selectionColor={colors.brand}
+                />
+              </View>
             ) : null}
 
             <ScrollView
@@ -131,6 +144,7 @@ export function Select({
                       onPress={() => handleSelect(item.value)}
                       accessibilityRole="button"
                       accessibilityLabel={item.label}
+                      accessibilityState={{ selected: isSelected }}
                       style={({ pressed }) => [
                         styles.option,
                         isSelected && styles.optionSelected,
@@ -145,6 +159,9 @@ export function Select({
                       >
                         {item.label}
                       </Text>
+                      {isSelected ? (
+                        <Icon name="check" size={GLYPH} color={colors.brand} />
+                      ) : null}
                     </Pressable>
                   );
                 })
@@ -159,7 +176,7 @@ export function Select({
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.xs,
+    gap: spacing.sm,
   },
   label: {
     ...typography.label,
@@ -169,20 +186,23 @@ const styles = StyleSheet.create({
     color: colors.error,
   },
   trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.surface,
-    minHeight: 52,
-    justifyContent: 'center',
+    paddingVertical: spacing.sm + spacing.xs,
+    backgroundColor: colors.inputBackground,
+    minHeight: spacing.xxl,
   },
   triggerPressed: {
-    opacity: 0.7,
+    backgroundColor: colors.surfacePressed,
   },
   triggerText: {
     ...typography.bodyLarge,
+    flex: 1,
   },
   triggerTextFilled: {
     color: colors.textPrimary,
@@ -192,13 +212,13 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: colors.overlay,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: colors.background,
-    borderTopLeftRadius: radii.lg,
-    borderTopRightRadius: radii.lg,
+    backgroundColor: colors.surfaceHigh,
+    borderTopLeftRadius: radii.xl,
+    borderTopRightRadius: radii.xl,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xl,
@@ -206,49 +226,62 @@ const styles = StyleSheet.create({
   },
   sheetHandle: {
     alignSelf: 'center',
-    width: 40,
-    height: 4,
+    width: spacing.xl + spacing.sm,
+    height: spacing.xs,
     borderRadius: radii.full,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderStrong,
     marginBottom: spacing.md,
   },
   sheetTitle: {
     ...typography.h3,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.xs,
   },
-  searchInput: {
+  searchField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
     marginBottom: spacing.sm,
+    backgroundColor: colors.inputBackground,
+  },
+  searchInput: {
     ...typography.body,
+    flex: 1,
+    paddingVertical: spacing.sm + spacing.xs,
     color: colors.textPrimary,
-    backgroundColor: colors.surface,
   },
   listContent: {
     paddingBottom: spacing.lg,
   },
   option: {
-    paddingVertical: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    minHeight: spacing.xxl,
+    paddingVertical: spacing.sm + spacing.xs,
     paddingHorizontal: spacing.sm,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
   optionSelected: {
-    backgroundColor: colors.surfaceElevated,
+    backgroundColor: colors.brandSoft,
   },
   optionPressed: {
-    opacity: 0.7,
+    backgroundColor: colors.surfacePressed,
   },
   optionText: {
     ...typography.body,
     color: colors.textPrimary,
+    flex: 1,
   },
   optionTextSelected: {
-    color: colors.accent,
-    fontWeight: '600',
+    ...typography.bodyStrong,
+    color: colors.brand,
+    flex: 1,
   },
   empty: {
     ...typography.body,

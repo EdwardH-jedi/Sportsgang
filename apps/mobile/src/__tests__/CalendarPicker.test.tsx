@@ -1,7 +1,7 @@
 /**
  * CalendarPicker — component tests.
  *
- * Mocks the theme so style tokens don't blow up the renderer; uses a
+ * Uses the real theme (the picker renders IconButton primitives) and a
  * fixed `now` so the today/past math is deterministic.
  */
 
@@ -10,20 +10,6 @@ import { render, fireEvent } from '@testing-library/react-native';
 
 import { CalendarPicker } from '../components/CalendarPicker';
 import { formatDateLabel } from '../lib/sessionTime';
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#0f01', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 const FIXED_NOW = new Date(2026, 5, 15, 12, 0, 0); // 2026-06-15 local
 

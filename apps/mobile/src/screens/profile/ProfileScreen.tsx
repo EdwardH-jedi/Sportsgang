@@ -1,20 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { HonorCard } from '../../components/HonorCard';
 import { LocalRankSection } from '../../components/LocalRankSection';
-import { Screen } from '../../components/Screen';
-import { ListRow } from '../../components/ui';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import {
+  Avatar,
+  Badge,
+  Card,
+  EmptyState,
+  Header,
+  Icon,
+  ListRow,
+  Screen,
+  Skeleton,
+  StatBlock,
+  sportIconName,
+} from '../../components/ui';
 import { useDeleteAccount } from '../../hooks/useAccount';
 import { useHonorSummary } from '../../hooks/useHonorSummary';
 import { useHonorSystem } from '../../hooks/useHonorSystem';
@@ -24,7 +28,7 @@ import { openLegal, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../../lib/legal'
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { Session } from '../../lib/sessions';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -160,13 +164,21 @@ export function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <Screen padded>
-        <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.brand} />
-        </View>
+      <Screen padded={false}>
+        <ProfileSkeleton />
       </Screen>
     );
   }
+
+  const stats = [
+    {
+      value: honorSummary ? honorSummary.completedGamesCount : EMPTY_STAT,
+      label: 'Completed',
+      icon: 'finish' as const,
+    },
+    { value: honorSummary ? honorSummary.honorScore : EMPTY_STAT, label: 'Honor', icon: 'award' as const },
+    { value: upcoming.length, label: 'Upcoming', icon: 'calendar' as const },
+  ];
 
   return (
     <Screen padded={false}>
@@ -174,249 +186,323 @@ export function ProfileScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* SportsGang brand banner — neon-lime hero with the avatar overlapping
-            the bottom edge. The bannerOverlay supplies a subtle deeper-lime tint
-            so the band reads as a brand block, not a flat fill. */}
-        <View style={styles.banner}>
-          <View style={styles.bannerOverlay} />
-          <View style={styles.bannerHeader}>
-            <Text style={styles.bannerEyebrow}>Account</Text>
-            {profile ? (
-              <Pressable
-                onPress={() => navigation.navigate('EditProfile')}
-                style={({ pressed }) => [styles.editChip, pressed && styles.pressed]}
-                accessibilityRole="button"
-                accessibilityLabel="Edit profile"
-              >
-                <Text style={styles.editChipText}>Edit</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        </View>
+        <Header
+          large
+          title="Profile"
+          actions={
+            profile
+              ? [
+                  {
+                    icon: 'edit',
+                    accessibilityLabel: 'Edit profile',
+                    onPress: () => navigation.navigate('EditProfile'),
+                  },
+                ]
+              : []
+          }
+          style={styles.header}
+        />
 
-        {/* Avatar + name block — overlaps the banner via negative top margin.
-            We keep the page title `Profile` for parity with the reference page
-            structure even though the banner now carries the brand. */}
-        <View style={styles.identityBlock}>
-          <View style={styles.avatarRing}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {profile?.displayName?.charAt(0).toUpperCase() ?? '·'}
-              </Text>
-            </View>
-          </View>
-
-          <Text style={styles.pageTitle}>Profile</Text>
-
+        {/* Identity */}
+        <View style={styles.identity}>
           {error ? (
-            <Text style={styles.errorText}>{error}</Text>
+            <FormErrorBanner message={error} style={styles.fill} />
           ) : profile ? (
             <>
-              <Text style={styles.displayName}>{profile.displayName}</Text>
-              {profile.suburb ? (
-                <Text style={styles.suburb}>{profile.suburb}</Text>
-              ) : null}
+              <Avatar
+                name={profile.displayName || 'You'}
+                uri={profile.avatarUrl}
+                size="xl"
+                ring
+              />
+              <View style={styles.identityText}>
+                <Text style={styles.displayName} numberOfLines={2}>
+                  {profile.displayName}
+                </Text>
+                {profile.suburb ? (
+                  <View style={styles.suburbRow}>
+                    <Icon name="location" size="sm" color={colors.textSecondary} />
+                    <Text style={styles.suburb}>{profile.suburb}</Text>
+                  </View>
+                ) : null}
+                {sportProfiles && sportProfiles.length > 0 ? (
+                  <View style={styles.sportBadges}>
+                    {sportProfiles.map((sp) => (
+                      <Badge
+                        key={sp.sport}
+                        tone="brand"
+                        icon={sportIconName(sp.sport)}
+                        label={`${sportLabel(sp.sport)} · ${capitalize(sp.level)}`}
+                      />
+                    ))}
+                  </View>
+                ) : null}
+              </View>
             </>
           ) : (
-            <View style={styles.emptyBlock}>
-              <Text style={styles.emptyTitle}>Profile not set up</Text>
-              <Text style={styles.emptyBody}>
-                Complete onboarding to build your workout partner profile.
-              </Text>
-            </View>
+            <EmptyState
+              compact
+              icon="profile"
+              title="Profile not set up"
+              message="Complete onboarding to build your training partner profile."
+              style={styles.fill}
+            />
           )}
         </View>
 
-        {/* Profile content cards — only shown when a profile exists. */}
         {!error && profile ? (
-          <View style={styles.cardStack}>
-            <HonorCard
-              summary={honorSummary}
-              isLoading={honorLoading}
-              error={honorError}
-            />
-
-            {honorArea !== null && profile.suburb ? (
-              <LocalRankSection
-                sport={honorSport}
-                // Display form (e.g. "Balmain East"); the hook gets the key.
-                area={profile.suburb.trim()}
-                rank={localRank}
-                localChampion={localChampion}
-                myTitles={myTitles}
-                isLoading={localRankLoading}
-                error={localRankError}
+          <Card variant="elevated" padding="md" style={styles.statsCard}>
+            {stats.map((st) => (
+              <StatBlock
+                key={st.label}
+                value={st.value}
+                label={st.label}
+                icon={st.icon}
+                align="center"
+                accent={st.label === 'Honor'}
+                style={styles.stat}
               />
-            ) : null}
-
-            {profile.bio ? (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>About</Text>
-                <Text style={styles.bioText}>{profile.bio}</Text>
-              </View>
-            ) : null}
-
-            {sportProfiles && sportProfiles.length > 0 ? (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Sports</Text>
-                <View style={styles.sportList}>
-                  {sportProfiles.map((sp) => (
-                    <View key={sp.sport} style={styles.sportRow}>
-                      <Text style={styles.sportName}>
-                        {sportLabel(sp.sport)}
-                      </Text>
-                      <Text style={styles.sportLevel}>
-                        {sp.level.charAt(0).toUpperCase() + sp.level.slice(1)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ) : null}
-
-          </View>
+            ))}
+          </Card>
         ) : null}
 
-        <View style={styles.cardStack}>
+        <View style={styles.sections}>
+          {!error && profile?.bio ? (
+            <Section title="About">
+              <Card>
+                <Text style={styles.bioText}>{profile.bio}</Text>
+              </Card>
+            </Section>
+          ) : null}
+
+          <Section title="Crews">
+            <Card padding="none">
+              <ListRow
+                icon="crew"
+                title="Your crews"
+                subtitle="Run with your crew and find new ones"
+                accessibilityLabel="Your crews"
+                onPress={() => navigation.navigate('Main', { screen: 'Crews' })}
+              />
+            </Card>
+          </Section>
+
           {/* Upcoming sessions — confirmed bookings only, sorted earliest
               first. Pending proposals stay in chat (S2); declined and past
               sessions are filtered out so the section stays a calm, simple
               "what's actually happening next" surface. */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Upcoming sessions</Text>
+          <Section title="Upcoming sessions">
             {upcoming.length === 0 ? (
-              <Text style={styles.upcomingEmpty}>No confirmed sessions yet.</Text>
+              <Card>
+                <View style={styles.upcomingEmpty}>
+                  <Icon name="calendar" size="md" color={colors.textTertiary} />
+                  <Text style={styles.upcomingEmptyText}>No confirmed sessions yet.</Text>
+                </View>
+              </Card>
             ) : (
-              <View style={styles.upcomingList}>
-                {upcoming.map((s) => (
+              <Card padding="none">
+                {upcoming.map((s, i) => (
                   <UpcomingSessionRow
                     key={s.id}
                     session={s}
+                    divider={i < upcoming.length - 1}
                     onPress={() =>
                       navigation.navigate('BookingDetail', { bookingId: s.id })
                     }
                   />
                 ))}
-              </View>
+              </Card>
             )}
-          </View>
+          </Section>
+
+          {!error && profile ? (
+            <Section title="Honor & rank">
+              <HonorCard
+                summary={honorSummary}
+                isLoading={honorLoading}
+                error={honorError}
+              />
+              {honorArea !== null && profile.suburb ? (
+                <LocalRankSection
+                  sport={honorSport}
+                  // Display form (e.g. "Balmain East"); the hook gets the key.
+                  area={profile.suburb.trim()}
+                  rank={localRank}
+                  localChampion={localChampion}
+                  myTitles={myTitles}
+                  isLoading={localRankLoading}
+                  error={localRankError}
+                />
+              ) : null}
+            </Section>
+          ) : null}
 
           {/* Games & challenges — the former Events tab's entry points:
               Battles (group games in every sport) and 1-on-1 Challenges. */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Games & challenges</Text>
-            <ListRow
-              icon="battle"
-              title="Battles"
-              subtitle="Casual or ranked group games in your area"
-              accessibilityLabel="Open Battles"
-              onPress={() => navigation.navigate('Battles')}
-            />
-            <ListRow
-              icon="trophy"
-              title="Challenges"
-              subtitle="1-on-1 results that count toward Honor and Rank"
-              accessibilityLabel="Open Challenges"
-              onPress={() => navigation.navigate('Challenges')}
-            />
-          </View>
+          <Section title="Games & challenges">
+            <Card padding="none">
+              <ListRow
+                icon="battle"
+                title="Battles"
+                subtitle="Casual or ranked group games in your area"
+                accessibilityLabel="Open Battles"
+                onPress={() => navigation.navigate('Battles')}
+              />
+              <RowDivider />
+              <ListRow
+                icon="trophy"
+                title="Challenges"
+                subtitle="1-on-1 results that count toward Honor and Rank"
+                accessibilityLabel="Open Challenges"
+                onPress={() => navigation.navigate('Challenges')}
+              />
+            </Card>
+          </Section>
 
-          {/* Guides — how Honor works + safety basics */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Guides</Text>
-            <View style={styles.legalList}>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => navigation.navigate('HonorGuide')}
-                accessibilityRole="link"
+          {/* Guides + safety tools */}
+          <Section title="Guides & safety">
+            <Card padding="none">
+              <ListRow
+                icon="award"
+                title="Honor Guide"
+                subtitle="How Honor, Gang Score, and Sport Levels work"
                 accessibilityLabel="Honor Guide"
-              >
-                <Text style={styles.legalRowText}>Honor Guide</Text>
-                <Text style={styles.legalRowSubText}>
-                  How Honor, Gang Score, and Sport Levels work
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => navigation.navigate('SafetyCenter')}
-                accessibilityRole="link"
+                onPress={() => navigation.navigate('HonorGuide')}
+              />
+              <RowDivider />
+              <ListRow
+                icon="shield"
+                title="Safety Center"
+                subtitle="Reports, blocking, and community rules"
                 accessibilityLabel="Safety Center"
-              >
-                <Text style={styles.legalRowText}>Safety Center</Text>
-                <Text style={styles.legalRowSubText}>
-                  Reports, blocking, and community rules
-                </Text>
-              </Pressable>
-            </View>
-          </View>
+                onPress={() => navigation.navigate('SafetyCenter')}
+              />
+              <RowDivider />
+              <ListRow
+                icon="block"
+                title="Blocked users"
+                subtitle="Review and unblock people"
+                accessibilityLabel="Blocked users"
+                onPress={() => navigation.navigate('BlockedUsers')}
+              />
+            </Card>
+          </Section>
 
           {__DEV__ ? (
             // Development builds only: design-system review screen.
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Developer</Text>
-              <ListRow
-                icon="settings"
-                title="UI gallery"
-                subtitle="Every design-system primitive and variant"
-                onPress={() => navigation.navigate('UiGallery')}
-              />
-            </View>
+            <Section title="Developer">
+              <Card padding="none">
+                <ListRow
+                  icon="settings"
+                  title="UI gallery"
+                  subtitle="Every design-system primitive and variant"
+                  onPress={() => navigation.navigate('UiGallery')}
+                />
+              </Card>
+            </Section>
           ) : null}
 
-          {/* Legal */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Legal</Text>
-            <View style={styles.legalList}>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(PRIVACY_URL, 'Privacy Policy')}
-                accessibilityRole="link"
+          <Section title="Legal">
+            <Card padding="none">
+              <ListRow
+                icon="lock"
+                title="Privacy Policy"
                 accessibilityLabel="Privacy Policy"
-              >
-                <Text style={styles.legalRowText}>Privacy Policy</Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(TERMS_URL, 'Terms of Service')}
-                accessibilityRole="link"
+                trailing={<Icon name="external-link" size="sm" color={colors.textTertiary} />}
+                chevron={false}
+                onPress={() => openLegal(PRIVACY_URL, 'Privacy Policy')}
+              />
+              <RowDivider />
+              <ListRow
+                icon="info"
+                title="Terms of Service"
                 accessibilityLabel="Terms of Service"
-              >
-                <Text style={styles.legalRowText}>Terms of Service</Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(SUPPORT_URL, 'Support')}
-                accessibilityRole="link"
+                trailing={<Icon name="external-link" size="sm" color={colors.textTertiary} />}
+                chevron={false}
+                onPress={() => openLegal(TERMS_URL, 'Terms of Service')}
+              />
+              <RowDivider />
+              <ListRow
+                icon="help"
+                title="Support"
                 accessibilityLabel="Support"
-              >
-                <Text style={styles.legalRowText}>Support</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+                trailing={<Icon name="external-link" size="sm" color={colors.textTertiary} />}
+                chevron={false}
+                onPress={() => openLegal(SUPPORT_URL, 'Support')}
+              />
+            </Card>
+          </Section>
 
-        {/* Account actions */}
-        <View style={styles.actionStack}>
-          <Pressable
-            style={({ pressed }) => [styles.logoutButton, pressed && styles.pressed]}
-            onPress={handleLogout}
-            accessibilityRole="button"
-            accessibilityLabel="Log out"
-          >
-            <Text style={styles.logoutText}>Log out</Text>
-          </Pressable>
-
-          <Pressable
-            style={({ pressed }) => [styles.deleteButton, pressed && styles.pressed]}
-            onPress={handleDeleteAccount}
-            accessibilityRole="button"
-            accessibilityLabel="Delete my account"
-          >
-            <Text style={styles.deleteText}>Delete my account</Text>
-          </Pressable>
+          <Section title="Account">
+            <Card padding="none">
+              <ListRow
+                icon="logout"
+                iconColor={colors.textPrimary}
+                title="Log out"
+                accessibilityLabel="Log out"
+                chevron={false}
+                onPress={handleLogout}
+              />
+              <RowDivider />
+              <ListRow
+                icon="trash"
+                title="Delete my account"
+                accessibilityLabel="Delete my account"
+                destructive
+                chevron={false}
+                onPress={handleDeleteAccount}
+              />
+            </Card>
+          </Section>
         </View>
       </ScrollView>
     </Screen>
+  );
+}
+
+/** Shown in a stat when the value isn't available yet (no invented zeros). */
+const EMPTY_STAT = '–';
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        {title}
+      </Text>
+      {children}
+    </View>
+  );
+}
+
+function RowDivider() {
+  return <View style={styles.rowDivider} />;
+}
+
+function ProfileSkeleton() {
+  return (
+    <View
+      style={styles.skeleton}
+      accessible
+      accessibilityLabel="Loading profile"
+      accessibilityState={{ busy: true }}
+      testID="profile-loading"
+    >
+      <Skeleton width="40%" height={spacing.xl + spacing.xs} />
+      <View style={styles.identity}>
+        <Skeleton circle height={AVATAR_XL} />
+        <View style={styles.identityText}>
+          <Skeleton width="70%" height={spacing.lg} />
+          <Skeleton width="40%" height={spacing.md} />
+        </View>
+      </View>
+      <Skeleton height={spacing.xxxl + spacing.lg} radius={radii.lg} />
+      <Skeleton height={spacing.xxxl} radius={radii.lg} />
+      <Skeleton height={spacing.xxxl} radius={radii.lg} />
+    </View>
   );
 }
 
@@ -445,18 +531,22 @@ function upcomingVenueLine(s: UpcomingSession): string | null {
 }
 
 /**
- * Compact row inside the Upcoming sessions card. Tap → BookingDetail
- * (where the existing Cancel / Mark completed / Record no-show actions
- * live; this row deliberately does NOT duplicate them).
+ * Row inside the Upcoming sessions card: a condensed date tile, sport,
+ * time, venue and partner. Tap → BookingDetail (where the existing
+ * Cancel / Mark completed / Record no-show actions live; this row
+ * deliberately does NOT duplicate them).
  */
 function UpcomingSessionRow({
   session,
   onPress,
+  divider,
 }: {
   session: UpcomingSession;
   onPress: () => void;
+  divider: boolean;
 }) {
   const sport = sportLabel(session.sport);
+  const start = new Date(session.startsAt);
   const date = formatUpcomingDate(session.startsAt);
   const time = formatUpcomingTimeRange(session.startsAt, session.endsAt);
   const venue = upcomingVenueLine(session);
@@ -466,358 +556,171 @@ function UpcomingSessionRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`Open upcoming ${sport.toLowerCase()} session with ${partnerName}`}
-      style={({ pressed }) => [styles.upcomingRow, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.upcomingRow,
+        divider && styles.upcomingDivider,
+        pressed && styles.rowPressed,
+      ]}
     >
-      <View style={styles.upcomingRowHeader}>
-        <Text style={styles.upcomingSport}>{sport}</Text>
-        <View style={[styles.statusPill, { borderColor: colors.success }]}>
-          <Text style={[styles.statusPillText, { color: colors.success }]}>
-            CONFIRMED
-          </Text>
-        </View>
-      </View>
-      <Text style={styles.upcomingWhen}>
-        {date} · {time}
-      </Text>
-      {venue ? (
-        <Text style={styles.upcomingVenue} numberOfLines={2}>
-          {venue}
+      <View style={styles.dateTile}>
+        <Text style={styles.dateTileDay}>{start.getDate()}</Text>
+        <Text style={styles.dateTileMonth}>
+          {start.toLocaleDateString(undefined, { month: 'short' })}
         </Text>
-      ) : null}
-      <Text style={styles.upcomingPartner}>With {partnerName}</Text>
+      </View>
+      <View style={styles.upcomingBody}>
+        <View style={styles.upcomingRowHeader}>
+          <Icon name={sportIconName(session.sport)} size="sm" color={colors.brand} />
+          <Text style={styles.upcomingSport}>{sport}</Text>
+          <Badge label="CONFIRMED" tone="success" size="sm" style={styles.upcomingBadge} />
+        </View>
+        <Text style={styles.upcomingWhen}>
+          {date} · {time}
+        </Text>
+        {venue ? (
+          <Text style={styles.upcomingVenue} numberOfLines={2}>
+            {venue}
+          </Text>
+        ) : null}
+        <Text style={styles.upcomingPartner}>With {partnerName}</Text>
+      </View>
+      <Icon name="chevron-right" size="md" color={colors.textTertiary} />
     </Pressable>
   );
 }
 
-const BANNER_HEIGHT = 168;
-const AVATAR_SIZE = 104;
+/** Avatar `xl` diameter — the loading skeleton mirrors it. */
+const AVATAR_XL = 88;
 
 const styles = StyleSheet.create({
   scroll: {
     paddingBottom: spacing.xxxl,
-    backgroundColor: colors.surfaceElevated,
   },
-  centred: {
+  header: {
+    paddingTop: spacing.sm,
+  },
+  fill: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-
-  // Hero banner
-  banner: {
-    height: BANNER_HEIGHT,
-    backgroundColor: colors.brand,
-    overflow: 'hidden',
+  skeleton: {
+    padding: layout.screenPadding,
+    gap: spacing.lg,
   },
-  bannerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: colors.brandDark,
-    opacity: 0.35,
-  },
-  bannerHeader: {
+  identity: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
+    gap: spacing.md + spacing.xs,
+    paddingHorizontal: layout.screenPadding,
   },
-  bannerEyebrow: {
-    ...typography.label,
-    color: colors.textInverse,
-  },
-  editChip: {
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
-  },
-  editChipText: {
-    ...typography.label,
-    color: colors.textInverse,
-    letterSpacing: 0.6,
-  },
-
-  // Identity block (overlaps banner)
-  identityBlock: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    marginTop: -AVATAR_SIZE / 2,
-  },
-  avatarRing: {
-    width: AVATAR_SIZE + 8,
-    height: AVATAR_SIZE + 8,
-    borderRadius: radii.full,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.brandDarkest,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: radii.full,
-    backgroundColor: colors.brand,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: colors.textInverse,
-  },
-  pageTitle: {
-    ...typography.label,
-    color: colors.textTertiary,
-    marginTop: spacing.md,
+  identityText: {
+    flex: 1,
+    gap: spacing.xs + spacing.xs / 2,
   },
   displayName: {
-    ...typography.h1,
-    fontSize: 26,
-    color: colors.textPrimary,
-    marginTop: spacing.xs,
-    textAlign: 'center',
+    ...typography.h2,
+  },
+  suburbRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   suburb: {
     ...typography.body,
-    color: colors.textSecondary,
-    marginTop: 2,
   },
-  emptyBlock: {
-    alignItems: 'center',
-    paddingTop: spacing.md,
+  sportBadges: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs + spacing.xs / 2,
+    marginTop: spacing.xs,
   },
-  emptyTitle: {
-    ...typography.h3,
-    marginBottom: spacing.sm,
+  statsCard: {
+    flexDirection: 'row',
+    marginHorizontal: layout.screenPadding,
+    marginTop: spacing.lg,
   },
-  emptyBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
+  stat: {
+    flex: 1,
   },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    marginTop: spacing.md,
-    textAlign: 'center',
+  sections: {
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.xl,
+    gap: spacing.xl,
   },
-
-  // Card stack
-  cardStack: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: spacing.md,
+  section: {
+    gap: spacing.sm + spacing.xs,
   },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    shadowColor: colors.brandDarkest,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
+  sectionTitle: {
+    ...typography.label,
+    color: colors.textTertiary,
   },
-  cardTitle: {
-    ...typography.h3,
-    fontSize: 17,
-    color: colors.textPrimary,
-    marginBottom: spacing.md,
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginLeft: spacing.md,
   },
   bioText: {
-    ...typography.bodyLarge,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-  sportList: {
-    gap: spacing.sm,
-  },
-  sportRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-  },
-  sportName: {
-    ...typography.bodyLarge,
-    fontWeight: '600',
+    ...typography.body,
     color: colors.textPrimary,
   },
-  sportLevel: {
-    ...typography.body,
-    color: colors.brand,
-    fontWeight: '600',
-  },
-
-  // Upcoming sessions
   upcomingEmpty: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  upcomingList: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
+  upcomingEmptyText: {
+    ...typography.body,
+  },
   upcomingRow: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+  },
+  upcomingDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  rowPressed: {
+    backgroundColor: colors.surfacePressed,
+  },
+  dateTile: {
+    width: touchTarget + spacing.sm,
+    paddingVertical: spacing.sm,
     borderRadius: radii.md,
-    gap: 2,
+    backgroundColor: colors.surfaceHigh,
+    alignItems: 'center',
+  },
+  dateTileDay: {
+    ...typography.statSmall,
+  },
+  dateTileMonth: {
+    ...typography.label,
+    color: colors.brand,
+  },
+  upcomingBody: {
+    flex: 1,
+    gap: spacing.xs / 2,
   },
   upcomingRowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    marginBottom: 2,
+    gap: spacing.xs + spacing.xs / 2,
   },
   upcomingSport: {
-    ...typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
+  },
+  upcomingBadge: {
+    marginLeft: 'auto',
   },
   upcomingWhen: {
     ...typography.body,
     color: colors.textPrimary,
   },
   upcomingVenue: {
-    ...typography.body,
+    ...typography.bodySmall,
     color: colors.textSecondary,
   },
   upcomingPartner: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
-  },
-  statusPill: {
-    borderWidth: 1,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-  },
-  statusPillText: {
-    ...typography.label,
-    letterSpacing: 0.6,
-  },
-
-  // Integrations
-  integrationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-  },
-  integrationLabel: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  integrationAction: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  integrationActionText: {
-    ...typography.label,
-    color: colors.error,
-  },
-  integrationButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.brandSoft,
-  },
-  integrationButtonText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  integrationDisabled: {
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.xs,
-  },
-  integrationDisabledTitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  integrationDisabledBody: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-  },
-  integrationErrorText: {
-    ...typography.bodySmall,
-    color: colors.error,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-
-  // Legal
-  legalList: {
-    gap: spacing.xs,
-  },
-  legalRow: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-  },
-  legalRowText: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  legalRowSubText: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    marginTop: 2,
-  },
-
-  // Account actions
-  actionStack: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    gap: spacing.sm,
-  },
-  logoutButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-  },
-  logoutText: {
-    ...typography.button,
-    color: colors.textSecondary,
-  },
-  deleteButton: {
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  deleteText: {
-    ...typography.button,
-    color: colors.error,
-  },
-  pressed: {
-    opacity: 0.65,
   },
 });

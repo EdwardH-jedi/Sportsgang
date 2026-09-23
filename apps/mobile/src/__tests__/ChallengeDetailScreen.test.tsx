@@ -45,23 +45,15 @@ jest.mock('../stores/auth', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 function makeNavigation() {
   return { navigate: jest.fn(), goBack: jest.fn(), replace: jest.fn() };
@@ -102,13 +94,14 @@ describe('ChallengeDetailScreen', () => {
   it('renders the loading state while detail is null', () => {
     mockDetail = null;
     mockIsLoading = true;
-    const { getByText } = render(
+    const { getByText, getByLabelText } = render(
       <ChallengeDetailScreen
         navigation={makeNavigation() as any}
         route={makeRoute() as any}
       />
     );
-    getByText('Detail');
+    getByText('Challenge');
+    getByLabelText('Loading challenge');
   });
 
   it('renders a safe error message with retry when detail load fails', () => {
@@ -315,6 +308,33 @@ describe('ChallengeDetailScreen', () => {
     getByText(
       'The two submissions did not match. Honor and Rank are not changed for disputed challenges.'
     );
+  });
+
+  it('marks the chosen result option as a selected radio', () => {
+    mockDetail = makeChallenge({
+      status: 'accepted',
+      challengerUserId: 'me',
+      opponentUserId: 'them',
+    });
+    const { getByLabelText } = render(
+      <ChallengeDetailScreen
+        navigation={makeNavigation() as any}
+        route={makeRoute() as any}
+      />
+    );
+    expect(getByLabelText('Submit result').props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+    fireEvent.press(getByLabelText('I won'));
+    const won = getByLabelText('I won');
+    expect(won.props.accessibilityRole).toBe('radio');
+    expect(won.props.accessibilityState).toMatchObject({ selected: true });
+    expect(getByLabelText('They won').props.accessibilityState).toMatchObject({
+      selected: false,
+    });
+    expect(getByLabelText('Submit result').props.accessibilityState).toMatchObject({
+      disabled: false,
+    });
   });
 
   it('calls accept() on the hook when the Accept button is pressed', async () => {

@@ -1,13 +1,8 @@
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
-import { colors, radii, spacing, typography } from '../../theme';
+import { Badge, Header, Screen } from '../../components/ui';
+import { colors, face, layout, spacing, typography } from '../../theme';
+import { GuideSection } from './GuideSection';
 import type { HonorGuideScreenProps } from '../../navigation/types';
 
 /**
@@ -29,190 +24,120 @@ const HONOR_LEVELS = [
 
 export function HonorGuideScreen({ navigation }: HonorGuideScreenProps) {
   return (
-    <Screen padded={false}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.backText}>{'<'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Honor Guide</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scroll}>
+    <Screen
+      padded={false}
+      header={
+        <Header
+          title="Honor Guide"
+          onBack={() => navigation.goBack()}
+          backLabel="Back"
+          style={styles.header}
+        />
+      }
+    >
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.intro}>
-          <Text style={styles.title}>Build your Honor</Text>
+          <Text style={styles.title} accessibilityRole="header">
+            Build your Honor
+          </Text>
           <Text style={styles.leadStrong}>Honor is not popularity.</Text>
           <Text style={styles.lead}>
             It reflects attendance, fair play, and reliable hosting.
           </Text>
         </View>
 
-        <Section title="Honor">
-          <Text style={styles.body}>
-            Honor reflects how reliable you are in the SportsGang community.
-          </Text>
-          <Text style={styles.body}>
-            Showing up, playing fairly, and hosting responsibly help build trust.
-          </Text>
-        </Section>
+        <GuideSection
+          title="Honor"
+          icon="award"
+          lines={[
+            'Honor reflects how reliable you are in the SportsGang community.',
+            'Showing up, playing fairly, and hosting responsibly help build trust.',
+          ]}
+        />
 
-        <Section title="Gang Score">
-          <Text style={styles.body}>
-            Gang Score reflects your activity and contribution.
-          </Text>
-          <Text style={styles.body}>
-            Completing games and hosting reliable events can increase your Gang
-            Score.
-          </Text>
-        </Section>
+        <GuideSection
+          title="Gang Score"
+          icon="activity"
+          lines={[
+            'Gang Score reflects your activity and contribution.',
+            'Completing games and hosting reliable events can increase your Gang Score.',
+          ]}
+        />
 
-        <Section title="Sport Levels">
-          <Text style={styles.body}>Each sport has its own level.</Text>
-          <Text style={styles.body}>
-            Sport Levels reflect experience in that sport, not overall
-            popularity.
-          </Text>
-        </Section>
+        <GuideSection
+          title="Sport Levels"
+          icon="trending"
+          lines={[
+            'Each sport has its own level.',
+            'Sport Levels reflect experience in that sport, not overall popularity.',
+          ]}
+        />
 
-        <Section title="No-show policy">
-          <Text style={styles.body}>Only join games you can attend.</Text>
-          <Text style={styles.body}>No-shows can lower Honor.</Text>
-          <Text style={styles.body}>
-            Excused attendance does not lower Honor.
-          </Text>
-        </Section>
+        <GuideSection
+          title="No-show policy"
+          icon="clock"
+          lines={[
+            'Only join games you can attend.',
+            'No-shows can lower Honor.',
+            'Excused attendance does not lower Honor.',
+          ]}
+        />
 
-        <Section title="Reports and safety">
-          <Text style={styles.body}>
-            Reports help us review unsafe or unreliable behavior.
-          </Text>
-          <Text style={styles.body}>
-            Reports do not automatically change someone's Honor.
-          </Text>
-          <Text style={styles.body}>
-            Only reviewed actioned reports may affect Honor.
-          </Text>
-        </Section>
+        <GuideSection
+          title="Reports and safety"
+          icon="shield"
+          lines={[
+            'Reports help us review unsafe or unreliable behavior.',
+            "Reports do not automatically change someone's Honor.",
+            'Only reviewed actioned reports may affect Honor.',
+          ]}
+        />
 
-        <Section title="Honor levels">
+        <GuideSection title="Honor levels" icon="medal">
           <View style={styles.levelList}>
-            {HONOR_LEVELS.map((level) => (
-              <View key={level} style={styles.levelPill}>
-                <Text style={styles.levelPillText}>{level}</Text>
-              </View>
+            {HONOR_LEVELS.map((level, i) => (
+              <Badge
+                key={level}
+                label={level}
+                tone={i >= 2 ? 'brand' : 'neutral'}
+                variant={i === HONOR_LEVELS.length - 1 ? 'solid' : 'soft'}
+              />
             ))}
           </View>
-        </Section>
+        </GuideSection>
       </ScrollView>
     </Screen>
   );
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={styles.section} accessibilityLabel={`Section ${title}`}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionBody}>{children}</View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
   scroll: {
+    padding: layout.screenPadding,
     paddingBottom: spacing.xxxl,
     gap: spacing.md,
   },
   intro: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
     gap: spacing.xs,
+    paddingBottom: spacing.sm,
   },
   title: {
-    ...typography.h2,
-    color: colors.textPrimary,
+    ...typography.h1,
   },
   leadStrong: {
     ...typography.bodyLarge,
+    ...face('semibold', '600'),
     color: colors.brand,
-    fontWeight: '600',
   },
   lead: {
     ...typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginHorizontal: spacing.lg,
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  sectionTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  sectionBody: {
-    gap: spacing.xs,
-  },
-  body: {
-    ...typography.body,
-    color: colors.textSecondary,
   },
   levelList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
-    marginTop: spacing.xs,
+    gap: spacing.sm,
   },
-  levelPill: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceElevated,
-  },
-  levelPillText: {
-    ...typography.label,
-    color: colors.textPrimary,
-  },
-  pressed: { opacity: 0.65 },
 });

@@ -7,7 +7,6 @@
  *  - apps/mobile/src/stores/auth (useAuthStore)
  *  - React Navigation (navigation.goBack)
  *  - Screen component
- *  - theme
  *  - react-native Alert
  */
 
@@ -51,36 +50,15 @@ jest.mock('../stores/auth', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000',
-    brand: '#000',
-    border: '#ccc',
-    surface: '#fff',
-    surfaceElevated: '#f5f5f5',
-    background: '#fafafa',
-    separator: '#e0e0e0',
-    textPrimary: '#000',
-    textSecondary: '#555',
-    textTertiary: '#888',
-    textInverse: '#fff',
-    success: '#0f0',
-    error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: {
-    xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48,
-  },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -125,16 +103,27 @@ describe('BookingDetailScreen', () => {
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
-  it('shows a loading indicator while fetching', () => {
+  it('shows a loading skeleton (with a Back button) while fetching', () => {
     mockApiGet.mockReturnValue(new Promise(() => {}));
-    const { UNSAFE_queryAllByType } = render(
+    const { getByLabelText } = render(
       <BookingDetailScreen
         route={makeRoute() as any}
         navigation={makeNavigation() as any}
       />
     );
-    const { ActivityIndicator } = require('react-native');
-    expect(UNSAFE_queryAllByType(ActivityIndicator).length).toBeGreaterThan(0);
+    getByLabelText('Loading session');
+    getByLabelText('Back');
+  });
+
+  it('shows the start time and duration as stats', async () => {
+    mockApiGet.mockResolvedValue(makeBooking());
+    const { findByLabelText } = render(
+      <BookingDetailScreen
+        route={makeRoute() as any}
+        navigation={makeNavigation() as any}
+      />
+    );
+    await findByLabelText('60 min, Duration');
   });
 
   // ── Error state ────────────────────────────────────────────────────────────

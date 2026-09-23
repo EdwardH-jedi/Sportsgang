@@ -1,31 +1,35 @@
 import { useCallback, useRef } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Screen } from '../../components/Screen';
+import {
+  Avatar,
+  Badge,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+  Skeleton,
+  sportIconName,
+} from '../../components/ui';
 import { useMatches } from '../../hooks/useMatches';
 import type { MatchSummary as Match } from '../../lib/matches';
 import { formatPreviewTimestamp, previewText } from '../../lib/messages';
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 
-// ─── Match card ───────────────────────────────────────────────────────────────
+// ─── Chat row ─────────────────────────────────────────────────────────────────
 
-function MatchCard({ match, currentUserId }: { match: Match; currentUserId: string | null }) {
+function ChatRow({ match, currentUserId }: { match: Match; currentUserId: string | null }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const sportLabelText = sportLabel(match.sport);
   const levelLabel = match.partner.sportProfiles.find((sp) => sp.sport === match.sport)?.level;
+  const badgeLabel = levelLabel
+    ? `${sportLabelText} · ${levelLabel.charAt(0).toUpperCase()}${levelLabel.slice(1)}`
+    : sportLabelText;
 
   const sanitized = previewText(match.lastMessage);
   // Only attach the "You:" prefix when we're sure the message belongs to
@@ -33,11 +37,13 @@ function MatchCard({ match, currentUserId }: { match: Match; currentUserId: stri
   const isMine =
     !!currentUserId && match.lastMessageSenderId === currentUserId;
   const previewBody = sanitized || 'Start the conversation';
+  const preview = sanitized && isMine ? `You: ${previewBody}` : previewBody;
   const timestamp = sanitized ? formatPreviewTimestamp(match.lastMessageAt) : '';
+  const name = match.partner.displayName;
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       onPress={() =>
         navigation.navigate('Chat', {
           matchId: match.id,
@@ -47,47 +53,65 @@ function MatchCard({ match, currentUserId }: { match: Match; currentUserId: stri
         })
       }
       accessibilityRole="button"
+      accessibilityLabel={[`Chat with ${name}`, preview, timestamp].filter(Boolean).join(', ')}
     >
-      <View style={styles.cardAvatar}>
-        <Text style={styles.cardAvatarText}>
-          {match.partner.displayName.charAt(0).toUpperCase()}
-        </Text>
-      </View>
+      <Avatar name={name} size="lg" />
 
-      <View style={styles.cardBody}>
-        <View style={styles.cardNameRow}>
-          <Text style={styles.cardName} numberOfLines={1}>
-            {match.partner.displayName}
+      <View style={styles.rowBody}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name} numberOfLines={1}>
+            {name}
           </Text>
-          {timestamp ? (
-            <Text style={styles.cardTimestamp}>{timestamp}</Text>
-          ) : null}
+          {timestamp ? <Text style={styles.timestamp}>{timestamp}</Text> : null}
         </View>
 
         <Text
-          style={[
-            styles.cardPreview,
-            !sanitized && styles.cardPreviewEmpty,
-          ]}
+          style={[styles.preview, !sanitized && styles.previewEmpty]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {sanitized && isMine ? `You: ${previewBody}` : previewBody}
+          {preview}
         </Text>
 
-        <View style={styles.cardMetaRow}>
+        <View style={styles.metaRow}>
+          <Badge
+            label={badgeLabel}
+            tone="brand"
+            size="sm"
+            icon={sportIconName(match.sport)}
+          />
           {match.partner.suburb ? (
-            <Text style={styles.cardSuburb}>{match.partner.suburb}</Text>
+            <View style={styles.suburbRow}>
+              <Icon name="location" size="xs" color={colors.textTertiary} />
+              <Text style={styles.suburb}>{match.partner.suburb}</Text>
+            </View>
           ) : null}
-          <View style={styles.sportBadge}>
-            <Text style={styles.sportBadgeText}>
-              {sportLabelText}
-              {levelLabel ? ` · ${levelLabel.charAt(0).toUpperCase()}${levelLabel.slice(1)}` : ''}
-            </Text>
-          </View>
         </View>
       </View>
     </Pressable>
+  );
+}
+
+function ChatListSkeleton() {
+  return (
+    <View
+      style={styles.list}
+      accessible
+      accessibilityLabel="Loading chats"
+      accessibilityState={{ busy: true }}
+      testID="chats-loading"
+    >
+      {[0, 1, 2, 3, 4].map((i) => (
+        <View key={i} style={styles.row}>
+          <Skeleton circle height={AVATAR_LG} />
+          <View style={styles.rowBody}>
+            <Skeleton width="45%" height={spacing.md} />
+            <Skeleton width="80%" height={spacing.sm + spacing.xs} />
+            <Skeleton width="30%" height={spacing.sm + spacing.xs} />
+          </View>
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -126,48 +150,40 @@ export function MatchesScreen() {
   );
 
   return (
-    <Screen padded={false}>
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>Mutual interest</Text>
-        <Text style={styles.title}>Matches</Text>
-      </View>
-
+    <Screen
+      padded={false}
+      header={<Header large eyebrow="Your matches" title="Chats" />}
+    >
       {isLoading ? (
-        <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.accent} />
-        </View>
+        <ChatListSkeleton />
       ) : error ? (
-        <View style={styles.centred}>
-          <Text style={styles.errorTitle}>Something went wrong</Text>
-          <Text style={styles.errorBody}>{error}</Text>
-          <Pressable
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-            onPress={fetchMatches}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon="alert"
+          title="Something went wrong"
+          message={error}
+          action={{ label: 'Try again', icon: 'refresh', onPress: fetchMatches }}
+        />
       ) : matches.length === 0 ? (
-        <View style={styles.centred}>
-          <Text style={styles.emptyTitle}>No matches yet</Text>
-          <Text style={styles.emptyBody}>
-            Tap players you'd train with.{'\n'}When they tap back, they show up here.
-          </Text>
-        </View>
+        <EmptyState
+          icon="chat"
+          title="No matches yet"
+          message="Connect with runners you'd train with. When they connect back, your chat shows up here."
+        />
       ) : (
         <FlatList
           data={matches}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <MatchCard match={item} currentUserId={currentUserId} />
+            <ChatRow match={item} currentUserId={currentUserId} />
           )}
+          ItemSeparatorComponent={RowSeparator}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              tintColor={colors.accent}
+              tintColor={colors.brand}
             />
           }
         />
@@ -176,145 +192,71 @@ export function MatchesScreen() {
   );
 }
 
+function RowSeparator() {
+  return <View style={styles.separator} />;
+}
+
+/** Avatar `lg` diameter — the skeleton circle mirrors it. */
+const AVATAR_LG = 56;
+
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.accent,
-    marginBottom: spacing.xs,
-  },
-  title: {
-    ...typography.h2,
-  },
-  centred: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxxl,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  emptyBody: {
-    ...typography.body,
-    textAlign: 'center',
-    color: colors.textSecondary,
-    maxWidth: 260,
-    lineHeight: 22,
-  },
-  errorTitle: {
-    ...typography.h3,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  errorBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.textPrimary,
-  },
-  pressed: {
-    opacity: 0.65,
-  },
   list: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
+    paddingTop: spacing.xs,
     paddingBottom: spacing.xl,
-    gap: spacing.sm,
   },
-  card: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.separator,
+    paddingHorizontal: layout.screenPadding,
+    paddingVertical: spacing.md,
   },
-  cardAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: radii.full,
-    backgroundColor: colors.brand,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
+  rowPressed: {
+    backgroundColor: colors.surfacePressed,
   },
-  cardAvatarText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.textInverse,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginLeft: layout.screenPadding + AVATAR_LG + spacing.md,
   },
-  cardBody: {
+  rowBody: {
     flex: 1,
-    gap: 2,
+    gap: spacing.xs,
   },
-  cardNameRow: {
+  nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
   },
-  cardName: {
-    ...typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.textPrimary,
+  name: {
+    ...typography.bodyStrong,
+    fontSize: typography.bodyLarge.fontSize,
     flexShrink: 1,
   },
-  cardTimestamp: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+  timestamp: {
+    ...typography.caption,
     marginLeft: 'auto',
   },
-  cardPreview: {
+  preview: {
     ...typography.body,
-    color: colors.textSecondary,
-    marginTop: 2,
   },
-  cardPreviewEmpty: {
+  previewEmpty: {
     fontStyle: 'italic',
     color: colors.textTertiary,
   },
-  cardMetaRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
     flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginTop: spacing.xs / 2,
   },
-  cardSuburb: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+  suburbRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs / 2,
   },
-  sportBadge: {
-    alignSelf: 'flex-start',
-    marginTop: spacing.xs,
-    backgroundColor: colors.background,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: colors.separator,
-  },
-  sportBadgeText: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
+  suburb: {
+    ...typography.caption,
   },
 });
