@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Sentry from '@sentry/react-native';
 
+import { useAppFonts } from './src/hooks/useAppFonts';
 import { RootNavigator } from './src/navigation/RootNavigator';
 
 // Crash reporting — guarded so dev builds without a DSN are a no-op.
@@ -20,13 +21,27 @@ if (SENTRY_DSN) {
 }
 
 // Prevent the native splash from auto-hiding before the JS bundle is ready.
-// hideAsync() is called inside the useEffect below once the component tree mounts.
+// hideAsync() is called below once the brand fonts are ready.
 ExpoSplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  // Inter + Barlow Condensed. `ready` also flips on a load error or after a
+  // timeout, so a font problem can never hold the splash screen forever —
+  // text then falls back to the system font.
+  const { ready: fontsReady, error: fontError } = useAppFonts();
+
   useEffect(() => {
-    ExpoSplashScreen.hideAsync();
-  }, []);
+    if (!fontsReady) return;
+    if (fontError && SENTRY_DSN) {
+      Sentry.captureException(fontError);
+    }
+    void ExpoSplashScreen.hideAsync();
+  }, [fontsReady, fontError]);
+
+  if (!fontsReady) {
+    // Native splash is still visible.
+    return null;
+  }
 
   return (
     // Gesture handler must wrap the whole tree so pan gestures (bottom
