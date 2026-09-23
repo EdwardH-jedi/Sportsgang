@@ -31,6 +31,8 @@ import { HonorGuideScreen } from '../screens/help/HonorGuideScreen';
 import { SafetyCenterScreen } from '../screens/help/SafetyCenterScreen';
 import { BlockedUsersScreen } from '../screens/safety/BlockedUsersScreen';
 import { UiGalleryScreen } from '../screens/dev/UiGalleryScreen';
+import { CrewDetailScreen } from '../screens/crews/CrewDetailScreen';
+import { CreateCrewScreen } from '../screens/crews/CreateCrewScreen';
 
 import { registerForPushNotifications, configureForegroundHandler } from '../lib/notifications';
 import { useAuthStore } from '../stores/auth';
@@ -225,6 +227,16 @@ export function RootNavigator() {
           name="BlockedUsers"
           component={BlockedUsersScreen}
           options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="CrewDetail"
+          component={CrewDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="CreateCrew"
+          component={CreateCrewScreen}
+          options={{ animation: 'slide_from_bottom' }}
         />
         {__DEV__ ? (
           // Design-system review screen; never registered in release builds.
