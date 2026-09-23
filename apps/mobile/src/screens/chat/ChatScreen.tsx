@@ -1,28 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActionSheetIOS,
-  ActivityIndicator,
   Alert,
   Dimensions,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { Screen } from '../../components/Screen';
+import {
+  Avatar,
+  Button,
+  EmptyState,
+  Icon,
+  IconButton,
+  Screen,
+  Skeleton,
+  TextField,
+} from '../../components/ui';
 import { SessionProposalCard } from '../../components/SessionProposalCard';
 import { useChat } from '../../hooks/useChat';
 import type { ChatMessage } from '../../lib/matches';
+import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { ChatScreenProps } from '../../navigation/types';
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
@@ -233,40 +240,39 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   return (
     <Screen padded={false}>
       {/* Header — kept OUTSIDE the KeyboardAvoidingView so it stays anchored
-          at the top regardless of keyboard state. */}
+          at the top regardless of keyboard state. The Header primitive only
+          takes a text title, so the avatar + name bar is composed here. */}
       <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+        <IconButton
+          icon="back"
           onPress={() => navigation.goBack()}
-          accessibilityRole="button"
           accessibilityLabel="Back"
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerName} numberOfLines={1}>
-            {partnerName}
-          </Text>
+        />
+        <View style={styles.headerIdentity}>
+          <Avatar name={partnerName} size="sm" />
+          <View style={styles.headerText}>
+            <Text style={styles.headerName} numberOfLines={1} accessibilityRole="header">
+              {partnerName}
+            </Text>
+            <Text style={styles.headerSport} numberOfLines={1}>
+              {sportLabel(sport)}
+            </Text>
+          </View>
         </View>
         <View style={styles.headerActions}>
-          <Pressable
-            style={({ pressed }) => [styles.bookButton, pressed && styles.pressed]}
+          <IconButton
+            icon="calendar"
+            variant="filled"
             onPress={() =>
               navigation.navigate('BookingComposer', { matchId, sport })
             }
-            accessibilityRole="button"
             accessibilityLabel="Propose a session"
-          >
-            <Text style={styles.bookButtonText}>+ Session</Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [styles.overflowButton, pressed && styles.pressed]}
+          />
+          <IconButton
+            icon="more"
             onPress={openSafetyMenu}
-            accessibilityRole="button"
             accessibilityLabel="More options"
-          >
-            <Text style={styles.overflowText}>⋯</Text>
-          </Pressable>
+          />
         </View>
       </View>
 
@@ -274,38 +280,37 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
           must not move when the keyboard opens; only the list+composer
           should shift. */}
       <View style={styles.planBanner}>
+        <View style={styles.planIcon}>
+          <Icon name="calendar" size="md" color={colors.brand} />
+        </View>
         <View style={styles.planBannerText}>
           <Text style={styles.planBannerTitle}>Plan a session</Text>
           <Text style={styles.planBannerSubtitle}>
             Find a court and propose a time.
           </Text>
         </View>
-        <Pressable
+        <Button
+          label="Find a court"
+          size="sm"
           onPress={() =>
             navigation.navigate('BookingComposer', {
               matchId,
               sport,
             })
           }
-          accessibilityRole="button"
           accessibilityLabel="Find a court"
-          style={({ pressed }) => [styles.findCourtCta, pressed && styles.pressed]}
-        >
-          <Text style={styles.findCourtCtaText}>Find a court</Text>
-        </Pressable>
+        />
       </View>
 
       {isLoading ? (
-        <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.accent} />
-        </View>
+        <MessagesSkeleton />
       ) : fetchError ? (
-        <View style={styles.centred}>
-          <Text style={styles.errorText}>{fetchError}</Text>
-          <Pressable style={styles.retryButton} onPress={fetchMessages}>
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon="alert"
+          title="Couldn't load messages"
+          message={fetchError}
+          action={{ label: 'Try again', icon: 'refresh', onPress: fetchMessages }}
+        />
       ) : (
         // Single shared layout for both platforms. The composer is a normal
         // visible View below the FlatList — it must be tappable BEFORE the
@@ -368,6 +373,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             keyboardDismissMode="interactive"
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
+                <Avatar name={partnerName} size="lg" />
                 <Text style={styles.emptyText}>
                   Say hello to {partnerName} to get things started.
                 </Text>
@@ -389,13 +395,13 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
                 : null,
             ]}
           >
-            <TextInput
-              style={styles.input}
+            <TextField
               value={draft}
               onChangeText={setDraft}
               placeholder="Message…"
-              placeholderTextColor={colors.textTertiary}
+              accessibilityLabel="Message"
               multiline
+              minHeight={COMPOSER_HEIGHT}
               maxLength={1000}
               returnKeyType="send"
               onSubmitEditing={sendMessage}
@@ -404,24 +410,49 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
               // vertically centers the caret as the input grows, which makes
               // the first line appear to "jump" while typing.
               textAlignVertical="top"
+              containerStyle={styles.composerField}
+              inputStyle={styles.input}
             />
-            <Pressable
-              style={({ pressed }) => [
-                styles.sendButton,
-                (!draft.trim() || isSending) && styles.sendButtonDisabled,
-                pressed && styles.pressed,
-              ]}
+            <IconButton
+              icon="send"
+              variant="brand"
               onPress={sendMessage}
               disabled={!draft.trim() || isSending}
-              accessibilityRole="button"
               accessibilityLabel="Send"
-            >
-              <Text style={styles.sendButtonText}>Send</Text>
-            </Pressable>
+              style={styles.sendButton}
+            />
           </View>
         </KeyboardAvoidingView>
       )}
     </Screen>
+  );
+}
+
+/** Placeholder bubbles while the first page of messages loads. */
+function MessagesSkeleton() {
+  return (
+    <View
+      style={styles.skeleton}
+      accessible
+      accessibilityLabel="Loading messages"
+      accessibilityState={{ busy: true }}
+      testID="chat-loading"
+    >
+      <Skeleton width="55%" height={COMPOSER_HEIGHT - spacing.sm} radius={radii.lg} />
+      <Skeleton
+        width="40%"
+        height={COMPOSER_HEIGHT - spacing.sm}
+        radius={radii.lg}
+        style={styles.skeletonOwn}
+      />
+      <Skeleton width="65%" height={COMPOSER_HEIGHT + spacing.md} radius={radii.lg} />
+      <Skeleton
+        width="35%"
+        height={COMPOSER_HEIGHT - spacing.sm}
+        radius={radii.lg}
+        style={styles.skeletonOwn}
+      />
+    </View>
   );
 }
 
@@ -470,145 +501,129 @@ function MessageBubble({ message, isOwn }: { message: ChatMessage; isOwn: boolea
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
+/**
+ * Composer resting height (48). Real-device QA: at 44 the typed text felt
+ * clipped on an iPhone with the keyboard open; 48 gives the caret + first
+ * line clear breathing room. The Send button matches it so a single-line
+ * composer reads as one row.
+ */
+const COMPOSER_HEIGHT = touchTarget + spacing.xs;
+/** ~5 lines of growth before the input scrolls internally. */
+const COMPOSER_MAX_HEIGHT = COMPOSER_HEIGHT + spacing.xxl + spacing.xl + spacing.xs;
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    minHeight: layout.headerHeight,
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
+  headerIdentity: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.sm + spacing.xs,
+  },
+  headerText: {
+    flex: 1,
   },
   headerName: {
-    ...typography.h3,
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
+    fontSize: typography.bodyLarge.fontSize,
+  },
+  headerSport: {
+    ...typography.caption,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
   },
-  bookButton: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  bookButtonText: {
-    ...typography.label,
-    color: colors.textInverse,
-  },
-  overflowButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  overflowText: {
-    fontSize: 20,
-    color: colors.textSecondary,
-    letterSpacing: 2,
-  },
   planBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm + spacing.xs,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + spacing.xs,
     backgroundColor: colors.surface,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
+  },
+  planIcon: {
+    width: touchTarget - spacing.xs,
+    height: touchTarget - spacing.xs,
+    borderRadius: radii.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   planBannerText: {
     flex: 1,
-    gap: 2,
+    gap: spacing.xs / 2,
   },
   planBannerTitle: {
-    ...typography.label,
-    color: colors.textPrimary,
-    letterSpacing: 0.6,
+    ...typography.bodyStrong,
   },
   planBannerSubtitle: {
     ...typography.bodySmall,
     color: colors.textSecondary,
   },
-  findCourtCta: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  findCourtCtaText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 14,
-  },
-  centred: {
+  skeleton: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: spacing.md,
+    gap: spacing.sm + spacing.xs,
+  },
+  skeletonOwn: {
+    alignSelf: 'flex-end',
   },
   messageList: {
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
     // Larger bottom pad so the last bubble keeps clear of the composer's
     // top border AND the keyboard edge when the input grows multi-line.
-    // Slightly bumped from spacing.md so a fresh send doesn't visually
-    // crash into the input on real devices.
     paddingBottom: spacing.lg,
-    gap: spacing.xs,
+    gap: spacing.xs + spacing.xs / 2,
   },
   proposalRow: {
-    // Full-bleed card wrapper: cancels the bubble's 75% maxWidth so the
+    // Full-bleed card wrapper: cancels the bubble's 78% maxWidth so the
     // session proposal occupies the chat list's content width on its own
     // row. Vertical breathing room separates it from adjacent bubbles.
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.sm,
   },
   emptyWrap: {
     flex: 1,
     alignItems: 'center',
     paddingTop: spacing.xxxl,
     paddingHorizontal: spacing.xl,
+    gap: spacing.md,
   },
   emptyText: {
     ...typography.body,
-    color: colors.textSecondary,
     textAlign: 'center',
   },
   bubble: {
-    maxWidth: '75%',
+    maxWidth: '78%',
     borderRadius: radii.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md - spacing.xs / 2,
+    paddingVertical: spacing.sm + spacing.xs / 2,
   },
   bubbleOwn: {
     alignSelf: 'flex-end',
     backgroundColor: colors.brand,
-    borderBottomRightRadius: 3,
+    borderBottomRightRadius: radii.sm / 2,
   },
   bubbleOther: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    borderBottomLeftRadius: 3,
+    backgroundColor: colors.surfaceElevated,
+    borderBottomLeftRadius: radii.sm / 2,
   },
   bubbleText: {
     ...typography.body,
-    lineHeight: 20,
   },
   bubbleTextOwn: {
     color: colors.textInverse,
@@ -620,69 +635,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderTopWidth: 1,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.separator,
     gap: spacing.sm,
     backgroundColor: colors.background,
   },
-  input: {
+  composerField: {
     flex: 1,
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    // 12 px vertical padding on each side keeps a single line of bodyLarge
-    // (lineHeight 26) clearly inside the box without clipping the caret or
-    // descenders. Combined with minHeight 48, an empty composer is a
-    // comfortable resting target above the iOS HIG threshold.
-    paddingVertical: 12,
-    // Real-device QA: at the previous 44 px the typed text felt clipped on
-    // an iPhone with the keyboard open. 48 gives the caret + first line
-    // clear breathing room. maxHeight 132 lets the input grow to ~5 lines
-    // before scrolling internally so the user can review what they're
-    // typing without the keyboard ever covering the composer.
-    minHeight: 48,
-    maxHeight: 132,
+  },
+  input: {
+    // TextField's multiline input is sized from `minHeight`; pin the
+    // resting height and cap growth (~5 lines) so the keyboard never
+    // covers the composer while the user reviews a long message.
+    minHeight: COMPOSER_HEIGHT,
+    maxHeight: COMPOSER_MAX_HEIGHT,
   },
   sendButton: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    // Match the input's resting minHeight so a single-line composer reads
-    // as one unified row. With alignItems: 'flex-end' on the parent, the
-    // Send button stays bottom-aligned when the input grows multi-line.
-    minHeight: 48,
-    justifyContent: 'center',
+    // + TextField's 1pt border above and below the input.
+    width: COMPOSER_HEIGHT + 2,
+    height: COMPOSER_HEIGHT + 2,
+    minHeight: COMPOSER_HEIGHT + 2,
   },
-  sendButtonDisabled: {
-    backgroundColor: colors.border,
-  },
-  sendButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.textPrimary,
-  },
-  pressed: { opacity: 0.65 },
 });

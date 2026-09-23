@@ -5,7 +5,6 @@
  *  - apps/mobile/src/lib/api (api.get)
  *  - @react-navigation/native (useNavigation)
  *  - Screen component
- *  - theme
  */
 
 import React from 'react';
@@ -74,36 +73,15 @@ jest.mock('../stores/auth', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000',
-    brand: '#000',
-    border: '#ccc',
-    surface: '#fff',
-    surfaceElevated: '#f5f5f5',
-    background: '#fafafa',
-    separator: '#e0e0e0',
-    textPrimary: '#000',
-    textSecondary: '#555',
-    textTertiary: '#888',
-    textInverse: '#fff',
-    success: '#0f0',
-    error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: {
-    xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48,
-  },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -139,11 +117,17 @@ describe('MatchesScreen', () => {
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
-  it('shows a loading indicator before data arrives', () => {
+  it('shows skeleton rows before data arrives', () => {
     mockApiGet.mockReturnValue(new Promise(() => {}));
-    const { UNSAFE_queryAllByType } = render(<MatchesScreen />);
-    const { ActivityIndicator } = require('react-native');
-    expect(UNSAFE_queryAllByType(ActivityIndicator).length).toBeGreaterThan(0);
+    const { getByLabelText } = render(<MatchesScreen />);
+    getByLabelText('Loading chats');
+  });
+
+  it('renders the Chats header', async () => {
+    mockApiGet.mockResolvedValue(emptyResponse);
+    const { getByText } = render(<MatchesScreen />);
+    await waitFor(() => getByText('No matches yet'));
+    getByText('Chats');
   });
 
   it('fetches from the correct endpoint on mount', async () => {
@@ -216,6 +200,13 @@ describe('MatchesScreen', () => {
     });
   });
 
+  it('labels each row as a button that opens the chat', async () => {
+    mockApiGet.mockResolvedValue({ items: [makeMatch()], total: 1, limit: 50, offset: 0 });
+    const { findByLabelText } = render(<MatchesScreen />);
+    const row = await findByLabelText(/^Chat with Jordan Lee/);
+    expect(row.props.accessibilityRole).toBe('button');
+  });
+
   // ── Error state ────────────────────────────────────────────────────────────
 
   it('shows an error message and Try again button on fetch failure', async () => {
@@ -261,7 +252,7 @@ describe('MatchesScreen', () => {
     // Regression: the focus callback read a stale `isLoading === true` from
     // the first render, so returning to the tab never refreshed previews.
     mockApiGet.mockResolvedValue({ items: [makeMatch()], total: 1, limit: 50, offset: 0 });
-    const { getByText, UNSAFE_queryAllByType } = render(<MatchesScreen />);
+    const { getByText, queryByLabelText } = render(<MatchesScreen />);
     await waitFor(() => getByText('Jordan Lee'));
     // First focus (mount) must not double the initial fetch.
     expect(mockApiGet).toHaveBeenCalledTimes(1);
@@ -278,9 +269,8 @@ describe('MatchesScreen', () => {
 
     expect(mockApiGet).toHaveBeenCalledTimes(2);
     await waitFor(() => getByText('Riley Chen'));
-    // Silent: the list is never replaced by the full-screen spinner.
-    const { ActivityIndicator } = require('react-native');
-    expect(UNSAFE_queryAllByType(ActivityIndicator)).toHaveLength(0);
+    // Silent: the list is never replaced by the loading skeleton.
+    expect(queryByLabelText('Loading chats')).toBeNull();
   });
 
   it('keeps the list on screen when a focus refresh fails', async () => {

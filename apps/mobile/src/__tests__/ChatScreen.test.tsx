@@ -6,7 +6,6 @@
  *  - apps/mobile/src/stores/auth (useAuthStore)
  *  - React Navigation (navigation.goBack, navigation.navigate)
  *  - Screen component
- *  - theme
  */
 
 import React from 'react';
@@ -93,7 +92,13 @@ class MockWebSocket implements MockWS {
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
 
@@ -122,33 +127,6 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-}));
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000',
-    brand: '#000',
-    border: '#ccc',
-    surface: '#fff',
-    surfaceElevated: '#f5f5f5',
-    background: '#fafafa',
-    separator: '#e0e0e0',
-    textPrimary: '#000',
-    textSecondary: '#555',
-    textTertiary: '#888',
-    textInverse: '#fff',
-    success: '#0f0',
-    error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: {
-    xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48,
-  },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, label: {}, button: {},
-  },
 }));
 
 // ─── Mock navigation types (no-op — navigation is injected as a prop) ─────────
@@ -222,12 +200,19 @@ describe('ChatScreen', () => {
 
   // ── Loading & fetch ────────────────────────────────────────────────────────
 
-  it('shows a loading indicator on mount before messages load', () => {
+  it('shows skeleton bubbles on mount before messages load', () => {
     // Never resolves during this test
     mockApiGet.mockReturnValue(new Promise(() => {}));
-    const { UNSAFE_queryAllByType } = renderChatScreen();
-    const { ActivityIndicator } = require('react-native');
-    expect(UNSAFE_queryAllByType(ActivityIndicator).length).toBeGreaterThan(0);
+    const { getByLabelText } = renderChatScreen();
+    getByLabelText('Loading messages');
+  });
+
+  it('shows the partner avatar and sport under the name in the header', async () => {
+    setupMessagesAndBookingsMock();
+    const { getByText, getAllByLabelText } = renderChatScreen();
+    await waitFor(() => getByText('Gym'));
+    // Header avatar (+ the empty-state avatar) are labelled with the name.
+    expect(getAllByLabelText('Jordan Lee').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders partner name in the header', async () => {
