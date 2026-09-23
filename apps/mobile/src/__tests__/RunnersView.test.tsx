@@ -4,6 +4,7 @@
  * gestures, match banner, partner preview, honor badge, public profile.
  */
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { State } from 'react-native-gesture-handler';
 import type { PanGesture } from 'react-native-gesture-handler';
@@ -137,6 +138,14 @@ describe('RunnersView', () => {
     getByText('1 more runners to meet');
     // Only the top card is shown.
     expect(queryByText('Blake')).toBeNull();
+  });
+
+  it('never lets the sport chip row shrink under the card list', () => {
+    setup({ partners: [alex] });
+    const { getByTestId } = renderView();
+    const style = StyleSheet.flatten(getByTestId('runner-sport-chips').props.style);
+    expect(style.flexShrink).toBe(0);
+    expect(style.flexGrow).toBe(0);
   });
 
   it('falls back to initials when the runner has no photo', () => {

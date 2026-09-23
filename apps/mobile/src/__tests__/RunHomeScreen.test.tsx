@@ -7,8 +7,11 @@ import { act, fireEvent, render, waitFor, within } from '@testing-library/react-
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { EventSummary } from '@protin/shared-types';
 
+import { StyleSheet } from 'react-native';
+
+import { formatClock, formatDayLabel } from '../lib/format';
 import { RunHomeScreen, locationSubtitle } from '../screens/run/RunHomeScreen';
-import { GROUP_RUN_RADIUS_KM } from '../screens/run/GroupRunsView';
+import { GROUP_RUN_RADIUS_KM, SHEET_SNAPS } from '../screens/run/GroupRunsView';
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -315,9 +318,33 @@ describe('Next up', () => {
     expect(mockNavigate).toHaveBeenCalledWith('BattleDetail', { eventId: 'mine' });
   });
 
+  it('keeps the time out of the truncating eyebrow (compact on Group runs, own line on Runners)', async () => {
+    const startsAt = '2031-01-01T06:00:00Z';
+    mockListEvents.mockResolvedValue({
+      items: [makeRun({ id: 'mine', title: 'Sunrise 5k', startsAt })],
+      total: 1,
+    });
+    const { findByText, getByText, queryByText } = await renderScreen();
+    await findByText('Next up');
+    // Compact row: day and time are separate, untruncated lines.
+    getByText(formatClock(startsAt));
+    getByText(formatDayLabel(startsAt));
+    fireEvent.press(getByText('Runners'));
+    getByText(`${formatDayLabel(startsAt)} · ${formatClock(startsAt)}`);
+    expect(queryByText(/Next up ·/)).toBeNull();
+  });
+
   it('is hidden with nothing upcoming', async () => {
     const { queryByTestId } = await renderScreen();
     await waitFor(() => expect(mockListEvents).toHaveBeenCalled());
     expect(queryByTestId('next-up-card')).toBeNull();
+  });
+});
+
+describe('Group runs sheet layout', () => {
+  it('opens at 40% so the map stays usable, flush above the tab bar', async () => {
+    expect(SHEET_SNAPS[1]).toBe('40%');
+    const { getByTestId } = await renderScreen();
+    expect(StyleSheet.flatten(getByTestId('group-runs-sheet-content').props.style).paddingBottom).toBe(0);
   });
 });

@@ -167,6 +167,7 @@ export function RunnersView({ coords }: RunnersViewProps) {
         showsHorizontalScrollIndicator={false}
         style={styles.chipsScroll}
         contentContainerStyle={styles.chips}
+        testID="runner-sport-chips"
       >
         {SPORTS.map(({ id, label }) => (
           <Chip
@@ -295,8 +296,11 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
   },
+  // A horizontal ScrollView in a column can be squeezed by its flex
+  // sibling (the card list) — never let it shrink below the chip height.
   chipsScroll: {
     flexGrow: 0,
+    flexShrink: 0,
   },
   chips: {
     gap: spacing.sm,

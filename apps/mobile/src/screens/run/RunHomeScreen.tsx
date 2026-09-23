@@ -92,6 +92,9 @@ export function RunHomeScreen() {
         <View style={styles.nextUp}>
           <NextUpCard
             item={next}
+            // Group runs needs the height for its map; a one-line row keeps
+            // the time visible without squeezing the map to a strip.
+            compact={segment === 'runs'}
             onPress={() =>
               next.kind === 'session'
                 ? navigation.navigate('BookingDetail', { bookingId: next.id })

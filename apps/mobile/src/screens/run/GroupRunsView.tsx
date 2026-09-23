@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { BottomSheet, Button, Card, Chip, EmptyState } from '../../components/ui';
+import { BottomSheet, Button, Chip, EmptyState, Icon } from '../../components/ui';
 import { useGroupRuns } from '../../hooks/useGroupRuns';
 import type { EventSummary } from '../../lib/events';
 import {
@@ -14,14 +14,18 @@ import {
   filterRuns,
 } from '../../lib/groupRuns';
 import type { Coords, LocationStatus } from '../../lib/location';
-import { colors, layout, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, typography } from '../../theme';
 import { RunCard } from './components/RunCard';
 import { RunCardSkeleton } from './components/RunCardSkeleton';
 import { RunMap } from './components/RunMap';
 
 /** Meeting-point search radius once we have a fix. */
 export const GROUP_RUN_RADIUS_KM = 20;
-export const SHEET_SNAPS = ['25%', '55%', '90%'] as const;
+/**
+ * Collapsed · default · expanded. The default (40%) leaves the map a real
+ * area to scan pins in, with ~2 run cards visible below the filters.
+ */
+export const SHEET_SNAPS = ['25%', '40%', '90%'] as const;
 
 export interface GroupRunsViewProps {
   coords: Coords | null;
@@ -70,31 +74,29 @@ export function GroupRunsView({
   const locationNotice = (() => {
     if (locationStatus === 'undetermined') {
       return (
-        <Card variant="outline" padding="md" style={styles.notice}>
-          <Text style={styles.noticeTitle}>See runs near you</Text>
-          <Text style={styles.noticeBody}>
-            Share a rough location (about 1 km) to sort runs by distance.
-          </Text>
-          <Button label="Set location" size="sm" leadingIcon="my-location" onPress={onSetLocation} />
-        </Card>
+        <LocationBanner
+          title="See runs near you"
+          body="Share a rough location (about 1 km) to sort runs by distance."
+          action={<Button label="Set location" size="sm" onPress={onSetLocation} />}
+        />
       );
     }
     if (locationStatus === 'denied') {
       return (
-        <Card variant="outline" padding="md" style={styles.notice}>
-          <Text style={styles.noticeTitle}>Location is off</Text>
-          <Text style={styles.noticeBody}>Showing group runs across Sydney.</Text>
-          <Button label="Open settings" size="sm" variant="secondary" onPress={onOpenSettings} />
-        </Card>
+        <LocationBanner
+          title="Location is off"
+          body="Showing group runs across Sydney."
+          action={<Button label="Open settings" size="sm" variant="secondary" onPress={onOpenSettings} />}
+        />
       );
     }
     if (locationStatus === 'unavailable') {
       return (
-        <Card variant="outline" padding="md" style={styles.notice}>
-          <Text style={styles.noticeTitle}>Couldn't find your location</Text>
-          <Text style={styles.noticeBody}>Showing group runs across Sydney.</Text>
-          <Button label="Try again" size="sm" variant="secondary" onPress={onSetLocation} />
-        </Card>
+        <LocationBanner
+          title="Couldn't find your location"
+          body="Showing group runs across Sydney."
+          action={<Button label="Try again" size="sm" variant="secondary" onPress={onSetLocation} />}
+        />
       );
     }
     return null;
@@ -102,7 +104,12 @@ export function GroupRunsView({
 
   const filtersBlock = (
     <View style={styles.filters}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.chipScroll}
+        contentContainerStyle={styles.chipRow}
+      >
         {WHEN_FILTERS.map((f) => (
           <Chip key={f.id} label={f.label} size="sm" selected={when === f.id} onPress={() => setWhen(f.id)} />
         ))}
@@ -117,7 +124,12 @@ export function GroupRunsView({
       </ScrollView>
       {showFilters ? (
         <>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.chipScroll}
+            contentContainerStyle={styles.chipRow}
+          >
             {DISTANCE_FILTERS.map((f) => (
               <Chip
                 key={f.id}
@@ -128,7 +140,12 @@ export function GroupRunsView({
               />
             ))}
           </ScrollView>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.chipScroll}
+            contentContainerStyle={styles.chipRow}
+          >
             {PACE_FILTERS.map((f) => (
               <Chip
                 key={f.id}
@@ -208,6 +225,9 @@ export function GroupRunsView({
         onIndexChange={setSheetIndex}
         accessibilityLabel="Group runs list"
         testID="group-runs-sheet"
+        // The Run tab ends above the tab bar, which already clears the
+        // home indicator — don't pad the list a second time.
+        bottomInset={0}
         header={
           <View style={styles.sheetHeader}>
             <View style={styles.sheetTitleBlock}>
@@ -252,6 +272,24 @@ function Separator() {
   return <View style={styles.separator} />;
 }
 
+/** Inline one-row notice (location state) that keeps run cards in view. */
+function LocationBanner({ title, body, action }: { title: string; body: string; action: React.ReactNode }) {
+  return (
+    <View style={styles.notice}>
+      <Icon name="location" size="md" color={colors.brand} />
+      <View style={styles.noticeText}>
+        <Text style={styles.noticeTitle} numberOfLines={2}>
+          {title}
+        </Text>
+        <Text style={styles.noticeBody} numberOfLines={2}>
+          {body}
+        </Text>
+      </View>
+      {action}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -284,17 +322,36 @@ const styles = StyleSheet.create({
   filters: {
     gap: spacing.sm,
   },
+  // Chip rows bleed to the sheet edge (the list is inset by the screen
+  // padding) and re-inset their content, so chips scroll off the edge
+  // instead of being clipped inside the gutter.
+  chipScroll: {
+    marginHorizontal: -layout.screenPadding,
+  },
   chipRow: {
     gap: spacing.sm,
+    paddingHorizontal: layout.screenPadding,
   },
   notice: {
-    gap: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm + spacing.xs,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
+  },
+  noticeText: {
+    flex: 1,
+    minWidth: 0,
   },
   noticeTitle: {
     ...typography.bodyStrong,
   },
   noticeBody: {
-    ...typography.bodySmall,
+    ...typography.caption,
     color: colors.textSecondary,
   },
   skeletons: {
