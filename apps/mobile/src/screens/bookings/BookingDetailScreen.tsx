@@ -1,21 +1,26 @@
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Header,
+  Icon,
+  Screen,
+  Skeleton,
+  SkeletonText,
+  StatBlock,
+  sportIconName,
+  type BadgeTone,
+  type IconName,
+} from '../../components/ui';
 import { useBooking } from '../../hooks/useBookings';
 import type { BookingAction } from '../../lib/sessions';
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
 import type { BookingDetailScreenProps } from '../../navigation/types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -43,11 +48,25 @@ function statusLabel(status: string): string {
   return map[status] ?? status;
 }
 
-function statusColor(status: string): string {
-  if (status === 'confirmed' || status === 'completed') return colors.success;
-  if (status === 'declined' || status === 'cancelled' || status === 'no_show')
-    return colors.error;
-  return colors.textSecondary;
+function statusTone(status: string): BadgeTone {
+  if (status === 'confirmed' || status === 'completed') return 'success';
+  if (status === 'declined' || status === 'cancelled' || status === 'no_show') return 'error';
+  if (status === 'proposed') return 'warning';
+  return 'neutral';
+}
+
+function formatClock(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-AU', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
+/** Whole minutes between start and end (never negative). */
+function durationMinutes(startsAt: string, endsAt: string): number {
+  const ms = new Date(endsAt).getTime() - new Date(startsAt).getTime();
+  return Number.isFinite(ms) ? Math.max(0, Math.round(ms / 60000)) : 0;
 }
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
@@ -91,11 +110,28 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
     );
   }, [performTransition]);
 
+  const header = (
+    <Header
+      title="Session"
+      onBack={() => navigation.goBack()}
+      backLabel="Back"
+      style={styles.header}
+    />
+  );
+
   if (isLoading) {
     return (
-      <Screen padded>
-        <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.accent} />
+      <Screen padded={false} header={header}>
+        <View
+          style={styles.skeleton}
+          accessible
+          accessibilityLabel="Loading session"
+          accessibilityState={{ busy: true }}
+          testID="booking-loading"
+        >
+          <Skeleton width="35%" height={spacing.lg} radius={radii.pill} />
+          <Skeleton height={spacing.xxxl + spacing.xl} radius={radii.lg} />
+          <SkeletonText lines={5} lineHeight={spacing.md} />
         </View>
       </Screen>
     );
@@ -103,81 +139,80 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
 
   if (error || !booking) {
     return (
-      <Screen padded>
-        <Text style={styles.errorText}>{error ?? 'Booking not found.'}</Text>
+      <Screen padded={false} header={header}>
+        <EmptyState icon="alert" title="Session unavailable" message={error ?? 'Booking not found.'} />
       </Screen>
     );
   }
 
-  return (
-    <Screen padded={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Session</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
+  const minutes = durationMinutes(booking.startsAt, booking.endsAt);
 
+  return (
+    <Screen padded={false} header={header}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* Status pill */}
-        <View style={styles.statusRow}>
-          <View style={[styles.statusPill, { borderColor: statusColor(booking.status) }]}>
-            <Text style={[styles.statusText, { color: statusColor(booking.status) }]}>
-              {statusLabel(booking.status)}
-            </Text>
+        {/* Summary: status + the numbers that matter at a glance */}
+        <Card variant="elevated" padding="lg" style={styles.summary}>
+          <View style={styles.summaryTop}>
+            <View style={styles.sportIcon}>
+              <Icon name={sportIconName(booking.sport)} size="lg" color={colors.brand} />
+            </View>
+            <Badge label={statusLabel(booking.status)} tone={statusTone(booking.status)} />
           </View>
-        </View>
+          <View style={styles.stats}>
+            <StatBlock
+              value={formatClock(booking.startsAt)}
+              label="Start"
+              icon="clock"
+              size="lg"
+              accent
+            />
+            <StatBlock value={minutes} unit="min" label="Duration" icon="timer" size="lg" />
+          </View>
+        </Card>
 
         {/* Details */}
-        <View style={styles.section}>
-          <DetailRow label="With" value={booking.partner.displayName} />
-          <DetailRow label="Sport" value={sportLabel(booking.sport)} />
-          <DetailRow label="Starts" value={formatDateTime(booking.startsAt)} />
-          <DetailRow label="Ends" value={formatDateTime(booking.endsAt)} />
+        <Card padding="none">
+          <DetailRow icon="profile" label="With" value={booking.partner.displayName} />
+          <DetailRow icon={sportIconName(booking.sport)} label="Sport" value={sportLabel(booking.sport)} />
+          <DetailRow icon="calendar" label="Starts" value={formatDateTime(booking.startsAt)} />
+          <DetailRow icon="finish" label="Ends" value={formatDateTime(booking.endsAt)} />
           {booking.venue ? (
             <>
-              <DetailRow label="Court" value={booking.venue.name} />
+              <DetailRow icon="location" label="Court" value={booking.venue.name} />
               {booking.venue.area || booking.venue.address ? (
                 <DetailRow
+                  icon="map"
                   label="Where"
                   value={booking.venue.address ?? booking.venue.area ?? ''}
                 />
               ) : null}
-              {booking.venue.isBookable && booking.venue.bookingUrl ? (
-                <Pressable
-                  onPress={() => booking.venue?.bookingUrl && Linking.openURL(booking.venue.bookingUrl)}
-                  accessibilityRole="link"
-                  accessibilityLabel="Open court booking"
-                  style={({ pressed }) => [styles.bookingLink, pressed && styles.pressed]}
-                >
-                  <Text style={styles.bookingLinkText}>Open court booking</Text>
-                </Pressable>
-              ) : null}
             </>
           ) : booking.location ? (
-            <DetailRow label="Location" value={booking.location} />
+            <DetailRow icon="location" label="Location" value={booking.location} />
           ) : null}
           {booking.notes ? (
-            <DetailRow label="Notes" value={booking.notes} />
+            <DetailRow icon="edit" label="Notes" value={booking.notes} last />
           ) : null}
-        </View>
+        </Card>
+
+        {booking.venue?.isBookable && booking.venue.bookingUrl ? (
+          <Button
+            label="Open court booking"
+            variant="secondary"
+            leadingIcon="external-link"
+            fullWidth
+            onPress={() => booking.venue?.bookingUrl && Linking.openURL(booking.venue.bookingUrl)}
+            accessibilityLabel="Open court booking"
+          />
+        ) : null}
 
         {/* Action buttons — conditionally shown based on status */}
         {isActing ? (
-          <View style={styles.centred}>
-            <ActivityIndicator color={colors.accent} />
+          <View style={styles.acting} accessibilityLabel="Updating session">
+            <ActivityIndicator color={colors.brand} />
           </View>
         ) : (
           <View style={styles.actions}>
@@ -185,26 +220,31 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
               (() => {
                 const isProposer = booking.proposerId === user?.id;
                 return isProposer ? (
-                  <ActionButton
+                  <Button
                     label="Cancel"
-                    variant="ghost"
+                    variant="destructive"
+                    fullWidth
                     onPress={() => performTransition('cancel')}
                   />
                 ) : (
                   <>
-                    <ActionButton
+                    <Button
                       label="Confirm"
-                      variant="primary"
+                      size="lg"
+                      fullWidth
+                      leadingIcon="check"
                       onPress={() => performTransition('confirm')}
                     />
-                    <ActionButton
+                    <Button
                       label="Decline"
-                      variant="ghost"
+                      variant="secondary"
+                      fullWidth
                       onPress={() => performTransition('decline')}
                     />
-                    <ActionButton
+                    <Button
                       label="Cancel"
                       variant="ghost"
+                      fullWidth
                       onPress={() => performTransition('cancel')}
                     />
                   </>
@@ -212,19 +252,24 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
               })()
             ) : booking.status === 'confirmed' ? (
               <>
-                <ActionButton
+                <Button
                   label="Mark completed"
-                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  leadingIcon="check-circle"
                   onPress={() => performTransition('complete')}
                 />
-                <ActionButton
+                <Button
                   label="Record no-show"
-                  variant="ghost"
+                  variant="secondary"
+                  fullWidth
+                  leadingIcon="flag"
                   onPress={handleNoShow}
                 />
-                <ActionButton
+                <Button
                   label="Cancel"
-                  variant="ghost"
+                  variant="destructive"
+                  fullWidth
                   onPress={() => performTransition('cancel')}
                 />
               </>
@@ -236,117 +281,82 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({
+  icon,
+  label,
+  value,
+  last = false,
+}: {
+  icon: IconName;
+  label: string;
+  value: string;
+  last?: boolean;
+}) {
   return (
-    <View style={styles.detailRow}>
+    <View
+      style={[styles.detailRow, !last && styles.detailDivider]}
+      accessible
+      accessibilityLabel={`${label}: ${value}`}
+    >
+      <Icon name={icon} size="sm" color={colors.textTertiary} />
       <Text style={styles.detailLabel}>{label}</Text>
       <Text style={styles.detailValue}>{value}</Text>
     </View>
   );
 }
 
-function ActionButton({
-  label,
-  variant,
-  onPress,
-}: {
-  label: string;
-  variant: 'primary' | 'ghost';
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.actionButton,
-        variant === 'primary' ? styles.actionButtonPrimary : styles.actionButtonGhost,
-        pressed && styles.pressed,
-      ]}
-      onPress={onPress}
-      accessibilityRole="button"
-    >
-      <Text
-        style={[
-          styles.actionButtonText,
-          variant === 'primary'
-            ? styles.actionButtonTextPrimary
-            : styles.actionButtonTextGhost,
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  centred: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
+  skeleton: {
+    padding: layout.screenPadding,
+    gap: spacing.lg,
   },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
   scroll: {
+    padding: layout.screenPadding,
     paddingBottom: spacing.xxxl,
+    gap: spacing.lg,
   },
-  statusRow: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+  summary: {
+    gap: spacing.lg,
   },
-  statusPill: {
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+  summaryTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  statusText: {
-    ...typography.label,
+  sportIcon: {
+    width: touchTarget + spacing.xs,
+    height: touchTarget + spacing.xs,
+    borderRadius: radii.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  section: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
+  stats: {
+    flexDirection: 'row',
+    gap: spacing.xl,
   },
   detailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
+    gap: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + spacing.xs,
+  },
+  detailDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
   detailLabel: {
     ...typography.label,
     color: colors.textTertiary,
     flex: 1,
+    paddingTop: spacing.xs / 2,
   },
   detailValue: {
     ...typography.body,
@@ -354,42 +364,11 @@ const styles = StyleSheet.create({
     flex: 2,
     textAlign: 'right',
   },
-  bookingLink: {
-    paddingVertical: spacing.sm,
-    alignItems: 'flex-end',
-  },
-  bookingLinkText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  actions: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  actionButton: {
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
+  acting: {
+    paddingVertical: spacing.lg,
     alignItems: 'center',
   },
-  actionButtonPrimary: {
-    backgroundColor: colors.brand,
+  actions: {
+    gap: spacing.sm,
   },
-  actionButtonGhost: {
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  actionButtonText: {
-    ...typography.button,
-  },
-  actionButtonTextPrimary: {
-    color: colors.textInverse,
-  },
-  actionButtonTextGhost: {
-    color: colors.textPrimary,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  pressed: { opacity: 0.65 },
 });

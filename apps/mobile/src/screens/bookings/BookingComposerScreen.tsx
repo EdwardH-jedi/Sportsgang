@@ -1,19 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
 import { CalendarPicker } from '../../components/CalendarPicker';
-import { Screen } from '../../components/Screen';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import {
+  Button,
+  Card,
+  Header,
+  Icon,
+  ListRow,
+  Screen,
+  TextField,
+} from '../../components/ui';
 import { TimeWheelPicker } from '../../components/TimeWheelPicker';
 import { useProposeSession } from '../../hooks/useBookings';
 import { useVenueLocation } from '../../hooks/useVenueLocation';
@@ -28,8 +34,9 @@ import {
   type DateString,
   type TimeString,
 } from '../../lib/sessionTime';
+import { sportLabel } from '../../lib/sports';
 import { formatVenueLocation } from '../../lib/venueLocation';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, radii, spacing, typography } from '../../theme';
 import type { BookingComposerScreenProps } from '../../navigation/types';
 import type { Venue } from '@protin/shared-types';
 import { NearbyCourtsModal } from './NearbyCourtsModal';
@@ -125,60 +132,59 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable
-            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-            onPress={() => navigation.goBack()}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-          >
-            <Text style={styles.backText}>{'←'}</Text>
-          </Pressable>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Propose a session</Text>
-          </View>
-          <View style={styles.headerSpacer} />
-        </View>
+        <Header
+          title="Propose a session"
+          subtitle={sportLabel(sport)}
+          onBack={() => navigation.goBack()}
+          backLabel="Back"
+          style={styles.header}
+        />
 
         <ScrollView
           contentContainerStyle={styles.form}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Field label="Date">
-            <SelectorButton
-              label={formatDateLabel(date)}
-              accessibilityLabel="Choose date"
-              onPress={() => setDatePickerOpen(true)}
-            />
-          </Field>
+          <Section title="When">
+            <Card padding="none">
+              <ListRow
+                icon="calendar"
+                title="Date"
+                value={formatDateLabel(date)}
+                accessibilityLabel="Choose date"
+                accessibilityHint={`Selected: ${formatDateLabel(date)}`}
+                onPress={() => setDatePickerOpen(true)}
+              />
+              <View style={styles.rowDivider} />
+              <ListRow
+                icon="clock"
+                title="Start time"
+                value={formatTimeLabel(startTime)}
+                accessibilityLabel="Choose start time"
+                accessibilityHint={`Selected: ${formatTimeLabel(startTime)}`}
+                onPress={() => setStartPickerOpen(true)}
+              />
+              <View style={styles.rowDivider} />
+              <ListRow
+                icon="clock"
+                title="End time"
+                value={formatTimeLabel(endTime)}
+                accessibilityLabel="Choose end time"
+                accessibilityHint={`Selected: ${formatTimeLabel(endTime)}`}
+                onPress={() => setEndPickerOpen(true)}
+              />
+            </Card>
+            <FormErrorBanner message={inlineError} />
+            <View style={styles.hintRow}>
+              <Icon name="info" size="xs" color={colors.textTertiary} />
+              <Text style={styles.hint}>Times are in your local timezone.</Text>
+            </View>
+          </Section>
 
-          <Field label="Start time">
-            <SelectorButton
-              label={formatTimeLabel(startTime)}
-              accessibilityLabel="Choose start time"
-              onPress={() => setStartPickerOpen(true)}
-            />
-          </Field>
-
-          <Field label="End time">
-            <SelectorButton
-              label={formatTimeLabel(endTime)}
-              accessibilityLabel="Choose end time"
-              onPress={() => setEndPickerOpen(true)}
-            />
-          </Field>
-
-          {inlineError ? (
-            <Text style={styles.errorText} accessibilityLiveRegion="polite">
-              {inlineError}
-            </Text>
-          ) : null}
-
-          <Field label="Court / venue (optional)">
+          <Section title="Court / venue (optional)">
             {selectedVenue ? (
-              <View style={styles.selectedVenueRow}>
+              <Card variant="brand" padding="sm" style={styles.selectedVenueRow}>
+                <Icon name="location" size="md" color={colors.brand} />
                 <View style={styles.selectedVenueText}>
                   <Text style={styles.selectedVenueName} numberOfLines={1}>
                     {selectedVenue.name}
@@ -187,69 +193,61 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
                     <Text style={styles.selectedVenueArea}>{selectedVenue.area}</Text>
                   ) : null}
                 </View>
-                <Pressable
+                <Button
+                  label="Change"
+                  variant="ghost"
+                  size="sm"
                   onPress={() => setSelectedVenue(null)}
-                  accessibilityRole="button"
                   accessibilityLabel="Clear selected court"
-                  style={({ pressed }) => [styles.clearVenue, pressed && styles.pressed]}
-                >
-                  <Text style={styles.clearVenueText}>Change</Text>
-                </Pressable>
-              </View>
+                />
+              </Card>
             ) : (
               <>
-                <Pressable
-                  onPress={() => setIsVenuePickerOpen(true)}
-                  accessibilityRole="button"
-                  accessibilityLabel="Choose a court or venue"
-                  style={({ pressed }) => [styles.findCourtButton, pressed && styles.pressed]}
-                >
-                  <Text style={styles.findCourtText}>Choose a court or venue</Text>
-                </Pressable>
-                <TextInput
-                  style={[styles.input, styles.locationFallback]}
+                <Card padding="none">
+                  <ListRow
+                    icon="map"
+                    title="Choose a court or venue"
+                    subtitle="Nearby courts, gyms and parks"
+                    accessibilityLabel="Choose a court or venue"
+                    onPress={() => setIsVenuePickerOpen(true)}
+                  />
+                </Card>
+                <TextField
+                  leadingIcon="location"
                   value={location}
                   onChangeText={setLocation}
                   placeholder="Or type a location, e.g. Bondi gym"
-                  placeholderTextColor={colors.textTertiary}
+                  accessibilityLabel="Location"
                   maxLength={200}
                 />
               </>
             )}
-          </Field>
+          </Section>
 
-          <Field label="Notes (optional)">
-            <TextInput
-              style={[styles.input, styles.inputMultiline]}
+          <Section title="Notes (optional)">
+            <TextField
               value={notes}
               onChangeText={setNotes}
               placeholder="Anything your partner should know…"
-              placeholderTextColor={colors.textTertiary}
+              accessibilityLabel="Notes"
               multiline
               maxLength={500}
             />
-          </Field>
-
-          <Text style={styles.timezoneHint}>Times are in your local timezone.</Text>
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.submitButton,
-              !canSubmit && styles.submitButtonDisabled,
-              pressed && canSubmit && styles.pressed,
-            ]}
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-            accessibilityRole="button"
-            accessibilityLabel="Send proposal"
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color={colors.textInverse} />
-            ) : (
-              <Text style={styles.submitButtonText}>Send proposal</Text>
-            )}
-          </Pressable>
+          </Section>
         </ScrollView>
+
+        <View style={styles.footer}>
+          <Button
+            label="Send proposal"
+            size="lg"
+            fullWidth
+            leadingIcon="send"
+            loading={isSubmitting}
+            disabled={Boolean(validationError)}
+            onPress={handleSubmit}
+            accessibilityLabel="Send proposal"
+          />
+        </View>
       </KeyboardAvoidingView>
 
       <NearbyCourtsModal
@@ -308,34 +306,12 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
+    <View style={styles.section}>
+      <Text style={styles.sectionLabel}>{title}</Text>
       {children}
     </View>
-  );
-}
-
-function SelectorButton({
-  label,
-  accessibilityLabel,
-  onPress,
-}: {
-  label: string;
-  accessibilityLabel: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      style={({ pressed }) => [styles.selector, pressed && styles.pressed]}
-    >
-      <Text style={styles.selectorText}>{label}</Text>
-      <Text style={styles.selectorChevron}>{'›'}</Text>
-    </Pressable>
   );
 }
 
@@ -359,16 +335,18 @@ function PickerModal({
     >
       <View style={styles.modalRoot}>
         <View style={styles.modalSheet}>
+          <View style={styles.modalHandle} />
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{title}</Text>
-            <Pressable
+            <Text style={styles.modalTitle} accessibilityRole="header">
+              {title}
+            </Text>
+            <Button
+              label="Done"
+              variant="ghost"
+              size="sm"
               onPress={onClose}
-              accessibilityRole="button"
               accessibilityLabel={`Close ${title.toLowerCase()} picker`}
-              style={({ pressed }) => [styles.modalClose, pressed && styles.pressed]}
-            >
-              <Text style={styles.modalCloseText}>Done</Text>
-            </Pressable>
+            />
           </View>
           {children}
         </View>
@@ -447,181 +425,90 @@ function TimePickerModal({
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
   form: {
-    padding: spacing.lg,
-    gap: spacing.lg,
+    padding: layout.screenPadding,
+    gap: spacing.xl,
   },
-  field: {
-    gap: spacing.xs,
+  section: {
+    gap: spacing.sm + spacing.xs,
   },
-  fieldLabel: {
+  sectionLabel: {
     ...typography.label,
-    color: colors.textTertiary,
   },
-  input: {
-    ...typography.body,
-    color: colors.textPrimary,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface,
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginLeft: spacing.md,
   },
-  inputMultiline: {
-    minHeight: 88,
-    textAlignVertical: 'top',
-  },
-  selector: {
+  hintRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.surface,
-    minHeight: 48,
+    gap: spacing.xs,
   },
-  selectorText: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  selectorChevron: {
-    fontSize: 22,
-    color: colors.textTertiary,
-  },
-  findCourtButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.brandSoft,
-  },
-  findCourtText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  locationFallback: {
-    marginTop: spacing.sm,
+  hint: {
+    ...typography.bodySmall,
   },
   selectedVenueRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.brandSoft,
+    gap: spacing.sm + spacing.xs,
   },
   selectedVenueText: {
     flex: 1,
-    gap: 2,
+    gap: spacing.xs / 2,
   },
   selectedVenueName: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
   },
   selectedVenueArea: {
     ...typography.bodySmall,
     color: colors.textSecondary,
   },
-  clearVenue: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+  footer: {
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
+    backgroundColor: colors.background,
   },
-  clearVenueText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  timezoneHint: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-  },
-  submitButton: {
-    backgroundColor: colors.brand,
-    // Pill matches the dominant primary-CTA shape across the app
-    // (LoginScreen, RegisterScreen, AuthEntry, CreateBattle, BattleDetail).
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  submitButtonDisabled: {
-    backgroundColor: colors.border,
-  },
-  submitButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  pressed: { opacity: 0.65 },
 
   // ── Picker modal ───────────────────────────────────────────────────────────
   modalRoot: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: colors.overlay,
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radii.lg,
-    borderTopRightRadius: radii.lg,
+    backgroundColor: colors.surfaceHigh,
+    borderTopLeftRadius: radii.xl,
+    borderTopRightRadius: radii.xl,
     maxHeight: '70%',
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+  },
+  modalHandle: {
+    alignSelf: 'center',
+    width: spacing.xl + spacing.sm,
+    height: spacing.xs,
+    borderRadius: radii.pill,
+    backgroundColor: colors.borderStrong,
+    marginBottom: spacing.sm,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
   modalTitle: {
     ...typography.h3,
-    color: colors.textPrimary,
-  },
-  modalClose: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  modalCloseText: {
-    ...typography.button,
-    color: colors.brand,
   },
   timeWheelWrap: {
     paddingVertical: spacing.lg,
@@ -629,7 +516,6 @@ const styles = StyleSheet.create({
   },
   wheelHint: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
     marginTop: spacing.sm,
   },
 });
