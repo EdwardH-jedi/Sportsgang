@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { useAuthStore } from '../stores/auth';
 import { useProfileStore } from '../stores/profile';
@@ -60,6 +61,9 @@ export function SplashScreen({ navigation }: SplashScreenProps) {
 
   return (
     <View style={styles.container}>
+      {/* Dark content on the lime splash only; the app-wide default (App.tsx)
+          is light, and is restored when this screen unmounts. */}
+      <StatusBar style="dark" />
       <Text style={styles.wordmark}>SPORTSGANG</Text>
     </View>
   );

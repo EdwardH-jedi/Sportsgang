@@ -29,11 +29,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       {/*
-        StatusBar is set to 'auto' here as the global default.
-        SplashScreen (dark background) may override this if needed —
-        React Navigation handles per-screen focus events.
+        The app is dark-only (near-black canvas, see theme + app.config.js
+        userInterfaceStyle "dark"), so status bar content is always light.
       */}
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <RootNavigator />
     </SafeAreaProvider>
   );

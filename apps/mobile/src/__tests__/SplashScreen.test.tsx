@@ -12,6 +12,8 @@
  * Mocks:
  *  - stores/auth (useAuthStore.getState)
  *  - stores/profile (useProfileStore.getState)
+ *  - expo-status-bar (the native StatusBar schedules updates that never
+ *    flush under fake timers)
  *  - theme
  */
 
@@ -19,6 +21,10 @@ import React from 'react';
 import { render, act } from '@testing-library/react-native';
 
 import { SplashScreen } from '../screens/SplashScreen';
+
+// ─── Mock expo-status-bar ─────────────────────────────────────────────────────
+
+jest.mock('expo-status-bar', () => ({ StatusBar: () => null }));
 
 // ─── Mock auth store ──────────────────────────────────────────────────────────
 

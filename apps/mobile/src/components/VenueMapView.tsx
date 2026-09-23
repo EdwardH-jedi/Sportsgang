@@ -152,6 +152,10 @@ export function VenueMapView({
         showsCompass={false}
         showsScale={false}
         toolbarEnabled={false}
+        // Pin Apple Maps to its light style: the app-wide interface style
+        // is "dark" (app.config.js) and would otherwise flip the map tiles.
+        // Revisit when the map-based discovery redesign picks a map theme.
+        userInterfaceStyle="light"
       >
         {userLat !== undefined && userLng !== undefined ? (
           <Marker

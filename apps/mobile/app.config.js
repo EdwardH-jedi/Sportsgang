@@ -170,7 +170,10 @@ module.exports = () => {
       slug: "protin",
       version: "1.0.0",
       orientation: "portrait",
-      userInterfaceStyle: "light",
+      // SportsGang is dark-only (near-black canvas, electric-lime accent).
+      // "dark" keeps native chrome — alerts, action sheets, keyboard,
+      // pickers — consistent with the in-app theme.
+      userInterfaceStyle: "dark",
       // SportsGang app icon (lime square with a dark "SG" mark). This is the
       // icon shipped with the v1.0 App Store build; replace `assets/icon.png`
       // to change the store icon in a future release.
