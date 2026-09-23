@@ -1,6 +1,11 @@
 {
   "name": "protin",
   "private": true,
+  "description": "SportsGang monorepo: Expo React Native app, FastAPI service and shared TypeScript types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdwardH-jedi/Sportsgang.git"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -14,7 +19,10 @@
     "mobile:start": "npm run start --workspace @protin/mobile",
     "mobile:android": "npm run android --workspace @protin/mobile",
     "mobile:ios": "npm run ios --workspace @protin/mobile",
-    "mobile:web": "npm run web --workspace @protin/mobile"
+    "mobile:web": "npm run web --workspace @protin/mobile",
+    "test": "npm run test:ci --workspace @protin/mobile",
+    "lint": "npm run lint --workspace @protin/mobile",
+    "typecheck": "npm run typecheck --workspace @protin/mobile --workspace @protin/shared-types"
   },
   "devDependencies": {
     "@expo/config-plugins": "~54.0.4"
