@@ -1,6 +1,7 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing, typography } from '../theme';
+import { Card, Icon, Skeleton, SkeletonText, StatBlock, sportIconName } from './ui';
 import type { HonorLevel, HonorSummary, SportLevelSummary } from '../lib/rank';
 
 interface HonorCardProps {
@@ -30,32 +31,34 @@ const HONOR_LEVEL_ACCENTS: Record<HonorLevel, string> = {
 export function HonorCard({ summary, isLoading = false, error }: HonorCardProps) {
   if (isLoading && !summary) {
     return (
-      <View style={styles.card} accessibilityLabel="Honor card loading">
-        <Text style={styles.title}>Honor</Text>
-        <View style={styles.centered}>
-          <ActivityIndicator color={colors.brand} />
+      <Card accessibilityLabel="Honor card loading" style={styles.card}>
+        <CardTitle />
+        <View style={styles.row}>
+          <Skeleton height={spacing.xxxl + spacing.md} radius={radii.md} style={styles.flex} />
+          <Skeleton height={spacing.xxxl + spacing.md} radius={radii.md} style={styles.flex} />
         </View>
-      </View>
+        <SkeletonText lines={2} />
+      </Card>
     );
   }
 
   if (error && !summary) {
     return (
-      <View style={styles.card} accessibilityLabel="Honor card error">
-        <Text style={styles.title}>Honor</Text>
+      <Card accessibilityLabel="Honor card error" style={styles.card}>
+        <CardTitle />
         <Text style={styles.errorText}>{error}</Text>
-      </View>
+      </Card>
     );
   }
 
   if (!summary) {
     return (
-      <View style={styles.card} accessibilityLabel="Honor card empty">
-        <Text style={styles.title}>Honor</Text>
+      <Card accessibilityLabel="Honor card empty" style={styles.card}>
+        <CardTitle />
         <Text style={styles.bodyMuted}>
           Play your first game to start building your Honor.
         </Text>
-      </View>
+      </Card>
     );
   }
 
@@ -63,20 +66,29 @@ export function HonorCard({ summary, isLoading = false, error }: HonorCardProps)
     HONOR_LEVEL_ACCENTS[summary.honorLevel] ?? colors.textSecondary;
 
   return (
-    <View style={styles.card} accessibilityLabel="Honor card">
-      <Text style={styles.title}>Honor</Text>
+    <Card accessibilityLabel="Honor card" style={styles.card}>
+      <CardTitle />
 
       <View style={styles.row}>
         <View style={styles.scoreBlock}>
-          <Text style={styles.scoreLabel}>HONOR</Text>
-          <Text style={styles.scoreValue}>{summary.honorScore}</Text>
+          <StatBlock
+            value={summary.honorScore}
+            label="Honor"
+            size="lg"
+            accent
+            accessibilityLabel={`Honor score: ${summary.honorScore}, ${summary.honorLevel}`}
+          />
           <Text style={[styles.levelText, { color: levelColor }]}>
             {summary.honorLevel}
           </Text>
         </View>
         <View style={styles.scoreBlock}>
-          <Text style={styles.scoreLabel}>GANG SCORE</Text>
-          <Text style={styles.scoreValue}>{summary.gangScore}</Text>
+          <StatBlock
+            value={summary.gangScore}
+            label="Gang Score"
+            size="lg"
+            accessibilityLabel={`Gang Score: ${summary.gangScore}`}
+          />
           <Text style={styles.scoreFootnote}>Activity · contribution</Text>
         </View>
       </View>
@@ -99,6 +111,7 @@ export function HonorCard({ summary, isLoading = false, error }: HonorCardProps)
           <Text style={styles.sectionLabel}>Sport levels</Text>
           {summary.sportLevels.map((s: SportLevelSummary) => (
             <View key={s.sport} style={styles.sportRow}>
+              <Icon name={sportIconName(s.sport)} size="sm" color={colors.textSecondary} />
               <Text style={styles.sportName}>{capitalize(s.sport)}</Text>
               <Text style={styles.sportLevel}>
                 Lv {s.level} · {s.xp} XP
@@ -107,16 +120,31 @@ export function HonorCard({ summary, isLoading = false, error }: HonorCardProps)
           ))}
         </View>
       ) : null}
+    </Card>
+  );
+}
+
+function CardTitle() {
+  return (
+    <View style={styles.titleRow}>
+      <Icon name="award" size="md" color={colors.brand} />
+      <Text style={styles.title} accessibilityRole="header">
+        Honor
+      </Text>
     </View>
   );
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <View style={styles.statCell} accessibilityLabel={`${label}: ${value}`}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    <StatBlock
+      value={value}
+      label={label}
+      size="sm"
+      align="center"
+      accessibilityLabel={`${label}: ${value}`}
+      style={styles.statCell}
+    />
   );
 }
 
@@ -126,50 +154,35 @@ function capitalize(s: string): string {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    padding: spacing.md,
+    gap: spacing.sm + spacing.xs,
+  },
+  flex: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   title: {
     ...typography.h3,
-    color: colors.textPrimary,
-  },
-  centered: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
-    gap: spacing.md,
+    gap: spacing.sm + spacing.xs,
   },
   scoreBlock: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    padding: spacing.md,
     borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
     backgroundColor: colors.surfaceElevated,
-    gap: 2,
-  },
-  scoreLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-  },
-  scoreValue: {
-    ...typography.h2,
-    color: colors.textPrimary,
+    gap: spacing.xs,
   },
   levelText: {
-    ...typography.button,
-    fontSize: 14,
+    ...typography.buttonSmall,
   },
   scoreFootnote: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
+    ...typography.caption,
   },
   bodyCopy: {
     ...typography.bodySmall,
@@ -177,38 +190,21 @@ const styles = StyleSheet.create({
   },
   bodyMuted: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   statsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.sm,
-    marginTop: spacing.xs,
   },
   statCell: {
-    flexGrow: 1,
-    minWidth: '30%',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    flex: 1,
+    paddingVertical: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.xs,
     borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
     backgroundColor: colors.surfaceElevated,
-    alignItems: 'center',
-    gap: 2,
-  },
-  statValue: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  statLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-    textAlign: 'center',
   },
   sportsBlock: {
-    marginTop: spacing.sm,
     gap: spacing.xs,
+    paddingTop: spacing.xs,
   },
   sectionLabel: {
     ...typography.label,
@@ -216,15 +212,17 @@ const styles = StyleSheet.create({
   },
   sportRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
     paddingVertical: spacing.xs,
   },
   sportName: {
     ...typography.body,
     color: colors.textPrimary,
+    flex: 1,
   },
   sportLevel: {
-    ...typography.body,
+    ...typography.bodyStrong,
     color: colors.brand,
   },
   errorText: {

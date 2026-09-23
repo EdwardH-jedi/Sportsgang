@@ -50,23 +50,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
     borderRadius: radii.pill,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: spacing.xs / 2,
   },
   honorText: {
     ...typography.label,
     color: colors.textInverse,
-    fontWeight: '700',
   },
   tierPill: {
     borderWidth: 1,
-    borderColor: colors.brand,
+    borderColor: colors.brandMuted,
+    backgroundColor: colors.brandSoft,
     borderRadius: radii.pill,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: spacing.xs / 2,
   },
   tierText: {
     ...typography.label,
     color: colors.brand,
-    fontWeight: '700',
   },
 });

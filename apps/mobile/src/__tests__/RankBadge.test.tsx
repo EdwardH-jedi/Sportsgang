@@ -12,16 +12,6 @@ import { render } from '@testing-library/react-native';
 import { RankBadge } from '../components/RankBadge';
 import type { RankSummary } from '@protin/shared-types';
 
-jest.mock('../theme', () => ({
-  colors: {
-    brand: '#000', textInverse: '#fff', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', surface: '#fff', border: '#ccc',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: { label: {} },
-}));
-
 describe('RankBadge', () => {
   it('renders nothing when summary is null', () => {
     const { toJSON } = render(<RankBadge summary={null} />);

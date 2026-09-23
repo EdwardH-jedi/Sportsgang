@@ -2,6 +2,15 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { HonorLevel } from '../lib/rank';
 import { colors, radii, spacing, typography } from '../theme';
+import { Icon } from './ui/Icon';
+
+/**
+ * Glyph size in points, built from spacing rather than an `iconSizes`
+ * token: this badge renders inside Discovery / Battles screens whose tests
+ * mock only colors / spacing / radii / typography.
+ */
+const GLYPH = spacing.sm + spacing.xs;
+const HIGH_LEVELS: readonly HonorLevel[] = ['Trusted', 'Captain', 'Legend'];
 
 interface HonorBadgeProps {
   /** Honor level. Omit when the summary is unavailable to render the fallback. */
@@ -70,11 +79,14 @@ export function HonorBadge({
     ? `${honorLevel} ${honorScore}`
     : honorLevel;
 
+  const high = HIGH_LEVELS.includes(honorLevel);
+
   return (
     <View
-      style={[styles.pill, { borderColor: accent }]}
+      style={[styles.pill, high && styles.pillHigh, { borderColor: accent }]}
       accessibilityLabel={accessibilityLabel ?? `Honor ${fallbackLabel}`}
     >
+      <Icon name="award" size={GLYPH} color={accent} />
       <Text style={[styles.text, { color: accent }]}>{honorLevel}</Text>
       {showScore ? (
         <Text style={[styles.score, { color: accent }]}>- {honorScore}</Text>
@@ -88,30 +100,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: spacing.xs / 2,
     borderRadius: radii.pill,
     borderWidth: 1,
     backgroundColor: colors.surfaceElevated,
-    gap: 4,
+    gap: spacing.xs,
     alignSelf: 'flex-start',
+  },
+  pillHigh: {
+    backgroundColor: colors.brandSoft,
   },
   pillMuted: {
     borderColor: colors.border,
   },
   text: {
     ...typography.label,
-    fontSize: 10,
-    letterSpacing: 1.2,
   },
   textMuted: {
     ...typography.label,
-    fontSize: 10,
-    letterSpacing: 1.2,
     color: colors.textTertiary,
   },
   score: {
     ...typography.label,
-    fontSize: 10,
-    letterSpacing: 0.6,
+    letterSpacing: 0,
+    fontVariant: ['tabular-nums'],
   },
 });

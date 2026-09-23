@@ -9,9 +9,9 @@ import {
   View,
 } from 'react-native';
 
-import { colors, typography } from '../theme';
+import { colors, radii, touchTarget, typography } from '../theme';
 
-const ITEM_HEIGHT = 44; // iOS-standard row height — matches the snap interval.
+const ITEM_HEIGHT = touchTarget; // iOS-standard 44pt row — matches the snap interval.
 const VISIBLE_COUNT = 5; // Odd: 2 above + 1 center + 2 below.
 const VISIBLE_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
 const HALF_VISIBLE = Math.floor(VISIBLE_COUNT / 2);
@@ -42,9 +42,9 @@ export interface WheelPickerProps<T> {
  *   tap-an-off-center-row behavior and keeps the picker driveable
  *   from accessibility tools / tests.
  *
- * The center selection cursor is rendered as two hairlines above and
- * below the center row, with a faint highlight band — visually quiet
- * but unambiguous.
+ * The center selection cursor is a raised surface band with a faint lime
+ * outline behind the center row — visually quiet but unambiguous. Values
+ * use the condensed stat face with tabular digits.
  */
 export function WheelPicker<T>({
   items,
@@ -97,12 +97,8 @@ export function WheelPicker<T>({
 
   return (
     <View style={styles.column} accessibilityRole="adjustable" accessibilityLabel={accessibilityLabel}>
-      {/* Selection cursor — hairlines above + below the center row. */}
-      <View style={styles.cursorBand} pointerEvents="none">
-        <View style={styles.cursorHairline} />
-        <View style={styles.cursorRow} />
-        <View style={styles.cursorHairline} />
-      </View>
+      {/* Selection cursor — a raised band behind the center row. */}
+      <View style={styles.cursorBand} pointerEvents="none" />
 
       <ScrollView
         ref={scrollRef}
@@ -139,7 +135,7 @@ export function WheelPicker<T>({
 
 const styles = StyleSheet.create({
   column: {
-    width: 90,
+    width: touchTarget * 2,
     height: VISIBLE_HEIGHT,
     justifyContent: 'center',
   },
@@ -154,13 +150,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowText: {
-    ...typography.bodyLarge,
+    ...typography.statSmall,
     color: colors.textTertiary,
-    fontVariant: ['tabular-nums'],
   },
   rowTextSelected: {
     color: colors.textPrimary,
-    fontWeight: '700',
   },
   cursorBand: {
     position: 'absolute',
@@ -168,16 +162,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: ITEM_HEIGHT,
-    justifyContent: 'space-between',
-  },
-  cursorHairline: {
-    height: 1,
-    backgroundColor: colors.brand,
-    opacity: 0.5,
-  },
-  cursorRow: {
-    flex: 1,
-    backgroundColor: colors.brandSoft,
-    opacity: 0.3,
+    borderRadius: radii.md,
+    backgroundColor: colors.surfaceElevated,
+    borderWidth: 1,
+    borderColor: colors.brandMuted,
   },
 });

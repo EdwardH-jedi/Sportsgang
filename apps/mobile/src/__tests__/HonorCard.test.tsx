@@ -11,21 +11,6 @@ import { render } from '@testing-library/react-native';
 import { HonorCard } from '../components/HonorCard';
 import type { HonorSummary } from '@protin/shared-types';
 
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', inputBackground: '#eee',
-    success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
-
 function makeSummary(overrides: Partial<HonorSummary> = {}): HonorSummary {
   return {
     userId: 'u1',
@@ -79,6 +64,12 @@ describe('HonorCard', () => {
     getByText('Completed games');
     getByText('Hosted games');
     getByText('No-shows');
+  });
+
+  it('announces the Honor and Gang Score blocks with their values', () => {
+    const { getByLabelText } = render(<HonorCard summary={makeSummary()} />);
+    getByLabelText('Honor score: 102, Regular');
+    getByLabelText('Gang Score: 25');
   });
 
   it('renders the no-show count when present', () => {

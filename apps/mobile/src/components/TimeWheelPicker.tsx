@@ -76,8 +76,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   colon: {
-    ...typography.h2,
-    color: colors.textPrimary,
-    fontWeight: '700',
+    ...typography.stat,
+    color: colors.brand,
   },
 });

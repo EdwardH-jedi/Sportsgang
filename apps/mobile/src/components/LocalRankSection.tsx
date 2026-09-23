@@ -1,6 +1,7 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing, typography } from '../theme';
+import { Card, Icon, Skeleton, StatBlock } from './ui';
 import type { HonorTitleRead, RankProfileRead } from '../lib/honorSystem';
 
 interface LocalRankSectionProps {
@@ -45,27 +46,29 @@ export function LocalRankSection({
 
   if (isLoading && rank === null) {
     return (
-      <View style={styles.card} accessibilityLabel="Local rank loading">
-        <Text style={styles.title}>{heading}</Text>
-        <View style={styles.centered}>
-          <ActivityIndicator color={colors.brand} />
+      <Card accessibilityLabel="Local rank loading" style={styles.card}>
+        <Heading text={heading} />
+        <View style={styles.statsGrid}>
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} height={spacing.xxxl} radius={radii.md} style={styles.statCell} />
+          ))}
         </View>
-      </View>
+      </Card>
     );
   }
 
   if (error && rank === null) {
     return (
-      <View style={styles.card} accessibilityLabel="Local rank error">
-        <Text style={styles.title}>{heading}</Text>
+      <Card accessibilityLabel="Local rank error" style={styles.card}>
+        <Heading text={heading} />
         <Text style={styles.errorText}>{error}</Text>
-      </View>
+      </Card>
     );
   }
 
   return (
-    <View style={styles.card} accessibilityLabel="Local rank section">
-      <Text style={styles.title}>{heading}</Text>
+    <Card accessibilityLabel="Local rank section" style={styles.card}>
+      <Heading text={heading} />
 
       {isUnranked ? (
         <Text style={styles.emptyText} accessibilityLabel="Local rank empty">
@@ -74,7 +77,7 @@ export function LocalRankSection({
         </Text>
       ) : (
         <View style={styles.statsGrid}>
-          <Stat label="Rating" value={rank?.rating ?? 0} />
+          <Stat label="Rating" value={rank?.rating ?? 0} accent />
           <Stat
             label="Wins / Losses"
             value={`${rank?.wins ?? 0} / ${rank?.losses ?? 0}`}
@@ -85,8 +88,11 @@ export function LocalRankSection({
 
       {localChampion && localChampion.currentHolderUserId !== null ? (
         <View style={styles.championRow} accessibilityLabel="Local champion">
-          <Text style={styles.championLabel}>Local champion</Text>
-          <Text style={styles.championValue}>{localChampion.titleName}</Text>
+          <Icon name="trophy" size="lg" color={colors.brand} />
+          <View style={styles.championText}>
+            <Text style={styles.championLabel}>Local champion</Text>
+            <Text style={styles.championValue}>{localChampion.titleName}</Text>
+          </View>
         </View>
       ) : null}
 
@@ -94,12 +100,24 @@ export function LocalRankSection({
         <View style={styles.titlesBlock} accessibilityLabel="My honor titles">
           <Text style={styles.sectionLabel}>Current titles</Text>
           {myTitles.map((t) => (
-            <Text key={t.id} style={styles.titleRow}>
-              {t.titleName}
-            </Text>
+            <View key={t.id} style={styles.titleRow}>
+              <Icon name="medal" size="sm" color={colors.brand} />
+              <Text style={styles.titleText}>{t.titleName}</Text>
+            </View>
           ))}
         </View>
       ) : null}
+    </Card>
+  );
+}
+
+function Heading({ text }: { text: string }) {
+  return (
+    <View style={styles.headingRow}>
+      <Icon name="trending" size="md" color={colors.brand} />
+      <Text style={styles.title} accessibilityRole="header">
+        {text}
+      </Text>
     </View>
   );
 }
@@ -107,80 +125,73 @@ export function LocalRankSection({
 function Stat({
   label,
   value,
+  accent = false,
 }: {
   label: string;
   value: number | string;
+  accent?: boolean;
 }) {
   return (
-    <View style={styles.statCell} accessibilityLabel={`${label}: ${value}`}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    <StatBlock
+      value={value}
+      label={label}
+      size="sm"
+      align="center"
+      accent={accent}
+      accessibilityLabel={`${label}: ${value}`}
+      style={styles.statCell}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    padding: spacing.md,
+    gap: spacing.sm + spacing.xs,
+  },
+  headingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   title: {
     ...typography.h3,
-    color: colors.textPrimary,
-  },
-  centered: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
+    flex: 1,
   },
   emptyText: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   statsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.sm,
   },
   statCell: {
-    flexGrow: 1,
-    minWidth: '30%',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    flex: 1,
+    paddingVertical: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.xs,
     borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
     backgroundColor: colors.surfaceElevated,
-    alignItems: 'center',
-    gap: 2,
-  },
-  statValue: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  statLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-    textAlign: 'center',
   },
   championRow: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm + spacing.xs,
+    padding: spacing.md,
     borderRadius: radii.md,
-    backgroundColor: colors.inputBackground,
-    gap: 2,
+    backgroundColor: colors.brandSoft,
+    borderWidth: 1,
+    borderColor: colors.brandMuted,
+  },
+  championText: {
+    flex: 1,
+    gap: spacing.xs / 2,
   },
   championLabel: {
     ...typography.label,
-    color: colors.textTertiary,
+    color: colors.brand,
   },
   championValue: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    fontWeight: '600',
+    ...typography.bodyStrong,
+    fontSize: typography.bodyLarge.fontSize,
   },
   titlesBlock: {
     gap: spacing.xs,
@@ -190,6 +201,11 @@ const styles = StyleSheet.create({
     color: colors.textTertiary,
   },
   titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  titleText: {
     ...typography.body,
     color: colors.textPrimary,
   },

@@ -8,7 +8,14 @@ import {
   View,
 } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, radii, spacing, touchTarget, typography } from '../theme';
+import { Icon } from './ui/Icon';
+
+/**
+ * Stepper glyph size in points, built from spacing rather than an
+ * `iconSizes` token: onboarding tests mock only part of the theme.
+ */
+const GLYPH = spacing.md + spacing.xs;
 
 interface AgeRangeSelectorProps {
   minAge: number;
@@ -220,14 +227,11 @@ function StepperRow({
             pressed && canDecrement && styles.pressed,
           ]}
         >
-          <Text
-            style={[
-              styles.stepperButtonText,
-              !canDecrement && styles.stepperButtonTextDisabled,
-            ]}
-          >
-            −
-          </Text>
+          <Icon
+            name="minus"
+            size={GLYPH}
+            color={canDecrement ? colors.brand : colors.textTertiary}
+          />
         </Pressable>
         <Text style={styles.stepperValue}>{value}</Text>
         <Pressable
@@ -243,22 +247,19 @@ function StepperRow({
             pressed && canIncrement && styles.pressed,
           ]}
         >
-          <Text
-            style={[
-              styles.stepperButtonText,
-              !canIncrement && styles.stepperButtonTextDisabled,
-            ]}
-          >
-            +
-          </Text>
+          <Icon
+            name="plus"
+            size={GLYPH}
+            color={canIncrement ? colors.brand : colors.textTertiary}
+          />
         </Pressable>
       </View>
     </View>
   );
 }
 
-const TRACK_HEIGHT = 6;
-const THUMB_SIZE = 22;
+const TRACK_HEIGHT = spacing.xs + spacing.xs / 2;
+const THUMB_SIZE = spacing.lg;
 
 const styles = StyleSheet.create({
   container: {
@@ -275,12 +276,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   summaryValue: {
-    ...typography.h1,
+    ...typography.statLarge,
     color: colors.brand,
   },
   summaryDash: {
     color: colors.textTertiary,
-    fontWeight: '400',
   },
   summaryUnit: {
     ...typography.body,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: TRACK_HEIGHT,
     borderRadius: radii.pill,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderStrong,
   },
   fill: {
     position: 'absolute',
@@ -316,8 +316,8 @@ const styles = StyleSheet.create({
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
     backgroundColor: colors.brand,
-    borderWidth: 2,
-    borderColor: colors.surfaceElevated,
+    borderWidth: 3,
+    borderColor: colors.background,
     marginLeft: -THUMB_SIZE / 2,
     top: 0,
   },
@@ -327,8 +327,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   scaleEdgeLabel: {
-    ...typography.bodySmall,
+    ...typography.caption,
     color: colors.textTertiary,
+    fontVariant: ['tabular-nums'],
   },
   controlsRow: {
     gap: spacing.sm,
@@ -353,8 +354,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   stepperButton: {
-    width: 44,
-    height: 44,
+    width: touchTarget,
+    height: touchTarget,
     borderRadius: radii.full,
     borderWidth: 1,
     borderColor: colors.brand,
@@ -366,21 +367,13 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: 'transparent',
   },
-  stepperButtonText: {
-    ...typography.h3,
-    color: colors.brand,
-    lineHeight: 28,
-  },
-  stepperButtonTextDisabled: {
-    color: colors.textTertiary,
-  },
   stepperValue: {
-    ...typography.h2,
+    ...typography.stat,
     color: colors.textPrimary,
-    minWidth: 36,
+    minWidth: spacing.xl + spacing.sm,
     textAlign: 'center',
   },
   pressed: {
-    opacity: 0.65,
+    backgroundColor: colors.surfacePressed,
   },
 });

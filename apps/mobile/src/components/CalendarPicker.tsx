@@ -12,7 +12,8 @@ import {
   toDateString,
   type DateString,
 } from '../lib/sessionTime';
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, spacing, touchTarget, typography } from '../theme';
+import { IconButton } from './ui';
 
 // Sunday-first labels. Index 0 == Sunday, matching JavaScript's
 // `Date.getDay()` and `firstWeekdayOfMonth`. The grid offset and the
@@ -87,34 +88,26 @@ export function CalendarPicker({ selected, onSelect, now = new Date() }: Calenda
   return (
     <View style={styles.root}>
       <View style={styles.header}>
-        <Pressable
+        <IconButton
+          icon="back"
+          variant="filled"
           onPress={handlePrevMonth}
           disabled={prevDisabled}
-          accessibilityRole="button"
+          color={colors.brand}
           accessibilityLabel="Previous month"
-          style={({ pressed }) => [
-            styles.navButton,
-            prevDisabled && styles.navButtonDisabled,
-            pressed && !prevDisabled && styles.pressed,
-          ]}
-        >
-          <Text
-            style={[styles.navText, prevDisabled && styles.navTextDisabled]}
-          >
-            {'‹'}
-          </Text>
-        </Pressable>
+        />
 
-        <Text style={styles.monthLabel}>{monthLabel(visibleYear, visibleMonth)}</Text>
+        <Text style={styles.monthLabel} accessibilityRole="header">
+          {monthLabel(visibleYear, visibleMonth)}
+        </Text>
 
-        <Pressable
+        <IconButton
+          icon="chevron-right"
+          variant="filled"
           onPress={handleNextMonth}
-          accessibilityRole="button"
+          color={colors.brand}
           accessibilityLabel="Next month"
-          style={({ pressed }) => [styles.navButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.navText}>{'›'}</Text>
-        </Pressable>
+        />
       </View>
 
       <View style={styles.weekHeaderRow}>
@@ -176,8 +169,8 @@ export function CalendarPicker({ selected, onSelect, now = new Date() }: Calenda
   );
 }
 
-const CELL_HEIGHT = 40;
-const ROW_GAP = 4;
+const CELL_HEIGHT = touchTarget - spacing.xs;
+const ROW_GAP = spacing.xs;
 
 const styles = StyleSheet.create({
   root: {
@@ -190,34 +183,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: spacing.sm,
   },
-  navButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radii.md,
-  },
-  navButtonDisabled: {
-    opacity: 0.3,
-  },
-  navText: {
-    fontSize: 26,
-    color: colors.brand,
-    lineHeight: 28,
-  },
-  navTextDisabled: {
-    color: colors.textTertiary,
-  },
   monthLabel: {
     ...typography.h3,
-    color: colors.textPrimary,
   },
   weekHeaderRow: {
     flexDirection: 'row',
     paddingVertical: spacing.xs,
   },
   weekHeaderText: {
-    ...typography.bodySmall,
+    ...typography.label,
     color: colors.textTertiary,
     flexBasis: COLUMN_FLEX_BASIS,
     textAlign: 'center',
@@ -250,20 +224,21 @@ const styles = StyleSheet.create({
   dayText: {
     ...typography.body,
     color: colors.textPrimary,
+    fontVariant: ['tabular-nums'],
   },
   dayTextToday: {
+    ...typography.bodyStrong,
     color: colors.brand,
-    fontWeight: '600',
   },
   dayTextSelected: {
+    ...typography.bodyStrong,
     color: colors.textInverse,
-    fontWeight: '700',
   },
   dayTextPast: {
-    color: colors.textTertiary,
-    opacity: 0.5,
+    color: colors.textDisabled,
   },
   pressed: {
-    opacity: 0.65,
+    backgroundColor: colors.surfacePressed,
+    borderRadius: CELL_HEIGHT / 2,
   },
 });
