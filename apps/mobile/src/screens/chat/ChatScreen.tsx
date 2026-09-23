@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
@@ -18,59 +18,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Screen } from '../../components/Screen';
-import {
-  SessionProposalCard,
-  type SessionProposalCardData,
-} from '../../components/SessionProposalCard';
-import { api, BASE_URL } from '../../lib/api';
-import { dedupeMessagesById } from '../../lib/messages';
+import { SessionProposalCard } from '../../components/SessionProposalCard';
+import { useChat } from '../../hooks/useChat';
+import type { ChatMessage } from '../../lib/matches';
 import { useAuthStore } from '../../stores/auth';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { ChatScreenProps } from '../../navigation/types';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Message {
-  id: string;
-  matchId: string;
-  senderId: string;
-  body: string;
-  createdAt: string;
-}
-
-interface MessageListResponse {
-  items: Message[];
-  total: number;
-  limit: number;
-  offset: number;
-}
-
-// Booking shape returned by GET /bookings (camelCased by lib/api). Only the
-// fields the in-chat proposal card needs are listed; the BookingDetail
-// screen owns the wider shape.
-interface BookingItem extends SessionProposalCardData {
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface BookingListResponse {
-  items: BookingItem[];
-  total: number;
-  limit: number;
-  offset: number;
-}
-
-/**
- * Unified timeline entry. Text messages and proposal cards are merged in
- * `createdAt` order so the chat reads chronologically — a proposal sent
- * mid-conversation appears between the surrounding text bubbles, not pinned
- * to the top or bottom.
- */
-type TimelineEntry =
-  | { kind: 'message'; createdAt: string; message: Message }
-  | { kind: 'proposal'; createdAt: string; proposal: BookingItem };
-
-const PROPOSAL_FETCH_STATUSES = 'proposed,confirmed,declined';
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -84,13 +37,9 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   const normalizedRoutePartnerId =
     routePartnerId && routePartnerId.trim().length > 0 ? routePartnerId : null;
   const insets = useSafeAreaInsets();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [proposals, setProposals] = useState<BookingItem[]>([]);
   // Tracks which booking id is currently mid-accept / mid-decline so its
   // card can show a spinner without freezing every other card on the screen.
   const [actingBookingId, setActingBookingId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [isSending, setIsSending] = useState(false);
   // iOS keyboard inset — bumps the visible composer above the keyboard.
@@ -101,7 +50,23 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   // on adjustResize and keeps inset = 0.
   const [keyboardInset, setKeyboardInset] = useState(0);
   const listRef = useRef<FlatList>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+
+  const {
+    timeline,
+    isLoading,
+    error: fetchError,
+    refresh: fetchMessages,
+    refreshProposals: fetchProposals,
+    sendMessage: postChatMessage,
+    respondToProposal,
+    blockPartner,
+  } = useChat({
+    matchId,
+    token,
+    onIncomingMessage: () => {
+      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
+    },
+  });
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
@@ -131,7 +96,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     if (!partnerId.current || isBlocking) return;
     setIsBlocking(true);
     try {
-      await api.post(`/blocks/${partnerId.current}`, {});
+      await blockPartner(partnerId.current);
       Alert.alert(
         'User blocked',
         "You won't be matched or contacted by this user.",
@@ -145,7 +110,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     } finally {
       setIsBlocking(false);
     }
-  }, [isBlocking, navigation]);
+  }, [isBlocking, navigation, blockPartner]);
 
   const confirmBlock = useCallback(() => {
     if (!partnerId.current || isBlocking) return;
@@ -201,62 +166,10 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     }
   }, [navigation, partnerName, confirmBlock]);
 
-  const fetchProposals = useCallback(async () => {
-    // Pull every non-cancelled booking on this match. Cancelled bookings
-    // are intentionally hidden from the in-chat surface — once the
-    // proposer cancels, the card is gone; users discover the cancellation
-    // via /matches preview / BookingDetail rather than a stale chat row.
-    const data = await api.get<BookingListResponse>(
-      `/bookings?match_id=${matchId}&status=${PROPOSAL_FETCH_STATUSES}&limit=50`
-    );
-    // Defensive shape check: only render rows that have the fields the card
-    // actually reads. Guards against unexpected backend payloads and makes
-    // the chat resilient — a malformed item just doesn't appear instead of
-    // crashing the screen.
-    setProposals(
-      data.items.filter(
-        (p) =>
-          p &&
-          typeof p.proposerId === 'string' &&
-          typeof p.partnerId === 'string' &&
-          typeof p.startsAt === 'string' &&
-          p.partner !== undefined &&
-          p.partner !== null
-      )
-    );
-  }, [matchId]);
-
-  const fetchMessages = useCallback(async () => {
-    try {
-      // Run both fetches in parallel so a slow /bookings doesn't delay the
-      // text history (and vice-versa). Either failing surfaces a single
-      // friendly error.
-      const [msgRes] = await Promise.all([
-        api.get<MessageListResponse>(`/matches/${matchId}/messages?limit=100`),
-        fetchProposals(),
-      ]);
-      // Merge instead of replace: a WS-received message could have landed in
-      // state while this fetch was in-flight (slow network, partner sent
-      // mid-load). dedupeMessagesById keeps the FIRST occurrence so the
-      // canonical history from data.items wins on overlap, and any tail-end
-      // WS messages survive at the end. Defensive against duplicate rows in
-      // the response too.
-      setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
-    } catch (err) {
-      setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [matchId, fetchProposals]);
-
-  useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
-
   // After the user proposes a session in BookingComposer, navigation pops
   // back into the chat — refetch proposals on focus so the new card shows
   // up without forcing a manual pull-to-refresh. Skip the very first focus
-  // so the initial mount fetch above isn't doubled.
+  // so useChat's initial mount fetch isn't doubled.
   const didMountRef = useRef(false);
   useFocusEffect(
     useCallback(() => {
@@ -273,15 +186,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       if (actingBookingId) return;
       setActingBookingId(bookingId);
       try {
-        const updated = await api.post<BookingItem>(
-          `/bookings/${bookingId}/${action}`,
-          {}
-        );
-        // Optimistic-but-authoritative: trust the backend's response over
-        // any in-flight refetch result. Replace the row in-place.
-        setProposals((prev) =>
-          prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p))
-        );
+        // Patches the card in place with the backend's response.
+        await respondToProposal(bookingId, action);
       } catch (err) {
         Alert.alert(
           "Couldn't update this session.",
@@ -293,61 +199,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         setActingBookingId(null);
       }
     },
-    [actingBookingId]
+    [actingBookingId, respondToProposal]
   );
-
-  // ── Real-time WebSocket connection ──────────────────────────────────────────
-  useEffect(() => {
-    if (!token) return;
-    const wsBase = BASE_URL.replace(/^http/, 'ws');
-    const ws = new WebSocket(`${wsBase}/matches/${matchId}/ws?token=${token}`);
-    wsRef.current = ws;
-
-    ws.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data as string) as Message;
-        // Use the shared dedupe helper so this path matches sendMessage and
-        // fetchMessages — a single source of truth means a race between the
-        // POST response and a WS echo of the same id can never duplicate.
-        setMessages((prev) => dedupeMessagesById([...prev, incoming]));
-        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
-      } catch {
-        // ignore malformed frames
-      }
-    };
-
-    return () => {
-      ws.close();
-      wsRef.current = null;
-    };
-  }, [matchId, token]);
-
-  // Merged chronological timeline. Proposal cards land between the text
-  // bubbles surrounding their createdAt, so the chat reads as a single
-  // story. Stable: messages and proposals are dropped in by createdAt
-  // (ascending) with messages winning ties so a text echo never jumps
-  // ahead of the booking event it followed.
-  const timeline = useMemo<TimelineEntry[]>(() => {
-    const entries: TimelineEntry[] = [
-      ...messages.map<TimelineEntry>((m) => ({
-        kind: 'message',
-        createdAt: m.createdAt,
-        message: m,
-      })),
-      ...proposals.map<TimelineEntry>((p) => ({
-        kind: 'proposal',
-        createdAt: p.createdAt,
-        proposal: p,
-      })),
-    ];
-    entries.sort((a, b) => {
-      if (a.createdAt === b.createdAt) {
-        return a.kind === 'message' ? -1 : 1;
-      }
-      return a.createdAt < b.createdAt ? -1 : 1;
-    });
-    return entries;
-  }, [messages, proposals]);
 
   const sendMessage = useCallback(async () => {
     const body = draft.trim();
@@ -356,12 +209,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     setDraft('');
     setIsSending(true);
     try {
-      const msg = await api.post<Message>(`/matches/${matchId}/messages`, { body });
-      // Dedupe-on-append: the WebSocket may have already broadcast this same
-      // id back to us before the POST response resolved. Without this, both
-      // paths would each push the message and React would warn:
+      // useChat dedupes on append: the WebSocket may have already broadcast
+      // this same id back to us before the POST response resolved. Without
+      // that, both paths would each push the message and React would warn:
       //   "Encountered two children with the same key: <id>"
-      setMessages((prev) => dedupeMessagesById([...prev, msg]));
+      await postChatMessage(body);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
     } catch (err) {
       // Send failed — restore the draft so the user doesn't lose their typing,
@@ -376,7 +228,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     } finally {
       setIsSending(false);
     }
-  }, [draft, isSending, matchId]);
+  }, [draft, isSending, postChatMessage]);
 
   return (
     <Screen padded={false}>
@@ -606,7 +458,7 @@ function isOwnMessage(
   return senderId === currentUserId;
 }
 
-function MessageBubble({ message, isOwn }: { message: Message; isOwn: boolean }) {
+function MessageBubble({ message, isOwn }: { message: ChatMessage; isOwn: boolean }) {
   return (
     <View style={[styles.bubble, isOwn ? styles.bubbleOwn : styles.bubbleOther]}>
       <Text style={[styles.bubbleText, isOwn ? styles.bubbleTextOwn : styles.bubbleTextOther]}>

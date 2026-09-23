@@ -107,6 +107,59 @@ export async function fetchPendingSessions(): Promise<Session[]> {
   return res.items.filter((b) => b.status === 'proposed');
 }
 
+/**
+ * FSM transitions exposed by `POST /bookings/{id}/{action}`. Either party
+ * can call any of them; the backend enforces who may do what.
+ */
+export type BookingAction = 'confirm' | 'decline' | 'cancel' | 'complete' | 'no-show';
+
+/** Statuses the in-chat proposal cards render (cancelled rows are hidden). */
+const MATCH_PROPOSAL_STATUSES = 'proposed,confirmed,declined';
+
+/**
+ * Every non-cancelled booking on a match — feeds the chat's proposal cards.
+ * The query string is written out literally (comma list unencoded) to keep
+ * the exact request the chat screen has always sent.
+ */
+export async function listMatchProposals<T = Session>(
+  matchId: string
+): Promise<{ items: T[]; total: number; limit: number; offset: number }> {
+  return api.get<{ items: T[]; total: number; limit: number; offset: number }>(
+    `/bookings?match_id=${matchId}&status=${MATCH_PROPOSAL_STATUSES}&limit=50`
+  );
+}
+
+/** Single booking by id (BookingDetail). */
+export async function getBooking<T = Session>(bookingId: string): Promise<T> {
+  return api.get<T>(`/bookings/${bookingId}`);
+}
+
+/** Run one FSM transition and return the updated booking. */
+export async function transitionBooking<T = Session>(
+  bookingId: string,
+  action: BookingAction
+): Promise<T> {
+  return api.post<T>(`/bookings/${bookingId}/${action}`, {});
+}
+
+export interface CreateBookingRequest {
+  matchId: string;
+  sport: string;
+  /** Local wall-clock ISO string without offset, e.g. `2026-05-01T09:00:00`. */
+  startsAt: string;
+  endsAt: string;
+  location?: string;
+  venueId?: string;
+  notes?: string;
+}
+
+/** Propose a session on a match (BookingComposer). */
+export async function createBooking(
+  body: CreateBookingRequest
+): Promise<{ id: string }> {
+  return api.post<{ id: string }>('/bookings', body);
+}
+
 /** Mirror of the chat card's Accept action — calls the existing FSM endpoint. */
 export async function acceptSession(sessionId: string): Promise<Session> {
   return api.post<Session>(`/bookings/${sessionId}/confirm`, {});
