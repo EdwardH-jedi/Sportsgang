@@ -25,6 +25,11 @@ class PartnerCardResponse(BaseModel):
     photo_urls: list[str] = []
     age: int | None = None
     sport_profiles: list[SportProfileSummary]
+    # Coarse distance from the caller's supplied lat/lng to this user's
+    # (already ~1 km rounded) home location: rounded UP to the next
+    # 0.5 km, minimum 1.0. Only set when /discovery is called with
+    # lat & lng; null otherwise (and on every non-discovery surface).
+    distance_km: float | None = None
 
 
 class DiscoveryFeedResponse(BaseModel):

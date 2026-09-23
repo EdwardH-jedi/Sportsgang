@@ -102,6 +102,7 @@ from app.routers import (  # noqa: E402  # noqa: E402
     bookings,
     challenges,
     chat,
+    crews,
     discovery,
     events,
     google_calendar,
@@ -134,6 +135,7 @@ app.include_router(honor_system.honors_router)
 app.include_router(challenges.router)
 app.include_router(tournaments.router)
 app.include_router(events.router)
+app.include_router(crews.router)
 
 # Serve uploaded profile photos from local disk in dev. Production replaces
 # this with cloud object storage; the URL prefix stays the same.

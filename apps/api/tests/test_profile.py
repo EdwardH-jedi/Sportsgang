@@ -200,3 +200,96 @@ async def test_get_sport_profiles_returns_list(auth_client) -> None:
     sports = {sp["sport"] for sp in body}
     assert "gym" in sports
     assert "golf" in sports
+
+
+# ---------------------------------------------------------------------------
+# Coarse home location (run-first discovery)
+# ---------------------------------------------------------------------------
+
+
+async def _stored_home(token: str, client: AsyncClient) -> tuple[float | None, float | None]:
+    from uuid import UUID
+
+    from sqlalchemy import select
+
+    from app.models.profile import UserProfile
+
+    me = await client.get("/auth/me", headers=auth_headers(token))
+    async with _TestSession() as db:
+        row = (await db.execute(select(UserProfile).where(UserProfile.user_id == UUID(me.json()["id"])))).scalar_one()
+        return row.home_lat, row.home_lng
+
+
+async def test_put_profile_stores_rounded_home_location_and_never_returns_it(auth_client) -> None:
+    client, token = auth_client
+    r = await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner", "home_lat": -33.887654, "home_lng": 151.211234},
+        headers=auth_headers(token),
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert "home_lat" not in body
+    assert "home_lng" not in body
+    assert body["has_home_location"] is True
+
+    assert await _stored_home(token, client) == (-33.89, 151.21)
+
+    got = await client.get("/users/me/profile", headers=auth_headers(token))
+    assert "home_lat" not in got.json()
+    assert got.json()["has_home_location"] is True
+
+
+async def test_put_profile_without_home_fields_keeps_stored_location(auth_client) -> None:
+    """v1.0 clients never send home_lat/home_lng — an update must not wipe them."""
+    client, token = auth_client
+    await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner", "home_lat": -33.9, "home_lng": 151.2},
+        headers=auth_headers(token),
+    )
+    r = await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner Renamed", "suburb": "Newtown"},
+        headers=auth_headers(token),
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["display_name"] == "Runner Renamed"
+    assert await _stored_home(token, client) == (-33.9, 151.2)
+
+
+async def test_put_profile_can_clear_home_location(auth_client) -> None:
+    client, token = auth_client
+    await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner", "home_lat": -33.9, "home_lng": 151.2},
+        headers=auth_headers(token),
+    )
+    r = await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner", "home_lat": None, "home_lng": None},
+        headers=auth_headers(token),
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["has_home_location"] is False
+    assert await _stored_home(token, client) == (None, None)
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"home_lat": 91.0, "home_lng": 151.2},
+        {"home_lat": -33.9, "home_lng": -181.0},
+        {"home_lat": -33.9},
+        {"home_lng": 151.2},
+        {"home_lat": -33.9, "home_lng": None},
+    ],
+)
+async def test_put_profile_rejects_invalid_home_location(auth_client, extra: dict) -> None:
+    client, token = auth_client
+    r = await client.put(
+        "/users/me/profile",
+        json={"display_name": "Runner", **extra},
+        headers=auth_headers(token),
+    )
+    assert r.status_code == 422, r.text

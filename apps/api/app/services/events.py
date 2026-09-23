@@ -13,9 +13,11 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.geo import DEFAULT_RADIUS_KM, bbox_filter, haversine_km
+from app.models.crew import Crew, CrewMember
 from app.models.event import (
     EVENT_ATTENDANCE_HOST_STATUSES,
     EVENT_ATTENDANCE_SELF_STATUSES,
@@ -36,6 +38,8 @@ from app.schemas.events import (
     EventSummary,
     HostAttendanceUpdateRequest,
     SelfAttendanceRequest,
+    UpdateEventRequest,
+    check_pace_band,
 )
 from app.services.content_moderation import ensure_text_allowed
 
@@ -44,6 +48,12 @@ _VISIBLE_STATUSES: frozenset[str] = frozenset({"open", "full"})
 
 # Statuses a participant can leave from.
 _LEAVABLE_STATUSES: frozenset[str] = frozenset({"open", "full"})
+
+# Statuses the host can still edit.
+_EDITABLE_STATUSES: frozenset[str] = frozenset({"open", "full"})
+
+# Upper bound on events pulled into Python for exact-distance filtering.
+_GEO_POOL = 500
 
 
 # ---------------------------------------------------------------------------
@@ -81,7 +91,40 @@ async def _get_event_or_404(db: AsyncSession, event_id: UUID) -> Event:
     return e
 
 
-async def _to_summary(db: AsyncSession, e: Event, current_user_id: UUID) -> EventSummary:
+async def _crew_name(db: AsyncSession, crew_id: UUID | None) -> str | None:
+    if crew_id is None:
+        return None
+    return (await db.execute(select(Crew.name).where(Crew.id == crew_id))).scalar_one_or_none()
+
+
+async def _ensure_crew_member(db: AsyncSession, crew_id: UUID, user_id: UUID) -> None:
+    """Only members of a crew may attach a run to it."""
+    crew = (await db.execute(select(Crew.id).where(Crew.id == crew_id))).scalar_one_or_none()
+    if crew is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Crew not found")
+    member = (
+        await db.execute(select(CrewMember.id).where(CrewMember.crew_id == crew_id, CrewMember.user_id == user_id))
+    ).scalar_one_or_none()
+    if member is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only crew members can host a run for this crew",
+        )
+
+
+def _as_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
+async def _to_summary(
+    db: AsyncSession,
+    e: Event,
+    current_user_id: UUID,
+    *,
+    distance_from_you: float | None = None,
+) -> EventSummary:
     count = await _joined_count(db, e.id)
     joined = (await _active_participant(db, e.id, current_user_id)) is not None
     host = await _resolve_host(db, e.host_user_id)
@@ -103,12 +146,25 @@ async def _to_summary(db: AsyncSession, e: Event, current_user_id: UUID) -> Even
         description=e.description,
         created_at=e.created_at,
         updated_at=e.updated_at,
+        crew_id=e.crew_id,
+        crew_name=await _crew_name(db, e.crew_id),
+        meeting_lat=e.meeting_lat,
+        meeting_lng=e.meeting_lng,
+        distance_km=e.distance_km,
+        pace_min_sec_per_km=e.pace_min_sec_per_km,
+        pace_max_sec_per_km=e.pace_max_sec_per_km,
+        distance_km_from_you=distance_from_you,
     )
 
 
 # ---------------------------------------------------------------------------
 # Public service functions
 # ---------------------------------------------------------------------------
+
+
+async def summarize_event(db: AsyncSession, e: Event, current_user_id: UUID) -> EventSummary:
+    """Public wrapper so other services (crews) render the same summary shape."""
+    return await _to_summary(db, e, current_user_id)
 
 
 async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRequest) -> EventDetail:
@@ -141,6 +197,9 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
     if body.description:
         ensure_text_allowed(body.description, context="event-description")
 
+    if body.crew_id is not None:
+        await _ensure_crew_member(db, body.crew_id, host_user_id)
+
     e = Event(
         host_user_id=host_user_id,
         title=body.title.strip(),
@@ -152,6 +211,12 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
         description=(body.description or None),
         visibility=body.visibility,
         status="open",
+        crew_id=body.crew_id,
+        meeting_lat=body.meeting_lat,
+        meeting_lng=body.meeting_lng,
+        distance_km=body.distance_km,
+        pace_min_sec_per_km=body.pace_min_sec_per_km,
+        pace_max_sec_per_km=body.pace_max_sec_per_km,
     )
     db.add(e)
     await db.flush()
@@ -188,7 +253,31 @@ async def list_events(
     mode: str | None = None,
     limit: int = 20,
     offset: int = 0,
+    crew_id: UUID | None = None,
+    lat: float | None = None,
+    lng: float | None = None,
+    radius_km: float = DEFAULT_RADIUS_KM,
+    starts_from: datetime | None = None,
+    starts_to: datetime | None = None,
 ) -> EventListResponse:
+    """
+    List events. The group-run filters are all optional and additive —
+    a v1.0 request (mine/sport/mode/limit/offset only) behaves exactly
+    as before.
+
+    * ``crew_id`` — only runs attached to that crew.
+    * ``starts_from`` / ``starts_to`` — ``starts_from <= starts_at < starts_to``.
+    * ``lat``/``lng``/``radius_km`` — only events with a meeting point
+      within the radius (events without one are excluded); each item
+      gets ``distance_km_from_you``. Ordering stays ``starts_at`` asc.
+    """
+    geo = lat is not None and lng is not None
+    if starts_from is not None and starts_to is not None and starts_from >= starts_to:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="'from' must be earlier than 'to'",
+        )
+
     base = select(Event)
     if mine:
         # Events the user has joined (active) OR hosts.
@@ -221,7 +310,29 @@ async def list_events(
             )
         base = base.where(Event.mode == mode)
 
+    if crew_id is not None:
+        base = base.where(Event.crew_id == crew_id)
+    if starts_from is not None:
+        base = base.where(Event.starts_at >= _as_utc(starts_from))
+    if starts_to is not None:
+        base = base.where(Event.starts_at < _as_utc(starts_to))
+
+    if geo:
+        base = base.where(and_(*bbox_filter(Event.meeting_lat, Event.meeting_lng, lat, lng, radius_km)))
+
     base = base.order_by(Event.starts_at.asc())
+
+    if geo:
+        pool = list((await db.execute(base.limit(_GEO_POOL))).scalars().all())
+        nearby: list[tuple[Event, float]] = []
+        for e in pool:
+            km = haversine_km(lat, lng, e.meeting_lat, e.meeting_lng)
+            if km <= radius_km:
+                nearby.append((e, round(km, 1)))
+        geo_items = [
+            await _to_summary(db, e, current_user_id, distance_from_you=km) for e, km in nearby[offset : offset + limit]
+        ]
+        return EventListResponse(items=geo_items, total=len(nearby))
 
     rows = list((await db.execute(base.offset(offset).limit(limit))).scalars().all())
     total = int((await db.execute(select(func.count()).select_from(base.subquery()))).scalar_one())
@@ -230,6 +341,76 @@ async def list_events(
     for e in rows:
         items.append(await _to_summary(db, e, current_user_id))
     return EventListResponse(items=items, total=total)
+
+
+async def update_event(
+    db: AsyncSession,
+    event_id: UUID,
+    current_user_id: UUID,
+    body: UpdateEventRequest,
+) -> EventDetail:
+    """
+    Host-only partial update. Allowed while the event is open or full.
+    Capacity cannot drop below the current participant count; the
+    open/full status is recomputed after a capacity change. Attaching a
+    crew requires crew membership, like create.
+    """
+    locked_stmt = select(Event).where(Event.id == event_id).with_for_update()
+    e = (await db.execute(locked_stmt)).scalar_one_or_none()
+    if e is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+
+    await _enforce_private_visibility(db, e, current_user_id)
+
+    if current_user_id != e.host_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the host can edit this event",
+        )
+
+    if e.status not in _EDITABLE_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=f"Cannot edit a {e.status} event",
+        )
+
+    changes = body.model_dump(exclude_unset=True)
+
+    if changes.get("title"):
+        ensure_text_allowed(changes["title"], context="event-title")
+        changes["title"] = changes["title"].strip()
+    if "description" in changes:
+        if changes["description"]:
+            ensure_text_allowed(changes["description"], context="event-description")
+        changes["description"] = changes["description"] or None
+    if "location_text" in changes:
+        changes["location_text"] = changes["location_text"].strip()
+
+    if changes.get("crew_id") is not None and changes["crew_id"] != e.crew_id:
+        await _ensure_crew_member(db, changes["crew_id"], current_user_id)
+
+    pace_min = changes.get("pace_min_sec_per_km", e.pace_min_sec_per_km)
+    pace_max = changes.get("pace_max_sec_per_km", e.pace_max_sec_per_km)
+    try:
+        check_pace_band(pace_min, pace_max)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
+
+    if "capacity" in changes:
+        count = await _joined_count(db, e.id)
+        if changes["capacity"] < count:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Capacity cannot be lower than the {count} people already joined",
+            )
+        e.status = "full" if count >= changes["capacity"] else "open"
+
+    for field, value in changes.items():
+        setattr(e, field, value)
+
+    await db.commit()
+    await db.refresh(e)
+    return await get_event(db, e.id, current_user_id)
 
 
 async def get_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) -> EventDetail:

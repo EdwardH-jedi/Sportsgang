@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, CheckConstraint, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import JSON, CheckConstraint, Float, ForeignKey, Index, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -22,6 +22,11 @@ class UserProfile(Base):
     birth_year: Mapped[Optional[int]]
     suburb: Mapped[Optional[str]] = mapped_column(String(80))
     avatar_url: Mapped[Optional[str]] = mapped_column(String(500))
+    # Coarse home location used only for distance-based discovery.
+    # Stored rounded to 2 decimal places (~1 km) and NEVER serialised to
+    # another user — responses expose a coarse ``distance_km`` instead.
+    home_lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    home_lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
@@ -31,6 +36,22 @@ class UserProfile(Base):
         cascade="all, delete-orphan",
         order_by="ProfilePhoto.position",
     )
+
+    __table_args__ = (
+        Index("ix_user_profiles_home_lat_lng", "home_lat", "home_lng"),
+        CheckConstraint(
+            "home_lat IS NULL OR (home_lat >= -90 AND home_lat <= 90)",
+            name="ck_user_profiles_home_lat_range",
+        ),
+        CheckConstraint(
+            "home_lng IS NULL OR (home_lng >= -180 AND home_lng <= 180)",
+            name="ck_user_profiles_home_lng_range",
+        ),
+    )
+
+    @property
+    def has_home_location(self) -> bool:
+        return self.home_lat is not None and self.home_lng is not None
 
 
 class ProfilePhoto(Base):

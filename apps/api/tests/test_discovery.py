@@ -569,3 +569,114 @@ async def test_different_sport_creates_separate_match(client: AsyncClient) -> No
             )
         ).scalar_one()
     assert count == 2, f"expected one match per sport (2 total), found {count}"
+
+
+# ---------------------------------------------------------------------------
+# Geo-aware discovery (lat / lng / radius_km)
+# ---------------------------------------------------------------------------
+
+# A remote origin so users from other tests (no home location) never
+# land inside the radius.
+_ORIGIN = (-10.0, 20.0)
+
+
+async def _runner(client: AsyncClient, email: str, home: tuple[float, float] | None) -> tuple[str, str]:
+    token, uid = await _register_with_id(client, email)
+    body: dict = {"display_name": email.split("@")[0]}
+    if home is not None:
+        body.update({"home_lat": home[0], "home_lng": home[1]})
+    r = await client.put("/users/me/profile", json=body, headers=_auth(token))
+    assert r.status_code == 200, r.text
+    r = await client.post(
+        "/users/me/sport-profiles",
+        json={"sport": "running", "level": "intermediate"},
+        headers=_auth(token),
+    )
+    assert r.status_code == 201, r.text
+    return token, uid
+
+
+async def test_discovery_geo_filters_sorts_and_reports_coarse_distance(client: AsyncClient) -> None:
+    viewer, _ = await _runner(client, "geo_viewer@example.com", None)
+    _, same_spot = await _runner(client, "geo_same@example.com", (-10.0, 20.0))  # 0 km
+    _, near = await _runner(client, "geo_near@example.com", (-10.02, 20.0))  # ~2.2 km
+    _, mid = await _runner(client, "geo_mid@example.com", (-10.08, 20.0))  # ~8.9 km
+    _, far = await _runner(client, "geo_far@example.com", (-10.3, 20.0))  # ~33.4 km
+    _, homeless = await _runner(client, "geo_homeless@example.com", None)
+
+    lat, lng = _ORIGIN
+    r = await client.get("/discovery", params={"sport": "running", "lat": lat, "lng": lng}, headers=_auth(viewer))
+    assert r.status_code == 200, r.text
+    body = r.json()
+    ids = [item["user_id"] for item in body["items"]]
+    assert ids == [same_spot, near, mid]
+    assert body["total"] == 3
+    assert [item["distance_km"] for item in body["items"]] == [1.0, 2.5, 9.0]
+    for item in body["items"]:
+        assert "home_lat" not in item
+        assert "home_lng" not in item
+
+    wide = await client.get(
+        "/discovery",
+        params={"sport": "running", "lat": lat, "lng": lng, "radius_km": 50},
+        headers=_auth(viewer),
+    )
+    assert wide.status_code == 200, wide.text
+    wide_ids = [item["user_id"] for item in wide.json()["items"]]
+    assert wide_ids == [same_spot, near, mid, far]
+    assert wide.json()["items"][-1]["distance_km"] == 33.5
+
+    # Pagination applies after the distance sort.
+    page = await client.get(
+        "/discovery",
+        params={"sport": "running", "lat": lat, "lng": lng, "radius_km": 50, "limit": 2, "offset": 2},
+        headers=_auth(viewer),
+    )
+    assert [item["user_id"] for item in page.json()["items"]] == [mid, far]
+    assert page.json()["total"] == 4
+
+    # Without lat/lng: v1.0 behaviour — everyone (incl. no home location), distance null.
+    plain = await client.get("/discovery", params={"sport": "running"}, headers=_auth(viewer))
+    assert plain.status_code == 200
+    plain_ids = {item["user_id"] for item in plain.json()["items"]}
+    assert {same_spot, near, mid, far, homeless} <= plain_ids
+    assert all(item["distance_km"] is None for item in plain.json()["items"])
+
+
+async def test_discovery_geo_respects_blocks(client: AsyncClient) -> None:
+    from uuid import UUID
+
+    from app.models.safety import Block
+
+    viewer, viewer_id = await _runner(client, "geo_block_viewer@example.com", None)
+    _, blocked = await _runner(client, "geo_block_blocked@example.com", (-10.0, 20.01))
+    _, blocker = await _runner(client, "geo_block_blocker@example.com", (-10.0, 20.01))
+    _, ok = await _runner(client, "geo_block_ok@example.com", (-10.0, 20.01))
+
+    async with _TestSession() as db:
+        db.add(Block(blocker_id=UUID(viewer_id), blocked_id=UUID(blocked)))
+        db.add(Block(blocker_id=UUID(blocker), blocked_id=UUID(viewer_id)))
+        await db.commit()
+
+    r = await client.get("/discovery", params={"sport": "running", "lat": -10.0, "lng": 20.0}, headers=_auth(viewer))
+    assert r.status_code == 200, r.text
+    ids = {item["user_id"] for item in r.json()["items"]}
+    assert ok in ids
+    assert blocked not in ids
+    assert blocker not in ids
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"lat": -33.9},
+        {"lng": 151.2},
+        {"lat": -33.9, "lng": 151.2, "radius_km": 51},
+        {"lat": -33.9, "lng": 151.2, "radius_km": 0},
+        {"lat": 95, "lng": 151.2},
+    ],
+)
+async def test_discovery_geo_param_validation(client: AsyncClient, params: dict) -> None:
+    token = await _register(client, f"geo_val_{len(str(params))}_{abs(hash(str(params))) % 10000}@example.com")
+    r = await client.get("/discovery", params={"sport": "running", **params}, headers=_auth(token))
+    assert r.status_code == 422, r.text

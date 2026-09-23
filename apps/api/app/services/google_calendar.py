@@ -279,9 +279,32 @@ def _resolve_event_location(booking: Booking, venue: object | None) -> str:
     return f"{name} — {detail}" if detail else name
 
 
+# Human-readable calendar labels per sport. Unknown sports fall back to a
+# title-cased version of the stored key, so a new sport never gets
+# mislabelled as another one (the old gym/golf ternary called every
+# tennis or running session "Golf").
+_SPORT_LABELS: dict[str, str] = {
+    "gym": "Gym",
+    "golf": "Golf",
+    "tennis": "Tennis",
+    "running": "Running",
+    "basketball": "Basketball",
+    "badminton": "Badminton",
+    "soccer": "Soccer",
+    "football": "Football",
+}
+
+
+def sport_label(sport: str | None) -> str:
+    key = (sport or "").strip().lower()
+    if not key:
+        return "Sport"
+    return _SPORT_LABELS.get(key, key.replace("_", " ").title())
+
+
 def _booking_to_event(booking: Booking, partner_name: str, venue: object | None = None) -> dict:
-    sport_label = "Gym" if booking.sport == "gym" else "Golf"
-    summary = f"{sport_label} session with {partner_name}"
+    sport_label_text = sport_label(booking.sport)
+    summary = f"{sport_label_text} session with {partner_name}"
     description = booking.notes or ""
     return {
         "summary": summary,

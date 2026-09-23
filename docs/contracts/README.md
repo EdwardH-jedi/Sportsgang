@@ -80,6 +80,17 @@ Safety                 Reports and blocks
   └─ ReportResponse       id, reporterId, reportedId, reason  (safety.ts)
   └─ BlockResponse        id, blockerId, blockedId, createdAt  (safety.ts)
 
+Events / group runs    Battles and run-first group runs  (event.ts)
+  └─ EventSummary        + optional crewId, crewName, meetingLat/Lng, distanceKm,
+                           paceMin/MaxSecPerKm, distanceKmFromYou
+  └─ GroupRunFields      optional run fields on Create/UpdateEventRequest
+  └─ EventListQuery      GET /events filters incl. crewId, lat/lng/radiusKm, from/to
+
+Crews                  Persistent running groups  (crew.ts)
+  └─ CrewListItem        crew + memberCount, myRole, coarse distanceKm, nextRun
+  └─ CrewDetail          CrewListItem + members (CrewMember[]) + upcomingRuns
+  └─ Create/UpdateCrewRequest, CrewListQuery, LeaveCrewResponse
+
 Calendar (future)      Availability scheduling — NOT YET IMPLEMENTED in the API
   └─ AvailabilityWindow   Recurring weekly block  (calendar.ts)
   └─ CalendarSlot         Single slot view  (calendar.ts)

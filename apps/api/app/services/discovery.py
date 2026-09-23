@@ -5,6 +5,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.geo import DEFAULT_RADIUS_KM, bbox_filter, coarse_distance_km, haversine_km
 from app.models.match import DiscoveryAction, Match
 from app.models.profile import SportProfile, UserProfile
 from app.models.safety import Block
@@ -52,6 +53,7 @@ def _build_partner_card(
     user: User,
     profile: UserProfile,
     sport_profiles: list[SportProfile],
+    distance_km: float | None = None,
 ) -> PartnerCardResponse:
     age = _CURRENT_YEAR - profile.birth_year if profile.birth_year else None
     bio_excerpt = profile.bio[:160] if profile.bio else None
@@ -78,6 +80,7 @@ def _build_partner_card(
             )
             for sp in sport_profiles
         ],
+        distance_km=distance_km,
     )
 
 
@@ -87,7 +90,24 @@ async def get_discovery_feed(
     sport: str,
     limit: int = 20,
     offset: int = 0,
+    lat: float | None = None,
+    lng: float | None = None,
+    radius_km: float = DEFAULT_RADIUS_KM,
 ) -> DiscoveryFeedResponse:
+    """
+    Partner-discovery feed for one sport.
+
+    Without ``lat``/``lng`` this is the v1.0 feed: compatibility-scored,
+    ``distance_km`` null. With them, the SQL pool is prefiltered to a
+    bounding box around the point (candidates with no stored home
+    location drop out), exact haversine distance is applied in Python,
+    and results are ordered by the coarse distance bucket the client
+    sees, then by the usual compatibility score. Sorting on the bucket
+    rather than the raw distance keeps the ordering from leaking more
+    precision than the displayed value. Block / already-acted-on
+    exclusions apply identically in both modes.
+    """
+    geo = lat is not None and lng is not None
     # Fetch actor's sport profile for compatibility scoring.
     actor_sp_stmt = select(SportProfile).where(
         and_(SportProfile.user_id == current_user_id, SportProfile.sport == sport)
@@ -119,6 +139,8 @@ async def get_discovery_feed(
         User.id.not_in(blocked_by_me_subq),
         User.id.not_in(blocking_me_subq),
     )
+    if geo:
+        base_filter = and_(base_filter, *bbox_filter(UserProfile.home_lat, UserProfile.home_lng, lat, lng, radius_km))
 
     # Fetch a scoring pool (bounded) — sort by score in Python, then paginate.
     pool_stmt = (
@@ -137,17 +159,38 @@ async def get_discovery_feed(
     )
     pool = (await db.execute(pool_stmt)).all()
 
-    # Score and sort descending
-    scored = sorted(
-        pool,
-        key=lambda row: _score_compatibility(actor_level, actor_times, row[2]),
-        reverse=True,
-    )
+    if not geo:
+        # Score and sort descending
+        scored = sorted(
+            pool,
+            key=lambda row: _score_compatibility(actor_level, actor_times, row[2]),
+            reverse=True,
+        )
 
-    total = len(scored)
-    page = scored[offset : offset + limit]
+        total = len(scored)
+        page = scored[offset : offset + limit]
 
-    items = [_build_partner_card(user, profile, [sp]) for user, profile, sp in page]
+        items = [_build_partner_card(user, profile, [sp]) for user, profile, sp in page]
+        return DiscoveryFeedResponse(items=items, total=total, limit=limit, offset=offset)
+
+    # Geo mode: exact radius check, then nearest bucket first, then the
+    # usual compatibility order (Python's sort is stable, so equal
+    # buckets and scores keep the pool's newest-first order).
+    nearby: list[tuple[float, float, tuple]] = []
+    for row in pool:
+        profile = row[1]
+        km = haversine_km(lat, lng, profile.home_lat, profile.home_lng)
+        if km > radius_km:
+            continue
+        nearby.append((coarse_distance_km(km), _score_compatibility(actor_level, actor_times, row[2]), row))
+    nearby.sort(key=lambda entry: (entry[0], -entry[1]))
+
+    total = len(nearby)
+    page_rows = nearby[offset : offset + limit]
+    items = [
+        _build_partner_card(user, profile, [sp], distance_km=bucket)
+        for bucket, _score, (user, profile, sp) in page_rows
+    ]
     return DiscoveryFeedResponse(items=items, total=total, limit=limit, offset=offset)
 
 

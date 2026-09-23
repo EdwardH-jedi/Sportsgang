@@ -11,8 +11,11 @@
  *   user            — User, auth request/response types
  *   sport-profile   — Sport, FitnessLevel, PreferredTime, GenderPreference,
  *                     UserProfile, IdentityPreferences, SportProfile
- *   discovery       — DiscoveryAction, DiscoveryFilter, PartnerCard,
+ *   discovery       — DiscoveryAction, DiscoveryFilter, DiscoveryQuery, PartnerCard,
  *                     DiscoveryFeedResponse, RecordActionRequest, RecordActionResponse
+ *   event           — Event (battle / group run) types incl. GroupRunFields,
+ *                     UpdateEventRequest, EventListQuery
+ *   crew            — Crew, CrewMember, CrewListItem, CrewDetail, crew requests
  *   booking         — Booking, BookingDetail, BookingStatus, CreateBookingRequest
  *   match           — Match, MatchStatus, MatchWithPartner, MatchListResponse
  *   chat            — Message, SendMessageRequest, MessageListResponse
@@ -55,6 +58,7 @@ export type {
 export type {
   DiscoveryAction,
   DiscoveryFilter,
+  DiscoveryQuery,
   PartnerCard,
   DiscoveryFeedResponse,
   RecordActionRequest,
@@ -165,6 +169,9 @@ export type {
   EventDetail,
   EventListResponse,
   CreateEventRequest,
+  GroupRunFields,
+  UpdateEventRequest,
+  EventListQuery,
   AttendanceStatus,
   SelfAttendanceStatus,
   ParticipantLifecycleStatus,
@@ -181,3 +188,18 @@ export type {
   CreateChallengeRequest,
   SubmitChallengeResultRequest,
 } from './challenge';
+
+export type {
+  CrewRole,
+  CrewVisibility,
+  Crew,
+  CrewMember,
+  CrewNextRun,
+  CrewListItem,
+  CrewDetail,
+  CrewListResponse,
+  CrewListQuery,
+  CreateCrewRequest,
+  UpdateCrewRequest,
+  LeaveCrewResponse,
+} from './crew';

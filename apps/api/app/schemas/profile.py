@@ -2,7 +2,9 @@ from datetime import date, datetime
 from typing import Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.core.geo import HOME_COORD_DECIMALS, round_coord
 
 # Birth-year bounds match the mobile Step 1 picker: [today - MAX_AGE, today - MIN_AGE].
 # Computed at validation time so the bounds advance with the calendar year — the
@@ -29,11 +31,30 @@ class UserProfileCreate(BaseModel):
     bio: Optional[str] = Field(None, max_length=400)
     birth_year: Optional[int] = None
     suburb: Optional[str] = Field(None, max_length=80)
+    # Optional coarse home location (run-first discovery). Rounded to
+    # 2 dp (~1 km) before storage and never returned to other users.
+    # Must be sent as a pair; send both as null to clear. Omitting them
+    # leaves the stored value untouched (v1.0 clients never send them).
+    home_lat: Optional[float] = Field(None, ge=-90.0, le=90.0)
+    home_lng: Optional[float] = Field(None, ge=-180.0, le=180.0)
 
     @field_validator("birth_year")
     @classmethod
     def _check_birth_year(cls, v: Optional[int]) -> Optional[int]:
         return _validate_birth_year(v)
+
+    @field_validator("home_lat", "home_lng")
+    @classmethod
+    def _round_home_coord(cls, v: Optional[float]) -> Optional[float]:
+        return round_coord(v, HOME_COORD_DECIMALS)
+
+    @model_validator(mode="after")
+    def _check_home_pair(self) -> "UserProfileCreate":
+        lat_sent = "home_lat" in self.model_fields_set
+        lng_sent = "home_lng" in self.model_fields_set
+        if lat_sent != lng_sent or (self.home_lat is None) != (self.home_lng is None):
+            raise ValueError("home_lat and home_lng must be provided together")
+        return self
 
 
 class UserProfileUpdate(BaseModel):
@@ -65,6 +86,9 @@ class UserProfileResponse(BaseModel):
     suburb: Optional[str]
     avatar_url: Optional[str]
     photos: list[ProfilePhotoResponse] = []
+    # True once the user has saved a coarse home location. The
+    # coordinates themselves are write-only and never serialised.
+    has_home_location: bool = False
     created_at: datetime
     updated_at: datetime
 
