@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '../../components/Screen';
+import { FormErrorBanner } from '../../components/FormErrorBanner';
+import { Button, Card, EmptyState, Header, Screen, TextField } from '../../components/ui';
 import { useReport, type ReportReason } from '../../hooks/useReport';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, layout, spacing, touchTarget, typography } from '../../theme';
 import type { ReportScreenProps } from '../../navigation/types';
 
 const REASONS: { value: ReportReason; label: string }[] = [
@@ -34,242 +27,146 @@ export function ReportScreen({ route, navigation }: ReportScreenProps) {
   };
 
   return (
-    <Screen padded={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Report</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
-
+    <Screen
+      padded={false}
+      withKeyboard
+      header={
+        <Header
+          title="Report"
+          onBack={() => navigation.goBack()}
+          backLabel="Back"
+          style={styles.header}
+        />
+      }
+    >
       {submitted ? (
-        <View style={styles.successWrap}>
-          <Text style={styles.successTitle}>Report submitted</Text>
-          <Text style={styles.successBody}>
-            Thanks for helping keep SportsGang safe. We'll review this user.
-          </Text>
-          <Pressable
-            style={({ pressed }) => [styles.doneButton, pressed && styles.pressed]}
-            onPress={() => navigation.goBack()}
-            accessibilityRole="button"
-          >
-            <Text style={styles.doneButtonText}>Done</Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon="check-circle"
+          title="Report submitted"
+          message="Thanks for helping keep SportsGang safe. We'll review this user."
+          action={{ label: 'Done', onPress: () => navigation.goBack() }}
+        />
       ) : (
         <ScrollView
           contentContainerStyle={styles.form}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.prompt}>
+          <Text style={styles.prompt} accessibilityRole="header">
             Why are you reporting {reportedName}?
           </Text>
 
-          <View style={styles.reasonList}>
-            {REASONS.map((r) => (
-              <Pressable
-                key={r.value}
-                style={({ pressed }) => [
-                  styles.reasonRow,
-                  reason === r.value && styles.reasonRowSelected,
-                  pressed && styles.pressed,
-                ]}
-                onPress={() => setReason(r.value)}
-                accessibilityRole="radio"
-              >
-                <View
-                  style={[
-                    styles.reasonRadio,
-                    reason === r.value && styles.reasonRadioSelected,
-                  ]}
-                />
-                <Text style={styles.reasonLabel}>{r.label}</Text>
-              </Pressable>
-            ))}
-          </View>
+          <Card padding="none" style={styles.reasonList}>
+            <View accessibilityRole="radiogroup">
+              {REASONS.map((r, i) => {
+                const selected = reason === r.value;
+                return (
+                  <Pressable
+                    key={r.value}
+                    style={({ pressed }) => [
+                      styles.reasonRow,
+                      i < REASONS.length - 1 && styles.reasonDivider,
+                      selected && styles.reasonRowSelected,
+                      pressed && !selected && styles.reasonRowPressed,
+                    ]}
+                    onPress={() => setReason(r.value)}
+                    accessibilityRole="radio"
+                    accessibilityLabel={r.label}
+                    accessibilityState={{ selected, checked: selected }}
+                  >
+                    <View style={[styles.reasonRadio, selected && styles.reasonRadioSelected]}>
+                      {selected ? <View style={styles.reasonRadioDot} /> : null}
+                    </View>
+                    <Text style={styles.reasonLabel}>{r.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Card>
 
-          <View style={styles.contextField}>
-            <Text style={styles.contextLabel}>Additional context (optional)</Text>
-            <TextInput
-              style={styles.contextInput}
-              value={context}
-              onChangeText={setContext}
-              placeholder="Describe what happened…"
-              placeholderTextColor={colors.textTertiary}
-              multiline
-              maxLength={1000}
-            />
-          </View>
+          <TextField
+            label="Additional context (optional)"
+            value={context}
+            onChangeText={setContext}
+            placeholder="Describe what happened…"
+            multiline
+            maxLength={1000}
+          />
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <FormErrorBanner message={error} />
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.submitButton,
-              (!reason || isSubmitting) && styles.submitButtonDisabled,
-              pressed && reason && !isSubmitting && styles.pressed,
-            ]}
+          <Button
+            label="Submit report"
+            size="lg"
+            fullWidth
+            leadingIcon="flag"
+            loading={isSubmitting}
+            disabled={!reason}
             onPress={handleSubmit}
-            disabled={!reason || isSubmitting}
-            accessibilityRole="button"
             accessibilityLabel="Submit report"
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color={colors.textInverse} />
-            ) : (
-              <Text style={styles.submitButtonText}>Submit report</Text>
-            )}
-          </Pressable>
+          />
         </ScrollView>
       )}
     </Screen>
   );
 }
 
+/** Radio circle diameter and its selected dot. */
+const RADIO = spacing.md + spacing.xs;
+const RADIO_DOT = spacing.sm + spacing.xs / 2;
+
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.separator,
   },
-  backButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  backText: {
-    fontSize: 22,
-    color: colors.textPrimary,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-  },
-  headerSpacer: { width: 32 },
   form: {
-    padding: spacing.lg,
+    padding: layout.screenPadding,
+    paddingBottom: spacing.xxl,
     gap: spacing.lg,
   },
   prompt: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
+    ...typography.h2,
   },
   reasonList: {
-    gap: spacing.sm,
+    overflow: 'hidden',
   },
   reasonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    paddingVertical: spacing.sm,
+    minHeight: touchTarget + spacing.sm,
     paddingHorizontal: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+  },
+  reasonDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
   },
   reasonRowSelected: {
-    borderColor: colors.brand,
-    backgroundColor: colors.background,
+    backgroundColor: colors.brandSoft,
+  },
+  reasonRowPressed: {
+    backgroundColor: colors.surfacePressed,
   },
   reasonRadio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: RADIO,
+    height: RADIO,
+    borderRadius: RADIO / 2,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   reasonRadioSelected: {
     borderColor: colors.brand,
+  },
+  reasonRadioDot: {
+    width: RADIO_DOT,
+    height: RADIO_DOT,
+    borderRadius: RADIO_DOT / 2,
     backgroundColor: colors.brand,
   },
   reasonLabel: {
-    ...typography.body,
-    color: colors.textPrimary,
+    ...typography.bodyStrong,
   },
-  contextField: {
-    gap: spacing.xs,
-  },
-  contextLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-  },
-  contextInput: {
-    ...typography.body,
-    color: colors.textPrimary,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface,
-    minHeight: 88,
-    textAlignVertical: 'top',
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-  },
-  submitButton: {
-    backgroundColor: colors.error,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  submitButtonDisabled: {
-    backgroundColor: colors.border,
-  },
-  submitButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  successWrap: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    gap: spacing.md,
-  },
-  successTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  successBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  doneButton: {
-    backgroundColor: colors.brand,
-    // Pill for the post-success affirmative CTA — matches every other
-    // brand-primary button in the app. The red `submitButton` above
-    // stays at radii.md as an intentional destructive-action signal.
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.md,
-  },
-  doneButtonText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  pressed: { opacity: 0.65 },
 });

@@ -38,23 +38,15 @@ jest.mock('../stores/auth', () => ({
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
   return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Screen: ({ children, header, footer }: { children: React.ReactNode; header?: React.ReactNode; footer?: React.ReactNode }) => (
+      <View>
+        {header}
+        {children}
+        {footer}
+      </View>
+    ),
   };
 });
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#0f0', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 function makeNavigation() {
   return {
@@ -90,13 +82,15 @@ describe('ChallengeListScreen', () => {
     mockCurrentUserId = 'me';
   });
 
-  it('renders the loading spinner while items are empty and request is in flight', () => {
+  it('renders a loading skeleton while items are empty and request is in flight', () => {
     mockHookState = { items: [], total: 0, isLoading: true, error: null };
-    const { getByText } = render(
+    const { getByText, getByLabelText } = render(
       <ChallengeListScreen navigation={makeNavigation() as any} route={{} as any} />
     );
-    // Header still rendered above the spinner.
+    // Header still rendered above the skeleton.
     getByText('Challenges');
+    getByLabelText('Loading challenges');
+    getByLabelText('Back');
   });
 
   it('renders empty-section copy when the hook resolves to no items', () => {

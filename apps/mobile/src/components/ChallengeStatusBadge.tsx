@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-
 import type { ChallengeStatus } from '@protin/shared-types';
-import { colors, radii, spacing, typography } from '../theme';
+
+import { Badge, type BadgeTone, type IconName } from './ui';
 
 interface ChallengeStatusBadgeProps {
   status: ChallengeStatus;
@@ -10,16 +9,17 @@ interface ChallengeStatusBadgeProps {
 
 interface BadgeStyleSpec {
   label: string;
-  accent: string;
+  tone: BadgeTone;
+  icon: IconName;
 }
 
 const STATUS_STYLES: Record<ChallengeStatus, BadgeStyleSpec> = {
-  pending: { label: 'Pending', accent: colors.textSecondary },
-  accepted: { label: 'Accepted', accent: colors.brand },
-  verified: { label: 'Verified', accent: colors.success },
-  disputed: { label: 'Disputed', accent: colors.error },
-  declined: { label: 'Declined', accent: colors.textTertiary },
-  cancelled: { label: 'Cancelled', accent: colors.textTertiary },
+  pending: { label: 'Pending', tone: 'warning', icon: 'clock' },
+  accepted: { label: 'Accepted', tone: 'brand', icon: 'check' },
+  verified: { label: 'Verified', tone: 'success', icon: 'check-circle' },
+  disputed: { label: 'Disputed', tone: 'error', icon: 'alert' },
+  declined: { label: 'Declined', tone: 'neutral', icon: 'close' },
+  cancelled: { label: 'Cancelled', tone: 'neutral', icon: 'close' },
 };
 
 /**
@@ -35,27 +35,12 @@ export function ChallengeStatusBadge({
 }: ChallengeStatusBadgeProps) {
   const spec = STATUS_STYLES[status];
   return (
-    <View
-      style={[styles.pill, { borderColor: spec.accent }]}
+    <Badge
+      label={spec.label}
+      tone={spec.tone}
+      icon={spec.icon}
+      size="sm"
       accessibilityLabel={accessibilityLabel ?? `Status ${spec.label}`}
-    >
-      <Text style={[styles.text, { color: spec.accent }]}>{spec.label}</Text>
-    </View>
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  pill: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    backgroundColor: colors.surfaceElevated,
-    alignSelf: 'flex-start',
-  },
-  text: {
-    ...typography.label,
-    fontSize: 10,
-    letterSpacing: 1.2,
-  },
-});
