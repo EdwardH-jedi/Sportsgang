@@ -182,36 +182,8 @@ jest.mock('../components/Screen', () => {
   };
 });
 
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000',
-    brand: '#000',
-    brandDark: '#222',
-    brandDarkest: '#000',
-    brandSoft: '#222',
-    border: '#ccc',
-    surface: '#fff',
-    surfaceElevated: '#f5f5f5',
-    background: '#fafafa',
-    separator: '#e0e0e0',
-    textPrimary: '#000',
-    textSecondary: '#555',
-    textTertiary: '#888',
-    textInverse: '#fff',
-    inputBackground: '#eee',
-    success: '#0f0',
-    error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: {
-    xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48,
-  },
-  typography: {
-    h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
+// The real theme is used: ProfileScreen renders design-system primitives
+// (ListRow, Icon) that need the full token set, and the tokens are plain data.
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 

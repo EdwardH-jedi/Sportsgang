@@ -43,6 +43,8 @@ export type RootStackParamList = {
   SafetyCenter: undefined;
   /** Self-service management of users the caller has blocked. */
   BlockedUsers: undefined;
+  /** DEV ONLY: design-system gallery. Registered only when `__DEV__`. */
+  UiGallery: undefined;
 };
 
 /**
@@ -87,3 +89,4 @@ export type PublicProfileScreenProps = NativeStackScreenProps<RootStackParamList
 export type HonorGuideScreenProps = NativeStackScreenProps<RootStackParamList, 'HonorGuide'>;
 export type SafetyCenterScreenProps = NativeStackScreenProps<RootStackParamList, 'SafetyCenter'>;
 export type BlockedUsersScreenProps = NativeStackScreenProps<RootStackParamList, 'BlockedUsers'>;
+export type UiGalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'UiGallery'>;

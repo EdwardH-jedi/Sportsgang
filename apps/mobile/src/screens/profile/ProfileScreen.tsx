@@ -14,6 +14,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HonorCard } from '../../components/HonorCard';
 import { LocalRankSection } from '../../components/LocalRankSection';
 import { Screen } from '../../components/Screen';
+import { ListRow } from '../../components/ui';
 import { useDeleteAccount } from '../../hooks/useAccount';
 import { useHonorSummary } from '../../hooks/useHonorSummary';
 import { useHonorSystem } from '../../hooks/useHonorSystem';
@@ -328,6 +329,19 @@ export function ProfileScreen() {
               </Pressable>
             </View>
           </View>
+
+          {__DEV__ ? (
+            // Development builds only: design-system review screen.
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Developer</Text>
+              <ListRow
+                icon="settings"
+                title="UI gallery"
+                subtitle="Every design-system primitive and variant"
+                onPress={() => navigation.navigate('UiGallery')}
+              />
+            </View>
+          ) : null}
 
           {/* Legal */}
           <View style={styles.card}>

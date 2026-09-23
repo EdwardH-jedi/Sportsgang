@@ -34,6 +34,7 @@ import { PublicProfileScreen } from '../screens/profile/PublicProfileScreen';
 import { HonorGuideScreen } from '../screens/help/HonorGuideScreen';
 import { SafetyCenterScreen } from '../screens/help/SafetyCenterScreen';
 import { BlockedUsersScreen } from '../screens/safety/BlockedUsersScreen';
+import { UiGalleryScreen } from '../screens/dev/UiGalleryScreen';
 
 import { registerForPushNotifications, configureForegroundHandler } from '../lib/notifications';
 import { useAuthStore } from '../stores/auth';
@@ -271,6 +272,14 @@ export function RootNavigator() {
           component={BlockedUsersScreen}
           options={{ animation: 'slide_from_right' }}
         />
+        {__DEV__ ? (
+          // Design-system review screen; never registered in release builds.
+          <Stack.Screen
+            name="UiGallery"
+            component={UiGalleryScreen}
+            options={{ animation: 'slide_from_right' }}
+          />
+        ) : null}
       </Stack.Navigator>
     </NavigationContainer>
   );
