@@ -102,6 +102,7 @@ export function OnboardingStep2Screen({ navigation }: Props) {
   return (
     <OnboardingFrame
       step={2}
+      onBack={() => navigation.goBack()}
       eyebrow="Profile"
       title="Photos & bio"
       subtitle={`Add ${MIN_PHOTOS}–${MAX_PHOTOS} photos and a short bio so people know who they'll run with.`}

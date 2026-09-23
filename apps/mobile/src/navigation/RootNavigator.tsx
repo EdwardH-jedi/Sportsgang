@@ -14,7 +14,6 @@ import { OnboardingStep1Screen } from '../screens/onboarding/OnboardingStep1Scre
 import { OnboardingStep2Screen } from '../screens/onboarding/OnboardingStep2Screen';
 import { OnboardingStep3Screen } from '../screens/onboarding/OnboardingStep3Screen';
 import { OnboardingStep4Screen } from '../screens/onboarding/OnboardingStep4Screen';
-import { EventsScreen } from '../screens/events/EventsScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { ChatScreen } from '../screens/chat/ChatScreen';
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
@@ -169,14 +168,6 @@ export function RootNavigator() {
           name="Report"
           component={ReportScreen}
           options={{ animation: 'slide_from_bottom' }}
-        />
-        {/* The old Events tab. Its content now lives in Profile (upcoming
-            sessions, Games & challenges); kept registered so nothing is
-            orphaned until the run-first Run tab replaces it. */}
-        <Stack.Screen
-          name="Events"
-          component={EventsScreen}
-          options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name="Battles"

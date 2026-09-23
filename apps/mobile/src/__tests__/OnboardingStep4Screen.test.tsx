@@ -240,3 +240,14 @@ describe('OnboardingStep4Screen', () => {
     expect(nav.replace).not.toHaveBeenCalled();
   });
 });
+
+describe('OnboardingStep4Screen back affordance', () => {
+  it('goes back to the previous step', () => {
+    const { useProfileStore } = require('../stores/profile');
+    (useProfileStore as jest.Mock).mockReturnValue({ upsertSportProfile: jest.fn() });
+    const nav = { navigate: jest.fn(), replace: jest.fn(), goBack: jest.fn() };
+    const { getByLabelText } = render(<OnboardingStep4Screen navigation={nav as any} route={{} as any} />);
+    fireEvent.press(getByLabelText('Back'));
+    expect(nav.goBack).toHaveBeenCalled();
+  });
+});

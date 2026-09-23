@@ -115,6 +115,7 @@ export function OnboardingStep4Screen({ navigation }: Props) {
   return (
     <OnboardingFrame
       step={4}
+      onBack={() => navigation.goBack()}
       eyebrow="Sport profile"
       title="What you train"
       subtitle="Running's picked for you — add anything else you play so we can match you better."

@@ -21,8 +21,6 @@ export type RootStackParamList = {
   BookingComposer: { matchId: string; sport: string };
   BookingDetail: { bookingId: string };
   Report: { reportedUserId: string; reportedName: string };
-  /** Former Events tab (sessions, pending proposals, battles entry). */
-  Events: undefined;
   Battles: undefined;
   BattleDetail: { eventId: string };
   /**
@@ -89,7 +87,6 @@ export type OnboardingStep4ScreenProps = NativeStackScreenProps<RootStackParamLi
 export type RunHomeScreenProps = BottomTabScreenProps<MainTabParamList, 'RunHome'>;
 export type CrewsScreenProps = BottomTabScreenProps<MainTabParamList, 'Crews'>;
 export type MatchesScreenProps = BottomTabScreenProps<MainTabParamList, 'Matches'>;
-export type EventsScreenProps = NativeStackScreenProps<RootStackParamList, 'Events'>;
 export type ProfileScreenProps = BottomTabScreenProps<MainTabParamList, 'Profile'>;
 export type EditProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
 

@@ -85,6 +85,7 @@ export function OnboardingStep3Screen({ navigation }: Props) {
   return (
     <OnboardingFrame
       step={3}
+      onBack={() => navigation.goBack()}
       eyebrow="Preferences"
       title="Who and where"
       subtitle="We use this to show you runners, crews and group runs that fit."

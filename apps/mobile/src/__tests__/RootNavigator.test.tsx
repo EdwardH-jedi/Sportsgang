@@ -84,7 +84,6 @@ jest.mock('../screens/onboarding/OnboardingStep2Screen', () => ({ OnboardingStep
 jest.mock('../screens/onboarding/OnboardingStep3Screen', () => ({ OnboardingStep3Screen: () => null }));
 jest.mock('../screens/onboarding/OnboardingStep4Screen', () => ({ OnboardingStep4Screen: () => null }));
 jest.mock('../screens/run/RunHomeScreen', () => ({ RunHomeScreen: () => null }));
-jest.mock('../screens/events/EventsScreen', () => ({ EventsScreen: () => null }));
 jest.mock('../screens/matches/MatchesScreen', () => ({ MatchesScreen: () => null }));
 jest.mock('../screens/profile/ProfileScreen', () => ({ ProfileScreen: () => null }));
 jest.mock('../screens/profile/EditProfileScreen', () => ({ EditProfileScreen: () => null }));
@@ -99,11 +98,28 @@ describe('RootNavigator routes', () => {
     mockUseAuthStore.mockReturnValue({ token: null });
   });
 
-  it('keeps Events reachable as a stack route now that it is not a tab', () => {
+  it('registers the run-first stack routes', () => {
     render(<RootNavigator />);
     expect(mockStackRoutes).toEqual(
-      expect.arrayContaining(['Main', 'Events', 'Battles', 'Challenges', 'Chat'])
+      expect.arrayContaining([
+        'Main',
+        'Battles',
+        'BattleDetail',
+        'CreateBattle',
+        'AttendanceCheck',
+        'CrewDetail',
+        'CreateCrew',
+        'Challenges',
+        'Chat',
+        'BookingDetail',
+        'PublicProfile',
+      ])
     );
+  });
+
+  it('no longer registers the old Events screen (content lives in Run / Profile / Chat)', () => {
+    render(<RootNavigator />);
+    expect(mockStackRoutes).not.toContain('Events');
   });
 
   it('registers the UI gallery in development builds', () => {

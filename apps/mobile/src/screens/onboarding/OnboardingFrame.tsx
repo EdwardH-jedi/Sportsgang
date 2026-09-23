@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Icon, Screen, hapticSelection } from '../../components/ui';
+import { Button, Header, Icon, Screen, hapticSelection } from '../../components/ui';
 import { colors, radii, spacing, touchTarget, typography } from '../../theme';
 
 export const ONBOARDING_STEPS = 4;
@@ -18,6 +18,8 @@ export interface OnboardingFrameProps {
   submitting: boolean;
   /** Pass for screens with text inputs. */
   withKeyboard?: boolean;
+  /** Back to the previous step (steps 2+). */
+  onBack?: () => void;
 }
 
 /**
@@ -36,11 +38,13 @@ export function OnboardingFrame({
   onSubmit,
   submitting,
   withKeyboard = false,
+  onBack,
 }: OnboardingFrameProps) {
   return (
     <Screen
       scroll
       withKeyboard={withKeyboard}
+      header={onBack ? <Header onBack={onBack} backLabel="Back" /> : undefined}
       footer={
         <View style={styles.footer}>
           {error ? (
