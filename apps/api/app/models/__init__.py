@@ -1,4 +1,5 @@
 from app.models.challenge import ChallengeResultSubmission, SportsChallenge
+from app.models.crew import Crew, CrewMember
 from app.models.event import Event, EventParticipant
 from app.models.honor_system import HonorHistory, HonorTitle, RankProfile
 from app.models.profile import IdentityPreferences, ProfilePhoto, SportProfile, UserProfile
@@ -25,4 +26,6 @@ __all__ = [
     "HonorHistory",
     "SportsChallenge",
     "ChallengeResultSubmission",
+    "Crew",
+    "CrewMember",
 ]

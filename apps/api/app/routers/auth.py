@@ -44,6 +44,7 @@ from app.schemas.auth import (
     TokenResponse,
     UserResponse,
 )
+from app.services import crews as crews_service
 from app.services.apple_auth import (
     AppleIdentityTokenError,
     apple_revocation_configured,
@@ -305,6 +306,11 @@ async def delete_me(
     # --- Safety --------------------------------------------------------
     await db.execute(delete(Report).where((Report.reporter_id == user_id) | (Report.reported_id == user_id)))
     await db.execute(delete(Block).where((Block.blocker_id == user_id) | (Block.blocked_id == user_id)))
+
+    # --- Crews ----------------------------------------------------------
+    # Hand ownership on (or dissolve sole-member crews) before the
+    # membership rows go, so no crew is left without an owner.
+    await crews_service.remove_user_from_crews(db, user_id)
 
     # --- Profile / sport data ------------------------------------------
     await db.execute(delete(SportProfile).where(SportProfile.user_id == user_id))
