@@ -7,7 +7,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
+    Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     UniqueConstraint,
@@ -16,6 +18,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
+from app.models.crew import PACE_MAX_SEC_PER_KM, PACE_MIN_SEC_PER_KM
+
+# Group-run distance bounds (km).
+RUN_DISTANCE_MIN_KM = 0.5
+RUN_DISTANCE_MAX_KM = 100.0
 
 # Status vocabulary kept as plain strings (no DB enum) so adding new
 # values like "started" later does not require a migration. Service
@@ -64,7 +71,43 @@ class Event(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    __table_args__ = (CheckConstraint("capacity >= 1", name="ck_events_capacity_min"),)
+    # --- Group-run fields (run-first redesign; all optional) -----------
+    # A group run is an Event, optionally owned by a crew. ``crew_id`` is
+    # SET NULL when the crew is deleted so the run itself survives.
+    crew_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey("crews.id", ondelete="SET NULL", name="fk_events_crew_id_crews"),
+        nullable=True,
+        index=True,
+    )
+    # Public meeting point (not a home), stored to 5 dp (~1 m).
+    meeting_lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    meeting_lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    distance_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    pace_min_sec_per_km: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    pace_max_sec_per_km: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("capacity >= 1", name="ck_events_capacity_min"),
+        Index("ix_events_meeting_lat_lng", "meeting_lat", "meeting_lng"),
+        CheckConstraint(
+            f"distance_km IS NULL OR (distance_km >= {RUN_DISTANCE_MIN_KM} AND distance_km <= {RUN_DISTANCE_MAX_KM})",
+            name="ck_events_distance_km_range",
+        ),
+        CheckConstraint(
+            f"pace_min_sec_per_km IS NULL OR "
+            f"(pace_min_sec_per_km >= {PACE_MIN_SEC_PER_KM} AND pace_min_sec_per_km <= {PACE_MAX_SEC_PER_KM})",
+            name="ck_events_pace_min_range",
+        ),
+        CheckConstraint(
+            f"pace_max_sec_per_km IS NULL OR "
+            f"(pace_max_sec_per_km >= {PACE_MIN_SEC_PER_KM} AND pace_max_sec_per_km <= {PACE_MAX_SEC_PER_KM})",
+            name="ck_events_pace_max_range",
+        ),
+        CheckConstraint(
+            "pace_min_sec_per_km IS NULL OR pace_max_sec_per_km IS NULL OR pace_min_sec_per_km <= pace_max_sec_per_km",
+            name="ck_events_pace_band_order",
+        ),
+    )
 
 
 class EventParticipant(Base):

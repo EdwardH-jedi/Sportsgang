@@ -20,6 +20,7 @@ Privacy: crew home coordinates are write-only; lists expose a coarse
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -29,6 +30,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.geo import DEFAULT_RADIUS_KM, bbox_filter, coarse_distance_km, haversine_km
 from app.models.crew import Crew, CrewMember
+from app.models.event import Event, EventParticipant
 from app.models.profile import UserProfile
 from app.models.safety import Block
 from app.schemas.crews import (
@@ -40,9 +42,9 @@ from app.schemas.crews import (
     CrewNextRun,
     LeaveCrewResponse,
     UpdateCrewRequest,
-    check_pace_band,
 )
-from app.schemas.events import EventSummary
+from app.schemas.events import EventSummary, check_pace_band
+from app.services import events as events_service
 from app.services.content_moderation import ensure_text_allowed
 
 _MEMBER_PREVIEW_LIMIT = 12
@@ -141,14 +143,60 @@ async def _my_roles(db: AsyncSession, crew_ids: list[UUID], user_id: UUID) -> di
     return {crew_id: role for crew_id, role in (await db.execute(stmt)).all()}
 
 
+def _upcoming_runs_stmt(crew_ids: list[UUID]):
+    """Public open/full runs of the given crews that have not started yet."""
+    return (
+        select(Event)
+        .where(
+            Event.crew_id.in_(crew_ids),
+            Event.status.in_(("open", "full")),
+            Event.visibility == "public",
+            Event.starts_at >= datetime.now(tz=timezone.utc),
+        )
+        .order_by(Event.starts_at.asc(), Event.id.asc())
+    )
+
+
 async def _next_runs(db: AsyncSession, crew_ids: list[UUID]) -> dict[UUID, CrewNextRun]:
-    # Group runs gain a crew link in a follow-up migration; until then no
-    # crew has runs.
-    return {}
+    if not crew_ids:
+        return {}
+    # Upcoming runs per crew are few; take the earliest per crew in Python
+    # rather than a dialect-specific DISTINCT ON / window query.
+    firsts: dict[UUID, Event] = {}
+    for e in (await db.execute(_upcoming_runs_stmt(crew_ids))).scalars().all():
+        firsts.setdefault(e.crew_id, e)
+    if not firsts:
+        return {}
+    joined = dict(
+        (
+            await db.execute(
+                select(EventParticipant.event_id, func.count(EventParticipant.id))
+                .where(
+                    EventParticipant.event_id.in_([e.id for e in firsts.values()]),
+                    EventParticipant.status == "joined",
+                )
+                .group_by(EventParticipant.event_id)
+            )
+        ).all()
+    )
+    return {
+        crew_id: CrewNextRun(
+            id=e.id,
+            title=e.title,
+            starts_at=e.starts_at,
+            location_text=e.location_text,
+            distance_km=e.distance_km,
+            pace_min_sec_per_km=e.pace_min_sec_per_km,
+            pace_max_sec_per_km=e.pace_max_sec_per_km,
+            spots_left=max(0, e.capacity - int(joined.get(e.id, 0))),
+        )
+        for crew_id, e in firsts.items()
+    }
 
 
 async def _upcoming_runs(db: AsyncSession, crew_id: UUID, user_id: UUID) -> list[EventSummary]:
-    return []
+    rows = (await db.execute(_upcoming_runs_stmt([crew_id]).limit(_UPCOMING_RUNS_LIMIT))).scalars().all()
+    return [await events_service.summarize_event(db, e, user_id) for e in rows]
 
 
 async def _to_list_items(
@@ -218,7 +266,12 @@ def _moderate(name: str | None, description: str | None) -> None:
 
 
 async def _delete_crew_rows(db: AsyncSession, crew_id: UUID) -> None:
-    """Delete a crew and its memberships explicitly (dialect-independent)."""
+    """
+    Delete a crew and its memberships explicitly (dialect-independent).
+    Its group runs survive as ordinary events: ``crew_id`` is cleared
+    here as well as by the ``ON DELETE SET NULL`` foreign key.
+    """
+    await db.execute(update(Event).where(Event.crew_id == crew_id).values(crew_id=None))
     await db.execute(delete(CrewMember).where(CrewMember.crew_id == crew_id))
     await db.execute(delete(Crew).where(Crew.id == crew_id))
 

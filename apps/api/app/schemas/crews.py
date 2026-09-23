@@ -8,16 +8,10 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.core.geo import HOME_COORD_DECIMALS, round_coord
 from app.models.crew import PACE_MAX_SEC_PER_KM, PACE_MIN_SEC_PER_KM
-from app.schemas.events import EventSummary
+from app.schemas.events import EventSummary, check_pace_band
 
 CrewRole = Literal["owner", "member"]
 CrewVisibility = Literal["public"]
-
-
-def check_pace_band(pace_min: int | None, pace_max: int | None) -> None:
-    """Raise ValueError when both bounds are set and min > max."""
-    if pace_min is not None and pace_max is not None and pace_min > pace_max:
-        raise ValueError("pace_min_sec_per_km must be less than or equal to pace_max_sec_per_km")
 
 
 def _check_coord_pair(model: BaseModel, lat: float | None, lng: float | None) -> None:
