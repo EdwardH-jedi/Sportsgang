@@ -265,7 +265,7 @@ async def record_match_result_for_honor(
     """
     if winner_user_id == loser_user_id:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="winner and loser must be different users",
         )
     await _user_or_404(db, winner_user_id)

@@ -315,7 +315,7 @@ async def sync_booking(
 
     if booking.status != "confirmed":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Only confirmed bookings can be synced to Google Calendar.",
         )
 
@@ -326,7 +326,7 @@ async def sync_booking(
 
     if token_rec is None:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Google Calendar is not connected. Connect first.",
         )
 

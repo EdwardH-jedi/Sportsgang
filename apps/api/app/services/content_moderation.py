@@ -206,6 +206,6 @@ def ensure_text_allowed(text: str, context: str | None = None) -> None:
     if result.allowed:
         return
     raise HTTPException(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         detail=result.safe_user_message,
     )

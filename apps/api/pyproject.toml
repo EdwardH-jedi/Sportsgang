@@ -1,10 +1,13 @@
 [project]
 name = "protin-api"
 version = "0.1.0"
-description = "Protin API service"
+description = "SportsGang API service"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.116.0,<1.0.0",
+  # status.HTTP_422_UNPROCESSABLE_CONTENT (used by the service layer) first
+  # ships in Starlette 0.48; older releases only have the deprecated name.
+  "starlette>=0.48.0,<2.0.0",
   "pydantic[email]>=2.0.0,<3.0.0",
   "pydantic-settings>=2.10.0,<3.0.0",
   "uvicorn[standard]>=0.35.0,<1.0.0",
@@ -26,8 +29,8 @@ dependencies = [
   "python-multipart>=0.0.20,<1.0.0",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "pytest>=8.3.0",
   "pytest-asyncio>=0.24.0",
   "aiosqlite>=0.20.0",

@@ -73,7 +73,7 @@ async def get_nearby_venues(
 ) -> NearbyVenuesResponse:
     if (lat is None) != (lng is None):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="lat and lng must be provided together",
         )
     return await venues_service.list_nearby_venues(

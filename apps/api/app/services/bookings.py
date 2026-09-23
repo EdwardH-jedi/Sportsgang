@@ -40,7 +40,7 @@ def _check_transition(
     allowed_by = _TRANSITIONS.get(key)
     if allowed_by is None:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot transition from '{booking.status}' to '{new_status}'",
         )
     if allowed_by == "partner" and acting_user_id != booking.partner_id:
@@ -110,7 +110,7 @@ async def create_booking(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
     if m.status != "active":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot book on an inactive match",
         )
 
@@ -118,7 +118,7 @@ async def create_booking(
 
     if req.starts_at >= req.ends_at:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="ends_at must be after starts_at",
         )
 
@@ -129,7 +129,7 @@ async def create_booking(
         req_starts = req.starts_at
     if req_starts < now - timedelta(hours=1):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="starts_at cannot be more than 1 hour in the past",
         )
 
@@ -140,7 +140,7 @@ async def create_booking(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venue not found")
         if req.sport not in (venue.sport_tags or []):
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Selected venue does not support this sport",
             )
         venue_id_to_persist = venue.id

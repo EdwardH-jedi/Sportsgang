@@ -114,12 +114,12 @@ async def _to_summary(db: AsyncSession, e: Event, current_user_id: UUID) -> Even
 async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRequest) -> EventDetail:
     if body.mode not in EVENT_MODES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Invalid mode: {body.mode}",
         )
     if body.visibility not in EVENT_VISIBILITIES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Invalid visibility: {body.visibility}",
         )
     # Private events not yet exposed via list, but we accept the value
@@ -128,7 +128,7 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
     # creating orphan-private rows nobody can see.
     if body.visibility != "public":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Only public events are supported in this release",
         )
 
@@ -216,7 +216,7 @@ async def list_events(
     if mode is not None:
         if mode not in EVENT_MODES:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=f"Invalid mode: {mode}",
             )
         base = base.where(Event.mode == mode)
@@ -283,7 +283,7 @@ async def join_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) ->
 
     if e.status in ("cancelled", "completed"):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot join a {e.status} event",
         )
 
@@ -296,7 +296,7 @@ async def join_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) ->
     count = await _joined_count(db, e.id)
     if count >= e.capacity or e.status == "full":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Event is full",
         )
 
@@ -345,7 +345,7 @@ async def leave_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) -
 
     if e.status not in _LEAVABLE_STATUSES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot leave a {e.status} event",
         )
 
@@ -496,7 +496,7 @@ async def _load_participant_with_name(
 def _ensure_attendance_event_mutable(e: Event) -> None:
     if e.status not in _ATTENDANCE_MUTABLE_EVENT_STATUSES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot update attendance on a {e.status} event",
         )
 
@@ -533,7 +533,7 @@ def _ensure_attendance_time_eligible(e: Event) -> None:
         return
     if not _event_has_started(e):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Attendance opens after the game starts",
         )
 
@@ -560,7 +560,7 @@ async def host_update_attendance(
 
     if body.attendance_status not in EVENT_ATTENDANCE_HOST_STATUSES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Invalid attendance status: {body.attendance_status}",
         )
 
@@ -578,7 +578,7 @@ async def host_update_attendance(
     # two. A future stream can revisit if product wants late marks.
     if participant.status == "left":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot update attendance for a participant who left",
         )
 
@@ -608,7 +608,7 @@ async def self_report_attendance(
         # Either invalid vocab or no_show (host-only). Returns the same
         # 422 either way — participants don't get to self-brand no_show.
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Invalid self-report status: {body.attendance_status}",
         )
 
@@ -667,7 +667,7 @@ async def cancel_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) 
 
     if e.status == "completed":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot cancel a completed event",
         )
 
@@ -697,13 +697,13 @@ async def complete_event(db: AsyncSession, event_id: UUID, current_user_id: UUID
 
     if e.status == "cancelled":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot complete a cancelled event",
         )
 
     if not _event_has_started(e):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot complete an event before it has started",
         )
 

@@ -169,7 +169,7 @@ async def join_tournament(db: AsyncSession, tournament_id: UUID, current_user_id
 
     if t.status != "open":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Tournament is not accepting joins (status: {t.status})",
         )
 
@@ -186,7 +186,7 @@ async def join_tournament(db: AsyncSession, tournament_id: UUID, current_user_id
         # Defensive — should be unreachable given status='open' invariant,
         # but two requests racing past the open check still bump here.
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Tournament is full",
         )
 
@@ -209,7 +209,7 @@ async def leave_tournament(db: AsyncSession, tournament_id: UUID, current_user_i
 
     if t.status not in _LEAVABLE_STATUSES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot leave a {t.status} tournament",
         )
 

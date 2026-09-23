@@ -30,7 +30,7 @@ async def create_report(
     target_type = req.target_type
     if target_type not in REPORT_TARGET_TYPES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Invalid target_type: {target_type}",
         )
 
@@ -40,17 +40,17 @@ async def create_report(
     if target_type == "user":
         if req.reported_user_id is None:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="reported_user_id is required for user reports",
             )
         if req.target_event_id is not None:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="target_event_id must be null for user reports",
             )
         if reporter_id == req.reported_user_id:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Cannot report yourself.",
             )
         target_user = (await db.execute(select(User).where(User.id == req.reported_user_id))).scalar_one_or_none()
@@ -63,7 +63,7 @@ async def create_report(
     else:  # target_type == "event"
         if req.target_event_id is None:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="target_event_id is required for event reports",
             )
         target_event = (await db.execute(select(Event).where(Event.id == req.target_event_id))).scalar_one_or_none()
@@ -91,7 +91,7 @@ async def create_report(
                 )
         if reporter_id == target_event.host_user_id:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Cannot report your own event.",
             )
         target_event_id = req.target_event_id
@@ -139,7 +139,7 @@ async def block_user(
 ) -> BlockResponse:
     if blocker_id == blocked_id:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cannot block yourself.",
         )
 

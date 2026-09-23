@@ -89,7 +89,7 @@ async def create_challenge(
 ) -> ChallengeRead:
     if current_user_id == opponent_user_id:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="You cannot challenge yourself",
         )
     await _user_or_404(db, opponent_user_id)
@@ -152,7 +152,7 @@ async def accept_challenge(db: AsyncSession, *, current_user_id: UUID, challenge
         )
     if challenge.status != "pending":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot accept a {challenge.status} challenge",
         )
     challenge.status = "accepted"
@@ -172,7 +172,7 @@ async def decline_challenge(db: AsyncSession, *, current_user_id: UUID, challeng
         )
     if challenge.status != "pending":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot decline a {challenge.status} challenge",
         )
     challenge.status = "declined"
@@ -192,7 +192,7 @@ async def cancel_challenge(db: AsyncSession, *, current_user_id: UUID, challenge
         )
     if challenge.status != "pending":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot cancel a {challenge.status} challenge",
         )
     challenge.status = "cancelled"
@@ -261,17 +261,17 @@ async def submit_challenge_result(
 
     if challenge.status in CHALLENGE_TERMINAL_STATUSES:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Cannot submit a result for a {challenge.status} challenge",
         )
     if challenge.status != "accepted":
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=("Challenge must be accepted before a result can be submitted"),
         )
     if winner_user_id == loser_user_id:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="winner and loser must be different users",
         )
 
@@ -281,7 +281,7 @@ async def submit_challenge_result(
     }
     if {winner_user_id, loser_user_id} != participants:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=("winner and loser must be exactly the two challenge participants"),
         )
 
