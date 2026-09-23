@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { useMemo } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import MapView, {
   Marker,
   PROVIDER_DEFAULT,
@@ -8,7 +8,8 @@ import MapView, {
   type Region,
 } from 'react-native-maps';
 
-import { colors, radii, spacing, typography } from '../theme';
+import { EmptyState } from './ui';
+import { colors, radii } from '../theme';
 import type { Venue } from '@protin/shared-types';
 
 /**
@@ -51,6 +52,36 @@ function isGoogleMapsProviderAvailableForPlatform(): boolean {
 }
 
 const IS_GOOGLE_MAPS_PROVIDER_AVAILABLE = isGoogleMapsProviderAvailableForPlatform();
+
+/** Whether a map should use Google tiles (Places rows need them when a key exists). */
+export function shouldUseGoogleProvider(hasGooglePlacesRows: boolean): boolean {
+  return hasGooglePlacesRows && IS_GOOGLE_MAPS_PROVIDER_AVAILABLE;
+}
+
+/**
+ * Dark map theme for Google tiles (Android, and iOS when Places rows force
+ * Google), built from the colour tokens so maps sit on the app canvas.
+ * Apple Maps follows `userInterfaceStyle="dark"` instead.
+ */
+export const DARK_MAP_STYLE = [
+  { elementType: 'geometry', stylers: [{ color: colors.surface }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: colors.textTertiary }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: colors.background }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: colors.surfaceElevated }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: colors.surfaceHigh }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: colors.surfacePressed }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: colors.border }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: colors.borderStrong }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: colors.surfaceElevated }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: colors.background }] },
+];
+
+/** Pin colours: lime for the selected pin, muted otherwise. */
+export const PIN_COLORS = {
+  selected: colors.brand,
+  default: colors.textSecondary,
+  user: colors.accent,
+} as const;
 
 interface VenueMapViewProps {
   /** Venues to render as map pins. Markers are skipped for any venue
@@ -96,7 +127,7 @@ export function VenueMapView({
   // contains Places-sourced rows AND (b) the CURRENT platform has a
   // Maps SDK key configured. Without (b), PROVIDER_GOOGLE renders a
   // blank map — see isGoogleMapsProviderAvailableForPlatform above.
-  const useGoogleProvider = hasGooglePlacesRows && IS_GOOGLE_MAPS_PROVIDER_AVAILABLE;
+  const useGoogleProvider = shouldUseGoogleProvider(hasGooglePlacesRows);
 
   // Frame the visible region around either the user pin (preferred,
   // since results are sorted by distance from them) or the centroid of
@@ -132,10 +163,12 @@ export function VenueMapView({
   if (initialRegion === undefined) {
     return (
       <View style={styles.fallback}>
-        <Text style={styles.fallbackTitle}>Map unavailable</Text>
-        <Text style={styles.fallbackBody}>
-          Turn on location to see venues on a map.
-        </Text>
+        <EmptyState
+          icon="map"
+          title="Map unavailable"
+          message="Turn on location to see venues on a map."
+          compact
+        />
       </View>
     );
   }
@@ -152,17 +185,17 @@ export function VenueMapView({
         showsCompass={false}
         showsScale={false}
         toolbarEnabled={false}
-        // Pin Apple Maps to its light style: the app-wide interface style
-        // is "dark" (app.config.js) and would otherwise flip the map tiles.
-        // Revisit when the map-based discovery redesign picks a map theme.
-        userInterfaceStyle="light"
+        // Dark tiles to match the app canvas: Apple Maps via the
+        // interface style, Google tiles via the token-based style.
+        userInterfaceStyle="dark"
+        customMapStyle={DARK_MAP_STYLE}
       >
         {userLat !== undefined && userLng !== undefined ? (
           <Marker
             key="venue-map-user"
             coordinate={{ latitude: userLat, longitude: userLng }}
             title="You are here"
-            pinColor={colors.textSecondary}
+            pinColor={PIN_COLORS.user}
             accessibilityLabel="Your location marker"
           />
         ) : null}
@@ -179,7 +212,7 @@ export function VenueMapView({
                 coordinate={{ latitude: v.latitude, longitude: v.longitude }}
                 title={v.name}
                 description={v.area ?? v.address ?? undefined}
-                pinColor={isSelected ? colors.brand : colors.error}
+                pinColor={isSelected ? PIN_COLORS.selected : PIN_COLORS.default}
                 onPress={() => onMarkerPress(v)}
                 accessibilityLabel={`Venue pin ${v.name}`}
               />
@@ -200,20 +233,7 @@ const styles = StyleSheet.create({
   fallback: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
     backgroundColor: colors.surfaceElevated,
     borderRadius: radii.md,
-  },
-  fallbackTitle: {
-    ...typography.h3,
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  fallbackBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
   },
 });

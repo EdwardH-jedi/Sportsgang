@@ -28,7 +28,7 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
   }),
 }));
 
-jest.mock('../screens/discovery/DiscoveryScreen', () => ({ DiscoveryScreen: () => null }));
+jest.mock('../screens/run/RunHomeScreen', () => ({ RunHomeScreen: () => null }));
 jest.mock('../screens/matches/MatchesScreen', () => ({ MatchesScreen: () => null }));
 jest.mock('../screens/profile/ProfileScreen', () => ({ ProfileScreen: () => null }));
 
@@ -54,13 +54,12 @@ describe('MainTabs', () => {
   it('keeps the Matches and Profile route names for unchanged screens', () => {
     const { MatchesScreen } = jest.requireMock('../screens/matches/MatchesScreen');
     const { ProfileScreen } = jest.requireMock('../screens/profile/ProfileScreen');
-    const { DiscoveryScreen } = jest.requireMock('../screens/discovery/DiscoveryScreen');
+    const { RunHomeScreen } = jest.requireMock('../screens/run/RunHomeScreen');
     render(<MainTabs />);
     const byName = Object.fromEntries(mockScreens.map((s) => [s.name, s.component]));
     expect(byName.Matches).toBe(MatchesScreen);
     expect(byName.Profile).toBe(ProfileScreen);
-    // Temporary until the run-first home lands.
-    expect(byName.RunHome).toBe(DiscoveryScreen);
+    expect(byName.RunHome).toBe(RunHomeScreen);
     expect(byName.Crews).toBe(CrewsScreen);
   });
 

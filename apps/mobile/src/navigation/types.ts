@@ -25,7 +25,14 @@ export type RootStackParamList = {
   Events: undefined;
   Battles: undefined;
   BattleDetail: { eventId: string };
-  CreateBattle: undefined;
+  /**
+   * Host form. `sport: 'running'` opens "Host a run"; `crewId`/`crewName`
+   * pre-fill the crew (from a crew screen); `eventId` switches to host
+   * edit mode (PATCH /events/{id}).
+   */
+  CreateBattle:
+    | { sport?: string; crewId?: string; crewName?: string; eventId?: string }
+    | undefined;
   AttendanceCheck: { eventId: string };
   Challenges: undefined;
   ChallengeDetail: { challengeId: string };
@@ -47,6 +54,10 @@ export type RootStackParamList = {
   SafetyCenter: undefined;
   /** Self-service management of users the caller has blocked. */
   BlockedUsers: undefined;
+  /** Crew detail (members, upcoming runs, join / leave, owner tools). */
+  CrewDetail: { crewId: string };
+  /** Create a crew, or edit one when `crewId` is set (owner only). */
+  CreateCrew: { crewId?: string } | undefined;
   /** DEV ONLY: design-system gallery. Registered only when `__DEV__`. */
   UiGallery: undefined;
 };
@@ -56,7 +67,7 @@ export type RootStackParamList = {
  * keep their v1 route names (same screens); the Chats tab is `Matches`.
  */
 export type MainTabParamList = {
-  /** Run home. Renders partner discovery until the run-first home lands. */
+  /** Run home: group runs map + Runners (partner discovery). */
   RunHome: undefined;
   Crews: undefined;
   /** Chats tab (match list → Chat). */
@@ -76,8 +87,6 @@ export type OnboardingStep3ScreenProps = NativeStackScreenProps<RootStackParamLi
 export type OnboardingStep4ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep4'>;
 
 export type RunHomeScreenProps = BottomTabScreenProps<MainTabParamList, 'RunHome'>;
-/** Discovery is rendered by the Run tab for now. */
-export type DiscoveryScreenProps = RunHomeScreenProps;
 export type CrewsScreenProps = BottomTabScreenProps<MainTabParamList, 'Crews'>;
 export type MatchesScreenProps = BottomTabScreenProps<MainTabParamList, 'Matches'>;
 export type EventsScreenProps = NativeStackScreenProps<RootStackParamList, 'Events'>;
@@ -99,4 +108,6 @@ export type PublicProfileScreenProps = NativeStackScreenProps<RootStackParamList
 export type HonorGuideScreenProps = NativeStackScreenProps<RootStackParamList, 'HonorGuide'>;
 export type SafetyCenterScreenProps = NativeStackScreenProps<RootStackParamList, 'SafetyCenter'>;
 export type BlockedUsersScreenProps = NativeStackScreenProps<RootStackParamList, 'BlockedUsers'>;
+export type CrewDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'CrewDetail'>;
+export type CreateCrewScreenProps = NativeStackScreenProps<RootStackParamList, 'CreateCrew'>;
 export type UiGalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'UiGallery'>;

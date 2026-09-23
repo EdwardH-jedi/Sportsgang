@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Icon, type IconName } from '../components/ui';
 import { CrewsScreen } from '../screens/crews/CrewsScreen';
-import { DiscoveryScreen } from '../screens/discovery/DiscoveryScreen';
 import { MatchesScreen } from '../screens/matches/MatchesScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { RunHomeScreen } from '../screens/run/RunHomeScreen';
 import { TabBar } from './TabBar';
 import type { MainTabParamList } from './types';
 
@@ -21,12 +21,9 @@ interface TabConfig {
 /**
  * The four main tabs, in order. Route names are kept where the screen is
  * unchanged (`Matches`, `Profile`) so existing navigation keeps working.
- *
- * Temporary wiring until Phase 4: Run renders the partner-discovery screen
- * and Crews renders a placeholder.
  */
 export const MAIN_TABS: readonly TabConfig[] = [
-  { name: 'RunHome', label: 'Run', icon: 'run', component: DiscoveryScreen },
+  { name: 'RunHome', label: 'Run', icon: 'run', component: RunHomeScreen },
   { name: 'Crews', label: 'Crews', icon: 'crew', component: CrewsScreen },
   { name: 'Matches', label: 'Chats', icon: 'chat', component: MatchesScreen },
   { name: 'Profile', label: 'Profile', icon: 'profile', component: ProfileScreen },
