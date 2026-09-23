@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,42 +11,11 @@ import {
 } from 'react-native';
 
 import { Screen } from '../../components/Screen';
-import { api } from '../../lib/api';
+import { useBooking } from '../../hooks/useBookings';
+import type { BookingAction } from '../../lib/sessions';
 import { useAuthStore } from '../../stores/auth';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { BookingDetailScreenProps } from '../../navigation/types';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface BookingVenue {
-  id: string;
-  name: string;
-  area?: string;
-  address?: string;
-  bookingUrl?: string;
-  isBookable: boolean;
-}
-
-interface BookingDetail {
-  id: string;
-  matchId: string;
-  proposerId: string;
-  partnerId: string;
-  sport: string;
-  startsAt: string;
-  endsAt: string;
-  location?: string;
-  notes?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  partner: {
-    userId: string;
-    displayName: string;
-    suburb?: string;
-  };
-  venue?: BookingVenue | null;
-}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -85,41 +54,21 @@ function statusColor(status: string): string {
 export function BookingDetailScreen({ route, navigation }: BookingDetailScreenProps) {
   const { bookingId } = route.params;
   const { user } = useAuthStore();
-  const [booking, setBooking] = useState<BookingDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { booking, isLoading, error, transition } = useBooking(bookingId);
   const [isActing, setIsActing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchBooking = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.get<BookingDetail>(`/bookings/${bookingId}`);
-      setBooking(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load booking.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [bookingId]);
-
-  useEffect(() => {
-    fetchBooking();
-  }, [fetchBooking]);
 
   const performTransition = useCallback(
-    async (action: string) => {
+    async (action: BookingAction) => {
       setIsActing(true);
       try {
-        const updated = await api.post<BookingDetail>(`/bookings/${bookingId}/${action}`, {});
-        setBooking(updated);
+        await transition(action);
       } catch (err) {
         Alert.alert('Error', err instanceof Error ? err.message : 'Action failed.');
       } finally {
         setIsActing(false);
       }
     },
-    [bookingId]
+    [transition]
   );
 
   // No-show is the only transition the FSM lets either party trigger, so we

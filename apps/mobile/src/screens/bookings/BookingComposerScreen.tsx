@@ -15,8 +15,8 @@ import {
 import { CalendarPicker } from '../../components/CalendarPicker';
 import { Screen } from '../../components/Screen';
 import { TimeWheelPicker } from '../../components/TimeWheelPicker';
+import { useProposeSession } from '../../hooks/useBookings';
 import { useVenueLocation } from '../../hooks/useVenueLocation';
-import { api } from '../../lib/api';
 import {
   combineToLocalDate,
   computeValidationError,
@@ -24,7 +24,6 @@ import {
   defaultStartTime,
   formatDateLabel,
   formatTimeLabel,
-  mapBackendError,
   plusOneHour,
   type DateString,
   type TimeString,
@@ -49,8 +48,10 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [isVenuePickerOpen, setIsVenuePickerOpen] = useState(false);
   const [notes, setNotes] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { isSubmitting, error: submitError, propose } = useProposeSession({
+    matchId,
+    sport,
+  });
 
   // Open-state for the three picker modals.
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -88,35 +89,28 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
-    setSubmitError(null);
-    setIsSubmitting(true);
-    try {
-      const startsAt = `${date}T${startTime}:00`;
-      const endsAt = `${date}T${endTime}:00`;
+    const startsAt = `${date}T${startTime}:00`;
+    const endsAt = `${date}T${endTime}:00`;
 
-      // Fallback chain for the persisted location string:
-      //   1. typed text (manually entered always wins)
-      //   2. venue-derived "Name — Address"
-      //   3. undefined
-      const trimmedTyped = location.trim();
-      const venueDerived = selectedVenue ? formatVenueLocation(selectedVenue) : '';
-      const payloadLocation = trimmedTyped || venueDerived || undefined;
+    // Fallback chain for the persisted location string:
+    //   1. typed text (manually entered always wins)
+    //   2. venue-derived "Name — Address"
+    //   3. undefined
+    const trimmedTyped = location.trim();
+    const venueDerived = selectedVenue ? formatVenueLocation(selectedVenue) : '';
+    const payloadLocation = trimmedTyped || venueDerived || undefined;
 
-      const booking = await api.post<{ id: string }>('/bookings', {
-        matchId,
-        sport,
-        startsAt,
-        endsAt,
-        location: payloadLocation,
-        venueId: selectedVenue?.id,
-        notes: notes.trim() || undefined,
-      });
-
+    // useProposeSession maps server errors to friendly copy and releases
+    // the submit lock on failure; on success it stays locked while we leave.
+    const booking = await propose({
+      startsAt,
+      endsAt,
+      location: payloadLocation,
+      venueId: selectedVenue?.id,
+      notes: notes.trim() || undefined,
+    });
+    if (booking) {
       navigation.replace('BookingDetail', { bookingId: booking.id });
-    } catch (err) {
-      const raw = err instanceof Error ? err.message : '';
-      setSubmitError(mapBackendError(raw));
-      setIsSubmitting(false);
     }
   };
 

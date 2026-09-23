@@ -1,10 +1,8 @@
 /**
  * Safety API helpers (V1.1).
  *
- * Reports are submitted via the existing ReportScreen which calls
- * `api.post('/reports', ...)` inline. This module is intentionally
- * narrow — it exposes the block endpoint so screens that need to
- * trigger a block can do so without inlining a fetch.
+ * Report + block endpoints, shared by ReportScreen (via useReport),
+ * PublicProfile, BlockedUsers and the chat safety menu (via useChat).
  */
 
 import { api } from './api';
@@ -43,4 +41,17 @@ export async function listBlockedUsers(): Promise<BlockListResponse> {
  */
 export async function unblockUser(blockedUserId: string): Promise<void> {
   return api.delete<void>(`/blocks/${blockedUserId}`);
+}
+
+export type ReportReason = 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other';
+
+export interface SubmitReportRequest {
+  reportedUserId: string;
+  reason: ReportReason;
+  context?: string;
+}
+
+/** File a user report. Backend route is `POST /reports`. */
+export async function submitReport(body: SubmitReportRequest): Promise<void> {
+  await api.post('/reports', body);
 }

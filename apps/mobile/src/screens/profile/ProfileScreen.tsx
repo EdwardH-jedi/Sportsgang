@@ -14,43 +14,26 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HonorCard } from '../../components/HonorCard';
 import { LocalRankSection } from '../../components/LocalRankSection';
 import { Screen } from '../../components/Screen';
+import { useDeleteAccount } from '../../hooks/useAccount';
 import { useHonorSummary } from '../../hooks/useHonorSummary';
 import { useHonorSystem } from '../../hooks/useHonorSystem';
-import { api } from '../../lib/api';
+import { useUpcomingSessions } from '../../hooks/useUpcomingSessions';
 import { openLegal, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../../lib/legal';
 import { useAuthStore } from '../../stores/auth';
 import { sportLabel, useProfileStore } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
+import type { Session } from '../../lib/sessions';
 import type { RootStackParamList } from '../../navigation/types';
 
 // ─── Upcoming sessions ───────────────────────────────────────────────────────
 //
 // v1 surface for "what did I just confirm?" — sits on the existing Profile
-// card stack so we don't add a new bottom tab. Reuses GET /bookings's
-// existing `status` filter (so no backend change here) and client-filters
-// to future starts so a session that already happened drops off without
-// any timezone math on the server.
+// card stack so we don't add a new bottom tab. useUpcomingSessions reuses
+// GET /bookings's existing `status` filter (so no backend change here) and
+// client-filters to future starts so a session that already happened drops
+// off without any timezone math on the server.
 
-interface UpcomingSession {
-  id: string;
-  matchId: string;
-  proposerId: string;
-  partnerId: string;
-  sport: string;
-  startsAt: string;
-  endsAt: string;
-  location: string | null;
-  status: string;
-  partner: { displayName: string };
-  venue?: { name: string; area?: string | null; address?: string | null } | null;
-}
-
-interface UpcomingSessionListResponse {
-  items: UpcomingSession[];
-  total: number;
-  limit: number;
-  offset: number;
-}
+type UpcomingSession = Session;
 
 export function ProfileScreen() {
   const { logout } = useAuthStore();
@@ -58,7 +41,7 @@ export function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [upcoming, setUpcoming] = useState<UpcomingSession[]>([]);
+  const { deleteAccount } = useDeleteAccount();
   const {
     summary: honorSummary,
     isLoading: honorLoading,
@@ -96,35 +79,13 @@ export function ProfileScreen() {
       .finally(() => setIsLoading(false));
   }, [fetchProfile]);
 
-  // Pull confirmed bookings on mount AND on every tab-focus so a brand-new
-  // accept (driven from chat) shows up the moment the user navigates back
-  // to Profile. Failure is silent: Upcoming is a secondary surface and the
-  // rest of the screen must keep rendering even if /bookings is down.
-  const fetchUpcoming = useCallback(async () => {
-    try {
-      const res = await api.get<UpcomingSessionListResponse>(
-        '/bookings?status=confirmed&limit=50'
-      );
-      const nowMs = Date.now();
-      // Backend orders by starts_at ASC, but already-past confirmed sessions
-      // would appear at the top — drop them client-side. v1: keep this in the
-      // mobile so the API stays generic for other surfaces (BookingDetail
-      // history, future "Past sessions" view).
-      const futureOnly = res.items.filter(
-        (b) =>
-          (b.status === 'confirmed' || b.status === 'accepted') &&
-          new Date(b.endsAt).getTime() > nowMs
-      );
-      setUpcoming(futureOnly);
-    } catch {
-      setUpcoming([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchUpcoming();
-  }, [fetchUpcoming]);
-
+  // Confirmed bookings load on mount (inside useUpcomingSessions — called
+  // after the profile effect above so request order is unchanged) AND on
+  // every tab-focus so a brand-new accept (driven from chat) shows up the
+  // moment the user navigates back to Profile. Failure is silent: Upcoming
+  // is a secondary surface and the rest of the screen must keep rendering
+  // even if /bookings is down.
+  const { items: upcoming, refresh: fetchUpcoming } = useUpcomingSessions();
   useFocusEffect(
     useCallback(() => {
       void fetchUpcoming();
@@ -164,7 +125,7 @@ export function ProfileScreen() {
             if (isDeletingRef.current) return;
             isDeletingRef.current = true;
             try {
-              await api.delete('/auth/me');
+              await deleteAccount();
               // Order matters: clear local session first (logout drops the
               // token + resets the profile store), then reset navigation so
               // we never re-render Profile against stale state.
@@ -186,7 +147,7 @@ export function ProfileScreen() {
         },
       ]
     );
-  }, [logout, resetToAuthEntry]);
+  }, [logout, resetToAuthEntry, deleteAccount]);
 
   if (isLoading) {
     return (

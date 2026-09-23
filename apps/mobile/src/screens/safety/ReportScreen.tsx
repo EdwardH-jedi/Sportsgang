@@ -10,11 +10,9 @@ import {
 } from 'react-native';
 
 import { Screen } from '../../components/Screen';
-import { api } from '../../lib/api';
+import { useReport, type ReportReason } from '../../hooks/useReport';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { ReportScreenProps } from '../../navigation/types';
-
-type ReportReason = 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other';
 
 const REASONS: { value: ReportReason; label: string }[] = [
   { value: 'spam', label: 'Spam' },
@@ -28,26 +26,11 @@ export function ReportScreen({ route, navigation }: ReportScreenProps) {
   const { reportedUserId, reportedName } = route.params;
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [context, setContext] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { isSubmitting, submitted, error, submit } = useReport(reportedUserId);
 
   const handleSubmit = async () => {
     if (!reason || isSubmitting) return;
-    setError(null);
-    setIsSubmitting(true);
-    try {
-      await api.post('/reports', {
-        reportedUserId,
-        reason,
-        context: context.trim() || undefined,
-      });
-      setSubmitted(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit report.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    await submit(reason, context.trim() || undefined);
   };
 
   return (

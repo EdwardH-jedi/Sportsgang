@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,42 +12,13 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen } from '../../components/Screen';
-import { api } from '../../lib/api';
+import { useMatches } from '../../hooks/useMatches';
+import type { MatchSummary as Match } from '../../lib/matches';
 import { formatPreviewTimestamp, previewText } from '../../lib/messages';
 import { useAuthStore } from '../../stores/auth';
 import { sportLabel } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface PartnerSummary {
-  userId: string;
-  displayName: string;
-  suburb?: string;
-  sportProfiles: { sport: string; level: string }[];
-}
-
-interface Match {
-  id: string;
-  sport: string;
-  status: string;
-  createdAt: string;
-  partner: PartnerSummary;
-  // Last-message preview fields. All optional so a brand-new match (no
-  // messages yet) still satisfies the type — render the empty-state
-  // fallback in that case.
-  lastMessage?: string | null;
-  lastMessageAt?: string | null;
-  lastMessageSenderId?: string | null;
-}
-
-interface MatchListResponse {
-  items: Match[];
-  total: number;
-  limit: number;
-  offset: number;
-}
 
 // ─── Match card ───────────────────────────────────────────────────────────────
 
@@ -123,41 +94,15 @@ function MatchCard({ match, currentUserId }: { match: Match; currentUserId: stri
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export function MatchesScreen() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    items: matches,
+    isLoading,
+    isRefreshing,
+    error,
+    refresh: fetchMatches,
+    pullToRefresh: handleRefresh,
+  } = useMatches();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
-
-  const fetchMatches = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.get<MatchListResponse>('/matches?limit=50');
-      setMatches(data.items);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load matches.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    setError(null);
-    try {
-      const data = await api.get<MatchListResponse>('/matches?limit=50');
-      setMatches(data.items);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load matches.');
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchMatches();
-  }, [fetchMatches]);
 
   // Refresh on tab focus so the preview line stays in sync after the user
   // returns from a chat. Cheaper than wiring a per-match WebSocket
@@ -165,8 +110,8 @@ export function MatchesScreen() {
   // contract — the preview is at most one round-trip stale.
   useFocusEffect(
     useCallback(() => {
-      // Skip the focus refetch on the very first mount — the useEffect
-      // above already fires the initial fetch.
+      // Skip the focus refetch on the very first mount — useMatches
+      // already fires the initial fetch.
       if (!isLoading) {
         void fetchMatches();
       }
