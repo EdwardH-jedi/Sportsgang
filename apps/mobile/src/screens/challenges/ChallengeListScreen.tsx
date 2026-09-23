@@ -14,6 +14,7 @@ import {
 import { useChallenges } from '../../hooks/useChallenges';
 import { useAuthStore } from '../../stores/auth';
 import { sportLabelForBattle } from '../../lib/events';
+import { formatDate } from '../../lib/format';
 import { isChallengeTerminal, type ChallengeRead } from '../../lib/challenges';
 import { colors, layout, radii, spacing, typography } from '../../theme';
 import type { ChallengeListScreenProps } from '../../navigation/types';
@@ -258,13 +259,7 @@ function ChallengeCard({ challenge, currentUserId, onPress }: ChallengeCardProps
 }
 
 function formatChallengeWhen(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
+  return formatDate(iso);
 }
 
 const styles = StyleSheet.create({

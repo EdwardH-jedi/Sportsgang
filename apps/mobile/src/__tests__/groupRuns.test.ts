@@ -2,7 +2,6 @@ import type { EventSummary } from '@protin/shared-types';
 
 import {
   filterRuns,
-  formatRunDay,
   hasMeetingPoint,
   isActiveRun,
   matchesDistance,
@@ -94,13 +93,6 @@ describe('run filters', () => {
 });
 
 describe('run copy', () => {
-  it('labels today and tomorrow', () => {
-    const now = new Date(2030, 5, 1, 7, 0);
-    expect(formatRunDay(new Date(2030, 5, 1, 18, 0).toISOString(), now)).toBe('Today');
-    expect(formatRunDay(new Date(2030, 5, 2, 6, 0).toISOString(), now)).toBe('Tomorrow');
-    expect(formatRunDay(new Date(2030, 5, 5, 6, 0).toISOString(), now)).not.toMatch(/Today|Tomorrow/);
-  });
-
   it('describes spots left', () => {
     expect(spotsLeftText({ spotsLeft: 3, status: 'open' })).toBe('3 spots left');
     expect(spotsLeftText({ spotsLeft: 1, status: 'open' })).toBe('1 spot left');

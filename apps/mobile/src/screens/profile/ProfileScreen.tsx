@@ -23,6 +23,7 @@ import { useDeleteAccount } from '../../hooks/useAccount';
 import { useHonorSummary } from '../../hooks/useHonorSummary';
 import { useHonorSystem } from '../../hooks/useHonorSystem';
 import { useUpcomingSessions } from '../../hooks/useUpcomingSessions';
+import { formatMonthShort, formatWhenRange } from '../../lib/format';
 import { areaFromSuburb, primarySport } from '../../lib/honorSystem';
 import { openLegal, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../../lib/legal';
 import { sportLabel } from '../../lib/sports';
@@ -506,22 +507,6 @@ function ProfileSkeleton() {
   );
 }
 
-function formatUpcomingDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-function formatUpcomingTimeRange(startsAt: string, endsAt: string): string {
-  const opts: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
-  return `${new Date(startsAt).toLocaleTimeString(undefined, opts)}–${new Date(
-    endsAt
-  ).toLocaleTimeString(undefined, opts)}`;
-}
-
 function upcomingVenueLine(s: UpcomingSession): string | null {
   if (s.venue?.name) {
     const where = s.venue.address ?? s.venue.area;
@@ -547,8 +532,7 @@ function UpcomingSessionRow({
 }) {
   const sport = sportLabel(session.sport);
   const start = new Date(session.startsAt);
-  const date = formatUpcomingDate(session.startsAt);
-  const time = formatUpcomingTimeRange(session.startsAt, session.endsAt);
+  const when = formatWhenRange(session.startsAt, session.endsAt);
   const venue = upcomingVenueLine(session);
   const partnerName = session.partner.displayName || 'Partner';
   return (
@@ -565,7 +549,7 @@ function UpcomingSessionRow({
       <View style={styles.dateTile}>
         <Text style={styles.dateTileDay}>{start.getDate()}</Text>
         <Text style={styles.dateTileMonth}>
-          {start.toLocaleDateString(undefined, { month: 'short' })}
+          {formatMonthShort(start)}
         </Text>
       </View>
       <View style={styles.upcomingBody}>
@@ -574,9 +558,7 @@ function UpcomingSessionRow({
           <Text style={styles.upcomingSport}>{sport}</Text>
           <Badge label="CONFIRMED" tone="success" size="sm" style={styles.upcomingBadge} />
         </View>
-        <Text style={styles.upcomingWhen}>
-          {date} · {time}
-        </Text>
+        <Text style={styles.upcomingWhen}>{when}</Text>
         {venue ? (
           <Text style={styles.upcomingVenue} numberOfLines={2}>
             {venue}

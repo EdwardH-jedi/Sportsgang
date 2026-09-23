@@ -5,6 +5,8 @@
  * directly without rendering the screen.
  */
 
+import { formatClock, formatDate } from './format';
+
 export const MIN_SESSION_MINUTES = 30;
 export const MAX_SESSION_MINUTES = 4 * 60;
 export const DATE_PICKER_DAYS_AHEAD = 90;
@@ -38,24 +40,15 @@ export function combineToLocalDate(date: DateString, time: TimeString): Date {
   return new Date(y, m - 1, d, hh, mm, 0, 0);
 }
 
-/** Friendly display, e.g. "Sat, 6 Jun 2026". */
+/** Friendly display, e.g. "Sat 6 Jun 2026". */
 export function formatDateLabel(date: DateString): string {
   const d = combineToLocalDate(date, '00:00');
-  return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  return `${formatDate(d)} ${d.getFullYear()}`;
 }
 
-/** Friendly display, e.g. "9:00 AM" or "21:30" depending on locale. */
+/** Friendly display, e.g. "9:00 AM" (shared app formatter, see lib/format). */
 export function formatTimeLabel(time: TimeString): string {
-  const d = combineToLocalDate('2000-01-01', time);
-  return d.toLocaleTimeString(undefined, {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+  return formatClock(combineToLocalDate('2000-01-01', time));
 }
 
 /** Split "HH:MM" into numeric { hour, minute }. */

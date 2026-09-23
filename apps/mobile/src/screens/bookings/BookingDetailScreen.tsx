@@ -17,6 +17,7 @@ import {
   type IconName,
 } from '../../components/ui';
 import { useBooking } from '../../hooks/useBookings';
+import { formatClockParts, formatWhen } from '../../lib/format';
 import type { BookingAction } from '../../lib/sessions';
 import { sportLabel } from '../../lib/sports';
 import { useAuthStore } from '../../stores/auth';
@@ -25,16 +26,6 @@ import type { BookingDetailScreenProps } from '../../navigation/types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleString('en-AU', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 function statusLabel(status: string): string {
   const map: Record<string, string> = {
@@ -55,13 +46,6 @@ function statusTone(status: string): BadgeTone {
   return 'neutral';
 }
 
-function formatClock(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-AU', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-}
 
 /** Whole minutes between start and end (never negative). */
 function durationMinutes(startsAt: string, endsAt: string): number {
@@ -146,6 +130,7 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
   }
 
   const minutes = durationMinutes(booking.startsAt, booking.endsAt);
+  const startClock = formatClockParts(booking.startsAt);
 
   return (
     <Screen padded={false} header={header}>
@@ -163,7 +148,8 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
           </View>
           <View style={styles.stats}>
             <StatBlock
-              value={formatClock(booking.startsAt)}
+              value={startClock?.time ?? '–'}
+              unit={startClock?.meridiem}
               label="Start"
               icon="clock"
               size="lg"
@@ -177,8 +163,8 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
         <Card padding="none">
           <DetailRow icon="profile" label="With" value={booking.partner.displayName} />
           <DetailRow icon={sportIconName(booking.sport)} label="Sport" value={sportLabel(booking.sport)} />
-          <DetailRow icon="calendar" label="Starts" value={formatDateTime(booking.startsAt)} />
-          <DetailRow icon="finish" label="Ends" value={formatDateTime(booking.endsAt)} />
+          <DetailRow icon="calendar" label="Starts" value={formatWhen(booking.startsAt, { relative: false })} />
+          <DetailRow icon="finish" label="Ends" value={formatWhen(booking.endsAt, { relative: false })} />
           {booking.venue ? (
             <>
               <DetailRow icon="location" label="Court" value={booking.venue.name} />

@@ -16,6 +16,7 @@ import {
 } from '../../components/ui';
 import { useChallengeDetail } from '../../hooks/useChallenges';
 import { sportLabelForBattle } from '../../lib/events';
+import { formatWhen } from '../../lib/format';
 import { isChallengeTerminal } from '../../lib/challenges';
 import { useAuthStore } from '../../stores/auth';
 import { colors, layout, radii, spacing, touchTarget, typography } from '../../theme';
@@ -477,18 +478,7 @@ function ChoiceOption({ selected, onPress, title, caption, accessibilityLabel }:
 }
 
 function formatChallengeWhen(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const date = d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const time = d.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-  return `${date} · ${time}`;
+  return formatWhen(iso, { relative: false }) || iso;
 }
 
 const styles = StyleSheet.create({

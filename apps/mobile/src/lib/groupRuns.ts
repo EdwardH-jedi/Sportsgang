@@ -112,30 +112,6 @@ export function isActiveRun(run: EventSummary): boolean {
 
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
-function sameLocalDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
-/** "Today", "Tomorrow" or "Sat 17 May". */
-export function formatRunDay(iso: string, now: Date = new Date()): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  if (sameLocalDay(d, now)) return 'Today';
-  if (sameLocalDay(d, new Date(now.getTime() + DAY_MS))) return 'Tomorrow';
-  return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-}
-
-/** "6:30 am" style (device locale). */
-export function formatRunTime(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-}
-
 export function spotsLeftText(run: Pick<EventSummary, 'spotsLeft' | 'status'>): string {
   if (run.status === 'full' || run.spotsLeft <= 0) return 'Full';
   return run.spotsLeft === 1 ? '1 spot left' : `${run.spotsLeft} spots left`;

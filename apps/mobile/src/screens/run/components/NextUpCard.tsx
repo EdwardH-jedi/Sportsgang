@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Card, Icon } from '../../../components/ui';
-import { formatRunDay, formatRunTime } from '../../../lib/groupRuns';
+import { formatWhen } from '../../../lib/format';
 import { colors, spacing, typography } from '../../../theme';
 import { type NextUpItem, nextUpKind } from '../useNextUp';
 
@@ -13,7 +13,7 @@ export interface NextUpCardProps {
 
 /** Compact "Next up" strip at the top of the Run tab. */
 export function NextUpCard({ item, onPress }: NextUpCardProps) {
-  const when = `${formatRunDay(item.startsAt)} · ${formatRunTime(item.startsAt)}`;
+  const when = formatWhen(item.startsAt);
   return (
     <Card
       onPress={onPress}

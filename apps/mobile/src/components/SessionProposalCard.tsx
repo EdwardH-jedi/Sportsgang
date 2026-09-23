@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { formatWhenRange } from '../lib/format';
 import { sportLabel } from '../lib/sports';
 import { colors, radii, spacing, touchTarget, typography } from '../theme';
 import { Badge, Button, Card, Icon, sportIconName, type BadgeTone, type IconName } from './ui';
@@ -53,19 +54,6 @@ export interface SessionProposalCardProps {
   isActing?: boolean;
 }
 
-function formatTimeRange(startsAt: string, endsAt: string): string {
-  const start = new Date(startsAt);
-  const end = new Date(endsAt);
-  // Day + start; pair with the end-time on the right of the dash. Keeps the
-  // line readable on narrow phones.
-  const dayPart = start.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const timeOpts: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
-  return `${dayPart} · ${start.toLocaleTimeString(undefined, timeOpts)} – ${end.toLocaleTimeString(undefined, timeOpts)}`;
-}
 
 function venueLine(p: SessionProposalCardData): string | null {
   if (p.venue?.name) {
@@ -143,7 +131,7 @@ export function SessionProposalCard({
 
       <View style={styles.detailBlock}>
         <DetailRow icon={sportIconName(proposal.sport)} text={sportText} />
-        <DetailRow icon="calendar" text={formatTimeRange(proposal.startsAt, proposal.endsAt)} />
+        <DetailRow icon="calendar" text={formatWhenRange(proposal.startsAt, proposal.endsAt)} />
         {venue ? <DetailRow icon="location" text={venue} lines={2} /> : null}
         {proposal.notes ? (
           <Text style={styles.notes} numberOfLines={3}>

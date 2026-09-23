@@ -9,6 +9,8 @@
  * saw before this fix.
  */
 
+import { formatClock, formatDayMonth } from './format';
+
 interface IdLike {
   id: string;
 }
@@ -72,10 +74,7 @@ export function formatPreviewTimestamp(
     d.getDate() === now.getDate();
 
   if (sameDay) {
-    return d.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    return formatClock(d);
   }
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return formatDayMonth(d);
 }

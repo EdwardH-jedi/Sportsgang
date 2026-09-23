@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Avatar, Badge, Card, Icon, StatBlock } from '../../../components/ui';
 import type { EventSummary } from '../../../lib/events';
-import { formatRunDay, formatRunTime } from '../../../lib/groupRuns';
+import { formatWhen } from '../../../lib/format';
 import { formatDistanceAway, formatKm, paceBandValue } from '../../../lib/pace';
 import { colors, spacing, typography } from '../../../theme';
 
@@ -28,7 +28,7 @@ export function RunCard({ run, onPress, selected = false, hideCrew = false, now,
   const away = formatDistanceAway(run.distanceKmFromYou);
   const pace = paceBandValue(run.paceMinSecPerKm, run.paceMaxSecPerKm);
   const km = formatKm(run.distanceKm);
-  const when = `${formatRunDay(run.startsAt, now)} · ${formatRunTime(run.startsAt)}`;
+  const when = formatWhen(run.startsAt, { now });
 
   return (
     <Card

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Card, Icon } from '../../../components/ui';
 import type { CrewListItem } from '../../../lib/crews';
-import { formatRunDay, formatRunTime } from '../../../lib/groupRuns';
+import { formatWhen } from '../../../lib/format';
 import { formatDistanceAway, paceBandText } from '../../../lib/pace';
 import { colors, spacing, typography } from '../../../theme';
 
@@ -50,8 +50,7 @@ export function CrewCard({ crew, onPress }: CrewCardProps) {
         <View style={[styles.row, styles.next]}>
           <Icon name="run" size="sm" color={colors.brand} />
           <Text style={styles.nextText} numberOfLines={1}>
-            Next: {formatRunDay(crew.nextRun.startsAt)} {formatRunTime(crew.nextRun.startsAt)} ·{' '}
-            {crew.nextRun.title}
+            Next: {formatWhen(crew.nextRun.startsAt)} · {crew.nextRun.title}
           </Text>
         </View>
       ) : null}

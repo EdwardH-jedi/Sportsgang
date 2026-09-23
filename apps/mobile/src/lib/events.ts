@@ -7,6 +7,7 @@
  */
 
 import { api } from './api';
+import { formatWhen } from './format';
 import { roundCoord } from './location';
 import { getSport, sportLabel } from './sports';
 import type {
@@ -226,17 +227,7 @@ export function sportLabelForBattle(sport: string): string {
   return found ? found.label : sportLabel(sport);
 }
 
-/** Compact "Sat 17 May · 09:00" style. */
+/** Absolute "Sat 17 May · 9:00 AM" (see lib/format). */
 export function formatEventWhen(iso: string): string {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const time = d.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-  return `${date} · ${time}`;
+  return formatWhen(iso, { relative: false });
 }
