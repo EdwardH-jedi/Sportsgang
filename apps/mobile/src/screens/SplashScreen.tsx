@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { useAuthStore } from '../stores/auth';
 import { useProfileStore } from '../stores/profile';
-import { colors, typography } from '../theme';
+import { colors, spacing, typography } from '../theme';
 import type { SplashScreenProps } from '../navigation/types';
 
 /**
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
   wordmark: {
     ...typography.h1,
     color: colors.textInverse,
-    letterSpacing: 8,
+    letterSpacing: spacing.sm,
   },
 });

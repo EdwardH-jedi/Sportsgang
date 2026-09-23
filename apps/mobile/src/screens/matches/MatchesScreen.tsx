@@ -105,9 +105,9 @@ function ChatListSkeleton() {
         <View key={i} style={styles.row}>
           <Skeleton circle height={AVATAR_LG} />
           <View style={styles.rowBody}>
-            <Skeleton width="45%" height={14} />
-            <Skeleton width="80%" height={12} />
-            <Skeleton width="30%" height={12} />
+            <Skeleton width="45%" height={spacing.md} />
+            <Skeleton width="80%" height={spacing.sm + spacing.xs} />
+            <Skeleton width="30%" height={spacing.sm + spacing.xs} />
           </View>
         </View>
       ))}
