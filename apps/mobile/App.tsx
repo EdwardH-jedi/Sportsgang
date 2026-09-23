@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Sentry from '@sentry/react-native';
 
@@ -27,13 +29,21 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      {/*
-        The app is dark-only (near-black canvas, see theme + app.config.js
-        userInterfaceStyle "dark"), so status bar content is always light.
-      */}
-      <StatusBar style="light" />
-      <RootNavigator />
-    </SafeAreaProvider>
+    // Gesture handler must wrap the whole tree so pan gestures (bottom
+    // sheets, swipe cards) work on every screen and inside modals.
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaProvider>
+        {/*
+          The app is dark-only (near-black canvas, see theme + app.config.js
+          userInterfaceStyle "dark"), so status bar content is always light.
+        */}
+        <StatusBar style="light" />
+        <RootNavigator />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});

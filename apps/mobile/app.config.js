@@ -250,6 +250,10 @@ module.exports = () => {
           },
         ],
         "expo-apple-authentication",
+        // Fonts (Inter, Barlow Condensed) are loaded at runtime with
+        // useFonts from @expo-google-fonts/*; the plugin entry keeps
+        // expo-font's native config in the prebuild.
+        "expo-font",
         "@sentry/react-native/expo",
       ],
       // extra values are accessible in the app via Constants.expoConfig.extra
