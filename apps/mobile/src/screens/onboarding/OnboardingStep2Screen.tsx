@@ -1,19 +1,11 @@
-import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-import { Screen } from '../../components/Screen';
+import { Icon, IconButton, TextField } from '../../components/ui';
 import { useProfileStore } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
+import { OnboardingFrame, OnboardingSection } from './OnboardingFrame';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -108,32 +100,21 @@ export function OnboardingStep2Screen({ navigation }: Props) {
   const slots = Array.from({ length: MAX_PHOTOS }, (_, i) => photos[i] ?? null);
 
   return (
-    <Screen padded scroll withKeyboard>
-      <View style={styles.progressBlock}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressSegment, styles.progressSegmentActive]} />
-          <View style={[styles.progressSegment, styles.progressSegmentActive]} />
-          <View style={styles.progressSegment} />
-          <View style={styles.progressSegment} />
-        </View>
-        <Text style={styles.stepLabel}>Step 2 of 4</Text>
-      </View>
-
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>Profile</Text>
-        <Text style={styles.title}>Photos & bio</Text>
-        <Text style={styles.subtitle}>
-          Add {MIN_PHOTOS}–{MAX_PHOTOS} photos and a short bio so partners know who they'll train with.
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Photos<Text style={styles.required}> *</Text>
-        </Text>
-        <Text style={styles.hint}>
-          {photos.length} of {MAX_PHOTOS} selected · at least {MIN_PHOTOS} required
-        </Text>
+    <OnboardingFrame
+      step={2}
+      eyebrow="Profile"
+      title="Photos & bio"
+      subtitle={`Add ${MIN_PHOTOS}–${MAX_PHOTOS} photos and a short bio so people know who they'll run with.`}
+      error={error}
+      submitLabel="Continue"
+      onSubmit={() => void handleContinue()}
+      submitting={isSubmitting}
+      withKeyboard
+    >
+      <OnboardingSection
+        title="Photos *"
+        hint={`${photos.length} of ${MAX_PHOTOS} selected · at least ${MIN_PHOTOS} required`}
+      >
         <View style={styles.photoGrid}>
           {slots.map((uri, index) => (
             <PhotoSlot
@@ -146,45 +127,19 @@ export function OnboardingStep2Screen({ navigation }: Props) {
             />
           ))}
         </View>
-      </View>
+      </OnboardingSection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Bio<Text style={styles.required}> *</Text>
-        </Text>
-        <TextInput
-          style={styles.bioInput}
-          value={bio}
-          onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
-          placeholder="Tell partners a bit about yourself and how you train..."
-          placeholderTextColor={colors.textTertiary}
-          multiline
-          numberOfLines={5}
-          textAlignVertical="top"
-          accessibilityLabel="Bio"
-        />
-        <Text style={styles.charCount}>{bio.length} / {BIO_MAX}</Text>
-      </View>
-
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-      <Pressable
-        style={({ pressed }) => [
-          styles.submit,
-          (pressed || isSubmitting) && styles.submitPressed,
-        ]}
-        onPress={handleContinue}
-        disabled={isSubmitting}
-        accessibilityRole="button"
-        accessibilityLabel="Continue"
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={colors.textInverse} />
-        ) : (
-          <Text style={styles.submitText}>Continue</Text>
-        )}
-      </Pressable>
-    </Screen>
+      <TextField
+        label="Bio *"
+        value={bio}
+        onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
+        placeholder="Tell people a bit about yourself and how you train..."
+        multiline
+        minHeight={120}
+        helper={`${bio.length} / ${BIO_MAX}`}
+        accessibilityLabel="Bio"
+      />
+    </OnboardingFrame>
   );
 }
 
@@ -201,14 +156,14 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
     return (
       <View style={[styles.slot, styles.slotFilled]}>
         <Image source={{ uri }} style={styles.slotImage} resizeMode="cover" />
-        <Pressable
-          style={styles.removeButton}
+        <IconButton
+          icon="close"
+          size="sm"
+          variant="filled"
           onPress={onRemove}
-          accessibilityRole="button"
           accessibilityLabel={`Remove photo ${index + 1}`}
-        >
-          <Text style={styles.removeButtonText}>×</Text>
-        </Pressable>
+          style={styles.removeButton}
+        />
       </View>
     );
   }
@@ -220,7 +175,7 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
         accessibilityRole="button"
         accessibilityLabel={`Add photo ${index + 1}`}
       >
-        <Text style={styles.slotAddPlus}>+</Text>
+        <Icon name="camera" size="lg" color={colors.brand} />
         <Text style={styles.slotAddLabel}>Add photo</Text>
       </Pressable>
     );
@@ -229,163 +184,47 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
 }
 
 const styles = StyleSheet.create({
-  progressBlock: {
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  progressBar: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  progressSegment: {
-    flex: 1,
-    height: 4,
-    borderRadius: radii.pill,
-    backgroundColor: colors.separator,
-  },
-  progressSegmentActive: {
-    backgroundColor: colors.brand,
-  },
-  stepLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-  },
-  header: {
-    paddingBottom: spacing.xl,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.brand,
-    marginBottom: spacing.sm,
-  },
-  title: {
-    ...typography.h1,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    ...typography.h3,
-    marginBottom: spacing.xs,
-  },
-  required: {
-    color: colors.error,
-  },
-  hint: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    marginBottom: spacing.md,
-  },
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   slot: {
-    width: '48%',
-    aspectRatio: 1,
+    width: '47%',
+    aspectRatio: 3 / 4,
     borderRadius: radii.lg,
     overflow: 'hidden',
-    backgroundColor: colors.inputBackground,
-  },
-  slotFilled: {
-    borderWidth: 2,
-    borderColor: colors.brand,
-  },
-  slotImage: {
-    width: '100%',
-    height: '100%',
-  },
-  slotAdd: {
-    borderWidth: 2,
-    borderColor: colors.brand,
-    borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.brandSoft,
   },
-  slotPressed: {
-    opacity: 0.65,
+  slotFilled: {
+    backgroundColor: colors.surfaceElevated,
   },
-  slotEmpty: {
-    borderWidth: 1,
-    borderColor: colors.separator,
-    backgroundColor: colors.inputBackground,
-    opacity: 0.5,
-  },
-  slotAddPlus: {
-    ...typography.h1,
-    color: colors.brand,
-    fontSize: 36,
-    lineHeight: 40,
-  },
-  slotAddLabel: {
-    ...typography.bodySmall,
-    color: colors.brand,
-    fontWeight: '600',
+  slotImage: {
+    ...StyleSheet.absoluteFillObject,
   },
   removeButton: {
     position: 'absolute',
     top: spacing.xs,
     right: spacing.xs,
-    width: 28,
-    height: 28,
-    borderRadius: radii.full,
-    backgroundColor: 'rgba(15,23,42,0.65)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  removeButtonText: {
-    // Hardcoded white: the removeButton background is a fixed dark dot
-    // (rgba 15,23,42,0.65), independent of theme `textInverse`.
-    color: '#FFFFFF',
-    fontSize: 20,
-    lineHeight: 22,
+  slotAdd: {
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.brandMuted,
+    backgroundColor: colors.brandSoft,
   },
-  bioInput: {
+  slotPressed: {
+    backgroundColor: colors.surfacePressed,
+  },
+  slotAddLabel: {
+    ...typography.buttonSmall,
+    color: colors.brand,
+  },
+  slotEmpty: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    minHeight: 120,
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    backgroundColor: colors.inputBackground,
-  },
-  charCount: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    textAlign: 'right',
-    marginTop: spacing.xs,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    marginBottom: spacing.md,
-  },
-  submit: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-    marginBottom: spacing.xl,
-  },
-  submitPressed: {
-    opacity: 0.65,
-  },
-  submitText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
+    backgroundColor: colors.surface,
   },
 });

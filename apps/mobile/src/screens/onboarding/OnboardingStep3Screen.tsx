@@ -1,16 +1,12 @@
-import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { AgeRangeSelector } from '../../components/AgeRangeSelector';
-import { Screen } from '../../components/Screen';
+import { Button, Card, Icon } from '../../components/ui';
+import { useHomeLocation } from '../../hooks/useHomeLocation';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { colors, spacing, typography } from '../../theme';
+import { ChoiceChip, ChoiceRow, OnboardingFrame, OnboardingSection } from './OnboardingFrame';
 import type { GenderPreference } from '@protin/shared-types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
@@ -87,56 +83,35 @@ export function OnboardingStep3Screen({ navigation }: Props) {
   }
 
   return (
-    <Screen padded scroll>
-      {/* Progress indicator */}
-      <View style={styles.progress}>
-        <View style={styles.dot} />
-        <View style={styles.dot} />
-        <View style={[styles.dot, styles.dotActive]} />
-        <View style={styles.dot} />
-        <Text style={styles.stepLabel}>Step 3 of 4</Text>
-      </View>
+    <OnboardingFrame
+      step={3}
+      eyebrow="Preferences"
+      title="Who and where"
+      subtitle="We use this to show you runners, crews and group runs that fit."
+      error={error}
+      submitLabel="Continue"
+      onSubmit={() => void handleContinue()}
+      submitting={isSubmitting}
+    >
+      <OnboardingSection title="Where do you usually run?" hint="Optional — rounded to about 1 km and never shown to anyone.">
+        <LocationStep />
+      </OnboardingSection>
 
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>Preferences</Text>
-        <Text style={styles.title}>Your partner{'\n'}preferences</Text>
-        <Text style={styles.subtitle}>We use this to show you relevant workout partners.</Text>
-      </View>
+      <OnboardingSection title="I'm open to training with">
+        <ChoiceRow>
+          {OPEN_TO_OPTIONS.map((opt) => (
+            <ChoiceChip
+              key={opt.value}
+              role="checkbox"
+              label={opt.label}
+              checked={openTo.includes(opt.value)}
+              onPress={() => toggleOpenTo(opt.value)}
+            />
+          ))}
+        </ChoiceRow>
+      </OnboardingSection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>I'm open to training with</Text>
-        <View style={styles.toggleRow}>
-          {OPEN_TO_OPTIONS.map((opt) => {
-            const isSelected = openTo.includes(opt.value);
-            return (
-              <Pressable
-                key={opt.value}
-                style={({ pressed }) => [
-                  styles.toggleButton,
-                  isSelected && styles.toggleButtonActive,
-                  pressed && styles.pressed,
-                ]}
-                onPress={() => toggleOpenTo(opt.value)}
-                accessibilityRole="checkbox"
-                accessibilityLabel={opt.label}
-                accessibilityState={{ checked: isSelected }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    isSelected && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Partner age range</Text>
+      <OnboardingSection title="Partner age range">
         <AgeRangeSelector
           minAge={ageMin}
           maxAge={ageMax}
@@ -144,152 +119,86 @@ export function OnboardingStep3Screen({ navigation }: Props) {
           minLimit={AGE_MIN_LIMIT}
           maxLimit={AGE_MAX_LIMIT}
         />
-      </View>
+      </OnboardingSection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Max distance</Text>
-        <View style={styles.toggleRow}>
-          {DISTANCE_OPTIONS.map((km) => {
-            const isSelected = maxDistance === km;
-            return (
-              <Pressable
-                key={km}
-                style={({ pressed }) => [
-                  styles.toggleButton,
-                  isSelected && styles.toggleButtonActive,
-                  pressed && styles.pressed,
-                ]}
-                onPress={() => setMaxDistance(km)}
-                accessibilityRole="radio"
-                accessibilityLabel={`${km} km`}
-                accessibilityState={{ checked: isSelected }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    isSelected && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  {km} km
-                </Text>
-              </Pressable>
-            );
-          })}
+      <OnboardingSection title="Max distance">
+        <ChoiceRow>
+          {DISTANCE_OPTIONS.map((km) => (
+            <ChoiceChip
+              key={km}
+              role="radio"
+              label={`${km} km`}
+              checked={maxDistance === km}
+              onPress={() => setMaxDistance(km)}
+            />
+          ))}
+        </ChoiceRow>
+      </OnboardingSection>
+    </OnboardingFrame>
+  );
+}
+
+/**
+ * Skippable location step: one tap asks for permission, takes a coarse
+ * fix and saves it as the profile home location (2 dp). Powers "near
+ * you" on the Run and Crews tabs.
+ */
+function LocationStep() {
+  const { status, requestLocation, isBusy, openSettings } = useHomeLocation({ auto: false });
+
+  if (status === 'ready') {
+    return (
+      <Card variant="brand" padding="md">
+        <View style={styles.locationRow}>
+          <Icon name="check-circle" size="md" color={colors.brand} />
+          <Text style={styles.locationText}>Location saved. We'll show what's near you.</Text>
         </View>
+      </Card>
+    );
+  }
+  if (status === 'denied') {
+    return (
+      <View style={styles.locationBlock}>
+        <Text style={styles.locationHint}>
+          Location is off. You can still browse all of Sydney and set it later from the Run tab.
+        </Text>
+        <Button label="Open settings" variant="secondary" size="sm" onPress={openSettings} />
       </View>
-
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-      <Pressable
-        style={({ pressed }) => [
-          styles.buttonPrimary,
-          (pressed || isSubmitting) && styles.pressed,
-        ]}
-        onPress={handleContinue}
-        disabled={isSubmitting}
-        accessibilityRole="button"
-        accessibilityLabel="Continue"
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={colors.textInverse} />
-        ) : (
-          <Text style={styles.buttonPrimaryText}>Continue</Text>
-        )}
-      </Pressable>
-    </Screen>
+    );
+  }
+  return (
+    <View style={styles.locationBlock}>
+      <Button
+        label="Use my location"
+        variant="secondary"
+        leadingIcon="my-location"
+        loading={isBusy}
+        onPress={() => void requestLocation()}
+      />
+      {status === 'unavailable' ? (
+        <Text style={styles.locationHint}>Couldn't get a fix — you can skip this and set it later.</Text>
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  progress: {
+  locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: radii.full,
-    backgroundColor: colors.border,
-  },
-  dotActive: {
-    backgroundColor: colors.accent,
-    width: 20,
-  },
-  stepLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-    marginLeft: spacing.xs,
-  },
-  header: {
-    paddingBottom: spacing.lg,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.accent,
-    marginBottom: spacing.sm,
-  },
-  title: {
-    ...typography.h1,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    ...typography.h3,
-    marginBottom: spacing.md,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  toggleButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface,
-  },
-  toggleButtonActive: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent,
-  },
-  toggleButtonText: {
-    ...typography.body,
+  locationText: {
+    ...typography.bodySmall,
     color: colors.textPrimary,
+    flex: 1,
   },
-  toggleButtonTextActive: {
-    color: colors.textInverse,
-    fontWeight: '600',
+  locationBlock: {
+    gap: spacing.sm,
+    alignItems: 'flex-start',
   },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    marginBottom: spacing.md,
-  },
-  buttonPrimary: {
-    backgroundColor: colors.brand,
-    // Match the pill shape used by OnboardingStep1/2 + LoginScreen so the
-    // onboarding flow ends on the same CTA silhouette it began with.
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  buttonPrimaryText: {
-    ...typography.button,
-    color: colors.textInverse,
-  },
-  pressed: {
-    opacity: 0.65,
+  locationHint: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
 });

@@ -13,7 +13,9 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render as rtlRender, fireEvent, waitFor } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 import {
   MAX_BIRTH_YEAR,
@@ -21,6 +23,21 @@ import {
   OnboardingStep1Screen,
   buildYearOptions,
 } from '../screens/onboarding/OnboardingStep1Screen';
+
+const safeAreaMetrics = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
+
+function SafeArea({ children }: { children: React.ReactNode }) {
+  return <SafeAreaProvider initialMetrics={safeAreaMetrics}>{children}</SafeAreaProvider>;
+}
+
+/** Screens use the Screen primitive, which needs safe-area context. */
+function render(ui: React.ReactElement) {
+  return rtlRender(ui, { wrapper: SafeArea });
+}
+
 
 // ─── Mock profile store ───────────────────────────────────────────────────────
 
@@ -32,28 +49,6 @@ jest.mock('../stores/profile', () => ({
 
 // ─── Mock Screen component ────────────────────────────────────────────────────
 
-jest.mock('../components/Screen', () => {
-  const { View } = require('react-native');
-  return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-  };
-});
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#000', border: '#ccc', surface: '#fff',
-    surfaceElevated: '#f5f5f5', background: '#fafafa', separator: '#e0e0e0',
-    textPrimary: '#000', textSecondary: '#555', textTertiary: '#888',
-    textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

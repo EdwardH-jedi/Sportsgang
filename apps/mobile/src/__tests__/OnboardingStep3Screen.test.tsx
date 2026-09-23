@@ -9,9 +9,37 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render as rtlRender, fireEvent, waitFor } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 import { OnboardingStep3Screen } from '../screens/onboarding/OnboardingStep3Screen';
+
+const mockRequestLocation = jest.fn();
+let mockLocationStatus = 'undetermined';
+jest.mock('../hooks/useHomeLocation', () => ({
+  useHomeLocation: () => ({
+    status: mockLocationStatus,
+    requestLocation: mockRequestLocation,
+    isBusy: false,
+    openSettings: jest.fn(),
+  }),
+}));
+
+const safeAreaMetrics = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
+
+function SafeArea({ children }: { children: React.ReactNode }) {
+  return <SafeAreaProvider initialMetrics={safeAreaMetrics}>{children}</SafeAreaProvider>;
+}
+
+/** Screens use the Screen primitive, which needs safe-area context. */
+function render(ui: React.ReactElement) {
+  return rtlRender(ui, { wrapper: SafeArea });
+}
+
 
 // ─── Mock profile store ───────────────────────────────────────────────────────
 
@@ -23,28 +51,6 @@ jest.mock('../stores/profile', () => ({
 
 // ─── Mock Screen component ────────────────────────────────────────────────────
 
-jest.mock('../components/Screen', () => {
-  const { View } = require('react-native');
-  return {
-    Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-  };
-});
-
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#000', brandSoft: '#222', border: '#ccc',
-    surface: '#fff', surfaceElevated: '#f5f5f5', background: '#fafafa',
-    separator: '#e0e0e0', textPrimary: '#000', textSecondary: '#555',
-    textTertiary: '#888', textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, pill: 9999, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -364,5 +370,45 @@ describe('OnboardingStep3Screen', () => {
         );
       });
     });
+  });
+});
+
+describe('OnboardingStep3Screen location (skippable)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const { useProfileStore } = require('../stores/profile');
+    (useProfileStore as jest.Mock).mockReturnValue({
+      upsertIdentityPreferences: jest.fn().mockResolvedValue(undefined),
+    });
+    mockLocationStatus = 'undetermined';
+  });
+
+  function renderStep() {
+    const nav = { navigate: jest.fn(), replace: jest.fn() };
+    const utils = render(<OnboardingStep3Screen navigation={nav as any} route={{} as any} />);
+    return { ...utils, nav };
+  }
+
+  it('offers "Use my location", which requests and saves it', () => {
+    const { getByLabelText, getByText } = renderStep();
+    getByText('Where do you usually run?');
+    fireEvent.press(getByLabelText('Use my location'));
+    expect(mockRequestLocation).toHaveBeenCalledWith();
+  });
+
+  it('confirms once the location is saved', () => {
+    mockLocationStatus = 'ready';
+    const { getByText, queryByLabelText } = renderStep();
+    getByText("Location saved. We'll show what's near you.");
+    expect(queryByLabelText('Use my location')).toBeNull();
+  });
+
+  it('explains a denied permission and still lets the user continue', async () => {
+    mockLocationStatus = 'denied';
+    const { getByText, nav } = renderStep();
+    getByText(/Location is off/);
+    fireEvent.press(getByText('Continue'));
+    await waitFor(() => expect(nav.navigate).toHaveBeenCalledWith('OnboardingStep4'));
+    expect(mockRequestLocation).not.toHaveBeenCalled();
   });
 });
