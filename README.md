@@ -32,6 +32,8 @@ Recorded iOS release screenshots show the discovery, chat, and booking flows.
 - **Bookings** — propose, confirm, decline, cancel, complete, or no-show a session via an explicit state machine
 - **Venues** — nearby court/venue search combining a seeded database with Google Places, deduplicated by name + distance
 - **Battles (group events)** — host or join open sport events with attendance confirmation
+- **Crews & group runs** — persistent running crews (owner/member roles, pace band, home area) and scheduled group runs with meeting point, distance and pace; see [run-first API](docs/contracts/run-first-api.md)
+- **Geo-aware discovery** — optional `lat`/`lng`/`radius_km` on discovery, crews and events; home locations are stored at ~1 km precision and only coarse distances (rounded up to 0.5 km, min 1 km) are ever returned
 - **Tournaments** — backend only: list/detail/join/leave API behind the `TOURNAMENTS_ENABLED` feature flag (off outside local dev); there is no mobile UI
 - **Ranking & honour system** — rank progression from recorded results plus an honour/reputation layer
 - **Accounts & safety** — email/password and Sign in with Apple auth, profile photos, Google Calendar sync, Expo push notifications, reports, blocks, and content moderation
@@ -59,14 +61,14 @@ Expo mobile app ──HTTP + JWT──▶ FastAPI ──▶ PostgreSQL (async SQ
 ## Engineering highlights
 
 - Fully async API stack: FastAPI + SQLAlchemy 2 async sessions + asyncpg, async Redis client
-- 15 incremental Alembic migrations covering the whole schema history
+- 18 incremental Alembic migrations covering the whole schema history
 - Booking lifecycle modelled as an explicit finite state machine on the service layer
 - Field-level Fernet encryption (AES-CBC + HMAC, `cryptography` library) for stored OAuth tokens, enforced at startup
 - Google Calendar OAuth `state` is a signed, 10-minute, user-bound token, so the unauthenticated callback cannot be used to link another user's account
 - Rate limiting on auth and external-API-backed endpoints (slowapi)
 - Multi-source venue search: seeded venue DB merged with Google Places, haversine dedup, lazy place-details loading
 - Typed mobile API client with JWT handling and snake_case↔camelCase conversion, backed by a shared types package
-- 26 API test files (631 tests, pytest, in-memory SQLite) and 53 mobile test suites (747 tests, Jest + React Native Testing Library)
+- 28 API test files (712 tests, pytest, in-memory SQLite) and 53 mobile test suites (747 tests, Jest + React Native Testing Library)
 - CI: ruff lint/format, ESLint, TypeScript typecheck, both test suites, a PostgreSQL/Redis integration job, and a Docker image build on every push
 - Deployment configuration for a self-hosted staging stack (docker-compose + nginx) and Fly.io (Sydney region, API + worker processes)
 
