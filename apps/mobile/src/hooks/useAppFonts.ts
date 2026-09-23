@@ -9,6 +9,7 @@ import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import { BarlowCondensed_600SemiBold } from '@expo-google-fonts/barlow-condensed/600SemiBold';
 import { BarlowCondensed_700Bold } from '@expo-google-fonts/barlow-condensed/700Bold';
 
+import { iconFontSources } from '../components/ui/Icon';
 import { fonts } from '../theme';
 
 /**
@@ -23,6 +24,9 @@ export const appFontSources = {
   [fonts.displaySemibold]: BarlowCondensed_600SemiBold,
   [fonts.displayBold]: BarlowCondensed_700Bold,
 } as const;
+
+/** Brand fonts + the icon fonts, loaded together behind the splash. */
+const allFontSources = { ...appFontSources, ...iconFontSources };
 
 /** Give up waiting and render with system fonts after this long. */
 export const FONT_LOAD_TIMEOUT_MS = 4000;
@@ -41,7 +45,7 @@ export interface AppFontsState {
  * back to the system font (see `face()` in theme/typography).
  */
 export function useAppFonts(): AppFontsState {
-  const [loaded, error] = useFonts(appFontSources);
+  const [loaded, error] = useFonts(allFontSources);
   const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {

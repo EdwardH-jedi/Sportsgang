@@ -25,11 +25,12 @@ afterEach(() => {
 });
 
 describe('useAppFonts', () => {
-  it('registers every theme font family', () => {
+  it('registers every theme font family plus the icon fonts', () => {
     renderHook(() => useAppFonts());
     const map = mockUseFonts.mock.calls[0][0] as Record<string, unknown>;
-    expect(Object.keys(map).sort()).toEqual(Object.values(fonts).sort());
-    expect(Object.keys(appFontSources)).toHaveLength(Object.keys(fonts).length);
+    expect(Object.keys(map)).toEqual(expect.arrayContaining(Object.values(fonts)));
+    expect(Object.keys(map)).toEqual(expect.arrayContaining(['feather', 'material-community']));
+    expect(Object.keys(appFontSources).sort()).toEqual(Object.values(fonts).sort());
   });
 
   it('is not ready while fonts are loading', () => {

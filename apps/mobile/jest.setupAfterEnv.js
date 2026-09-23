@@ -17,3 +17,17 @@ jest.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy', Soft: 'soft', Rigid: 'rigid' },
   NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
 }));
+
+// Treat fonts (brand + @expo/vector-icons icon fonts) as loaded. Without
+// this, vector-icons renders an empty <Text /> until an async font load
+// resolves, which makes icons invisible to queries and triggers act()
+// warnings. Tests that exercise font loading mock expo-font themselves.
+jest.mock('expo-font', () => {
+  const actual = jest.requireActual('expo-font');
+  return {
+    ...actual,
+    isLoaded: () => true,
+    loadAsync: jest.fn(() => Promise.resolve()),
+    useFonts: () => [true, null],
+  };
+});
