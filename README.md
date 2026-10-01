@@ -1,401 +1,196 @@
-# Protin
+# SportsGang
 
-Protin connects players for peer sports matches: find opponents by sport, issue challenges, book nearby courts, and track results through a ranking and honour system. It is a full-stack mobile product — an Expo/React Native app backed by an async FastAPI service — currently supporting gym, golf, tennis, and running in Sydney.
+SportsGang helps people in Sydney find partners for gym, golf, tennis, and running, then arrange a session through matching, chat, and participant-confirmed bookings. The main product is an Expo/React Native app backed by FastAPI, PostgreSQL, and Redis.
 
-**Released as SportsGang v1.0:** the recorded release history documents App Store
-approval on **13 May 2026**, following an App Completeness review issue that was
-resolved with a reproducible reviewer-data workflow. This is a historical release
-milestone; it does not establish current service availability or user adoption.
+[App Store listing](https://apps.apple.com/us/app/sportsgang/id6767027447) · [Local setup](#local-setup) · [Release evidence](docs/PORTFOLIO_FACTS.md) · [CI](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml)
 
-[Release history and engineering decisions](docs/PORTFOLIO_FACTS.md) ·
-[Automated checks](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml) ·
-[Local setup](#local-setup)
+## Status and preview
 
-## Product preview
+SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [release history](docs/PORTFOLIO_FACTS.md). The listing and recorded screenshots are release evidence; they do not guarantee current backend availability. An always-on public backend demo is not provided here, and this repository does not establish download or active-user metrics.
 
-Recorded iOS release screenshots show the discovery, chat, and booking flows.
+**SportsGang is the public product name.** `Protin`, `protin-api`, and `@protin/*` remain internal project, package, and infrastructure names. Older web design material also contains earlier branding.
+
+Recorded iOS release screens:
 
 <p>
-  <img src="docs/release/screenshots/ios/01-discovery-gym-partners.png" width="230" alt="SportsGang opponent discovery screen">
-  <img src="docs/release/screenshots/ios/03-chat-confirmed-session.png" width="230" alt="Chat with a confirmed sports session">
+  <img src="docs/release/screenshots/ios/01-discovery-gym-partners.png" width="230" alt="SportsGang partner discovery screen">
+  <img src="docs/release/screenshots/ios/03-chat-confirmed-session.png" width="230" alt="Chat showing a confirmed sports session">
   <img src="docs/release/screenshots/ios/05-propose-session-form.png" width="230" alt="Form for proposing a sports session">
 </p>
 
-## What it does
+## Implemented features
 
-- **Opponent discovery** — sport-scoped partner feed with compatibility scoring; mutual likes create a match
-- **Challenges** — issue, accept/decline, and record results for 1-v-1 sport challenges
-- **Matches & chat** — per-match message threads with WebSocket live delivery
-- **Bookings** — propose, confirm, decline, cancel, complete, or no-show a session via an explicit state machine
-- **Venues** — nearby court/venue search combining a seeded database with Google Places, deduplicated by name + distance
-- **Battles (group events)** — host or join open sport events with attendance confirmation
-- **Tournaments** — join/leave tournaments, implemented behind a server-side feature flag (off outside local dev)
-- **Ranking & honour system** — rank progression from recorded results plus an honour/reputation layer
-- **Accounts & safety** — email/password and Sign in with Apple auth, profile photos, Google Calendar sync, Expo push notifications, reports, blocks, and content moderation
+- **Discovery and matching:** sport-scoped partner feeds, compatibility scoring, and mutual likes that create a match
+- **Chat and sessions:** match-specific message threads with WebSocket delivery; propose, confirm, decline, cancel, complete, or mark a session as a no-show
+- **Challenges and reputation:** one-to-one challenges, recorded results, rank progression, and honour/reputation events
+- **Venue discovery:** a local venue catalog with optional Google Places results and deduplication
+- **Group events:** host or join sports events and confirm attendance
+- **Accounts and safety:** email/password and Sign in with Apple paths, profile photos, reporting, blocking, and moderation
+- **Optional integrations:** Google Calendar sync and Expo push notifications, with provider configuration and separate delivery verification required
 
-## Stack
+Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment. Tournament list/join/leave endpoints are feature-flagged; brackets, result verification, and tournament rank integration are unfinished. The flag defaults on locally and off in staging/production.
 
-| Layer | Stack |
-|---|---|
+## Stack and architecture
+
+| Area | Implementation |
+| --- | --- |
 | Mobile | Expo 54, React Native 0.81, React 19, TypeScript, React Navigation, Zustand |
-| API | FastAPI, SQLAlchemy 2 (async) + asyncpg, Alembic, Pydantic v2, Python 3.12 |
-| Data | PostgreSQL 16, Redis 7 |
-| Contracts | `@protin/shared-types` — TypeScript types shared between app and API consumers |
-| Infra | Docker (multi-stage API image), docker-compose, nginx, Fly.io config, GitHub Actions CI |
-| Package managers | npm workspaces (JS), uv (Python) |
+| API | Python 3.12, FastAPI, Pydantic 2, async SQLAlchemy 2, asyncpg, Alembic |
+| Data | PostgreSQL 16 and Redis 7 |
+| Shared contracts | `@protin/shared-types` TypeScript package |
+| Web prototype | Vite, React, Tailwind CSS, anime.js |
+| Tooling and deployment | npm workspaces, uv, Docker Compose, nginx, Fly.io configuration, GitHub Actions |
 
-## Architecture
+The mobile app uses an HTTP/JWT API and match-specific WebSockets. The API stores application data in PostgreSQL and uses Redis; a separate worker processes notification delivery. Alembic manages schema changes. Apple, Google, and Expo integrations sit outside the local test boundary.
 
-```
-Expo mobile app ──HTTP + JWT──▶ FastAPI ──▶ PostgreSQL (async SQLAlchemy / Alembic)
-                                   │
-                                   └─────▶ Redis
-        notification worker ──────▶ Expo push service
-```
-
-## Engineering highlights
-
-- Fully async API stack: FastAPI + SQLAlchemy 2 async sessions + asyncpg, async Redis client
-- 15 incremental Alembic migrations covering the whole schema history
-- Booking lifecycle modelled as an explicit finite state machine on the service layer
-- Field-level Fernet encryption (AES-CBC + HMAC, `cryptography` library) for stored OAuth tokens, enforced at startup
-- Rate limiting on auth and external-API-backed endpoints (slowapi)
-- Multi-source venue search: seeded venue DB merged with Google Places, haversine dedup, lazy place-details loading
-- Typed mobile API client with JWT handling and snake_case↔camelCase conversion, backed by a shared types package
-- 26 API test files (620 tests, pytest, in-memory SQLite) and 53 mobile test suites (747 tests, Jest + React Native Testing Library)
-- CI: ruff lint/format, ESLint, TypeScript typecheck, both test suites, and a Docker image build on every push
-- Deployment configuration for a staging stack (docker-compose + nginx) and Fly.io (Sydney region, API + worker processes)
-
-## Current state
-
-SportsGang v1.0 passed App Review in May 2026. This repository is the maintained
-Protin engineering portfolio, with a local setup using Docker for PostgreSQL/Redis,
-uvicorn, and Expo. The previously deployed backend is not offered here as an
-always-on public demo; use the screenshots or local setup to review the product.
-Download counts and active-user metrics are not tracked in this repository.
-
-The API unit suite uses in-memory SQLite. The separate PostgreSQL/Redis CI job
-runs the Alembic migration chain and a register → match → booking-confirmation
-flow against disposable services; it does not validate external Apple, Google,
-or Expo delivery services. See [verification scope](docs/VERIFICATION.md).
-
----
-
-## Repository layout
-
-```
-.
-├── apps/
-│   ├── api/                  FastAPI service
-│   │   ├── alembic/          database migrations
-│   │   ├── app/
-│   │   │   ├── core/         config, security
-│   │   │   └── db/           SQLAlchemy engine, Redis client
-│   │   └── tests/
-│   └── mobile/               Expo React Native app
-│       └── src/
-│           ├── components/   shared UI primitives
-│           ├── navigation/   React Navigation setup
-│           ├── screens/      screen shells by domain
-│           └── theme/        design tokens
-├── packages/
-│   └── shared-types/         TypeScript type contracts shared with the app
-├── infra/                    nginx config, deploy/backup/health-check scripts
-├── docs/                     release, staging, runbook, and portfolio docs
-├── .env.example              root infrastructure variables (source of truth)
-├── docker-compose.yml        PostgreSQL + Redis
-└── package.json              npm workspace root + infra scripts
-```
-
----
-
-## Prerequisites
-
-| Tool | Version | Install |
-|---|---|---|
-| Node.js | 20+ | [nodejs.org](https://nodejs.org) |
-| npm | 10+ | bundled with Node |
-| Python | 3.12+ | [python.org](https://python.org) |
-| uv | latest | `pip install uv` or `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| Docker Desktop | latest | [docker.com](https://docker.com) |
-
----
+`apps/web` is a separate marketing prototype, not the mobile application. Its waitlist is browser-local storage only, with no subscription backend or notification delivery. Its draft policies, placeholder contacts, and legacy branding still need review. See the [web workspace notes](apps/web/README.md).
 
 ## Local setup
 
-### 1. Copy environment files
+For authorized local evaluation and development under the [proprietary license](LICENSE).
 
-**bash / macOS / Linux**
+**Prerequisites:** Git, Node.js 20, npm 10+, Python 3.12, uv, and Docker with Compose. An iOS simulator requires macOS/Xcode; use an Android emulator or a configured development device otherwise. The commands below use Bash.
+
+### 1. Install dependencies and configure local files
+
 ```bash
+git clone https://github.com/EdwardH-jedi/Sportsgang.git
+cd Sportsgang
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
 cp apps/mobile/.env.example apps/mobile/.env
+npm ci
+cd apps/api
+uv sync --frozen --dev
+uv run python -c "import secrets; print(secrets.token_hex(32))"
+cd ../..
 ```
 
-**PowerShell**
-```powershell
-Copy-Item .env.example .env
-Copy-Item apps\api\.env.example apps\api\.env
-Copy-Item apps\mobile\.env.example apps\mobile\.env
-```
+Put the generated value in `SECRET_KEY` in `apps/api/.env`, replacing the example value. Keep `APP_ENV=local`. Never commit `.env` files or reuse example credentials for deployment.
 
-The default values work out of the box for local development.
-See [Environment variables](#environment-variables) if you need to change ports.
+Configuration is split across three files:
 
----
+| File | Purpose |
+| --- | --- |
+| [`.env.example`](.env.example) → `.env` | Docker Compose database credentials and published ports |
+| [`apps/api/.env.example`](apps/api/.env.example) → `apps/api/.env` | API runtime settings; `POSTGRES_URL` and `REDIS_URL` must match Compose |
+| [`apps/mobile/.env.example`](apps/mobile/.env.example) → `apps/mobile/.env` | Mobile API URL and public app configuration |
 
-### 2. Start infrastructure
+For a basic local review, leave Google credentials and the Places key empty. Use test accounts and avoid connecting real OAuth accounts without configuring token encryption. `EXPO_PUBLIC_*` values are embedded in the mobile bundle: never put backend secrets or the server-side Google Places key there.
+
+### 2. Start PostgreSQL and Redis
+
+From the repository root:
 
 ```bash
 npm run infra:up
-```
-
-This starts PostgreSQL on `localhost:5432` and Redis on `localhost:6379`.
-
-**Wait for both services to be healthy before continuing:**
-
-```bash
 npm run infra:ps
 ```
 
-Expected output — both `Status` columns should read `Up (healthy)`:
+Wait until both services are healthy. Defaults publish PostgreSQL on port 5432 and Redis on 6379. These are development services with example database credentials; use a trusted local machine and do not expose them to the internet.
 
-```
-NAME               IMAGE                COMMAND                  STATUS
-protin-postgres-1  postgres:16-alpine   "docker-entrypoint.s…"  Up (healthy)
-protin-redis-1     redis:7-alpine       "docker-entrypoint.s…"  Up (healthy)
-```
-
-If services show `starting` rather than `healthy`, wait 10–15 seconds and run `npm run infra:ps` again.
-
----
-
-### 3. Install dependencies
+### 3. Migrate and run the API
 
 ```bash
-npm install                       # JavaScript — mobile app + root tooling
-cd apps/api && uv sync --dev      # Python — API + test dependencies
-```
-
----
-
-### 4. Run database migrations
-
-From `apps/api`:
-
-```bash
+cd apps/api
 uv run alembic upgrade head
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Expected output:
-
-```
-INFO  [alembic.runtime.migration] Context impl PostgreSQLImpl.
-INFO  [alembic.runtime.migration] Will assume transactional DDL.
-```
-
-Migrations are a no-op if the schema is already current.
-Re-run this command whenever new migration files are added.
-
----
-
-### 5. Start the API
-
-From `apps/api`:
+In another terminal:
 
 ```bash
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+curl http://127.0.0.1:8000/health
 ```
 
-**Verify the API is running and connected to both services:**
+A healthy response has `status: "ok"` and both `checks.db` and `checks.redis` set to `"ok"`. A dependency failure returns HTTP 503 with `status: "degraded"`. API documentation is at [localhost:8000/docs](http://localhost:8000/docs).
 
-```bash
-curl http://localhost:8000/health
-```
+### 4. Run the mobile app
 
-Expected response:
-
-```json
-{"status":"ok","environment":"local","checks":{"db":"ok","redis":"ok"}}
-```
-
-If either check shows `"error"`, see [Troubleshooting](#troubleshooting).
-
-Interactive API docs: `http://localhost:8000/docs`
-
----
-
-### 6. Start the mobile app
-
-From the repository root:
+From a separate terminal at the repository root:
 
 ```bash
 npm run mobile:start
 ```
 
-Then in the Expo terminal:
+Use `i` for the iOS simulator or `a` for an Android emulator. Set `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` to an address that the device can reach:
 
-| Key | Action |
-|---|---|
-| `a` | Open Android emulator |
-| `i` | Open iOS simulator |
-| `w` | Open in browser |
-| Scan QR | Open in Expo Go on a physical device |
+- iOS simulator on the API host: `http://localhost:8000`
+- Android Studio emulator: `http://10.0.2.2:8000`
+- Physical device: `http://<your-computer-LAN-IP>:8000` on the same trusted network; restart the API with `--host 0.0.0.0` and permit only the required local-network access
 
-The app connects to `EXPO_PUBLIC_API_URL` from `apps/mobile/.env` (default: `http://localhost:8000`).
+Restart Expo after changing its environment. Native integrations need appropriate device/build configuration; push delivery requires a physical-device check. Create at least two test accounts with profiles to exercise discovery, mutual matching, and session proposals.
 
----
+### Optional web prototype
 
-## Development scripts
-
-All infra scripts run from the repository root via npm.
-
-### Infrastructure
+After the root `npm ci`, run:
 
 ```bash
-npm run infra:up           # start PostgreSQL and Redis (detached)
-npm run infra:down         # stop services, keep data volumes
-npm run infra:reset        # wipe volumes and restart fresh (re-run migrations after)
-npm run infra:logs         # tail all service logs
-npm run infra:ps           # show service status and health
+npm run dev --workspace @protin/web
 ```
 
-### Mobile
+Follow the printed local URL. This runs the marketing prototype; it does not run the mobile app or connect a real waitlist service.
+
+## Tests and verification
+
+From the repository root:
 
 ```bash
-npm run mobile:start       # start Expo dev server
-npm run mobile:android     # open Android emulator
-npm run mobile:ios         # open iOS simulator
-npm run mobile:web         # open in browser
+npm run lint --workspace @protin/mobile
+npm run typecheck --workspace @protin/mobile
+npm run test:ci --workspace @protin/mobile
 ```
 
-### API (run from `apps/api`)
+From `apps/api`:
 
 ```bash
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000   # dev server
-uv run pytest                                                       # test suite
-uv run alembic upgrade head                                         # apply migrations
-uv run alembic downgrade -1                                         # roll back one migration
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest
 ```
 
----
+The API unit suite uses SQLite and service mocks. Mobile checks cover ESLint, TypeScript, and Jest component/unit behavior. CI also builds the API Docker image and runs a separate PostgreSQL/Redis journey covering fresh migrations, registration, matching, booking permissions, and confirmation.
 
-## Health verification
-
-Use these checks to confirm the full stack is operational before developing.
-
-### Infrastructure
+To reproduce the integration job, point `POSTGRES_URL` and `REDIS_URL` at **disposable local services**, set `APP_ENV=local` and a development `SECRET_KEY`, then run from `apps/api`:
 
 ```bash
-npm run infra:ps
-# Both STATUS values should be "Up (healthy)"
-
-# Check PostgreSQL directly
-docker compose exec postgres pg_isready -U protin
-# → /var/run/postgresql:5432 - accepting connections
-
-# Check Redis directly
-docker compose exec redis redis-cli ping
-# → PONG
+uv run alembic upgrade head
+uv run pytest tests_integration -q
 ```
 
-### API
+The integration test writes accounts and bookings. Never point it at production. See [verification scope](docs/VERIFICATION.md) and the [workflow](.github/workflows/ci.yml) for the exact checks. A green run does not verify external Apple/Google/Expo services, browser behavior in the web prototype, production load, or every concurrency/recovery scenario.
+
+## Operational notes and current limits
+
+- Chat history pagination/reconnection, failure-safe photo replacement, and concurrent booking transitions still need hardening. Existing checks should not be read as guarantees for these cases.
+- Photos currently use local filesystem storage. Deployment needs a deliberate persistence and backup plan.
+- Staging/production startup requires a non-default signing key, `FIELD_ENCRYPTION_KEY`, and `INTERNAL_API_TOKEN`. Local mode permits plaintext OAuth token fallback when no encryption key is configured. Review [environment configuration](docs/staging/ENV_VARS.md), [security notes](docs/security/SECURITY_AUDIT.md), and the [release runbook](docs/deployment/RELEASE_RUNBOOK.md) before deploying.
+- The web prototype has no real waitlist delivery; tournaments and provider-dependent integrations have the limits described above. Older staging notes are historical records, not a current availability report.
+
+### Stop, troubleshoot, or reset
 
 ```bash
-curl http://localhost:8000/health
-# → {"status":"ok","environment":"local","checks":{"db":"ok","redis":"ok"}}
+npm run infra:logs   # inspect PostgreSQL/Redis logs
+npm run infra:down   # stop services; preserve data volumes
 ```
 
-Both checks inside `checks` must be `"ok"`. If either is `"error"`, the service
-is running but cannot reach that dependency — see [Troubleshooting](#troubleshooting).
+For port conflicts, change `POSTGRES_PORT`/`REDIS_PORT` in the root `.env`, update the matching API connection URLs, then run `npm run infra:down` followed by `npm run infra:up`. A port change does not require deleting data. If migrations cannot connect, wait for healthy services and check credentials/URLs before retrying.
 
----
+**Destructive reset:** `npm run infra:reset` deletes the database and Redis volumes. Use it only for disposable data, then rerun `uv run alembic upgrade head` from `apps/api`.
 
-## Environment variables
+## Repository map and further reading
 
-### `.env` (root) — Docker Compose + shared
+| Path | Contents |
+| --- | --- |
+| [`apps/api/`](apps/api/) | API, domain services, Alembic migrations, unit and integration tests |
+| [`apps/mobile/`](apps/mobile/) | Mobile screens, navigation, API client, state, and theme |
+| [`apps/web/`](apps/web/) | Marketing prototype and earlier design/static-site material |
+| [`packages/shared-types/`](packages/shared-types/) | Shared TypeScript contracts |
+| [`infra/`](infra/) | nginx and deployment, backup, and health-check scripts |
+| [`docs/`](docs/) | Release, security, staging, workflow, and contract documentation |
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `POSTGRES_DB` | `protin` | database name |
-| `POSTGRES_USER` | `protin` | database user |
-| `POSTGRES_PASSWORD` | `protin` | database password |
-| `POSTGRES_PORT` | `5432` | host port for PostgreSQL |
-| `REDIS_PORT` | `6379` | host port for Redis |
-| `APP_ENV` | `local` | reported in `/health` response |
-| `API_HOST` | `0.0.0.0` | uvicorn bind address |
-| `API_PORT` | `8000` | uvicorn bind port |
-| `POSTGRES_URL` | `postgresql://protin:protin@localhost:5432/protin` | used by API and Alembic |
-| `REDIS_URL` | `redis://localhost:6379/0` | used by API |
-| `EXPO_PUBLIC_API_URL` | `http://localhost:8000` | API base URL baked into mobile JS bundle |
+Start with [Portfolio Facts](docs/PORTFOLIO_FACTS.md) for release history, [Verification](docs/VERIFICATION.md) for test boundaries, [Staging Setup](docs/staging/SETUP.md) and [Runbook](docs/staging/RUNBOOK.md) for operator instructions, and the [Venue Runbook](docs/runbooks/venues.md) for provider setup.
 
-### `apps/api/.env` — FastAPI runtime only
+## License
 
-Subset of the root variables: `APP_ENV`, `API_HOST`, `API_PORT`, `POSTGRES_URL`, `REDIS_URL`.
-
-### `apps/mobile/.env` — Expo runtime only
-
-`EXPO_PUBLIC_API_URL` only. The `EXPO_PUBLIC_` prefix is required by Expo to expose
-variables to the JavaScript bundle.
-
----
-
-## Troubleshooting
-
-### Port conflicts
-
-If ports `5432` or `6379` are already in use on your machine, edit `.env` before starting:
-
-```
-POSTGRES_PORT=5433
-REDIS_PORT=6380
-```
-
-Then update `POSTGRES_URL` to use the new port, restart infra (`npm run infra:reset`),
-and re-run migrations.
-
-### API health returns `"db": "error"`
-
-1. Confirm PostgreSQL is healthy: `npm run infra:ps`
-2. Confirm `POSTGRES_URL` in `apps/api/.env` matches the credentials in `.env`
-   (default for both: `protin` / `protin` / `protin`)
-3. If you reset volumes with `npm run infra:reset`, re-run migrations:
-   ```bash
-   cd apps/api && uv run alembic upgrade head
-   ```
-
-### API health returns `"redis": "error"`
-
-1. Confirm Redis is healthy: `npm run infra:ps`
-2. Confirm `REDIS_URL` in `apps/api/.env` matches the port in `.env`
-
-### Migrations fail: `Connection refused`
-
-PostgreSQL is not yet ready. Wait for `npm run infra:ps` to show `Up (healthy)`,
-then retry.
-
-### `uv` not found
-
-Install uv:
-```bash
-# bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# PowerShell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
----
-
-## Stopping and resetting
-
-```bash
-npm run infra:down          # stop services, data volumes are preserved
-npm run infra:reset         # wipe all data volumes and restart fresh
-```
-
-After `infra:reset`, re-run migrations before starting the API:
-
-```bash
-cd apps/api && uv run alembic upgrade head
-```
+Copyright © 2026 Edward Hwang. All rights reserved. The source is publicly visible for portfolio and evaluation purposes under the existing [proprietary license](LICENSE). Public visibility does not make it open source; use, modification, and redistribution require the copyright holder's prior written permission.
