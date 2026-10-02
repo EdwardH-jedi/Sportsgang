@@ -16,9 +16,9 @@ from app.schemas.profile import (
     UserProfileCreate,
     UserProfileResponse,
 )
-from app.services import media_storage
+from app.services import media_storage, sport_preferences
 
-PROFILE_PHOTO_MIN = 2
+PROFILE_PHOTO_MIN = 1
 PROFILE_PHOTO_MAX = 4
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -125,11 +125,23 @@ async def upsert_sport_profile(
     )
     sp = result.scalar_one_or_none()
 
+    v2_fields = set(sport_preferences.V2_FIELDS)
+    # Legacy fields: unchanged full-replace semantics.
+    legacy_values = body.model_dump(exclude=v2_fields)
+    # v2 fields: omitted = preserved, explicit null = cleared, so an old client
+    # posting only legacy fields never erases v2 preferences.
+    v2_patch = body.model_dump(include=v2_fields, exclude_unset=True)
+    current = {f: (getattr(sp, f) if sp is not None else None) for f in sport_preferences.V2_FIELDS}
+    merged = {**current, **v2_patch}
+    errors = sport_preferences.validate_merged(body.sport, merged)
+    if errors:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=" ".join(errors))
+
     if sp is None:
-        sp = SportProfile(user_id=current_user.id, **body.model_dump())
+        sp = SportProfile(user_id=current_user.id, **legacy_values, **v2_patch)
         db.add(sp)
     else:
-        for field, value in body.model_dump().items():
+        for field, value in {**legacy_values, **v2_patch}.items():
             setattr(sp, field, value)
 
     await db.commit()
@@ -145,7 +157,9 @@ async def replace_profile_photos(
 ) -> ProfilePhotosResponse:
     """Replace the current user's profile photos.
 
-    Accepts 2-4 multipart files. Existing photo rows for this profile are
+    Accepts 1-4 multipart files (photos are optional for onboarding, so a
+    single photo is enough when the user chooses to add one). Existing
+    photo rows for this profile are
     deleted, the uploads are persisted to local media storage, and new rows
     are written in upload order. ``avatar_url`` on the profile is synced to
     the first photo URL so existing avatar consumers keep working.

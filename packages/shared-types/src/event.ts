@@ -20,6 +20,41 @@ export interface EventHost {
   displayName: string;
 }
 
+// ---------------------------------------------------------------------------
+// v2 running / golf session details (docs/run-golf-v2/CONTRACTS.md §5)
+//
+// Everything here is informational: only status and capacity block joining.
+// The meeting point / course is the event's `locationText`; the tee time or
+// start time is `startsAt`.
+// ---------------------------------------------------------------------------
+
+export type RunSessionPaceMode = 'target_pace' | 'social';
+
+export interface RunSessionDetails {
+  distanceKm: number;
+  paceMode: RunSessionPaceMode;
+  /** Required for target_pace, null for social. Seconds per km. */
+  paceMinSecPerKm: number | null;
+  paceMaxSecPerKm: number | null;
+  groupStyle: 'stay_together' | 'regroup_at_finish' | 'pace_groups';
+  beginnerFriendly: boolean;
+  walkBreaksOk: boolean;
+}
+
+/** Host's declaration — never a course booking or platform verification. */
+export type TeeTimeStatus = 'secured' | 'planning';
+
+export interface GolfSessionDetails {
+  holes: 9 | 18;
+  teeTimeStatus: TeeTimeStatus;
+  /** Optional estimate in AUD cents. */
+  estimatedCostCents: number | null;
+  /** Suitable handicap guide, signed tenths, pair or neither. */
+  handicapMinTenths: number | null;
+  handicapMaxTenths: number | null;
+  beginnersWelcome: boolean;
+}
+
 export interface EventSummary {
   id: UUID;
   hostUserId: UUID;
@@ -36,6 +71,10 @@ export interface EventSummary {
   status: EventStatus;
   hasJoined: boolean;
   description: string | null;
+  /** null on legacy events and on non-running sessions. */
+  runDetails?: RunSessionDetails | null;
+  /** null on legacy events and on non-golf sessions. */
+  golfDetails?: GolfSessionDetails | null;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 }
@@ -97,4 +136,8 @@ export interface CreateEventRequest {
   capacity: number;
   description?: string | null;
   visibility?: EventVisibility;
+  /** Only with sport 'running'; requires mode 'casual'. */
+  runDetails?: RunSessionDetails;
+  /** Only with sport 'golf'; requires mode 'casual'. */
+  golfDetails?: GolfSessionDetails;
 }

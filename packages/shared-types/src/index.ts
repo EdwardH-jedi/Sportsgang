@@ -50,6 +50,15 @@ export type {
   SetIdentityPreferencesRequest,
   SportProfile,
   UpsertSportProfileRequest,
+  FocusSport,
+  SportPreferencesVersion,
+  GolfHandicapSource,
+  GolfExperience,
+  GolfPartnerIntent,
+  GolfPreferredHoles,
+  RunPaceMode,
+  RunGroupStyle,
+  SportPreferencesV2,
 } from './sport-profile';
 
 export type {
@@ -59,6 +68,10 @@ export type {
   DiscoveryFeedResponse,
   RecordActionRequest,
   RecordActionResponse,
+  CompatibilityTier,
+  CompatibilityNote,
+  PartnerCompatibility,
+  PartnerSportSummary,
 } from './discovery';
 
 export type {
@@ -172,6 +185,10 @@ export type {
   AttendanceListResponse,
   HostAttendanceUpdateRequest,
   SelfAttendanceRequest,
+  RunSessionPaceMode,
+  RunSessionDetails,
+  TeeTimeStatus,
+  GolfSessionDetails,
 } from './event';
 
 export type {

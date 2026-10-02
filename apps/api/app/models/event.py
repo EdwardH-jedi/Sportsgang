@@ -5,10 +5,13 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     DateTime,
+    Float,
     ForeignKey,
     Integer,
+    SmallInteger,
     String,
     UniqueConstraint,
     func,
@@ -61,6 +64,25 @@ class Event(Base):
     description: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
     visibility: Mapped[str] = mapped_column(String(20), nullable=False, default="public")
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="open")
+
+    # v2 running/golf session details (migration 0016). NULL on every
+    # legacy event. Validated in app/schemas/events.py; all of these are
+    # informational — only status and capacity gate joining.
+    run_distance_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    run_pace_mode: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    run_pace_min_sec_per_km: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    run_pace_max_sec_per_km: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    run_group_style: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    run_beginner_friendly: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    run_walk_breaks_ok: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    golf_holes: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
+    # Host's declaration ("secured" / "planning"); never a course booking.
+    golf_tee_time_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    golf_estimated_cost_cents: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    golf_handicap_min_tenths: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    golf_handicap_max_tenths: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    golf_beginners_welcome: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
 

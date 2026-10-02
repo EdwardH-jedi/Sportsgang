@@ -112,18 +112,21 @@ async def test_replace_profile_photos_four_files(photo_client) -> None:
     assert [p["position"] for p in body["photos"]] == [0, 1, 2, 3]
 
 
-async def test_replace_profile_photos_rejects_one_file(photo_client) -> None:
+async def test_replace_profile_photos_accepts_one_file(photo_client) -> None:
+    # Photos are optional for v2 onboarding; a single photo is a valid set.
     client, _, _ = photo_client
     r = await client.put("/users/me/photos", files=_files(1))
-    assert r.status_code == 422
-    assert "2-4" in r.json()["detail"]
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert len(body["photos"]) == 1
+    assert body["avatar_url"] == body["photos"][0]["photo_url"]
 
 
 async def test_replace_profile_photos_rejects_five_files(photo_client) -> None:
     client, _, _ = photo_client
     r = await client.put("/users/me/photos", files=_files(5))
     assert r.status_code == 422
-    assert "2-4" in r.json()["detail"]
+    assert "1-4" in r.json()["detail"]
 
 
 async def test_avatar_url_synced_to_first_photo(photo_client) -> None:
