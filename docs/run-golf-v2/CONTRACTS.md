@@ -135,8 +135,9 @@ Response additions (all additive):
 ```
 
 - `total`: number of eligible candidates inside the bounded scoring pool
-  (newest 200 users with a profile for the sport, before exclusion of
-  incompatible ones), **not** global coverage.
+  (the pool is the newest 200 users with a profile for the sport; `total`
+  is counted *after* candidates with an established incompatibility are
+  excluded), **not** global coverage.
 - Ordering: tier (`compatible` > `unverified` > `needs_setup`), then
   integer fit points (desc), then `user_id` (asc). Deterministic.
 - `cursor` encodes the last returned `(tier, points, user_id)`. The next page
