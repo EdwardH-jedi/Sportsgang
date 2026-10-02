@@ -178,4 +178,46 @@ describe('useProfileStore', () => {
 
     formSpy.mockRestore();
   });
+  // v2: partner (identity) preferences are optional, so a user who never
+  // opened that screen has no row. That 404 must not fail fetchProfile —
+  // Splash/Login treat a fetchProfile failure as "restart onboarding".
+  it('fetchProfile treats a missing identity-preferences record as null', async () => {
+    jest.spyOn(api, 'get').mockImplementation(async (path: string) => {
+      if (path === '/users/me/profile') {
+        return { id: 'p1', userId: 'u1', displayName: 'Jordan Lee', photos: [] } as any;
+      }
+      if (path === '/users/me/identity-preferences') throw new Error('Preferences not found');
+      if (path === '/users/me/sport-profiles') return [{ sport: 'running', level: 'beginner' }] as any;
+      throw new Error(`Unexpected path: ${path}`);
+    });
+
+    await useProfileStore.getState().fetchProfile();
+
+    const state = useProfileStore.getState();
+    expect(state.profile?.displayName).toBe('Jordan Lee');
+    expect(state.identityPreferences).toBeNull();
+    expect(state.sportProfiles).toEqual([{ sport: 'running', level: 'beginner' }]);
+  });
+
+  it('fetchProfile still fails on a real identity-preferences error', async () => {
+    jest.spyOn(api, 'get').mockImplementation(async (path: string) => {
+      if (path === '/users/me/profile') return { id: 'p1', userId: 'u1', displayName: 'J', photos: [] } as any;
+      if (path === '/users/me/identity-preferences') throw new Error('HTTP 500');
+      return [] as any;
+    });
+    await expect(useProfileStore.getState().fetchProfile()).rejects.toThrow('HTTP 500');
+  });
+
+  it('deleteSportProfile calls the API and drops only that sport locally', async () => {
+    const deleteSpy = jest.spyOn(api, 'delete').mockResolvedValue(undefined as any);
+    useProfileStore.setState({
+      sportProfiles: [
+        { sport: 'golf', level: 'beginner' },
+        { sport: 'gym', level: 'advanced' },
+      ] as any,
+    });
+    await useProfileStore.getState().deleteSportProfile('golf');
+    expect(deleteSpy).toHaveBeenCalledWith('/users/me/sport-profiles/golf');
+    expect(useProfileStore.getState().sportProfiles).toEqual([{ sport: 'gym', level: 'advanced' }]);
+  });
 });

@@ -148,14 +148,14 @@ describe('EditProfileScreen', () => {
     expect(mockUpsertProfile).not.toHaveBeenCalled();
   });
 
-  it('blocks save when in replace-photos mode without enough new photos', async () => {
+  it('blocks save when in replace-photos mode without any new photo', async () => {
     const utils = render(
       <EditProfileScreen navigation={makeNavigation() as any} route={{} as any} />
     );
     fireEvent.press(utils.getByLabelText('Replace photos'));
     // No photos picked yet
     fireEvent.press(utils.getByLabelText('Save profile'));
-    await waitFor(() => utils.getByText('Please add at least 2 photos or cancel replacing.'));
+    await waitFor(() => utils.getByText('Add at least one photo, or keep your current photos.'));
     expect(mockUpsertProfile).not.toHaveBeenCalled();
     expect(mockUploadProfilePhotos).not.toHaveBeenCalled();
   });
@@ -261,6 +261,21 @@ describe('EditProfileScreen', () => {
     expect(mockUpsertProfile).toHaveBeenCalled();
     expect(mockFetchProfile).toHaveBeenCalled();
     expect(nav.goBack).toHaveBeenCalled();
+  });
+
+  it('accepts a single replacement photo (photos are optional; API takes 1-4)', async () => {
+    mockUpsertProfile.mockResolvedValue(undefined);
+    mockUploadProfilePhotos.mockResolvedValue(['http://api/media/profile_photos/u1/only.jpg']);
+    mockFetchProfile.mockResolvedValue(undefined);
+    const nav = makeNavigation();
+    const utils = render(
+      <EditProfileScreen navigation={nav as any} route={{} as any} />
+    );
+    fireEvent.press(utils.getByLabelText('Replace photos'));
+    await addNewPhoto(utils, 'Add photo 1', 'file:///tmp/only.jpg');
+    fireEvent.press(utils.getByLabelText('Save profile'));
+    await waitFor(() => expect(nav.goBack).toHaveBeenCalled());
+    expect(mockUploadProfilePhotos).toHaveBeenCalledWith(['file:///tmp/only.jpg']);
   });
 
   // ── Cancel replace mode ────────────────────────────────────────────────────

@@ -76,6 +76,8 @@ const PROPOSAL_FETCH_STATUSES = 'proposed,confirmed,declined';
 
 export function ChatScreen({ route, navigation }: ChatScreenProps) {
   const { matchId, partnerName, partnerId: routePartnerId, sport } = route.params;
+  // Sport-aware wording for the 1:1 planning CTA; legacy sports keep "court".
+  const venueNoun = sport === 'golf' ? 'course' : sport === 'running' ? 'meeting spot' : 'court';
   const { user, token } = useAuthStore();
   const currentUserId = user?.id ?? null;
   // Treat empty / whitespace-only partner ids as null so an accidentally-blank
@@ -425,7 +427,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         <View style={styles.planBannerText}>
           <Text style={styles.planBannerTitle}>Plan a session</Text>
           <Text style={styles.planBannerSubtitle}>
-            Find a court and propose a time.
+            Find a {venueNoun} and propose a time.
           </Text>
         </View>
         <Pressable
@@ -436,10 +438,10 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             })
           }
           accessibilityRole="button"
-          accessibilityLabel="Find a court"
+          accessibilityLabel={`Find a ${venueNoun}`}
           style={({ pressed }) => [styles.findCourtCta, pressed && styles.pressed]}
         >
-          <Text style={styles.findCourtCtaText}>Find a court</Text>
+          <Text style={styles.findCourtCtaText}>Find a {venueNoun}</Text>
         </Pressable>
       </View>
 

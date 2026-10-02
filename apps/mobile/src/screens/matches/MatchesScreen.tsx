@@ -12,6 +12,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen } from '../../components/Screen';
+import { EmptyState, ErrorState, ScreenHeader } from '../../components/ui';
 import { api } from '../../lib/api';
 import { formatPreviewTimestamp, previewText } from '../../lib/messages';
 import { useAuthStore } from '../../stores/auth';
@@ -123,6 +124,7 @@ function MatchCard({ match, currentUserId }: { match: Match; currentUserId: stri
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export function MatchesScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [matches, setMatches] = useState<Match[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -177,31 +179,28 @@ export function MatchesScreen() {
   return (
     <Screen padded={false}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>Mutual interest</Text>
-        <Text style={styles.title}>Matches</Text>
+        <ScreenHeader eyebrow="Mutual interest" title="Chats" />
       </View>
 
       {isLoading ? (
         <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.accent} />
+          <ActivityIndicator size="large" color={colors.accent} accessibilityLabel="Loading chats" />
         </View>
       ) : error ? (
         <View style={styles.centred}>
-          <Text style={styles.errorTitle}>Something went wrong</Text>
-          <Text style={styles.errorBody}>{error}</Text>
-          <Pressable
-            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
-            onPress={fetchMatches}
-          >
-            <Text style={styles.retryText}>Try again</Text>
-          </Pressable>
+          <ErrorState title="Could not load your chats" body={error} onAction={fetchMatches} />
         </View>
       ) : matches.length === 0 ? (
         <View style={styles.centred}>
-          <Text style={styles.emptyTitle}>No matches yet</Text>
-          <Text style={styles.emptyBody}>
-            Tap players you'd train with.{'\n'}When they tap back, they show up here.
-          </Text>
+          <EmptyState
+            title="No chats yet"
+            body={
+              'When you and someone both show interest in Explore, your chat opens here.\n' +
+              'Use it to agree a time and propose a session.'
+            }
+            actionLabel="Go to Explore"
+            onAction={() => navigation.navigate('Main', { screen: 'Explore' })}
+          />
         </View>
       ) : (
         <FlatList
@@ -227,17 +226,8 @@ export function MatchesScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
-  },
-  eyebrow: {
-    ...typography.label,
-    color: colors.accent,
-    marginBottom: spacing.xs,
-  },
-  title: {
-    ...typography.h2,
   },
   centred: {
     flex: 1,
@@ -245,40 +235,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  emptyBody: {
-    ...typography.body,
-    textAlign: 'center',
-    color: colors.textSecondary,
-    maxWidth: 260,
-    lineHeight: 22,
-  },
-  errorTitle: {
-    ...typography.h3,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  errorBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  retryText: {
-    ...typography.button,
-    color: colors.textPrimary,
   },
   pressed: {
     opacity: 0.65,

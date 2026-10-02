@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { colors, radii, spacing, typography } from '../../theme';
 import type { AuthEntryScreenProps } from '../../navigation/types';
@@ -6,10 +7,10 @@ import type { AuthEntryScreenProps } from '../../navigation/types';
 /**
  * SportsGang Welcome / Auth entry.
  *
- * Neon-lime accent on a near-black hero:
- *  - black/dark hero block dominates the screen
- *  - lowercase wordmark sits on the hero
- *  - lime pill primary CTA + outlined ghost CTA stack at the bottom
+ * Deep-green outdoor hero (light theme v2):
+ *  - deep-green hero block with white text (on-brand tokens)
+ *  - lowercase lime wordmark sits on the hero
+ *  - lime pill primary CTA + outlined white ghost CTA stack at the bottom
  *
  * Built entirely with React Native primitives — no gradient library, just
  * two layered fills approximating a top→bottom darken.
@@ -17,6 +18,8 @@ import type { AuthEntryScreenProps } from '../../navigation/types';
 export function AuthEntryScreen({ navigation }: AuthEntryScreenProps) {
   return (
     <View style={styles.root}>
+      {/* Deep-green hero: light status bar here only (app default is dark). */}
+      <StatusBar style="light" />
       <View style={styles.hero}>
         {/* Layered overlay so the hero reads as a soft top→bottom darken,
             without needing a gradient library. */}
@@ -105,11 +108,11 @@ const styles = StyleSheet.create({
     fontSize: 44,
     fontWeight: '700',
     letterSpacing: -1.5,
-    color: colors.brand,
+    color: colors.primary,
   },
   eyebrow: {
     ...typography.label,
-    color: colors.textSecondary,
+    color: colors.onBrandMuted,
   },
   headlineBlock: {
     alignItems: 'center',
@@ -121,12 +124,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 46,
     letterSpacing: -1.5,
-    color: colors.textPrimary,
+    color: colors.onBrand,
     textAlign: 'center',
   },
   tagline: {
     ...typography.bodyLarge,
-    color: colors.textSecondary,
+    color: colors.onBrandMuted,
     textAlign: 'center',
     paddingTop: spacing.sm,
   },
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   ctaPrimary: {
-    backgroundColor: colors.brand,
+    backgroundColor: colors.primary,
     borderRadius: radii.pill,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -142,16 +145,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaPrimaryPressed: {
-    backgroundColor: colors.brandDark,
+    backgroundColor: colors.primaryPressed,
   },
   ctaPrimaryText: {
     ...typography.button,
-    color: colors.textInverse,
+    color: colors.onPrimary,
     fontSize: 17,
   },
   ctaGhost: {
     borderWidth: 1,
-    borderColor: 'rgba(198,255,61,0.35)',
+    borderColor: colors.onBrandBorder,
     borderRadius: radii.pill,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -159,10 +162,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaGhostPressed: {
-    backgroundColor: 'rgba(198,255,61,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   ctaGhostText: {
     ...typography.button,
-    color: colors.brand,
+    color: colors.onBrand,
   },
 });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   type AttendanceListResponse,
@@ -22,6 +22,8 @@ interface UseEventsArgs {
   mine?: boolean;
   sport?: string;
   mode?: EventMode;
+  /** Only sessions starting now or later. */
+  upcoming?: boolean;
   enabled?: boolean;
 }
 
@@ -29,25 +31,32 @@ export function useEvents({
   mine = false,
   sport,
   mode,
+  upcoming = false,
   enabled = true,
 }: UseEventsArgs = {}) {
   const [items, setItems] = useState<EventSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Each request carries a generation; a response for a superseded query
+  // (e.g. a slow running list after switching to golf) is dropped.
+  const generation = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!enabled) return;
+    const gen = ++generation.current;
     setIsLoading(true);
     setError(null);
     try {
-      const data: EventListResponse = await listEvents({ mine, sport, mode });
+      const data: EventListResponse = await listEvents({ mine, sport, mode, upcoming });
+      if (gen !== generation.current) return;
       setItems(data.items);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not load battles.');
+      if (gen !== generation.current) return;
+      setError(err instanceof Error ? err.message : 'Could not load sessions.');
     } finally {
-      setIsLoading(false);
+      if (gen === generation.current) setIsLoading(false);
     }
-  }, [mine, sport, mode, enabled]);
+  }, [mine, sport, mode, upcoming, enabled]);
 
   useEffect(() => {
     void refresh();
@@ -74,7 +83,7 @@ export function useEventDetail({ eventId, enabled = true }: UseEventDetailArgs) 
       const data = await getEvent(eventId);
       setDetail(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not load battle.');
+      setError(err instanceof Error ? err.message : 'Could not load this session.');
     } finally {
       setIsLoading(false);
     }

@@ -1,82 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { FocusSport, SportProfile } from '@protin/shared-types';
 
-import { HonorCard } from '../../components/HonorCard';
-import { LocalRankSection } from '../../components/LocalRankSection';
 import { Screen } from '../../components/Screen';
-import { useHonorSummary } from '../../hooks/useHonorSummary';
-import { useHonorSystem } from '../../hooks/useHonorSystem';
+import {
+  Button,
+  Card,
+  EmptyState,
+  InfoChip,
+  LoadingState,
+  ScreenHeader,
+  SectionTitle,
+} from '../../components/ui';
 import { api } from '../../lib/api';
 import { openLegal, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../../lib/legal';
+import {
+  FOCUS_SPORTS,
+  FOCUS_SPORT_LABEL,
+  TIME_OPTIONS,
+  golfChips,
+  isConfigured,
+  levelLabel,
+  runChips,
+} from '../../lib/sportPreferences';
 import { useAuthStore } from '../../stores/auth';
 import { sportLabel, useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { TOUCH_TARGET, colors, radii, spacing, typography } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 
-// ─── Upcoming sessions ───────────────────────────────────────────────────────
-//
-// v1 surface for "what did I just confirm?" — sits on the existing Profile
-// card stack so we don't add a new bottom tab. Reuses GET /bookings's
-// existing `status` filter (so no backend change here) and client-filters
-// to future starts so a session that already happened drops off without
-// any timezone math on the server.
-
-interface UpcomingSession {
-  id: string;
-  matchId: string;
-  proposerId: string;
-  partnerId: string;
-  sport: string;
-  startsAt: string;
-  endsAt: string;
-  location: string | null;
-  status: string;
-  partner: { displayName: string };
-  venue?: { name: string; area?: string | null; address?: string | null } | null;
-}
-
-interface UpcomingSessionListResponse {
-  items: UpcomingSession[];
-  total: number;
-  limit: number;
-  offset: number;
-}
-
+/**
+ * Profile tab (v2): identity, running/golf preferences and account settings.
+ *
+ * Rank / Honor / local-champion / battle / tournament / challenge surfaces
+ * are intentionally not shown here any more (their APIs and stored data are
+ * untouched). Upcoming sessions moved to the My Plans tab.
+ */
 export function ProfileScreen() {
   const { logout } = useAuthStore();
   const { profile, sportProfiles, fetchProfile } = useProfileStore();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [upcoming, setUpcoming] = useState<UpcomingSession[]>([]);
-  const {
-    summary: honorSummary,
-    isLoading: honorLoading,
-    error: honorError,
-  } = useHonorSummary();
-  // Honor System (local champion titles) read-only surface. The
-  // (sport, area) pair here is a temporary MVP default — replace with
-  // the user's selected sport/location context once Profile exposes a
-  // "primary sport + area" preference. The backend GET /rankings/me is
-  // read-only and returns the default rank row without persisting, so
-  // a brand-new user safely lands on the empty state.
-  const {
-    rank: localRank,
-    localChampion,
-    myTitles,
-    isLoading: localRankLoading,
-    error: localRankError,
-  } = useHonorSystem({ sport: 'tennis', area: 'annandale' });
   // Local guard so a double-tap or repeat confirmation cannot fire
   // DELETE /auth/me twice. Also blocks Log out while a delete is mid-flight.
   // A ref (not state) is required because Alert button onPress callbacks close
@@ -95,41 +61,6 @@ export function ProfileScreen() {
       })
       .finally(() => setIsLoading(false));
   }, [fetchProfile]);
-
-  // Pull confirmed bookings on mount AND on every tab-focus so a brand-new
-  // accept (driven from chat) shows up the moment the user navigates back
-  // to Profile. Failure is silent: Upcoming is a secondary surface and the
-  // rest of the screen must keep rendering even if /bookings is down.
-  const fetchUpcoming = useCallback(async () => {
-    try {
-      const res = await api.get<UpcomingSessionListResponse>(
-        '/bookings?status=confirmed&limit=50'
-      );
-      const nowMs = Date.now();
-      // Backend orders by starts_at ASC, but already-past confirmed sessions
-      // would appear at the top — drop them client-side. v1: keep this in the
-      // mobile so the API stays generic for other surfaces (BookingDetail
-      // history, future "Past sessions" view).
-      const futureOnly = res.items.filter(
-        (b) =>
-          (b.status === 'confirmed' || b.status === 'accepted') &&
-          new Date(b.endsAt).getTime() > nowMs
-      );
-      setUpcoming(futureOnly);
-    } catch {
-      setUpcoming([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchUpcoming();
-  }, [fetchUpcoming]);
-
-  useFocusEffect(
-    useCallback(() => {
-      void fetchUpcoming();
-    }, [fetchUpcoming])
-  );
 
   // Reset the root stack to AuthEntry. RootNavigator's auth-state effect also
   // forces this when `token` transitions to null, but we keep this explicit
@@ -158,9 +89,7 @@ export function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             // The Alert button can fire twice if the OS retains a stale onPress
-            // over a long press. Read the ref instead of state — the React
-            // closure captures stale state, but .current always reflects the
-            // latest value across consecutive invocations.
+            // over a long press. Read the ref instead of state.
             if (isDeletingRef.current) return;
             isDeletingRef.current = true;
             try {
@@ -191,215 +120,142 @@ export function ProfileScreen() {
   if (isLoading) {
     return (
       <Screen padded>
-        <View style={styles.centred}>
-          <ActivityIndicator size="large" color={colors.brand} />
-        </View>
+        <LoadingState label="Loading your profile…" />
       </Screen>
     );
   }
 
+  const rows = sportProfiles ?? [];
+  const legacyRows = rows.filter((sp) => !FOCUS_SPORTS.includes(sp.sport as FocusSport));
+
   return (
     <Screen padded={false}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* SportsGang brand banner — neon-lime hero with the avatar overlapping
-            the bottom edge. The bannerOverlay supplies a subtle deeper-lime tint
-            so the band reads as a brand block, not a flat fill. */}
-        <View style={styles.banner}>
-          <View style={styles.bannerOverlay} />
-          <View style={styles.bannerHeader}>
-            <Text style={styles.bannerEyebrow}>Account</Text>
-            {profile ? (
-              <Pressable
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScreenHeader
+          eyebrow="Account"
+          title="Profile"
+          right={
+            profile && !error ? (
+              <Button
+                label="Edit profile"
+                variant="secondary"
                 onPress={() => navigation.navigate('EditProfile')}
-                style={({ pressed }) => [styles.editChip, pressed && styles.pressed]}
-                accessibilityRole="button"
-                accessibilityLabel="Edit profile"
-              >
-                <Text style={styles.editChipText}>Edit</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        </View>
+                accessibilityHint="Edit your name, suburb, photos and bio"
+                style={styles.editButton}
+                testID="edit-profile"
+              />
+            ) : undefined
+          }
+        />
 
-        {/* Avatar + name block — overlaps the banner via negative top margin.
-            We keep the page title `Profile` for parity with the reference page
-            structure even though the banner now carries the brand. */}
-        <View style={styles.identityBlock}>
-          <View style={styles.avatarRing}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {profile?.displayName?.charAt(0).toUpperCase() ?? '·'}
-              </Text>
-            </View>
-          </View>
-
-          <Text style={styles.pageTitle}>Profile</Text>
-
-          {error ? (
-            <Text style={styles.errorText}>{error}</Text>
-          ) : profile ? (
-            <>
-              <Text style={styles.displayName}>{profile.displayName}</Text>
-              {profile.suburb ? (
-                <Text style={styles.suburb}>{profile.suburb}</Text>
-              ) : null}
-            </>
-          ) : (
-            <View style={styles.emptyBlock}>
-              <Text style={styles.emptyTitle}>Profile not set up</Text>
-              <Text style={styles.emptyBody}>
-                Complete onboarding to build your workout partner profile.
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Profile content cards — only shown when a profile exists. */}
-        {!error && profile ? (
-          <View style={styles.cardStack}>
-            <HonorCard
-              summary={honorSummary}
-              isLoading={honorLoading}
-              error={honorError}
-            />
-
-            <LocalRankSection
-              sport="tennis"
-              area="annandale"
-              rank={localRank}
-              localChampion={localChampion}
-              myTitles={myTitles}
-              isLoading={localRankLoading}
-              error={localRankError}
-            />
-
-            {profile.bio ? (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>About</Text>
-                <Text style={styles.bioText}>{profile.bio}</Text>
-              </View>
-            ) : null}
-
-            {sportProfiles && sportProfiles.length > 0 ? (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Sports</Text>
-                <View style={styles.sportList}>
-                  {sportProfiles.map((sp) => (
-                    <View key={sp.sport} style={styles.sportRow}>
-                      <Text style={styles.sportName}>
-                        {sportLabel(sp.sport)}
-                      </Text>
-                      <Text style={styles.sportLevel}>
-                        {sp.level.charAt(0).toUpperCase() + sp.level.slice(1)}
-                      </Text>
-                    </View>
-                  ))}
+        {error ? (
+          <Text style={styles.errorText} accessibilityRole="alert">
+            {error}
+          </Text>
+        ) : profile ? (
+          <Card style={styles.identityCard}>
+            <View style={styles.identityRow}>
+              {profile.avatarUrl ? (
+                <Image
+                  source={{ uri: profile.avatarUrl }}
+                  style={styles.avatar}
+                  accessibilityLabel={`${profile.displayName}'s photo`}
+                />
+              ) : (
+                <View style={[styles.avatar, styles.avatarFallback]} accessibilityElementsHidden>
+                  <Text style={styles.avatarText}>{profile.displayName?.charAt(0).toUpperCase() ?? '·'}</Text>
                 </View>
+              )}
+              <View style={styles.identityText}>
+                <Text style={styles.displayName}>{profile.displayName}</Text>
+                {profile.suburb ? <Text style={styles.suburb}>{profile.suburb}</Text> : null}
               </View>
-            ) : null}
+            </View>
+            {profile.bio ? <Text style={styles.bioText}>{profile.bio}</Text> : null}
+          </Card>
+        ) : (
+          <EmptyState
+            title="Profile not set up"
+            body="Finish the basics to start finding running and golf partners."
+            actionLabel="Finish setting up"
+            onAction={() => navigation.navigate('OnboardingStep1')}
+          />
+        )}
 
+        {!error && profile ? (
+          <View style={styles.section}>
+            <SectionTitle hint="These decide who you see — and who sees you.">Your sports</SectionTitle>
+            {FOCUS_SPORTS.map((sport) => {
+              const row = rows.find((sp) => sp.sport === sport) ?? null;
+              return row ? (
+                <SportCard
+                  key={sport}
+                  sport={sport}
+                  row={row}
+                  onEdit={() => navigation.navigate('EditSportPreferences', { sport })}
+                />
+              ) : (
+                <Card key={sport} style={styles.addCard}>
+                  <Text style={styles.addTitle}>{FOCUS_SPORT_LABEL[sport]}</Text>
+                  <Text style={styles.addBody}>Not on your profile yet.</Text>
+                  <Button
+                    label={`Add ${FOCUS_SPORT_LABEL[sport].toLowerCase()}`}
+                    variant="secondary"
+                    onPress={() => navigation.navigate('SetupSports', { mode: 'add' })}
+                  />
+                </Card>
+              );
+            })}
+            {legacyRows.length > 0 ? (
+              <Text style={styles.legacyNote}>
+                Also saved from earlier versions:{' '}
+                {legacyRows
+                  .map((sp) => `${sportLabel(sp.sport)} (${levelLabel(sp.level) ?? sp.level})`)
+                  .join(', ')}
+                . They stay on your account but are not part of running and golf matching.
+              </Text>
+            ) : null}
           </View>
         ) : null}
 
-        <View style={styles.cardStack}>
-          {/* Upcoming sessions — confirmed bookings only, sorted earliest
-              first. Pending proposals stay in chat (S2); declined and past
-              sessions are filtered out so the section stays a calm, simple
-              "what's actually happening next" surface. */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Upcoming sessions</Text>
-            {upcoming.length === 0 ? (
-              <Text style={styles.upcomingEmpty}>No confirmed sessions yet.</Text>
-            ) : (
-              <View style={styles.upcomingList}>
-                {upcoming.map((s) => (
-                  <UpcomingSessionRow
-                    key={s.id}
-                    session={s}
-                    onPress={() =>
-                      navigation.navigate('BookingDetail', { bookingId: s.id })
-                    }
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Guides — how Honor works + safety basics */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Guides</Text>
-            <View style={styles.legalList}>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => navigation.navigate('HonorGuide')}
-                accessibilityRole="link"
-                accessibilityLabel="Honor Guide"
-              >
-                <Text style={styles.legalRowText}>Honor Guide</Text>
-                <Text style={styles.legalRowSubText}>
-                  How Honor, Gang Score, and Sport Levels work
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => navigation.navigate('SafetyCenter')}
-                accessibilityRole="link"
-                accessibilityLabel="Safety Center"
-              >
-                <Text style={styles.legalRowText}>Safety Center</Text>
-                <Text style={styles.legalRowSubText}>
-                  Reports, blocking, and community rules
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Legal */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Legal</Text>
-            <View style={styles.legalList}>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(PRIVACY_URL, 'Privacy Policy')}
-                accessibilityRole="link"
-                accessibilityLabel="Privacy Policy"
-              >
-                <Text style={styles.legalRowText}>Privacy Policy</Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(TERMS_URL, 'Terms of Service')}
-                accessibilityRole="link"
-                accessibilityLabel="Terms of Service"
-              >
-                <Text style={styles.legalRowText}>Terms of Service</Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.legalRow, pressed && styles.pressed]}
-                onPress={() => openLegal(SUPPORT_URL, 'Support')}
-                accessibilityRole="link"
-                accessibilityLabel="Support"
-              >
-                <Text style={styles.legalRowText}>Support</Text>
-              </Pressable>
-            </View>
-          </View>
+        <View style={styles.section}>
+          <SectionTitle>Settings</SectionTitle>
+          <Card style={styles.listCard}>
+            {profile ? (
+              <>
+                <LinkRow
+                  label="Photos & bio"
+                  detail="Optional"
+                  onPress={() => navigation.navigate('OnboardingStep2')}
+                />
+                <LinkRow
+                  label="Partner preferences"
+                  detail="Optional — not used for matching yet"
+                  onPress={() => navigation.navigate('OnboardingStep3')}
+                />
+              </>
+            ) : null}
+            <LinkRow label="Blocked users" onPress={() => navigation.navigate('BlockedUsers')} />
+            <LinkRow
+              label="Safety Center"
+              detail="Reports, blocking, and community rules"
+              onPress={() => navigation.navigate('SafetyCenter')}
+              last
+            />
+          </Card>
         </View>
 
-        {/* Account actions */}
-        <View style={styles.actionStack}>
-          <Pressable
-            style={({ pressed }) => [styles.logoutButton, pressed && styles.pressed]}
-            onPress={handleLogout}
-            accessibilityRole="button"
-            accessibilityLabel="Log out"
-          >
-            <Text style={styles.logoutText}>Log out</Text>
-          </Pressable>
+        <View style={styles.section}>
+          <SectionTitle>Legal</SectionTitle>
+          <Card style={styles.listCard}>
+            <LinkRow label="Privacy Policy" role="link" onPress={() => openLegal(PRIVACY_URL, 'Privacy Policy')} />
+            <LinkRow label="Terms of Service" role="link" onPress={() => openLegal(TERMS_URL, 'Terms of Service')} />
+            <LinkRow label="Support" role="link" onPress={() => openLegal(SUPPORT_URL, 'Support')} last />
+          </Card>
+        </View>
 
+        <View style={styles.actions}>
+          <Button label="Log out" variant="secondary" onPress={handleLogout} />
           <Pressable
             style={({ pressed }) => [styles.deleteButton, pressed && styles.pressed]}
             onPress={handleDeleteAccount}
@@ -414,404 +270,121 @@ export function ProfileScreen() {
   );
 }
 
-function formatUpcomingDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
+function SportCard({ sport, row, onEdit }: { sport: FocusSport; row: SportProfile; onEdit: () => void }) {
+  const configured = isConfigured(row);
+  const chips = configured ? (sport === 'golf' ? golfChips(row) : runChips(row)) : [];
+  const times = (row.preferredTimes ?? [])
+    .map((t) => TIME_OPTIONS.find((o) => o.value === t)?.label)
+    .filter((t): t is string => !!t);
+  return (
+    <Card style={styles.sportCard} testID={`sport-card-${sport}`}>
+      <View style={styles.sportHeader}>
+        <Text style={styles.sportName}>{FOCUS_SPORT_LABEL[sport]}</Text>
+        <InfoChip label={levelLabel(row.level) ?? row.level} />
+      </View>
+      {configured ? (
+        <>
+          <View style={styles.chips}>
+            {chips.map((c) => (
+              <InfoChip key={c} label={c} tone="brand" />
+            ))}
+          </View>
+          {times.length > 0 ? <Text style={styles.times}>{times.join(' · ')}</Text> : null}
+          <Button
+            label={`Edit ${FOCUS_SPORT_LABEL[sport].toLowerCase()} preferences`}
+            variant="secondary"
+            onPress={onEdit}
+          />
+        </>
+      ) : (
+        <>
+          <Text style={styles.setupBody}>
+            Add your {sport === 'golf' ? 'handicap, experience and who you want to play with' : 'pace and how you like to run'} so
+            we can show who fits.
+          </Text>
+          <Button label={`Set up ${FOCUS_SPORT_LABEL[sport].toLowerCase()} preferences`} onPress={onEdit} />
+        </>
+      )}
+    </Card>
+  );
 }
 
-function formatUpcomingTimeRange(startsAt: string, endsAt: string): string {
-  const opts: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
-  return `${new Date(startsAt).toLocaleTimeString(undefined, opts)}–${new Date(
-    endsAt
-  ).toLocaleTimeString(undefined, opts)}`;
-}
-
-function upcomingVenueLine(s: UpcomingSession): string | null {
-  if (s.venue?.name) {
-    const where = s.venue.address ?? s.venue.area;
-    return where ? `${s.venue.name} · ${where}` : s.venue.name;
-  }
-  return s.location?.trim() ? s.location : null;
-}
-
-/**
- * Compact row inside the Upcoming sessions card. Tap → BookingDetail
- * (where the existing Cancel / Mark completed / Record no-show actions
- * live; this row deliberately does NOT duplicate them).
- */
-function UpcomingSessionRow({
-  session,
+function LinkRow({
+  label,
+  detail,
   onPress,
+  role = 'button',
+  last = false,
 }: {
-  session: UpcomingSession;
+  label: string;
+  detail?: string;
   onPress: () => void;
+  role?: 'button' | 'link';
+  last?: boolean;
 }) {
-  const sport = sportLabel(session.sport);
-  const date = formatUpcomingDate(session.startsAt);
-  const time = formatUpcomingTimeRange(session.startsAt, session.endsAt);
-  const venue = upcomingVenueLine(session);
-  const partnerName = session.partner.displayName || 'Partner';
   return (
     <Pressable
       onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={`Open upcoming ${sport.toLowerCase()} session with ${partnerName}`}
-      style={({ pressed }) => [styles.upcomingRow, pressed && styles.pressed]}
+      accessibilityRole={role}
+      accessibilityLabel={label}
+      accessibilityHint={detail}
+      style={({ pressed }) => [styles.linkRow, !last && styles.linkRowBorder, pressed && styles.pressed]}
     >
-      <View style={styles.upcomingRowHeader}>
-        <Text style={styles.upcomingSport}>{sport}</Text>
-        <View style={[styles.statusPill, { borderColor: colors.success }]}>
-          <Text style={[styles.statusPillText, { color: colors.success }]}>
-            CONFIRMED
-          </Text>
-        </View>
+      <View style={styles.linkText}>
+        <Text style={styles.linkLabel}>{label}</Text>
+        {detail ? <Text style={styles.linkDetail}>{detail}</Text> : null}
       </View>
-      <Text style={styles.upcomingWhen}>
-        {date} · {time}
+      <Text style={styles.chevron} accessibilityElementsHidden>
+        ›
       </Text>
-      {venue ? (
-        <Text style={styles.upcomingVenue} numberOfLines={2}>
-          {venue}
-        </Text>
-      ) : null}
-      <Text style={styles.upcomingPartner}>With {partnerName}</Text>
     </Pressable>
   );
 }
 
-const BANNER_HEIGHT = 168;
-const AVATAR_SIZE = 104;
+const AVATAR_SIZE = 64;
 
 const styles = StyleSheet.create({
-  scroll: {
-    paddingBottom: spacing.xxxl,
-    backgroundColor: colors.surfaceElevated,
-  },
-  centred: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
+  pressed: { opacity: 0.7 },
+  editButton: { minHeight: TOUCH_TARGET, paddingHorizontal: spacing.md },
+  errorText: { ...typography.body, color: colors.error, marginVertical: spacing.md },
 
-  // Hero banner
-  banner: {
-    height: BANNER_HEIGHT,
-    backgroundColor: colors.brand,
-    overflow: 'hidden',
-  },
-  bannerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: colors.brandDark,
-    opacity: 0.35,
-  },
-  bannerHeader: {
+  identityCard: { marginBottom: spacing.lg },
+  identityRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  avatar: { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: radii.full },
+  avatarFallback: { backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontSize: 26, fontWeight: '700', color: colors.brand },
+  identityText: { flex: 1 },
+  displayName: { ...typography.h2 },
+  suburb: { ...typography.body, marginTop: 2 },
+  bioText: { ...typography.body, marginTop: spacing.md },
+
+  section: { marginBottom: spacing.lg },
+  sportCard: { marginBottom: spacing.sm, gap: spacing.sm },
+  sportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
+  sportName: { ...typography.h3, flexShrink: 1 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  times: { ...typography.bodySmall },
+  setupBody: { ...typography.body },
+  addCard: { marginBottom: spacing.sm, gap: spacing.xs, borderStyle: 'dashed', borderColor: colors.border },
+  addTitle: { ...typography.h3 },
+  addBody: { ...typography.body, marginBottom: spacing.xs },
+  legacyNote: { ...typography.bodySmall, marginTop: spacing.xs },
+
+  listCard: { paddingVertical: 0 },
+  linkRow: {
+    minHeight: TOUCH_TARGET + 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-  bannerEyebrow: {
-    ...typography.label,
-    color: colors.textInverse,
-  },
-  editChip: {
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
-  },
-  editChipText: {
-    ...typography.label,
-    color: colors.textInverse,
-    letterSpacing: 0.6,
-  },
-
-  // Identity block (overlaps banner)
-  identityBlock: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    marginTop: -AVATAR_SIZE / 2,
-  },
-  avatarRing: {
-    width: AVATAR_SIZE + 8,
-    height: AVATAR_SIZE + 8,
-    borderRadius: radii.full,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.brandDarkest,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: radii.full,
-    backgroundColor: colors.brand,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: colors.textInverse,
-  },
-  pageTitle: {
-    ...typography.label,
-    color: colors.textTertiary,
-    marginTop: spacing.md,
-  },
-  displayName: {
-    ...typography.h1,
-    fontSize: 26,
-    color: colors.textPrimary,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-  },
-  suburb: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  emptyBlock: {
-    alignItems: 'center',
-    paddingTop: spacing.md,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    marginBottom: spacing.sm,
-  },
-  emptyBody: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-
-  // Card stack
-  cardStack: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.separator,
-    shadowColor: colors.brandDarkest,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  cardTitle: {
-    ...typography.h3,
-    fontSize: 17,
-    color: colors.textPrimary,
-    marginBottom: spacing.md,
-  },
-  bioText: {
-    ...typography.bodyLarge,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-  sportList: {
-    gap: spacing.sm,
-  },
-  sportRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-  },
-  sportName: {
-    ...typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  sportLevel: {
-    ...typography.body,
-    color: colors.brand,
-    fontWeight: '600',
-  },
-
-  // Upcoming sessions
-  upcomingEmpty: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  upcomingList: {
-    gap: spacing.sm,
-  },
-  upcomingRow: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-    gap: 2,
-  },
-  upcomingRowHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    marginBottom: 2,
-  },
-  upcomingSport: {
-    ...typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  upcomingWhen: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  upcomingVenue: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  upcomingPartner: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-  },
-  statusPill: {
-    borderWidth: 1,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-  },
-  statusPillText: {
-    ...typography.label,
-    letterSpacing: 0.6,
-  },
-
-  // Integrations
-  integrationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
   },
-  integrationLabel: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  integrationAction: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  integrationActionText: {
-    ...typography.label,
-    color: colors.error,
-  },
-  integrationButton: {
-    borderWidth: 1,
-    borderColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.brandSoft,
-  },
-  integrationButtonText: {
-    ...typography.button,
-    color: colors.brand,
-  },
-  integrationDisabled: {
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.xs,
-  },
-  integrationDisabledTitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  integrationDisabledBody: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-  },
-  integrationErrorText: {
-    ...typography.bodySmall,
-    color: colors.error,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
+  linkRowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.separator },
+  linkText: { flex: 1 },
+  linkLabel: { fontSize: 16, fontWeight: '500', color: colors.textPrimary },
+  linkDetail: { ...typography.bodySmall, marginTop: 2 },
+  chevron: { fontSize: 22, color: colors.textTertiary, marginLeft: spacing.sm },
 
-  // Legal
-  legalList: {
-    gap: spacing.xs,
-  },
-  legalRow: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radii.md,
-  },
-  legalRowText: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  legalRowSubText: {
-    ...typography.bodySmall,
-    color: colors.textTertiary,
-    marginTop: 2,
-  },
-
-  // Account actions
-  actionStack: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    gap: spacing.sm,
-  },
-  logoutButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-  },
-  logoutText: {
-    ...typography.button,
-    color: colors.textSecondary,
-  },
-  deleteButton: {
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  deleteText: {
-    ...typography.button,
-    color: colors.error,
-  },
-  pressed: {
-    opacity: 0.65,
-  },
+  actions: { gap: spacing.md, marginTop: spacing.sm },
+  deleteButton: { minHeight: TOUCH_TARGET, alignItems: 'center', justifyContent: 'center' },
+  deleteText: { fontSize: 15, fontWeight: '600', color: colors.error },
 });

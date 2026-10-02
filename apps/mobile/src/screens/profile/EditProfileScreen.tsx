@@ -24,7 +24,8 @@ import { colors, radii, spacing, typography } from '../../theme';
 import type { EditProfileScreenProps } from '../../navigation/types';
 
 const BIO_MAX = 400;
-export const MIN_PHOTOS = 2;
+// Photos are optional; replacing them needs at least one new photo (API takes 1–4).
+export const MIN_PHOTOS = 1;
 export const MAX_PHOTOS = 4;
 
 export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
@@ -39,7 +40,7 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
   // the entire set with uploaded files; existing absolute media URLs in
   // photoUris cannot be re-submitted as files. So we keep the existing photos
   // untouched unless the user explicitly enters "replace" mode and picks a
-  // fresh 2-4 set.
+  // fresh 1-4 set.
   const [replaceMode, setReplaceMode] = useState(false);
   const [newPhotos, setNewPhotos] = useState<string[]>([]);
 
@@ -94,7 +95,7 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
     }
     if (replaceMode) {
       if (newPhotos.length < MIN_PHOTOS) {
-        setError(`Please add at least ${MIN_PHOTOS} photos or cancel replacing.`);
+        setError('Add at least one photo, or keep your current photos.');
         return;
       }
       if (newPhotos.length > MAX_PHOTOS) {
@@ -244,7 +245,7 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps) {
             ) : (
               <>
                 <Text style={styles.helperText}>
-                  {newPhotos.length} of {MAX_PHOTOS} selected · at least {MIN_PHOTOS} required
+                  {newPhotos.length} of {MAX_PHOTOS} selected
                 </Text>
                 <View style={styles.editGrid}>
                   {newPhotoSlots.map((uri, index) => (

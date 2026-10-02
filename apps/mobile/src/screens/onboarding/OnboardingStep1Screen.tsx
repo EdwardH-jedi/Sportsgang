@@ -1,15 +1,9 @@
 import { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Screen } from '../../components/Screen';
 import { Select, type SelectOption } from '../../components/Select';
+import { Button } from '../../components/ui';
 import { SYDNEY_SUBURB_OPTIONS } from '../../data/sydneySuburbs';
 import {
   DISPLAY_NAME_HELPER_TEXT,
@@ -38,13 +32,16 @@ export function buildYearOptions(): SelectOption[] {
 }
 
 export function OnboardingStep1Screen({ navigation }: Props) {
-  const [displayName, setDisplayName] = useState('');
-  const [birthYear, setBirthYear] = useState<string | null>(null);
-  const [suburb, setSuburb] = useState<string | null>(null);
+  const { upsertProfile, profile } = useProfileStore();
+  // A partially created profile (app closed mid-onboarding) resumes with its
+  // saved values instead of asking for them again.
+  const [displayName, setDisplayName] = useState(profile?.displayName ?? '');
+  const [birthYear, setBirthYear] = useState<string | null>(
+    profile?.birthYear ? String(profile.birthYear) : null
+  );
+  const [suburb, setSuburb] = useState<string | null>(profile?.suburb ?? null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { upsertProfile } = useProfileStore();
 
   const yearOptions = useMemo(buildYearOptions, []);
 
@@ -72,7 +69,9 @@ export function OnboardingStep1Screen({ navigation }: Props) {
         birthYear: birthYearNum,
         suburb,
       });
-      navigation.navigate('OnboardingStep2');
+      // v2 flow: identity → sports → details → availability. Photos, bio and
+      // partner preferences are optional and live in Profile.
+      navigation.navigate('SetupSports', { mode: 'onboarding' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save profile. Please try again.');
     } finally {
@@ -95,7 +94,9 @@ export function OnboardingStep1Screen({ navigation }: Props) {
       <View style={styles.header}>
         <Text style={styles.eyebrow}>Getting started</Text>
         <Text style={styles.title}>Your profile</Text>
-        <Text style={styles.subtitle}>Help potential partners know who you are.</Text>
+        <Text style={styles.subtitle}>
+          The basics first. Next you'll choose running, golf or both.
+        </Text>
       </View>
 
       <View style={styles.form}>
@@ -172,22 +173,12 @@ export function OnboardingStep1Screen({ navigation }: Props) {
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.submit,
-            (pressed || isSubmitting) && styles.submitPressed,
-          ]}
+        <Button
+          label="Continue"
           onPress={handleContinue}
-          disabled={isSubmitting}
-          accessibilityRole="button"
-          accessibilityLabel="Continue"
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color={colors.textInverse} />
-          ) : (
-            <Text style={styles.submitText}>Continue</Text>
-          )}
-        </Pressable>
+          loading={isSubmitting}
+          style={styles.submit}
+        />
       </View>
     </Screen>
   );
@@ -269,21 +260,6 @@ const styles = StyleSheet.create({
     color: colors.error,
   },
   submit: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
     marginTop: spacing.md,
-  },
-  submitPressed: {
-    opacity: 0.65,
-  },
-  submitText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
   },
 });

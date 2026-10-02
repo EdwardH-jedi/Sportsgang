@@ -68,14 +68,14 @@ export function SplashScreen({ navigation }: SplashScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.brand,
+    backgroundColor: colors.splash,
     justifyContent: 'center',
     alignItems: 'center',
   },
   wordmark: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.textInverse,
+    color: colors.onPrimary,
     letterSpacing: 10,
   },
 });

@@ -1,16 +1,9 @@
 /**
- * OnboardingStep2Screen tests (Slice B — photos + bio).
+ * OnboardingStep2Screen tests — optional "Photos & bio" (v2).
  *
- * Step 2 now owns:
- *  - 2–4 profile photos picked from the device photo library
- *  - a required bio persisted via upsertProfile alongside the basic info
- *    already captured in Step 1
- *
- * Mocks:
- *  - stores/profile (useProfileStore)
- *  - expo-image-picker
- *  - Screen component
- *  - theme
+ * Photos and bio are no longer a completion gate: the screen is reached
+ * from Profile, saves a bio without photos, accepts a single photo (the API
+ * takes 1–4) and "Not now" leaves without saving anything.
  */
 
 import React from 'react';
@@ -18,8 +11,6 @@ import { Alert } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 
 import { OnboardingStep2Screen } from '../screens/onboarding/OnboardingStep2Screen';
-
-// ─── Mock expo-image-picker ───────────────────────────────────────────────────
 
 jest.mock('expo-image-picker', () => ({
   requestMediaLibraryPermissionsAsync: jest.fn(),
@@ -29,16 +20,12 @@ jest.mock('expo-image-picker', () => ({
 
 const ImagePicker = require('expo-image-picker');
 
-// ─── Mock profile store ───────────────────────────────────────────────────────
-
 const mockUpsertProfile = jest.fn();
 const mockUploadProfilePhotos = jest.fn();
 
 jest.mock('../stores/profile', () => ({
   useProfileStore: jest.fn(),
 }));
-
-// ─── Mock Screen component ────────────────────────────────────────────────────
 
 jest.mock('../components/Screen', () => {
   const { View } = require('react-native');
@@ -47,41 +34,25 @@ jest.mock('../components/Screen', () => {
   };
 });
 
-// ─── Mock theme ───────────────────────────────────────────────────────────────
-
-jest.mock('../theme', () => ({
-  colors: {
-    accent: '#000', brand: '#000', border: '#ccc', surface: '#fff',
-    surfaceElevated: '#f5f5f5', background: '#fafafa', separator: '#e0e0e0',
-    textPrimary: '#000', textSecondary: '#555', textTertiary: '#888',
-    textInverse: '#fff', success: '#0f0', error: '#f00',
-  },
-  radii: { sm: 4, md: 8, lg: 12, full: 9999 },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40, xxxl: 48 },
-  typography: {
-    h1: {}, h2: {}, h3: {}, body: {}, bodySmall: {}, bodyLarge: {}, label: {}, button: {},
-  },
-}));
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function makeNavigation() {
-  return { navigate: jest.fn(), replace: jest.fn() };
+  return { navigate: jest.fn(), replace: jest.fn(), goBack: jest.fn() };
 }
+
+const PROFILE = {
+  id: 'p1',
+  userId: 'u1',
+  displayName: 'Jordan Lee',
+  birthYear: 1990,
+  suburb: 'Newtown',
+  bio: undefined as string | undefined,
+  createdAt: '2026-01-01T00:00:00Z',
+  updatedAt: '2026-01-01T00:00:00Z',
+};
 
 function setupStore(overrides: Record<string, unknown> = {}) {
   const { useProfileStore } = require('../stores/profile');
   (useProfileStore as jest.Mock).mockReturnValue({
-    profile: {
-      id: 'p1',
-      userId: 'u1',
-      displayName: 'Jordan Lee',
-      birthYear: 1990,
-      suburb: 'Newtown',
-      bio: undefined,
-      createdAt: '2026-01-01T00:00:00Z',
-      updatedAt: '2026-01-01T00:00:00Z',
-    },
+    profile: PROFILE,
     photoUris: [],
     uploadProfilePhotos: mockUploadProfilePhotos,
     upsertProfile: mockUpsertProfile,
@@ -89,209 +60,135 @@ function setupStore(overrides: Record<string, unknown> = {}) {
   });
 }
 
-function grantPermission() {
-  ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: true });
-}
-
-function pickAsset(uri: string) {
-  ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-    canceled: false,
-    assets: [{ uri }],
-  });
-}
-
 async function addPhoto(utils: ReturnType<typeof render>, label: string, uri: string) {
-  grantPermission();
-  pickAsset(uri);
+  ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: true });
+  ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({ canceled: false, assets: [{ uri }] });
   fireEvent.press(utils.getByLabelText(label));
   await waitFor(() => utils.getByLabelText(`Remove photo ${label.match(/\d+/)?.[0]}`));
 }
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+function renderScreen(nav = makeNavigation()) {
+  return { nav, ...render(<OnboardingStep2Screen navigation={nav as any} route={{} as any} />) };
+}
 
-describe('OnboardingStep2Screen', () => {
+describe('OnboardingStep2Screen (optional photos & bio)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setupStore();
   });
 
-  // ── Rendering ──────────────────────────────────────────────────────────────
-
-  it('renders the step indicator for 4-step flow', () => {
-    const { getByText } = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    getByText('Step 2 of 4');
-  });
-
-  it('renders four photo slots and a bio field', () => {
-    const { getByLabelText } = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
+  it('is labelled optional and has no onboarding step indicator', () => {
+    const { getByText, queryByText, getByLabelText } = renderScreen();
+    getByText('Optional');
+    getByText('Photos & bio');
     getByLabelText('Add photo 1');
-    // Slots 2–4 are disabled until the prior slot is filled, so they render
-    // but are not pressable add-buttons yet.
     getByLabelText('Bio');
+    expect(queryByText(/Step \d of 4/)).toBeNull();
   });
 
-  it('shows selection count hint', () => {
-    const { getByText } = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    getByText(/0 of 4 selected/);
-  });
-
-  // ── Photo selection ────────────────────────────────────────────────────────
-
-  it('adds a photo from the library and renders it in the first slot', async () => {
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalledTimes(1);
-    utils.getByLabelText('Remove photo 1');
-  });
-
-  it('removes a photo when the remove button is pressed', async () => {
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    fireEvent.press(utils.getByLabelText('Remove photo 1'));
-    await waitFor(() => utils.getByLabelText('Add photo 1'));
-  });
-
-  it('alerts and does not launch picker when permission is denied', async () => {
-    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
-    ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: false });
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    fireEvent.press(utils.getByLabelText('Add photo 1'));
-    await waitFor(() => expect(alertSpy).toHaveBeenCalled());
-    expect(ImagePicker.launchImageLibraryAsync).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
-  });
-
-  // ── Validation ─────────────────────────────────────────────────────────────
-
-  it('blocks Continue when fewer than 2 photos are selected', async () => {
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), 'Love a morning run.');
-    fireEvent.press(utils.getByLabelText('Continue'));
-    await waitFor(() => utils.getByText('Please add at least 2 photos.'));
-    expect(mockUpsertProfile).not.toHaveBeenCalled();
-  });
-
-  it('blocks Continue when bio is only whitespace', async () => {
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), '   ');
-    fireEvent.press(utils.getByLabelText('Continue'));
-    await waitFor(() => utils.getByText('Please write a short bio.'));
-    expect(mockUpsertProfile).not.toHaveBeenCalled();
-  });
-
-  it('caps photo selection at 4 by hiding the add slot', async () => {
-    const utils = render(
-      <OnboardingStep2Screen navigation={makeNavigation() as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    await addPhoto(utils, 'Add photo 3', 'file:///tmp/p3.jpg');
-    await addPhoto(utils, 'Add photo 4', 'file:///tmp/p4.jpg');
-    expect(utils.queryByLabelText('Add photo 5')).toBeNull();
-    // All 4 slots are now filled; no "Add photo" slot remains.
-    expect(utils.queryByLabelText('Add photo 1')).toBeNull();
-  });
-
-  // ── Successful submit ──────────────────────────────────────────────────────
-
-  it('uploads photos to the backend and persists bio, then navigates', async () => {
-    mockUploadProfilePhotos.mockResolvedValue([
-      'https://api/media/profile_photos/u1/00.jpg',
-      'https://api/media/profile_photos/u1/01.jpg',
-    ]);
+  it('saves a bio without any photos and goes back', async () => {
     mockUpsertProfile.mockResolvedValue(undefined);
-    const nav = makeNavigation();
-    const utils = render(
-      <OnboardingStep2Screen navigation={nav as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), '  Early-morning runner in the Inner West.  ');
-    fireEvent.press(utils.getByLabelText('Continue'));
-    await waitFor(() => {
-      expect(mockUploadProfilePhotos).toHaveBeenCalledWith([
-        'file:///tmp/p1.jpg',
-        'file:///tmp/p2.jpg',
-      ]);
-    });
+    const { nav, getByLabelText } = renderScreen();
+    fireEvent.changeText(getByLabelText('Bio'), '  Early-morning runner in the Inner West.  ');
+    fireEvent.press(getByLabelText('Save'));
+    await waitFor(() => expect(nav.goBack).toHaveBeenCalled());
+    expect(mockUploadProfilePhotos).not.toHaveBeenCalled();
     expect(mockUpsertProfile).toHaveBeenCalledWith({
       displayName: 'Jordan Lee',
       birthYear: 1990,
       suburb: 'Newtown',
       bio: 'Early-morning runner in the Inner West.',
     });
-    expect(nav.navigate).toHaveBeenCalledWith('OnboardingStep3');
   });
 
-  // ── API error ──────────────────────────────────────────────────────────────
+  it('sends bio: null when the bio is left empty (clears it server-side)', async () => {
+    setupStore({ profile: { ...PROFILE, bio: 'Old bio' } });
+    mockUpsertProfile.mockResolvedValue(undefined);
+    const { nav, getByLabelText } = renderScreen();
+    fireEvent.changeText(getByLabelText('Bio'), '   ');
+    fireEvent.press(getByLabelText('Save'));
+    await waitFor(() => expect(nav.goBack).toHaveBeenCalled());
+    expect(mockUpsertProfile).toHaveBeenCalledWith(expect.objectContaining({ bio: null }));
+  });
 
-  it('does not advance and surfaces the error if photo upload fails', async () => {
-    mockUploadProfilePhotos.mockRejectedValue(new Error('Upload failed'));
-    const nav = makeNavigation();
-    const utils = render(
-      <OnboardingStep2Screen navigation={nav as any} route={{} as any} />
-    );
+  it('uploads a single photo (no two-photo minimum) before saving the bio', async () => {
+    mockUploadProfilePhotos.mockResolvedValue(['https://api/media/profile_photos/u1/00.jpg']);
+    mockUpsertProfile.mockResolvedValue(undefined);
+    const utils = renderScreen();
     await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), 'Ready to train.');
-    fireEvent.press(utils.getByLabelText('Continue'));
+    fireEvent.press(utils.getByLabelText('Save'));
+    await waitFor(() => expect(utils.nav.goBack).toHaveBeenCalled());
+    expect(mockUploadProfilePhotos).toHaveBeenCalledWith(['file:///tmp/p1.jpg']);
+    const uploadOrder = mockUploadProfilePhotos.mock.invocationCallOrder[0];
+    const upsertOrder = mockUpsertProfile.mock.invocationCallOrder[0];
+    expect(uploadOrder).toBeLessThan(upsertOrder);
+  });
+
+  it('"Not now" leaves without saving anything', () => {
+    const { nav, getByLabelText } = renderScreen();
+    fireEvent.press(getByLabelText('Not now'));
+    expect(nav.goBack).toHaveBeenCalled();
+    expect(mockUpsertProfile).not.toHaveBeenCalled();
+    expect(mockUploadProfilePhotos).not.toHaveBeenCalled();
+  });
+
+  it('tells the user how many photos are already saved and that new ones replace them', () => {
+    setupStore({ photoUris: ['https://api/a.jpg', 'https://api/b.jpg'] });
+    const { getByText } = renderScreen();
+    getByText('You have 2 saved photos. Adding new photos replaces them.');
+  });
+
+  it('removes a picked photo', async () => {
+    const utils = renderScreen();
+    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
+    fireEvent.press(utils.getByLabelText('Remove photo 1'));
+    await waitFor(() => utils.getByLabelText('Add photo 1'));
+  });
+
+  it('caps selection at 4 photos', async () => {
+    const utils = renderScreen();
+    for (let i = 1; i <= 4; i++) {
+      await addPhoto(utils, `Add photo ${i}`, `file:///tmp/p${i}.jpg`);
+    }
+    expect(utils.queryByLabelText('Add photo 5')).toBeNull();
+    expect(utils.queryByLabelText('Add photo 1')).toBeNull();
+  });
+
+  it('alerts and does not open the picker when permission is denied', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: false });
+    const { getByLabelText } = renderScreen();
+    fireEvent.press(getByLabelText('Add photo 1'));
+    await waitFor(() => expect(alertSpy).toHaveBeenCalled());
+    expect(ImagePicker.launchImageLibraryAsync).not.toHaveBeenCalled();
+    alertSpy.mockRestore();
+  });
+
+  it('stays on screen and shows the error when the upload fails', async () => {
+    mockUploadProfilePhotos.mockRejectedValue(new Error('Upload failed'));
+    const utils = renderScreen();
+    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
+    fireEvent.press(utils.getByLabelText('Save'));
     await waitFor(() => utils.getByText('Upload failed'));
     expect(mockUpsertProfile).not.toHaveBeenCalled();
-    expect(nav.navigate).not.toHaveBeenCalled();
+    expect(utils.nav.goBack).not.toHaveBeenCalled();
   });
 
-  it('does not advance if bio persistence fails after a successful upload', async () => {
-    mockUploadProfilePhotos.mockResolvedValue([
-      'https://api/media/profile_photos/u1/00.jpg',
-      'https://api/media/profile_photos/u1/01.jpg',
-    ]);
+  it('stays on screen when saving the bio fails', async () => {
     mockUpsertProfile.mockRejectedValue(new Error('Server error'));
-    const nav = makeNavigation();
-    const utils = render(
-      <OnboardingStep2Screen navigation={nav as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), 'Ready to train.');
-    fireEvent.press(utils.getByLabelText('Continue'));
-    await waitFor(() => utils.getByText('Server error'));
-    expect(mockUpsertProfile).toHaveBeenCalled();
-    expect(nav.navigate).not.toHaveBeenCalled();
+    const { nav, getByLabelText, getByText } = renderScreen();
+    fireEvent.changeText(getByLabelText('Bio'), 'Ready to train.');
+    fireEvent.press(getByLabelText('Save'));
+    await waitFor(() => getByText('Server error'));
+    expect(nav.goBack).not.toHaveBeenCalled();
   });
 
-  // ── Missing basic info guard ───────────────────────────────────────────────
-
-  it('fails gracefully if the profile from Step 1 is missing', async () => {
+  it('refuses to save when the basic profile is missing', async () => {
     setupStore({ profile: null });
-    const nav = makeNavigation();
-    const utils = render(
-      <OnboardingStep2Screen navigation={nav as any} route={{} as any} />
-    );
-    await addPhoto(utils, 'Add photo 1', 'file:///tmp/p1.jpg');
-    await addPhoto(utils, 'Add photo 2', 'file:///tmp/p2.jpg');
-    fireEvent.changeText(utils.getByLabelText('Bio'), 'Ready.');
-    fireEvent.press(utils.getByLabelText('Continue'));
-    await waitFor(() => utils.getByText('Your basic info is missing. Please restart onboarding.'));
+    const { nav, getByLabelText, getByText } = renderScreen();
+    fireEvent.press(getByLabelText('Save'));
+    await waitFor(() => getByText('Your basic info is missing. Please restart onboarding.'));
     expect(mockUpsertProfile).not.toHaveBeenCalled();
-    expect(nav.navigate).not.toHaveBeenCalled();
+    expect(nav.goBack).not.toHaveBeenCalled();
   });
 });

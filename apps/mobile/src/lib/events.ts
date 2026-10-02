@@ -7,6 +7,7 @@
  */
 
 import { api } from './api';
+import { formatDistance, formatHandicap, formatPaceRange } from './sportPreferences';
 import type {
   AttendanceEntry,
   AttendanceListResponse,
@@ -15,11 +16,18 @@ import type {
   EventDetail,
   EventListResponse,
   EventMode,
+  EventSummary,
+  GolfSessionDetails,
   HostAttendanceUpdateRequest,
+  RunSessionDetails,
   SelfAttendanceRequest,
 } from '@protin/shared-types';
 
 export type {
+  GolfSessionDetails,
+  RunSessionDetails,
+  RunSessionPaceMode,
+  TeeTimeStatus,
   CreateEventRequest,
   EventDetail,
   EventListResponse,
@@ -41,6 +49,8 @@ export interface ListEventsParams {
   mine?: boolean;
   sport?: string;
   mode?: EventMode;
+  /** Only sessions starting now or later. */
+  upcoming?: boolean;
   limit?: number;
   offset?: number;
 }
@@ -48,6 +58,7 @@ export interface ListEventsParams {
 function buildQuery(params: ListEventsParams): string {
   const qs = new URLSearchParams();
   if (params.mine) qs.set('mine', 'true');
+  if (params.upcoming) qs.set('upcoming', 'true');
   if (params.sport) qs.set('sport', params.sport);
   if (params.mode) qs.set('mode', params.mode);
   if (params.limit !== undefined) qs.set('limit', String(params.limit));
@@ -192,4 +203,77 @@ export function formatEventWhen(iso: string): string {
     minute: '2-digit',
   });
   return `${date} · ${time}`;
+}
+
+// ---------------------------------------------------------------------------
+// v2 running / golf sessions (docs/run-golf-v2/CONTRACTS.md §5)
+//
+// Capacity is the total including the host; participantCount already
+// includes the auto-joined host. All session preferences are informational.
+// ---------------------------------------------------------------------------
+
+/** Product noun for a session of this sport: "run", "round" or "session". */
+export function sessionNoun(sport: string): string {
+  if (sport === 'running') return 'run';
+  if (sport === 'golf') return 'round';
+  return 'session';
+}
+
+function participantNoun(sport: string, count: number): string {
+  const base = sport === 'running' ? 'runner' : sport === 'golf' ? 'golfer' : 'player';
+  return count === 1 ? base : `${base}s`;
+}
+
+/** "4 golfers · 1 spot left", "8 runners · Full", "4 golfers · Cancelled". */
+export function capacityText(
+  e: Pick<EventSummary, 'sport' | 'capacity' | 'spotsLeft' | 'status'>
+): string {
+  const total = `${e.capacity} ${participantNoun(e.sport, e.capacity)}`;
+  if (e.status === 'cancelled') return `${total} · Cancelled`;
+  if (e.status === 'completed') return `${total} · Completed`;
+  if (e.spotsLeft <= 0 || e.status === 'full') return `${total} · Full`;
+  return `${total} · ${e.spotsLeft} ${e.spotsLeft === 1 ? 'spot' : 'spots'} left`;
+}
+
+/** AUD cents → "~$35" / "~$35.50". */
+export function formatAudEstimate(cents: number): string {
+  const dollars = cents / 100;
+  return `~$${Number.isInteger(dollars) ? dollars : dollars.toFixed(2)}`;
+}
+
+const GROUP_STYLE_TEXT: Record<RunSessionDetails['groupStyle'], string> = {
+  stay_together: 'Stay together',
+  regroup_at_finish: 'Regroup at the finish',
+  pace_groups: 'Pace groups',
+};
+
+export function runSessionChips(d: RunSessionDetails): string[] {
+  const chips = [formatDistance(d.distanceKm)];
+  if (d.paceMode === 'target_pace' && d.paceMinSecPerKm != null && d.paceMaxSecPerKm != null) {
+    chips.push(`Target ${formatPaceRange(d.paceMinSecPerKm, d.paceMaxSecPerKm)}`);
+  } else {
+    chips.push('Social pace');
+  }
+  chips.push(GROUP_STYLE_TEXT[d.groupStyle]);
+  if (d.beginnerFriendly) chips.push('Beginner friendly');
+  if (d.walkBreaksOk) chips.push('Walk breaks OK');
+  return chips;
+}
+
+export function golfSessionChips(d: GolfSessionDetails): string[] {
+  const chips = [`${d.holes} holes`];
+  chips.push(d.teeTimeStatus === 'secured' ? 'Tee time secured (host says)' : 'Planning to book');
+  if (d.estimatedCostCents != null) chips.push(formatAudEstimate(d.estimatedCostCents));
+  if (d.handicapMinTenths != null && d.handicapMaxTenths != null) {
+    chips.push(`${formatHandicap(d.handicapMinTenths)}–${formatHandicap(d.handicapMaxTenths)} guide`);
+  }
+  if (d.beginnersWelcome) chips.push('Beginners welcome');
+  return chips;
+}
+
+/** Factual detail chips for any event; empty for legacy events. */
+export function sessionChips(e: Pick<EventSummary, 'runDetails' | 'golfDetails'>): string[] {
+  if (e.runDetails) return runSessionChips(e.runDetails);
+  if (e.golfDetails) return golfSessionChips(e.golfDetails);
+  return [];
 }

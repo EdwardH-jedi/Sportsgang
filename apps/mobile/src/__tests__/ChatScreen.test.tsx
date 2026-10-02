@@ -666,6 +666,18 @@ describe('ChatScreen', () => {
     getByLabelText('Find a court');
   });
 
+  it.each([
+    ['golf', 'course'],
+    ['running', 'meeting spot'],
+  ])('uses %s wording for the planning CTA', async (sport, noun) => {
+    mockApiGet.mockReturnValue(new Promise(() => {}));
+    const route = { ...makeRoute(), params: { ...makeRoute().params, sport } };
+    const { getByText, getByLabelText, queryByText } = renderChatScreen({ route });
+    getByText(`Find a ${noun} and propose a time.`);
+    getByLabelText(`Find a ${noun}`);
+    expect(queryByText(/court/)).toBeNull();
+  });
+
   it('navigates to BookingComposer when Find a court is pressed', async () => {
     mockApiGet.mockResolvedValue(emptyMessageResponse);
     const navigation = makeNavigation();

@@ -70,10 +70,28 @@ interface ProfileState {
   uploadProfilePhotos: (uris: string[]) => Promise<string[]>;
   upsertIdentityPreferences: (data: SetIdentityPreferencesRequest) => Promise<void>;
   upsertSportProfile: (data: UpsertSportProfileRequest) => Promise<void>;
+  // User-initiated removal of one sport (DELETE /users/me/sport-profiles/{sport}).
+  deleteSportProfile: (sport: Sport) => Promise<void>;
   // Drop every cached field tied to the current session. Called from
   // auth.logout() so a logout/delete-account flow cannot leave a stale
   // profile (display name, photos, sport rows) visible to the next user.
   reset: () => void;
+}
+
+/**
+ * Partner (identity) preferences are optional since the v2 setup flow: a
+ * user who never opened that screen has no row and the API answers 404.
+ * Treat that as "not set" so it can never block loading the profile (and
+ * therefore can never bounce a fully onboarded user back to Step 1).
+ */
+async function fetchIdentityPreferences(): Promise<IdentityPreferences | null> {
+  try {
+    return await api.get<IdentityPreferences>('/users/me/identity-preferences');
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '';
+    if (/not found|HTTP 404/i.test(message)) return null;
+    throw err;
+  }
 }
 
 function inferMimeFromUri(uri: string): string {
@@ -101,7 +119,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   fetchProfile: async () => {
     const raw = await api.get<ProfileResponse>('/users/me/profile');
-    const identityPreferences = await api.get<IdentityPreferences>('/users/me/identity-preferences');
+    const identityPreferences = await fetchIdentityPreferences();
     const sportProfiles = await api.get<SportProfile[]>('/users/me/sport-profiles');
     const photoUris = (raw.photos ?? [])
       .slice()
@@ -160,6 +178,11 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     const idx = current.findIndex((sp) => sp.sport === data.sport);
     const next = idx >= 0 ? current.map((sp, i) => (i === idx ? updated : sp)) : [...current, updated];
     set({ sportProfiles: next });
+  },
+
+  deleteSportProfile: async (sport) => {
+    await api.delete<void>(`/users/me/sport-profiles/${sport}`);
+    set({ sportProfiles: (get().sportProfiles ?? []).filter((sp) => sp.sport !== sport) });
   },
 
   reset: () => {

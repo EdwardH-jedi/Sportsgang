@@ -142,8 +142,17 @@ describe('MatchesScreen', () => {
 
   it('shows the empty state when there are no matches', async () => {
     mockApiGet.mockResolvedValue(emptyResponse);
+    const { getByText, getByLabelText } = render(<MatchesScreen />);
+    await waitFor(() => getByText('No chats yet'));
+    // The empty state explains how chats start and links back to Explore.
+    fireEvent.press(getByLabelText('Go to Explore'));
+    expect(mockNavigate).toHaveBeenCalledWith('Main', { screen: 'Explore' });
+  });
+
+  it('titles the tab Chats', async () => {
+    mockApiGet.mockResolvedValue(emptyResponse);
     const { getByText } = render(<MatchesScreen />);
-    await waitFor(() => getByText('No matches yet'));
+    await waitFor(() => getByText('Chats'));
   });
 
   // ── Match list ─────────────────────────────────────────────────────────────

@@ -1,33 +1,30 @@
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 import { Screen } from '../../components/Screen';
+import { Button } from '../../components/ui';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { TOUCH_TARGET, colors, radii, spacing, typography } from '../../theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OnboardingStep2'>;
 
-export const MIN_PHOTOS = 2;
 export const MAX_PHOTOS = 4;
 const BIO_MAX = 400;
 
+/**
+ * Optional "Photos & bio" screen (reached from Profile). Neither photos nor
+ * a bio is required to use the app any more: partner cards lead with sport
+ * details. Picked photos replace the saved set (the API takes 1–4 files);
+ * the bio can be saved on its own and cleared by leaving it empty.
+ */
 export function OnboardingStep2Screen({ navigation }: Props) {
   const { profile, photoUris, uploadProfilePhotos, upsertProfile } = useProfileStore();
-  // Hard-clamp hydrated state to MAX_PHOTOS so an over-long persisted/preloaded
-  // list cannot silently survive into the screen's working copy.
-  const [photos, setPhotos] = useState<string[]>(() => photoUris.slice(0, MAX_PHOTOS));
+  // Only freshly picked local files: saved photos are remote URLs that the
+  // upload endpoint cannot accept back as files.
+  const [photos, setPhotos] = useState<string[]>([]);
   const [bio, setBio] = useState<string>(profile?.bio ?? '');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,43 +58,28 @@ export function OnboardingStep2Screen({ navigation }: Props) {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleContinue() {
+  async function handleSave() {
     setError(null);
-    if (photos.length < MIN_PHOTOS) {
-      setError(`Please add at least ${MIN_PHOTOS} photos.`);
-      return;
-    }
-    if (photos.length > MAX_PHOTOS) {
-      // Defence-in-depth against malformed hydrated state: the picker already
-      // refuses to add past MAX_PHOTOS, but submit must also reject it rather
-      // than silently persisting an over-long list downstream.
-      setError(`You can only keep up to ${MAX_PHOTOS} photos.`);
-      return;
-    }
-    const trimmedBio = bio.trim();
-    if (!trimmedBio) {
-      setError('Please write a short bio.');
-      return;
-    }
     if (!profile || !profile.displayName) {
-      // Profile must be present from Step 1 — the backend requires
-      // display_name on every profile PUT, so we cannot send bio alone.
+      // Every profile PUT needs display_name, so a bio cannot be sent alone.
       setError('Your basic info is missing. Please restart onboarding.');
       return;
     }
     setIsSubmitting(true);
     try {
-      // Upload photos first: avatar_url on the profile is synced server-side
-      // to the first photo, so persisting bio afterwards keeps the latest
-      // updated_at while preserving the server-assigned avatar.
-      await uploadProfilePhotos(photos);
+      if (photos.length > 0) {
+        // avatar_url is synced server-side to the first uploaded photo.
+        await uploadProfilePhotos(photos);
+      }
+      const trimmedBio = bio.trim();
       await upsertProfile({
         displayName: profile.displayName,
         birthYear: profile.birthYear,
         suburb: profile.suburb,
-        bio: trimmedBio,
+        // null (not undefined) clears a previous bio on the server.
+        bio: trimmedBio.length > 0 ? trimmedBio : null,
       });
-      navigation.navigate('OnboardingStep3');
+      navigation.goBack();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save your photos and bio. Please try again.');
     } finally {
@@ -109,30 +91,23 @@ export function OnboardingStep2Screen({ navigation }: Props) {
 
   return (
     <Screen padded scroll withKeyboard>
-      <View style={styles.progressBlock}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressSegment, styles.progressSegmentActive]} />
-          <View style={[styles.progressSegment, styles.progressSegmentActive]} />
-          <View style={styles.progressSegment} />
-          <View style={styles.progressSegment} />
-        </View>
-        <Text style={styles.stepLabel}>Step 2 of 4</Text>
-      </View>
-
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>Profile</Text>
-        <Text style={styles.title}>Photos & bio</Text>
+        <Text style={styles.eyebrow}>Optional</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          Photos & bio
+        </Text>
         <Text style={styles.subtitle}>
-          Add {MIN_PHOTOS}–{MAX_PHOTOS} photos and a short bio so partners know who they'll train with.
+          Add up to {MAX_PHOTOS} photos and a short intro. Both are optional — partners see your
+          running and golf details first.
         </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Photos<Text style={styles.required}> *</Text>
-        </Text>
+        <Text style={styles.sectionTitle}>Photos</Text>
         <Text style={styles.hint}>
-          {photos.length} of {MAX_PHOTOS} selected · at least {MIN_PHOTOS} required
+          {photoUris.length > 0
+            ? `You have ${photoUris.length} saved photo${photoUris.length === 1 ? '' : 's'}. Adding new photos replaces them.`
+            : `${photos.length} of ${MAX_PHOTOS} selected`}
         </Text>
         <View style={styles.photoGrid}>
           {slots.map((uri, index) => (
@@ -149,41 +124,37 @@ export function OnboardingStep2Screen({ navigation }: Props) {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Bio<Text style={styles.required}> *</Text>
-        </Text>
+        <Text style={styles.sectionTitle}>Bio</Text>
         <TextInput
           style={styles.bioInput}
           value={bio}
           onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
-          placeholder="Tell partners a bit about yourself and how you train..."
+          placeholder="A line about how you like to run or play..."
           placeholderTextColor={colors.textTertiary}
           multiline
           numberOfLines={5}
           textAlignVertical="top"
           accessibilityLabel="Bio"
         />
-        <Text style={styles.charCount}>{bio.length} / {BIO_MAX}</Text>
+        <Text style={styles.charCount}>
+          {bio.length} / {BIO_MAX}
+        </Text>
       </View>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? (
+        <Text style={styles.errorText} accessibilityRole="alert">
+          {error}
+        </Text>
+      ) : null}
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.submit,
-          (pressed || isSubmitting) && styles.submitPressed,
-        ]}
-        onPress={handleContinue}
+      <Button label="Save" onPress={handleSave} loading={isSubmitting} />
+      <Button
+        label="Not now"
+        variant="ghost"
+        onPress={() => navigation.goBack()}
         disabled={isSubmitting}
-        accessibilityRole="button"
-        accessibilityLabel="Continue"
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={colors.textInverse} />
-        ) : (
-          <Text style={styles.submitText}>Continue</Text>
-        )}
-      </Pressable>
+        style={styles.skip}
+      />
     </Screen>
   );
 }
@@ -229,34 +200,13 @@ function PhotoSlot({ uri, index, canAdd, onAdd, onRemove }: PhotoSlotProps) {
 }
 
 const styles = StyleSheet.create({
-  progressBlock: {
+  header: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  progressBar: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  progressSegment: {
-    flex: 1,
-    height: 4,
-    borderRadius: radii.pill,
-    backgroundColor: colors.separator,
-  },
-  progressSegmentActive: {
-    backgroundColor: colors.brand,
-  },
-  stepLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-  },
-  header: {
-    paddingBottom: spacing.xl,
   },
   eyebrow: {
     ...typography.label,
-    color: colors.brand,
+    color: colors.accent,
     marginBottom: spacing.sm,
   },
   title: {
@@ -274,9 +224,6 @@ const styles = StyleSheet.create({
     ...typography.h3,
     marginBottom: spacing.xs,
   },
-  required: {
-    color: colors.error,
-  },
   hint: {
     ...typography.bodySmall,
     color: colors.textTertiary,
@@ -292,7 +239,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: radii.lg,
     overflow: 'hidden',
-    backgroundColor: colors.inputBackground,
+    backgroundColor: colors.surfaceElevated,
   },
   slotFilled: {
     borderWidth: 2,
@@ -316,7 +263,6 @@ const styles = StyleSheet.create({
   slotEmpty: {
     borderWidth: 1,
     borderColor: colors.separator,
-    backgroundColor: colors.inputBackground,
     opacity: 0.5,
   },
   slotAddPlus: {
@@ -334,28 +280,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing.xs,
     right: spacing.xs,
-    width: 28,
-    height: 28,
+    width: TOUCH_TARGET,
+    height: TOUCH_TARGET,
     borderRadius: radii.full,
-    backgroundColor: 'rgba(15,23,42,0.65)',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.overlay,
   },
   removeButtonText: {
-    // Hardcoded white: the removeButton background is a fixed dark dot
-    // (rgba 15,23,42,0.65), independent of theme `textInverse`.
+    // Fixed light glyph on the fixed dark overlay dot.
     color: '#FFFFFF',
-    fontSize: 20,
-    lineHeight: 22,
+    fontSize: 22,
+    lineHeight: 24,
   },
   bioInput: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     minHeight: 120,
-    ...typography.bodyLarge,
+    fontSize: typography.bodyLarge.fontSize,
     color: colors.textPrimary,
     backgroundColor: colors.inputBackground,
   },
@@ -370,22 +315,8 @@ const styles = StyleSheet.create({
     color: colors.error,
     marginBottom: spacing.md,
   },
-  submit: {
-    backgroundColor: colors.brand,
-    borderRadius: radii.pill,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
+  skip: {
+    marginTop: spacing.sm,
     marginBottom: spacing.xl,
-  },
-  submitPressed: {
-    opacity: 0.65,
-  },
-  submitText: {
-    ...typography.button,
-    color: colors.textInverse,
-    fontSize: 17,
   },
 });

@@ -235,7 +235,7 @@ describe('OnboardingStep1Screen', () => {
     });
   });
 
-  it('navigates to OnboardingStep2 on success', async () => {
+  it('continues to the v2 sport setup (not photos) on success', async () => {
     mockUpsertProfile.mockResolvedValue(undefined);
     const nav = makeNavigation();
     const utils = render(
@@ -244,7 +244,30 @@ describe('OnboardingStep1Screen', () => {
     fillRequired(utils);
     fireEvent.press(utils.getByText('Continue'));
     await waitFor(() => {
-      expect(nav.navigate).toHaveBeenCalledWith('OnboardingStep2');
+      expect(nav.navigate).toHaveBeenCalledWith('SetupSports', { mode: 'onboarding' });
+    });
+    expect(nav.navigate).not.toHaveBeenCalledWith('OnboardingStep2');
+  });
+
+  it('resumes a partially saved profile with its stored values', async () => {
+    const { useProfileStore } = require('../stores/profile');
+    (useProfileStore as jest.Mock).mockReturnValue({
+      upsertProfile: mockUpsertProfile,
+      profile: { displayName: 'Sam Park', birthYear: 1988, suburb: 'Bondi' },
+    });
+    mockUpsertProfile.mockResolvedValue(undefined);
+    const nav = makeNavigation();
+    const utils = render(
+      <OnboardingStep1Screen navigation={nav as any} route={{} as any} />
+    );
+    expect(utils.getByPlaceholderText("How you'll appear to others").props.value).toBe('Sam Park');
+    fireEvent.press(utils.getByText('Continue'));
+    await waitFor(() => {
+      expect(mockUpsertProfile).toHaveBeenCalledWith({
+        displayName: 'Sam Park',
+        birthYear: 1988,
+        suburb: 'Bondi',
+      });
     });
   });
 

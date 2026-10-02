@@ -14,9 +14,15 @@ import { RegisterScreen } from '../screens/auth/RegisterScreen';
 import { OnboardingStep1Screen } from '../screens/onboarding/OnboardingStep1Screen';
 import { OnboardingStep2Screen } from '../screens/onboarding/OnboardingStep2Screen';
 import { OnboardingStep3Screen } from '../screens/onboarding/OnboardingStep3Screen';
-import { OnboardingStep4Screen } from '../screens/onboarding/OnboardingStep4Screen';
-import { DiscoveryScreen } from '../screens/discovery/DiscoveryScreen';
-import { EventsScreen } from '../screens/events/EventsScreen';
+import { SetupSportsScreen } from '../screens/setup/SetupSportsScreen';
+import { SetupSportDetailsScreen } from '../screens/setup/SetupSportDetailsScreen';
+import { SetupAvailabilityScreen } from '../screens/setup/SetupAvailabilityScreen';
+import { ExploreScreen } from '../screens/explore/ExploreScreen';
+import { PartnerDetailScreen } from '../screens/explore/PartnerDetailScreen';
+import { MyPlansScreen } from '../screens/plans/MyPlansScreen';
+import { CreateSessionScreen } from '../screens/sessions/CreateSessionScreen';
+import { SessionDetailScreen } from '../screens/sessions/SessionDetailScreen';
+import { EditSportPreferencesScreen } from '../screens/profile/EditSportPreferencesScreen';
 import { MatchesScreen } from '../screens/matches/MatchesScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
@@ -71,30 +77,31 @@ function MainTabs() {
         },
         tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.textTertiary,
+        // Label-only tab bar (no icon set is bundled), so the labels carry
+        // the whole affordance: larger, centred, readable at large text.
+        tabBarIconStyle: { display: 'none' },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          letterSpacing: 0.3,
-          marginBottom: 2,
+          fontSize: 14,
+          fontWeight: '600',
+          letterSpacing: 0.1,
         },
-        // No tabBarIcon is provided — icons are added once the icon system
-        // is decided. React Navigation v6 has no `tabBarShowIcon` option.
+        tabBarItemStyle: { justifyContent: 'center' },
       }}
     >
       <Tab.Screen
-        name="Discovery"
-        component={DiscoveryScreen}
-        options={{ title: 'Discover' }}
+        name="Explore"
+        component={ExploreScreen}
+        options={{ title: 'Explore' }}
       />
       <Tab.Screen
-        name="Matches"
+        name="Plans"
+        component={MyPlansScreen}
+        options={{ title: 'My Plans' }}
+      />
+      <Tab.Screen
+        name="Chats"
         component={MatchesScreen}
-        options={{ title: 'Matches' }}
-      />
-      <Tab.Screen
-        name="Events"
-        component={EventsScreen}
-        options={{ title: 'Events' }}
+        options={{ title: 'Chats' }}
       />
       <Tab.Screen
         name="Profile"
@@ -188,14 +195,44 @@ export function RootNavigator() {
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
-          name="OnboardingStep4"
-          component={OnboardingStep4Screen}
+          name="SetupSports"
+          component={SetupSportsScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="SetupSportDetails"
+          component={SetupSportDetailsScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="SetupAvailability"
+          component={SetupAvailabilityScreen}
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name="Main"
           component={MainTabs}
           options={{ animation: 'fade' }}
+        />
+        <Stack.Screen
+          name="EditSportPreferences"
+          component={EditSportPreferencesScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="PartnerDetail"
+          component={PartnerDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="CreateSession"
+          component={CreateSessionScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="SessionDetail"
+          component={SessionDetailScreen}
+          options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name="EditProfile"

@@ -1,6 +1,9 @@
 /**
- * OnboardingStep3Screen tests (identity preferences, renumbered to 3 of 4
- * after Slice B inserted photos + bio as Step 2).
+ * OnboardingStep3Screen tests — optional partner (identity) preferences.
+ *
+ * v2: no longer part of the onboarding flow. Reached from Profile, saves to
+ * the existing identity-preferences record, says plainly that matching does
+ * not use these values yet, and returns to the previous screen on save.
  *
  * Mocks:
  *  - stores/profile (useProfileStore)
@@ -49,13 +52,14 @@ jest.mock('../theme', () => ({
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeNavigation() {
-  return { navigate: jest.fn(), replace: jest.fn() };
+  return { navigate: jest.fn(), replace: jest.fn(), goBack: jest.fn() };
 }
 
-function setupStore() {
+function setupStore(identityPreferences: Record<string, unknown> | null = null) {
   const { useProfileStore } = require('../stores/profile');
   (useProfileStore as jest.Mock).mockReturnValue({
     upsertIdentityPreferences: mockUpsertIdentityPreferences,
+    identityPreferences,
   });
 }
 
@@ -69,11 +73,32 @@ describe('OnboardingStep3Screen', () => {
 
   // ── Rendering ──────────────────────────────────────────────────────────────
 
-  it('renders the step indicator for 4-step flow', () => {
-    const { getByText } = render(
+  it('is optional and says these preferences do not filter matches yet', () => {
+    const { getByText, queryByText } = render(
       <OnboardingStep3Screen navigation={makeNavigation() as any} route={{} as any} />
     );
-    getByText('Step 3 of 4');
+    getByText('Optional');
+    getByText('Partner preferences');
+    getByText(/do not filter who you see yet/);
+    expect(queryByText(/Step \d of 4/)).toBeNull();
+  });
+
+  it('prefills previously saved preferences', async () => {
+    setupStore({ openTo: ['female'], ageRangeMin: 25, ageRangeMax: 40, maxDistanceKm: 10 });
+    mockUpsertIdentityPreferences.mockResolvedValue(undefined);
+    const { getByRole, getByText } = render(
+      <OnboardingStep3Screen navigation={makeNavigation() as any} route={{} as any} />
+    );
+    expect(getByRole('checkbox', { name: 'Women' }).props.accessibilityState.checked).toBe(true);
+    fireEvent.press(getByText('Save'));
+    await waitFor(() => {
+      expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith({
+        openTo: ['female'],
+        ageRangeMin: 25,
+        ageRangeMax: 40,
+        maxDistanceKm: 10,
+      });
+    });
   });
 
   it('renders the preference options', () => {
@@ -132,7 +157,7 @@ describe('OnboardingStep3Screen', () => {
     const { getByText } = render(
       <OnboardingStep3Screen navigation={nav as any} route={{} as any} />
     );
-    fireEvent.press(getByText('Continue'));
+    fireEvent.press(getByText('Save'));
     await waitFor(() => {
       expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith({
         openTo: ['any'],
@@ -143,16 +168,17 @@ describe('OnboardingStep3Screen', () => {
     });
   });
 
-  it('navigates to OnboardingStep4 on success', async () => {
+  it('goes back on success (no longer an onboarding step)', async () => {
     mockUpsertIdentityPreferences.mockResolvedValue(undefined);
     const nav = makeNavigation();
     const { getByText } = render(
       <OnboardingStep3Screen navigation={nav as any} route={{} as any} />
     );
-    fireEvent.press(getByText('Continue'));
+    fireEvent.press(getByText('Save'));
     await waitFor(() => {
-      expect(nav.navigate).toHaveBeenCalledWith('OnboardingStep4');
+      expect(nav.goBack).toHaveBeenCalled();
     });
+    expect(nav.navigate).not.toHaveBeenCalled();
   });
 
   // ── API error ──────────────────────────────────────────────────────────────
@@ -163,9 +189,9 @@ describe('OnboardingStep3Screen', () => {
     const { getByText } = render(
       <OnboardingStep3Screen navigation={nav as any} route={{} as any} />
     );
-    fireEvent.press(getByText('Continue'));
+    fireEvent.press(getByText('Save'));
     await waitFor(() => getByText('Network error'));
-    expect(nav.navigate).not.toHaveBeenCalled();
+    expect(nav.goBack).not.toHaveBeenCalled();
   });
 
   // ── Age range selector (keyboard-free, replaces TextInputs) ───────────────
@@ -190,7 +216,7 @@ describe('OnboardingStep3Screen', () => {
       );
       fireEvent.press(getByLabelText('Increase minimum age'));
       fireEvent.press(getByLabelText('Increase minimum age'));
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 20, ageRangeMax: 65 })
@@ -206,7 +232,7 @@ describe('OnboardingStep3Screen', () => {
       fireEvent.press(getByLabelText('Decrease maximum age'));
       fireEvent.press(getByLabelText('Decrease maximum age'));
       fireEvent.press(getByLabelText('Decrease maximum age'));
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 18, ageRangeMax: 62 })
@@ -241,7 +267,7 @@ describe('OnboardingStep3Screen', () => {
       // 15 presses lifts max from 65 to 80, the new ceiling.
       for (let i = 0; i < 15; i += 1) fireEvent.press(maxPlus);
       expect(getByLabelText('Increase maximum age').props.accessibilityState.disabled).toBe(true);
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 18, ageRangeMax: 80 })
@@ -261,7 +287,7 @@ describe('OnboardingStep3Screen', () => {
       const minPlus = getByLabelText('Increase minimum age');
       expect(minPlus.props.accessibilityState.disabled).toBe(true);
       fireEvent.press(minPlus);
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 18, ageRangeMax: 18 })
@@ -313,7 +339,7 @@ describe('OnboardingStep3Screen', () => {
       });
       fireEvent(bar, 'responderGrant', { nativeEvent: { locationX: 10 } });
       fireEvent(bar, 'responderRelease', { nativeEvent: { locationX: 10 } });
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 24, ageRangeMax: 65 })
@@ -335,7 +361,7 @@ describe('OnboardingStep3Screen', () => {
       fireEvent(bar, 'responderGrant', { nativeEvent: { locationX: 80 } });
       fireEvent(bar, 'responderMove', { nativeEvent: { locationX: 200 } });
       fireEvent(bar, 'responderRelease', { nativeEvent: { locationX: 200 } });
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 18, ageRangeMax: 80 })
@@ -357,7 +383,7 @@ describe('OnboardingStep3Screen', () => {
       fireEvent(bar, 'responderGrant', { nativeEvent: { locationX: 5 } });
       fireEvent(bar, 'responderMove', { nativeEvent: { locationX: 300 } });
       fireEvent(bar, 'responderRelease', { nativeEvent: { locationX: 300 } });
-      fireEvent.press(getByText('Continue'));
+      fireEvent.press(getByText('Save'));
       await waitFor(() => {
         expect(mockUpsertIdentityPreferences).toHaveBeenCalledWith(
           expect.objectContaining({ ageRangeMin: 65, ageRangeMax: 65 })

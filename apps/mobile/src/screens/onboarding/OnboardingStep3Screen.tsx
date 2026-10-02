@@ -10,7 +10,7 @@ import {
 import { AgeRangeSelector } from '../../components/AgeRangeSelector';
 import { Screen } from '../../components/Screen';
 import { useProfileStore } from '../../stores/profile';
-import { colors, radii, spacing, typography } from '../../theme';
+import { TOUCH_TARGET, colors, radii, spacing, typography } from '../../theme';
 import type { GenderPreference } from '@protin/shared-types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
@@ -30,15 +30,19 @@ const AGE_MIN_LIMIT = 18;
 const AGE_MAX_LIMIT = 80;
 const DEFAULT_AGE_MAX = 65;
 
+/**
+ * Optional partner preferences (reached from Profile). The values are saved
+ * to the existing identity-preferences record, but discovery does not filter
+ * by them yet — the copy says so instead of implying they are enforced.
+ */
 export function OnboardingStep3Screen({ navigation }: Props) {
-  const [openTo, setOpenTo] = useState<GenderPreference[]>(['any']);
-  const [ageMin, setAgeMin] = useState<number>(AGE_MIN_LIMIT);
-  const [ageMax, setAgeMax] = useState<number>(DEFAULT_AGE_MAX);
-  const [maxDistance, setMaxDistance] = useState<number>(20);
+  const { upsertIdentityPreferences, identityPreferences: saved } = useProfileStore();
+  const [openTo, setOpenTo] = useState<GenderPreference[]>(saved?.openTo?.length ? saved.openTo : ['any']);
+  const [ageMin, setAgeMin] = useState<number>(saved?.ageRangeMin ?? AGE_MIN_LIMIT);
+  const [ageMax, setAgeMax] = useState<number>(saved?.ageRangeMax ?? DEFAULT_AGE_MAX);
+  const [maxDistance, setMaxDistance] = useState<number>(saved?.maxDistanceKm ?? 20);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { upsertIdentityPreferences } = useProfileStore();
 
   function toggleOpenTo(value: GenderPreference) {
     if (value === 'any') {
@@ -78,7 +82,7 @@ export function OnboardingStep3Screen({ navigation }: Props) {
         ageRangeMax: ageMax,
         maxDistanceKm: maxDistance,
       });
-      navigation.navigate('OnboardingStep4');
+      navigation.goBack();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save preferences. Please try again.');
     } finally {
@@ -88,19 +92,15 @@ export function OnboardingStep3Screen({ navigation }: Props) {
 
   return (
     <Screen padded scroll>
-      {/* Progress indicator */}
-      <View style={styles.progress}>
-        <View style={styles.dot} />
-        <View style={styles.dot} />
-        <View style={[styles.dot, styles.dotActive]} />
-        <View style={styles.dot} />
-        <Text style={styles.stepLabel}>Step 3 of 4</Text>
-      </View>
-
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>Preferences</Text>
-        <Text style={styles.title}>Your partner{'\n'}preferences</Text>
-        <Text style={styles.subtitle}>We use this to show you relevant workout partners.</Text>
+        <Text style={styles.eyebrow}>Optional</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          Partner preferences
+        </Text>
+        <Text style={styles.subtitle}>
+          Saved to your profile for later. They do not filter who you see yet — matching uses
+          your running and golf preferences.
+        </Text>
       </View>
 
       <View style={styles.section}>
@@ -188,12 +188,12 @@ export function OnboardingStep3Screen({ navigation }: Props) {
         onPress={handleContinue}
         disabled={isSubmitting}
         accessibilityRole="button"
-        accessibilityLabel="Continue"
+        accessibilityLabel="Save"
       >
         {isSubmitting ? (
-          <ActivityIndicator color={colors.textInverse} />
+          <ActivityIndicator color={colors.onPrimary} />
         ) : (
-          <Text style={styles.buttonPrimaryText}>Continue</Text>
+          <Text style={styles.buttonPrimaryText}>Save</Text>
         )}
       </Pressable>
     </Screen>
@@ -201,29 +201,8 @@ export function OnboardingStep3Screen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  progress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: radii.full,
-    backgroundColor: colors.border,
-  },
-  dotActive: {
-    backgroundColor: colors.accent,
-    width: 20,
-  },
-  stepLabel: {
-    ...typography.label,
-    color: colors.textTertiary,
-    marginLeft: spacing.xs,
-  },
   header: {
+    paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
   },
   eyebrow: {
@@ -252,6 +231,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   toggleButton: {
+    minHeight: TOUCH_TARGET,
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.full,
@@ -260,15 +241,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   toggleButtonActive: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent,
+    borderColor: colors.brand,
+    backgroundColor: colors.brandSoft,
   },
   toggleButtonText: {
     ...typography.body,
     color: colors.textPrimary,
   },
   toggleButtonTextActive: {
-    color: colors.textInverse,
+    color: colors.brand,
     fontWeight: '600',
   },
   errorText: {
@@ -277,7 +258,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   buttonPrimary: {
-    backgroundColor: colors.brand,
+    backgroundColor: colors.primary,
+    minHeight: 50,
+    justifyContent: 'center',
     // Match the pill shape used by OnboardingStep1/2 + LoginScreen so the
     // onboarding flow ends on the same CTA silhouette it began with.
     borderRadius: radii.pill,
@@ -287,7 +270,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryText: {
     ...typography.button,
-    color: colors.textInverse,
+    color: colors.onPrimary,
   },
   pressed: {
     opacity: 0.65,

@@ -3,7 +3,9 @@ import * as SecureStore from 'expo-secure-store';
 import type { AppleSignInRequest, MeResponse, TokenResponse } from '@protin/shared-types';
 
 import { api, setToken } from '../lib/api';
+import { useExploreStore } from './explore';
 import { useProfileStore } from './profile';
+import { useSetupDraft } from './setupDraft';
 
 const TOKEN_KEY = 'protin.auth.token';
 
@@ -158,6 +160,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     // the previous account's display name, photos and sport rows on the
     // Profile tab while navigation is being reset.
     useProfileStore.getState().reset();
+    // Same for Explore: focus sport, filters and loaded partner cards are
+    // account-specific (the persisted focus key is per user id).
+    useExploreStore.getState().reset();
+    useSetupDraft.getState().reset();
   },
 
   initialize: async () => {

@@ -1,5 +1,9 @@
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { FocusSport } from '@protin/shared-types';
+
+export type SetupMode = 'onboarding' | 'add';
 
 /**
  * Root stack — full-screen flows managed outside the tab bar.
@@ -10,10 +14,29 @@ export type RootStackParamList = {
   LoginScreen: undefined;
   RegisterScreen: undefined;
   OnboardingStep1: undefined;
+  /**
+   * v2 sport setup: identity (Step 1) → sports → per-sport details →
+   * availability → Main. `mode: 'add'` reuses the flow from Profile to add
+   * a second sport without touching the rest of the profile.
+   */
+  SetupSports: { mode: SetupMode } | undefined;
+  SetupSportDetails: { mode: SetupMode; sports: FocusSport[]; index: number };
+  SetupAvailability: { mode: SetupMode; sports: FocusSport[] };
+  /** Edit one sport's v2 preferences (Profile / Explore setup prompt). */
+  EditSportPreferences: { sport: FocusSport };
+  /** Optional photos & bio (no longer a completion gate). */
   OnboardingStep2: undefined;
+  /** Optional partner (identity) preferences — informational, not enforced. */
   OnboardingStep3: undefined;
-  OnboardingStep4: undefined;
-  Main: undefined;
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
+  /**
+   * Partner detail, opened from an Explore partner card. The card is read
+   * from the discovery store by (userId, sport) so the feed and the detail
+   * screen act on the same loaded data.
+   */
+  PartnerDetail: { userId: string; sport: FocusSport };
+  CreateSession: { sport: FocusSport };
+  SessionDetail: { eventId: string };
   EditProfile: undefined;
   Chat: { matchId: string; partnerName: string; partnerId: string; sport: string };
   BookingComposer: { matchId: string; sport: string };
@@ -51,9 +74,9 @@ export type RootStackParamList = {
  * Main tab bar — core surfaces of the authenticated experience.
  */
 export type MainTabParamList = {
-  Discovery: undefined;
-  Matches: undefined;
-  Events: undefined;
+  Explore: undefined;
+  Plans: undefined;
+  Chats: undefined;
   Profile: undefined;
 };
 
@@ -66,12 +89,23 @@ export type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'Re
 export type OnboardingStep1ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep1'>;
 export type OnboardingStep2ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep2'>;
 export type OnboardingStep3ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep3'>;
-export type OnboardingStep4ScreenProps = NativeStackScreenProps<RootStackParamList, 'OnboardingStep4'>;
+export type SetupSportsScreenProps = NativeStackScreenProps<RootStackParamList, 'SetupSports'>;
+export type SetupSportDetailsScreenProps = NativeStackScreenProps<RootStackParamList, 'SetupSportDetails'>;
+export type SetupAvailabilityScreenProps = NativeStackScreenProps<RootStackParamList, 'SetupAvailability'>;
+export type EditSportPreferencesScreenProps = NativeStackScreenProps<RootStackParamList, 'EditSportPreferences'>;
+export type PartnerDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'PartnerDetail'>;
+export type CreateSessionScreenProps = NativeStackScreenProps<RootStackParamList, 'CreateSession'>;
+export type SessionDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'SessionDetail'>;
 
-export type DiscoveryScreenProps = BottomTabScreenProps<MainTabParamList, 'Discovery'>;
-export type MatchesScreenProps = BottomTabScreenProps<MainTabParamList, 'Matches'>;
-export type EventsScreenProps = BottomTabScreenProps<MainTabParamList, 'Events'>;
-export type ProfileScreenProps = BottomTabScreenProps<MainTabParamList, 'Profile'>;
+/** Tab screens can also push root-stack routes. */
+type TabProps<T extends keyof MainTabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, T>,
+  NativeStackScreenProps<RootStackParamList>
+>;
+export type ExploreScreenProps = TabProps<'Explore'>;
+export type PlansScreenProps = TabProps<'Plans'>;
+export type ChatsScreenProps = TabProps<'Chats'>;
+export type ProfileScreenProps = TabProps<'Profile'>;
 export type EditProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
 
 export type ChatScreenProps = NativeStackScreenProps<RootStackParamList, 'Chat'>;

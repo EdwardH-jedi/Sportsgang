@@ -1,55 +1,69 @@
 /**
- * SportsGang design tokens.
+ * SportsGang design tokens — light outdoor theme (run + golf v2).
  *
- * Visual direction: electric neon-lime accent on a near-black surface.
- * Lime is the brand mark; black + dark elevation are the canvas.
+ * Off-white canvas, dark-green text, deep-green brand for tints/links/fills,
+ * and a restrained lime reserved for primary actions. Token *names* are kept
+ * from the previous dark theme so every screen re-themes from one place;
+ * the roles are:
  *
- *   background        — near-black, the base canvas under every Screen
- *   surface           — slightly lighter than background for cards / chrome
- *   surfaceElevated   — one step brighter for raised content (banner gutter)
- *   text*             — off-white ramp; tertiary still readable on dark
- *   textInverse       — near-black, used as text color on lime brand fills
- *   brand             — electric lime, the headline accent
- *   brandDark*        — deeper / darker lime + pure black for hero gradients
- *   brandSoft         — translucent lime tint, used for badges / soft fills
- *   accent            — slightly brighter lime for hover / pressed
- *   error / success   — tuned for legibility on dark surfaces
+ *   background        — warm off-white canvas under every Screen
+ *   surface           — white cards / sheets / tab bar
+ *   surfaceElevated   — subtle tinted panel (chips, inset groups)
+ *   text*             — dark-green ramp; all >= 4.5:1 on background/surface
+ *   textInverse       — white, for text on `brand` (deep green) fills
+ *   brand             — deep green: active tints, links, secondary fills
+ *   brandDark         — pressed brand
+ *   brandDarkest      — darkest green for hero panels and shadows
+ *   brandSoft         — translucent green tint for badges / selected chips
+ *   accent            — mid green for spinners and small highlights (text-safe)
+ *   primary/onPrimary — lime fill + dark-green label for the primary action
+ *   error / success / warning — tuned for >= 4.5:1 on the light canvas
  *
- * Token *names* are kept stable so existing screens compile without touching
- * unrelated files. The single load-bearing flip is `textInverse` (white →
- * near-black) so that text on the lime brand fill reads correctly. The few
- * places that need light text on a hardcoded dark surface (image overlay /
- * remove-photo dot) override the color locally.
+ * Lime is never used as a text colour: it fails contrast on off-white.
  */
 
 export const colors = {
   // Backgrounds
-  background: '#0A0A0A',
-  surface: '#111114',
-  surfaceElevated: '#16161B',
+  background: '#F5F4EE',
+  surface: '#FFFFFF',
+  surfaceElevated: '#ECEBE3',
 
   // Text
-  textPrimary: '#F5F5F0',   // off-white
-  textSecondary: '#A8A8A2', // muted body
-  textTertiary: '#6E6E68',  // hints, placeholders
-  textInverse: '#0A0A0A',   // text on lime brand fills
+  textPrimary: '#13291C',
+  textSecondary: '#4B5B50',
+  textTertiary: '#58685D',
+  textInverse: '#FFFFFF',
 
-  // Brand — electric lime family
-  brand: '#C6FF3D',         // electric lime, primary CTA + accent
-  brandDark: '#9CCC1F',     // deeper lime, pressed state
-  brandDarkest: '#000000',  // pure black, hero base
-  brandSoft: 'rgba(198,255,61,0.14)', // translucent lime tint for badges
-  accent: '#DBFF66',        // brighter lime, hover/active
+  // Brand — deep green family
+  brand: '#1E5B3B',
+  brandDark: '#164530',
+  brandDarkest: '#0D2A1B',
+  brandSoft: 'rgba(30,91,59,0.10)',
+  accent: '#2B7A4B',
+
+  // Primary action — restrained lime
+  primary: '#C5EE5B',
+  primaryPressed: '#B2DD45',
+  onPrimary: '#13291C',
+  // Text on deep-green hero panels (welcome screen)
+  onBrand: '#FFFFFF',
+  onBrandMuted: 'rgba(255,255,255,0.82)',
+  onBrandBorder: 'rgba(255,255,255,0.45)',
+  /** Native splash colour from app.config.js — the in-app splash matches it. */
+  splash: '#C6FF3D',
 
   // UI chrome
-  border: '#26262B',
-  separator: '#1B1B20',
-  overlay: 'rgba(0, 0, 0, 0.65)',
-  inputBackground: '#15151A',
+  border: '#D9DACF',
+  separator: '#E6E6DD',
+  overlay: 'rgba(13,42,27,0.55)',
+  inputBackground: '#FFFFFF',
 
   // Feedback
-  error: '#FF5C5C',
-  success: '#5BFF8B',
+  error: '#B42318',
+  errorSoft: 'rgba(180,35,24,0.08)',
+  success: '#1F7A45',
+  warning: '#8A5300',
+  warningSoft: 'rgba(138,83,0,0.10)',
 } as const;
 
 export const spacing = {
@@ -71,42 +85,45 @@ export const radii = {
   full: 9999,
 } as const;
 
+/** Minimum touch target (iOS HIG 44pt). */
+export const TOUCH_TARGET = 44;
+
 /**
  * Typography scale. System font (SF Pro / Roboto), no external font dep.
  */
 export const typography = {
   display: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: '700' as const,
-    lineHeight: 54,
-    letterSpacing: -1.8,
+    lineHeight: 46,
+    letterSpacing: -1.2,
     color: colors.textPrimary,
   },
   h1: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: '700' as const,
-    lineHeight: 40,
-    letterSpacing: -1,
+    lineHeight: 36,
+    letterSpacing: -0.8,
     color: colors.textPrimary,
   },
   h2: {
     fontSize: 24,
     fontWeight: '700' as const,
-    lineHeight: 32,
-    letterSpacing: -0.5,
+    lineHeight: 30,
+    letterSpacing: -0.4,
     color: colors.textPrimary,
   },
   h3: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '600' as const,
-    lineHeight: 28,
-    letterSpacing: -0.3,
+    lineHeight: 26,
+    letterSpacing: -0.2,
     color: colors.textPrimary,
   },
   bodyLarge: {
     fontSize: 17,
     fontWeight: '400' as const,
-    lineHeight: 26,
+    lineHeight: 25,
     color: colors.textPrimary,
   },
   body: {
@@ -122,10 +139,10 @@ export const typography = {
     color: colors.textTertiary,
   },
   label: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600' as const,
     lineHeight: 16,
-    letterSpacing: 1.4,
+    letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
     color: colors.textSecondary,
   },
@@ -133,6 +150,6 @@ export const typography = {
     fontSize: 16,
     fontWeight: '600' as const,
     lineHeight: 20,
-    letterSpacing: -0.2,
+    letterSpacing: -0.1,
   },
 } as const;

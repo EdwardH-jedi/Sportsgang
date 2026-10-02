@@ -1,131 +1,48 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { api, BASE_URL } from '../lib/api';
+import { useExploreStore } from '../stores/explore';
 
-// Discovery card photos are served as relative paths (`/media/...`) by the
-// API. RN's <Image> needs absolute URIs, so we expand them at the data
-// boundary here — every consumer of useDiscovery gets ready-to-render URLs.
-function absolutizeMediaUrl(url: string | null | undefined): string | undefined {
-  if (!url) return undefined;
-  if (/^https?:\/\//i.test(url)) return url;
-  const path = url.startsWith('/') ? url : `/${url}`;
-  return `${BASE_URL}${path}`;
-}
+export type { FeedCard, FeedState } from '../stores/explore';
 
-export interface PartnerCard {
-  userId: string;
-  displayName: string;
-  suburb?: string;
-  bioExcerpt?: string;
-  bio?: string;
-  avatarUrl?: string;
-  photoUrls?: string[];
-  age?: number;
-  sportProfiles: {
-    sport: string;
-    level: string;
-    gymName?: string;
-    golfClub?: string;
-  }[];
-}
-
-interface ActionResponse {
-  matchCreated: boolean;
-  matchId?: string;
-}
-
-export interface UseDiscoveryReturn {
-  partners: PartnerCard[];
-  isLoading: boolean;
-  error: string | null;
-  sport: 'gym' | 'golf' | 'tennis' | 'running';
-  setSport: (s: 'gym' | 'golf' | 'tennis' | 'running') => void;
-  recordAction: (
-    targetUserId: string,
-    action: 'like' | 'pass' | 'save'
-  ) => Promise<ActionResponse>;
-  fetchMore: () => void;
-}
-
-const PAGE_LIMIT = 20;
-
-export function useDiscovery(): UseDiscoveryReturn {
-  const [partners, setPartners] = useState<PartnerCard[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sport, setSportState] = useState<'gym' | 'golf' | 'tennis' | 'running'>('gym');
-
-  async function fetchPartners(selectedSport: 'gym' | 'golf' | 'tennis' | 'running') {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.get<{ items: PartnerCard[] }>(
-        `/discovery?sport=${selectedSport}&limit=${PAGE_LIMIT}`
-      );
-      if (!data || !Array.isArray((data as { items?: unknown }).items)) {
-        throw new Error(
-          `Unexpected response shape from /discovery — got: ${JSON.stringify(data)}`
-        );
-      }
-      const normalized = data.items.map((item) => {
-        // Only overwrite media URL fields when the item actually carries
-        // them. Spreading `avatarUrl: undefined` would add an explicit
-        // undefined property and break callers that compare items via
-        // structural equality (incl. existing useDiscovery tests).
-        const out: PartnerCard = { ...item };
-        const absoluteAvatar = absolutizeMediaUrl(item.avatarUrl);
-        if (absoluteAvatar !== undefined) out.avatarUrl = absoluteAvatar;
-        if (item.photoUrls !== undefined) {
-          out.photoUrls = item.photoUrls
-            .map(absolutizeMediaUrl)
-            .filter((u): u is string => typeof u === 'string');
-        }
-        return out;
-      });
-      setPartners(normalized);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load partners.');
-    } finally {
-      setIsLoading(false);
-    }
-  }
+/**
+ * Partner feed for the current Explore focus sport.
+ *
+ * Thin wrapper over the explore store: it (re)loads page one whenever the
+ * focus sport or the strict-pace filter changes, and otherwise reuses the
+ * already-loaded feed (so returning from PartnerDetail keeps the list and
+ * scroll position). Pagination, stale-response guarding and sport-scoped
+ * actions live in the store — see stores/explore.ts.
+ */
+export function useDiscovery({ enabled = true }: { enabled?: boolean } = {}) {
+  const state = useExploreStore(
+    useShallow((s) => ({
+      sport: s.focusSport,
+      strictPace: s.strictPace,
+      feed: s.feed,
+      actingOn: s.actingOn,
+      loadFeed: s.loadFeed,
+      fetchMore: s.fetchMore,
+      recordAction: s.recordAction,
+      setStrictPace: s.setStrictPace,
+    }))
+  );
+  const { sport, strictPace, loadFeed } = state;
 
   useEffect(() => {
-    fetchPartners(sport);
-  }, [sport]);
-
-  function setSport(s: 'gym' | 'golf' | 'tennis' | 'running') {
-    setSportState(s);
-  }
-
-  const recordAction = useCallback(
-    async (
-      targetUserId: string,
-      action: 'like' | 'pass' | 'save'
-    ): Promise<ActionResponse> => {
-      const result = await api.post<ActionResponse>('/discovery/actions', {
-        targetUserId,
-        action,
-        sport,
-      });
-      // Remove acted-upon partner from the local list
-      setPartners((prev) => prev.filter((p) => p.userId !== targetUserId));
-      return result;
-    },
-    [sport]
-  );
-
-  function fetchMore() {
-    fetchPartners(sport);
-  }
+    if (!enabled) return;
+    void loadFeed();
+  }, [enabled, sport, strictPace, loadFeed]);
 
   return {
-    partners,
-    isLoading,
-    error,
     sport,
-    setSport,
-    recordAction,
-    fetchMore,
+    strictPace,
+    setStrictPace: state.setStrictPace,
+    feed: state.feed,
+    partners: state.feed.items,
+    actingOn: state.actingOn,
+    refresh: () => loadFeed({ force: true }),
+    fetchMore: state.fetchMore,
+    recordAction: state.recordAction,
   };
 }

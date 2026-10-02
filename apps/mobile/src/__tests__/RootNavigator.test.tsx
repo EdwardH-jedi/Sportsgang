@@ -49,13 +49,21 @@ const mockNavRef = (
   }
 ).__mockNavRef;
 
+const mockStackScreens: string[] = [];
+const mockTabScreens: string[] = [];
+
 jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: () => ({
     Navigator: ({ children }: { children: React.ReactNode }) => {
       const { View } = require('react-native');
       return <View>{children}</View>;
     },
-    Screen: () => null,
+    // Record every registered route; render only the tab shell so the tab
+    // registrations can be asserted too.
+    Screen: ({ name, component: Component }: { name: string; component: React.ComponentType }) => {
+      mockStackScreens.push(name);
+      return name === 'Main' ? <Component /> : null;
+    },
   }),
 }));
 
@@ -65,7 +73,10 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
       const { View } = require('react-native');
       return <View>{children}</View>;
     },
-    Screen: () => null,
+    Screen: ({ name, options }: { name: string; options?: { title?: string } }) => {
+      mockTabScreens.push(`${name}:${options?.title ?? ''}`);
+      return null;
+    },
   }),
 }));
 
@@ -76,9 +87,15 @@ jest.mock('../screens/auth/RegisterScreen', () => ({ RegisterScreen: () => null 
 jest.mock('../screens/onboarding/OnboardingStep1Screen', () => ({ OnboardingStep1Screen: () => null }));
 jest.mock('../screens/onboarding/OnboardingStep2Screen', () => ({ OnboardingStep2Screen: () => null }));
 jest.mock('../screens/onboarding/OnboardingStep3Screen', () => ({ OnboardingStep3Screen: () => null }));
-jest.mock('../screens/onboarding/OnboardingStep4Screen', () => ({ OnboardingStep4Screen: () => null }));
-jest.mock('../screens/discovery/DiscoveryScreen', () => ({ DiscoveryScreen: () => null }));
-jest.mock('../screens/events/EventsScreen', () => ({ EventsScreen: () => null }));
+jest.mock('../screens/setup/SetupSportsScreen', () => ({ SetupSportsScreen: () => null }));
+jest.mock('../screens/setup/SetupSportDetailsScreen', () => ({ SetupSportDetailsScreen: () => null }));
+jest.mock('../screens/setup/SetupAvailabilityScreen', () => ({ SetupAvailabilityScreen: () => null }));
+jest.mock('../screens/explore/ExploreScreen', () => ({ ExploreScreen: () => null }));
+jest.mock('../screens/explore/PartnerDetailScreen', () => ({ PartnerDetailScreen: () => null }));
+jest.mock('../screens/plans/MyPlansScreen', () => ({ MyPlansScreen: () => null }));
+jest.mock('../screens/sessions/CreateSessionScreen', () => ({ CreateSessionScreen: () => null }));
+jest.mock('../screens/sessions/SessionDetailScreen', () => ({ SessionDetailScreen: () => null }));
+jest.mock('../screens/profile/EditSportPreferencesScreen', () => ({ EditSportPreferencesScreen: () => null }));
 jest.mock('../screens/matches/MatchesScreen', () => ({ MatchesScreen: () => null }));
 jest.mock('../screens/profile/ProfileScreen', () => ({ ProfileScreen: () => null }));
 jest.mock('../screens/profile/EditProfileScreen', () => ({ EditProfileScreen: () => null }));
@@ -86,6 +103,44 @@ jest.mock('../screens/chat/ChatScreen', () => ({ ChatScreen: () => null }));
 jest.mock('../screens/bookings/BookingComposerScreen', () => ({ BookingComposerScreen: () => null }));
 jest.mock('../screens/bookings/BookingDetailScreen', () => ({ BookingDetailScreen: () => null }));
 jest.mock('../screens/safety/ReportScreen', () => ({ ReportScreen: () => null }));
+
+describe('RootNavigator destinations', () => {
+  beforeEach(() => {
+    mockStackScreens.length = 0;
+    mockTabScreens.length = 0;
+    mockUseAuthStore.mockReturnValue({ token: null });
+  });
+
+  it('shows Explore / My Plans / Chats / Profile as the four tabs', () => {
+    render(<RootNavigator />);
+    expect(mockTabScreens).toEqual(['Explore:Explore', 'Plans:My Plans', 'Chats:Chats', 'Profile:Profile']);
+  });
+
+  it('registers the v2 routes and keeps existing booking / chat / safety routes reachable', () => {
+    render(<RootNavigator />);
+    for (const route of [
+      'SetupSports',
+      'SetupSportDetails',
+      'SetupAvailability',
+      'EditSportPreferences',
+      'PartnerDetail',
+      'CreateSession',
+      'SessionDetail',
+      'Chat',
+      'BookingComposer',
+      'BookingDetail',
+      'Report',
+      'BlockedUsers',
+      'SafetyCenter',
+      'EditProfile',
+      'OnboardingStep2',
+      'OnboardingStep3',
+    ]) {
+      expect(mockStackScreens).toContain(route);
+    }
+    expect(mockStackScreens).not.toContain('OnboardingStep4');
+  });
+});
 
 describe('RootNavigator auth-adjacent side effects', () => {
   beforeEach(() => {
