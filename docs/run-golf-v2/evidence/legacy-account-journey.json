@@ -1,0 +1,36 @@
+{
+  "user_id": "5073fb86-0fca-464e-be69-02f7ca480bdd",
+  "profile_display_name": "Legacy Alice",
+  "golf_before": {
+    "id": "e7cb0b76-4a64-402d-a23f-5e5862f42eff",
+    "level": "intermediate",
+    "golf_club": "Moore Park",
+    "goals": "legacy goal",
+    "preferences_version": null
+  },
+  "old_match_present": true,
+  "old_message_present": true,
+  "old_booking_confirmed": true,
+  "old_event": {
+    "participant_count": 2,
+    "run_details": null,
+    "golf_details": null
+  },
+  "golf_after_old_client_write": {
+    "id": "e7cb0b76-4a64-402d-a23f-5e5862f42eff",
+    "level": "advanced",
+    "preferred_times": [
+      "afternoon"
+    ],
+    "golf_club": "Moore Park",
+    "preferences_version": 2,
+    "golf_handicap_tenths": 182,
+    "golf_handicap_source": "estimate",
+    "golf_partner_intents": [
+      "similar_level",
+      "welcome_beginners"
+    ]
+  },
+  "golf_feed_viewer_setup_required": false,
+  "old_message_still_present": true
+}

@@ -1,0 +1,15 @@
+sport_profiles|04c6e9f8-7287-491e-9dfa-72b985259654|19635672-7887-4346-9f87-aee651b7637e|golf|intermediate|["morning"]|Moore Park|legacy goal
+sport_profiles|1fd96133-cea0-4341-91a5-59fc4ec483ce|19635672-7887-4346-9f87-aee651b7637e|running|beginner|["evening"]||
+sport_profiles|9959f616-00a1-4a03-b304-89d9d7596d6a|5073fb86-0fca-464e-be69-02f7ca480bdd|running|beginner|["evening"]||
+sport_profiles|e7cb0b76-4a64-402d-a23f-5e5862f42eff|5073fb86-0fca-464e-be69-02f7ca480bdd|golf|intermediate|["morning"]|Moore Park|legacy goal
+users|5
+matches|36898891-7697-4555-9d84-4a1f2eceb9fb|51413694-7a86-4203-84ab-a55cbc2a0307|634d9fb7-4e61-4cb2-bcd4-ef9c2d51143f|gym|active
+matches|baa0ef24-5d1f-4e90-a7f1-7c3f429c3363|19635672-7887-4346-9f87-aee651b7637e|5073fb86-0fca-464e-be69-02f7ca480bdd|golf|active
+messages|4a59a720-5532-404c-b9b1-d639587cbc24|baa0ef24-5d1f-4e90-a7f1-7c3f429c3363|5073fb86-0fca-464e-be69-02f7ca480bdd|legacy hello
+bookings|3e620130-186b-4cc8-8d1e-c7a9e2463043|36898891-7697-4555-9d84-4a1f2eceb9fb|confirmed|gym
+bookings|3e72364e-225e-441a-9056-5eb73a494a92|baa0ef24-5d1f-4e90-a7f1-7c3f429c3363|confirmed|golf
+events|b3f20163-15a8-4a8a-9a1b-db2127b22696|5073fb86-0fca-464e-be69-02f7ca480bdd|basketball|6|open
+event_participants|b3f20163-15a8-4a8a-9a1b-db2127b22696|19635672-7887-4346-9f87-aee651b7637e|joined
+event_participants|b3f20163-15a8-4a8a-9a1b-db2127b22696|5073fb86-0fca-464e-be69-02f7ca480bdd|joined
+identity_preferences|19635672-7887-4346-9f87-aee651b7637e|["any"]|20|50|15
+identity_preferences|5073fb86-0fca-464e-be69-02f7ca480bdd|["any"]|20|50|15

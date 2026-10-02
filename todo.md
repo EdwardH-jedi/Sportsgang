@@ -141,26 +141,26 @@ Primary source locations:
 
 ## 3. Wave 0 — Preflight and isolated workspace
 
-- [ ] Verify the current checkout's origin is this repository. Read applicable
+- [x] Verify the current checkout's origin is this repository. Read applicable
   AGENTS.md, CLAUDE.md and narrower guidance.
-- [ ] Record branch, HEAD, dirty files and existing worktrees without exposing secrets.
-- [ ] Fetch origin/main when available. Create an isolated feature worktree and
+- [x] Record branch, HEAD, dirty files and existing worktrees without exposing secrets.
+- [x] Fetch origin/main when available. Create an isolated feature worktree and
   a new branch such as feat/run-golf-v2 from the latest verified main.
-- [ ] Preserve unrelated dirty files, existing worktrees and any existing todo.md.
+- [x] Preserve unrelated dirty files, existing worktrees and any existing todo.md.
   Do not reset, clean, delete or stash the user's work automatically.
-- [ ] Record both the inspected baseline above and the actual implementation base.
+- [x] Record both the inspected baseline above and the actual implementation base.
   A newer main is normal: inspect its delta and adapt. Do not stop solely because
   main advanced or an old suggested branch is unavailable.
-- [ ] If fetch is unavailable, use a verified local main and explicitly record
+- [x] If fetch is unavailable, use a verified local main and explicitly record
   remote freshness as unverified. If repository identity is wrong, report the
   concrete blocker rather than guessing a checkout path.
-- [ ] Read the installed package scripts, lockfiles, API migrations, test fixtures
+- [x] Read the installed package scripts, lockfiles, API migrations, test fixtures
   and Expo configuration before choosing commands.
-- [ ] Establish a baseline for relevant checks. Distinguish baseline failures
+- [x] Establish a baseline for relevant checks. Distinguish baseline failures
   from regressions introduced by this work.
-- [ ] Create docs/run-golf-v2/IMPLEMENTATION_REPORT.md and a concise contract note,
+- [x] Create docs/run-golf-v2/IMPLEMENTATION_REPORT.md and a concise contract note,
   CONTRACTS.md. Update this checklist as work progresses.
-- [ ] Keep commits local and stage owned paths explicitly. Do not use a blanket
+- [x] Keep commits local and stage owned paths explicitly. Do not use a blanket
   git add that captures unrelated files or credentials.
 
 Repository AGENTS.md assigns Codex planning/review and favors wave-based work.
@@ -174,18 +174,18 @@ TypeScript types, API casing transformation and mobile read/write models aligned
 
 ### 4.1 Data semantics
 
-- [ ] Retain legacy Sport values and existing generic level/time fields for old
+- [x] Retain legacy Sport values and existing generic level/time fields for old
   clients and history. Introduce an explicit v2 FocusSport of running/golf for
   the new UI instead of deleting gym/tennis enum support everywhere.
-- [ ] Add nullable sport-specific fields, or equivalently typed related records.
+- [x] Add nullable sport-specific fields, or equivalently typed related records.
   Use the existing SQLAlchemy/Alembic structure; document the final schema.
-- [ ] Record whether v2 preferences were explicitly configured, using a version
+- [x] Record whether v2 preferences were explicitly configured, using a version
   or completion marker. Existing rows must remain "not configured" until edited.
-- [ ] Missing, unknown and "open to any" are distinct states. Never invent a
+- [x] Missing, unknown and "open to any" are distinct states. Never invent a
   handicap, running pace, verified credential or consent during migration.
-- [ ] Old payloads that omit new fields must preserve existing new-field values.
+- [x] Old payloads that omit new fields must preserve existing new-field values.
   Explicit clearing must have documented null/empty semantics.
-- [ ] Validate sport-specific combinations server-side, not only in the UI.
+- [x] Validate sport-specific combinations server-side, not only in the UI.
 
 Required golf information:
 
@@ -214,32 +214,32 @@ Store pace numerically as seconds per kilometre. Render minutes:seconds per
 kilometre. Validate complete pairs and ordered bounds; do not store "6:30" as
 a decimal 6.30. Social mode is not pace zero.
 
-- [ ] Preserve existing preferred-time slots and suburb. Do not promise precise
+- [x] Preserve existing preferred-time slots and suburb. Do not promise precise
   partner distance: current user/profile models do not provide usable location
   coordinates for that computation.
-- [ ] Keep existing identity-preference records compatible and move optional
+- [x] Keep existing identity-preference records compatible and move optional
   controls out of the main setup. Do not infer gender or other missing
   attributes from names/photos. Do not claim unsupported filters are enforced.
-- [ ] Write an additive Alembic migration. Verify a fresh DB and an upgrade from
+- [x] Write an additive Alembic migration. Verify a fresh DB and an upgrade from
   populated baseline schema, including preserved user/profile/match/message/
   booking/event identifiers and relationships.
-- [ ] Update profile read/write endpoints and discovery summaries so persisted
+- [x] Update profile read/write endpoints and discovery summaries so persisted
   sport details survive app restart and profile editing.
-- [ ] Consolidate mobile response types with shared contracts where practical;
+- [x] Consolidate mobile response types with shared contracts where practical;
   useDiscovery currently duplicates the PartnerCard shape.
-- [ ] Cover old-client writes after v2 edits, explicit clearing, missing values,
+- [x] Cover old-client writes after v2 edits, explicit clearing, missing values,
   invalid ranges and sport switching with meaningful tests.
 
 Gate: persisted preferences and final API payload examples agree before Wave 2.
 
 ## 5. Wave 2 — Explainable bilateral matching and reliable feeds
 
-- [ ] Extract pure running/golf compatibility functions from HTTP/DB plumbing.
-- [ ] Keep self/inactive/blocked users excluded and preserve existing permissions.
-- [ ] Apply each user's intent. A requester's willingness alone is insufficient.
-- [ ] Use deterministic rules; no new LLM/provider dependency or artificial
+- [x] Extract pure running/golf compatibility functions from HTTP/DB plumbing.
+- [x] Keep self/inactive/blocked users excluded and preserve existing permissions.
+- [x] Apply each user's intent. A requester's willingness alone is insufficient.
+- [x] Use deterministic rules; no new LLM/provider dependency or artificial
   percentage "match accuracy".
-- [ ] Return factual compatibility reasons and identify incomplete preferences.
+- [x] Return factual compatibility reasons and identify incomplete preferences.
 
 ### Golf rules
 
@@ -263,30 +263,30 @@ Gate: persisted preferences and final API payload examples agree before Wave 2.
 
 Examples to cover:
 
-- [ ] Beginner seeking experience + experienced golfer welcoming beginners.
-- [ ] Same beginner + experienced golfer who wants similar-level partners only.
-- [ ] Similar golfers within both configured limits.
-- [ ] Missing/estimated/plus handicaps without fabricated verification.
-- [ ] Overlapping and non-overlapping running pace ranges.
-- [ ] Social runner with unknown pace under general versus strict pace browsing.
-- [ ] Legacy profile with missing v2 details; helpful setup prompt, no invented match.
-- [ ] Blocking either direction hides the profile.
+- [x] Beginner seeking experience + experienced golfer welcoming beginners.
+- [x] Same beginner + experienced golfer who wants similar-level partners only.
+- [x] Similar golfers within both configured limits.
+- [x] Missing/estimated/plus handicaps without fabricated verification.
+- [x] Overlapping and non-overlapping running pace ranges.
+- [x] Social runner with unknown pace under general versus strict pace browsing.
+- [x] Legacy profile with missing v2 details; helpful setup prompt, no invented match.
+- [x] Blocking either direction hides the profile.
 
 ### Feed correctness
 
-- [ ] Default to selected active focus sport; persist choice and scope/reset
+- [x] Default to selected active focus sport; persist choice and scope/reset
   account-specific preferences on logout/account switching.
-- [ ] fetchMore retrieves another page and appends without duplicate rows.
-- [ ] Choose a stable pagination approach appropriate to sorted recommendations.
+- [x] fetchMore retrieves another page and appends without duplicate rows.
+- [x] Choose a stable pagination approach appropriate to sorted recommendations.
   Test an action between page loads: hiding acted-on users must not silently
   skip the next candidates due to a shifted offset.
-- [ ] Sport/filter switches invalidate previous responses, errors and loading
+- [x] Sport/filter switches invalidate previous responses, errors and loading
   updates; a slow running response cannot overwrite the golf feed.
-- [ ] Prevent a stale card action from being sent with the newly selected sport.
-- [ ] Preserve the selected filters through detail/back navigation.
-- [ ] Distinguish loading, no eligible results, missing preferences, offline/
+- [x] Prevent a stale card action from being sent with the newly selected sport.
+- [x] Preserve the selected filters through detail/back navigation.
+- [x] Distinguish loading, no eligible results, missing preferences, offline/
   request failure and retry. Do not translate an API error into "no people".
-- [ ] If retaining the existing bounded 200-candidate scoring pool, document the
+- [x] If retaining the existing bounded 200-candidate scoring pool, document the
   limit and count semantics; do not imply complete global coverage.
 
 Gate: backend reasons, UI reasons, selected sport and loaded candidates agree.
@@ -297,13 +297,13 @@ Recommended visual direction: off-white backgrounds, dark green text,
 restrained lime primary actions, readable sport information and generous spacing.
 This is an authorized starting direction; no new logo is required.
 
-- [ ] Introduce shared semantic tokens and reusable primitives for focus switch,
+- [x] Introduce shared semantic tokens and reusable primitives for focus switch,
   information chips, partner/session cards, form fields and primary actions.
-- [ ] Avoid changing only theme colors while leaving screen-specific hardcoded
+- [x] Avoid changing only theme colors while leaving screen-specific hardcoded
   dark backgrounds and inverse text unreadable.
-- [ ] Use existing React Native/Expo navigation and state patterns; no new app,
+- [x] Use existing React Native/Expo navigation and state patterns; no new app,
   framework replacement or unnecessary UI dependency.
-- [ ] Implement these top-level destinations:
+- [x] Implement these top-level destinations:
 
 | Tab | Responsibility |
 | --- | --- |
@@ -312,24 +312,25 @@ This is an authorized starting direction; no new logo is required.
 | Chats | Existing match conversations, with meaningful empty state |
 | Profile | Editable running/golf details, account/settings |
 
-- [ ] Existing bookings/messages remain reachable; preserve navigation parameters
+- [x] Existing bookings/messages remain reachable; preserve navigation parameters
   and existing authorized deep-link behavior where configured.
-- [ ] Rework onboarding: basic identity/suburb -> active sport(s) ->
+- [x] Rework onboarding: basic identity/suburb -> active sport(s) ->
   relevant details/intent -> availability -> finish.
-- [ ] Make photos and bio optional for completion. Check every completion gate
+- [x] Make photos and bio optional for completion. Check every completion gate
   and resume path; changing one MIN_PHOTOS constant is not sufficient.
-- [ ] Existing users get a dismissible/targeted preference-completion flow,
+- [x] Existing users get a dismissible/targeted preference-completion flow,
   preserving their account and profile, rather than forced full registration.
-- [ ] Focus partner cards on handicap/intent or pace/distance/style before gallery
+- [x] Focus partner cards on handicap/intent or pace/distance/style before gallery
   and general biography. Reasons must originate from real stored data.
-- [ ] Remove foreground hardcoded tennis/annandale ranks and ranked-battle/
+- [x] Remove foreground hardcoded tennis/annandale ranks and ranked-battle/
   Honor-risk/tournament/challenge promotion. Preserve their old stored data and
   APIs. Keep reporting, blocking, account deletion and account settings reachable.
-- [ ] Keep displayed app name, bundle IDs, Apple Sign-in integration, auth storage,
+- [x] Keep displayed app name, bundle IDs, Apple Sign-in integration, auth storage,
   Expo project identity, versioning and release configuration stable.
-- [ ] Do not rename @protin packages or rewrite app.config.js/eas.json for branding.
-- [ ] Confirm keyboard-safe forms, touch targets, labels, text scaling, scroll
+- [x] Do not rename @protin packages or rewrite app.config.js/eas.json for branding.
+- [~] Confirm keyboard-safe forms, touch targets, labels, text scaling, scroll
   behavior and contrast on the primary screens.
+  (Done except a visual software-keyboard check — see IMPLEMENTATION_REPORT §10.2.)
 
 Native primary screens to complete: setup, Explore, partner detail, create
 session, session detail and My Plans. Apply shared chrome to Chats/Profile so
@@ -342,18 +343,18 @@ Gate: a coherent working UI reads/writes the Wave 1 contracts.
 Reuse the current /events model and lifecycle. "Sessions" is product-facing
 terminology; avoid a wholesale internal Event-to-Session rename.
 
-- [ ] Add typed running/golf event details, persisted and returned through shared
+- [x] Add typed running/golf event details, persisted and returned through shared
   contracts and APIs; do not hide all meaningful information in description text.
-- [ ] New v2 creation exposes only running/golf and casual social sessions.
+- [x] New v2 creation exposes only running/golf and casual social sessions.
   Keep legacy event sports/modes readable and compatible for old clients/history.
-- [ ] Session host is already auto-joined. Show total capacity including host;
+- [x] Session host is already auto-joined. Show total capacity including host;
   "4 golfers, 1 spot left" must mean three joined people including the host.
-- [ ] Preserve permission checks, moderation, privacy of attendance outcomes,
+- [x] Preserve permission checks, moderation, privacy of attendance outcomes,
   joins/leaves/cancellation/completion and existing row-lock behavior.
-- [ ] Use stored venue information where available and allow an honest manual
+- [x] Use stored venue information where available and allow an honest manual
   location fallback. Keep provider credentials server-side and existing required
   attribution if provider-backed results are used.
-- [ ] Do not require a live paid/provider lookup for local development or checks.
+- [x] Do not require a live paid/provider lookup for local development or checks.
 
 Running session information:
 
@@ -373,20 +374,20 @@ Golf session information:
 "Tee time secured" is a host declaration, not platform verification or a course
 inventory reservation. Participation in the app does not itself book a course.
 
-- [ ] Session forms validate required sport fields and invalid combinations.
-- [ ] Session requirements/preferences are explicit. Define and document which
+- [x] Session forms validate required sport fields and invalid combinations.
+- [x] Session requirements/preferences are explicit. Define and document which
   are informational and which block joining; enforce any hard gate server-side.
-- [ ] Preserve server rejection explanations when a session becomes full,
+- [x] Preserve server rejection explanations when a session becomes full,
   cancelled or completed while the user is viewing it.
-- [ ] My Plans merges bookings and events using explicit source IDs/types;
+- [x] My Plans merges bookings and events using explicit source IDs/types;
   preserve pending versus confirmed state and do not create fake confirmations.
-- [ ] Completed, cancelled and past items have intentional filters/history.
-- [ ] Surface data-source failures with retry even if another source succeeds.
-- [ ] Keep Sydney display time/date correct, with UTC API timestamps; exercise
+- [x] Completed, cancelled and past items have intentional filters/history.
+- [x] Surface data-source failures with retry even if another source succeeds.
+- [x] Keep Sydney display time/date correct, with UTC API timestamps; exercise
   daylight-saving boundary cases and devices in another timezone.
-- [ ] Preserve 1:1 booking proposals/confirmation and match chat. For group
+- [x] Preserve 1:1 booking proposals/confirmation and match chat. For group
   sessions, show host/location/attendance details without a fake chat button.
-- [ ] Add isolated, labeled development data for both sports if needed; never
+- [x] Add isolated, labeled development data for both sports if needed; never
   create fictitious public users/events in production.
 
 Gate: real two-account journeys reach persisted commitments in My Plans.
@@ -425,50 +426,54 @@ Keep generated export/log outputs out of tracked application source.
 
 ### 8.2 Isolated integration environment
 
-- [ ] Provision an explicitly disposable PostgreSQL/Redis environment with a
+- [x] Provision an explicitly disposable PostgreSQL/Redis environment with a
   distinct Compose project/database and available non-production ports.
-- [ ] Inspect config targets without printing secrets before any migration/test.
-- [ ] Keep temporary credentials/env/config files ignored and task-scoped.
-- [ ] Do not run infra:reset, docker compose down -v, or migrations against an
+- [x] Inspect config targets without printing secrets before any migration/test.
+- [x] Keep temporary credentials/env/config files ignored and task-scoped.
+- [x] Do not run infra:reset, docker compose down -v, or migrations against an
   existing user's database. Never borrow production service URLs.
-- [ ] Follow the current CI's real-service environment shape. The API unit suite
+- [x] Follow the current CI's real-service environment shape. The API unit suite
   uses mocks/SQLite in parts and does not prove PostgreSQL locking.
-- [ ] If Docker/native tooling is unavailable, complete independent work and
+- [x] If Docker/native tooling is unavailable, complete independent work and
   record those checks as BLOCKED_ENV, with exact steps to reproduce. Do not
   remove checks, replace them with mocks and call integration verified.
 
 ### 8.3 Required behavior verification
 
-- [ ] Running user completes setup, restarts app and retains pace/intent.
-- [ ] Golf beginner and experienced golfer have compatible bilateral preferences.
-- [ ] Incompatible expert intent is respected and recommendation reason is honest.
-- [ ] Existing user with legacy sports and prior messages/bookings can log in,
+- [x] Running user completes setup, restarts app and retains pace/intent.
+- [x] Golf beginner and experienced golfer have compatible bilateral preferences.
+- [x] Incompatible expert intent is respected and recommendation reason is honest.
+- [x] Existing user with legacy sports and prior messages/bookings can log in,
   update v2 preferences and still access old history.
-- [ ] Old payload after v2 setup does not erase new preferences.
-- [ ] Actual page two, acted-on-user pagination and slow sport-switch races work.
-- [ ] Running host creates a session; another account joins/leaves; My Plans agrees.
-- [ ] Golf host creates a round; last place is filled; a further join is rejected.
-- [ ] Two simultaneous users competing for the last event place are checked
+- [x] Old payload after v2 setup does not erase new preferences.
+- [x] Actual page two, acted-on-user pagination and slow sport-switch races work.
+- [x] Running host creates a session; another account joins/leaves; My Plans agrees.
+- [x] Golf host creates a round; last place is filled; a further join is rejected.
+- [x] Two simultaneous users competing for the last event place are checked
   against real PostgreSQL; no oversubscription.
-- [ ] Duplicate/repeated join does not increase participant count.
-- [ ] Host cancel versus another user's join leaves a consistent final state.
-- [ ] Outsiders cannot alter host state, attendance or other people's bookings.
-- [ ] Existing 1:1 match/chat/booking confirmation remains functional.
-- [ ] Offline/request failure is distinct from empty results.
-- [ ] Signup/auth/logout/account deletion/report/block regressions are checked.
-- [ ] Sydney local-time rendering and day-boundary/DST behavior are checked.
+- [x] Duplicate/repeated join does not increase participant count.
+- [x] Host cancel versus another user's join leaves a consistent final state.
+- [x] Outsiders cannot alter host state, attendance or other people's bookings.
+- [x] Existing 1:1 match/chat/booking confirmation remains functional.
+- [x] Offline/request failure is distinct from empty results.
+- [x] Signup/auth/logout/account deletion/report/block regressions are checked.
+  (Signup/login/logout/report-link/block natively or on PostgreSQL; account
+  deletion via the existing unit tests only — report §10.2.)
+- [x] Sydney local-time rendering and day-boundary/DST behavior are checked.
 
 ### 8.4 Visual/native verification
 
-- [ ] Exercise the six primary screens in an available iOS simulator/device,
+- [x] Exercise the six primary screens in an available iOS simulator/device,
   preferably at a normal and a smaller iPhone viewport.
-- [ ] Capture screenshots, screen names, device/runtime and source commit.
-- [ ] Check keyboard overlap, scrolling, long names, missing photos, numeric
+- [x] Capture screenshots, screen names, device/runtime and source commit.
+- [~] Check keyboard overlap, scrolling, long names, missing photos, numeric
   input formatting and large text.
-- [ ] Record native bundling and native runtime checks separately.
-- [ ] Expo Web or mocked component screenshots may supplement evidence but do
+  (Large text, scrolling, long names, missing photos and numeric input checked on
+  iPhone 16e; software-keyboard overlap not visually confirmed — report §10.2.)
+- [x] Record native bundling and native runtime checks separately.
+- [x] Expo Web or mocked component screenshots may supplement evidence but do
   not count as a native device pass.
-- [ ] Preserve availability limitations honestly; no manufactured screenshots
+- [x] Preserve availability limitations honestly; no manufactured screenshots
   or unchecked "all tests passed" statements.
 
 ### 8.5 Required handoff
@@ -487,17 +492,17 @@ Update docs/run-golf-v2/IMPLEMENTATION_REPORT.md with:
 10. Remaining defects, assumptions, deferred features and next recommended fix.
 11. Confirmation that no deployment/App Store submission/push took place.
 
-- [ ] Commit coherent waves locally with descriptive messages.
-- [ ] Leave no accidental dependency upgrades, generated bundles, secrets or
+- [x] Commit coherent waves locally with descriptive messages.
+- [x] Leave no accidental dependency upgrades, generated bundles, secrets or
   unrelated changes in the final diff.
-- [ ] Run required checks on the final source. If code changes after checks,
+- [x] Run required checks on the final source. If code changes after checks,
   rerun affected checks. Identify any later documentation-only commit separately.
-- [ ] Update this checklist from actual evidence, not intention.
-- [ ] If runtime context is nearly exhausted, write a checkpoint with branch,
+- [x] Update this checklist from actual evidence, not intention.
+- [x] If runtime context is nearly exhausted, write a checkpoint with branch,
   HEAD, completed tasks, next commands and blockers; resume from it.
-- [ ] When a provider-dependent check is unavailable, continue source/local
+- [x] When a provider-dependent check is unavailable, continue source/local
   verification. Never quietly substitute production calls or mock results.
-- [ ] End with the handoff location and exact remaining work.
+- [x] End with the handoff location and exact remaining work.
 
 ## 9. Codex morning review checklist
 
@@ -550,13 +555,13 @@ findings distinct from environment gaps.
 
 ## 10. Final definition of done
 
-- [ ] Existing SportsGang is recognizably focused on running and golf.
-- [ ] Both sports have meaningful, editable, persistent preferences.
-- [ ] Compatibility respects both people and explains actual conditions.
-- [ ] Users can join real locally persisted running/golf sessions and see plans.
-- [ ] Existing 1:1 communication/booking and legacy account/history remain usable.
-- [ ] Primary screens share a readable outdoor visual system.
-- [ ] Required regression, migration, concurrency and native checks have evidence,
+- [x] Existing SportsGang is recognizably focused on running and golf.
+- [x] Both sports have meaningful, editable, persistent preferences.
+- [x] Compatibility respects both people and explains actual conditions.
+- [x] Users can join real locally persisted running/golf sessions and see plans.
+- [x] Existing 1:1 communication/booking and legacy account/history remain usable.
+- [x] Primary screens share a readable outdoor visual system.
+- [x] Required regression, migration, concurrency and native checks have evidence,
   or the delivery is explicitly marked partial with reproducible blockers.
-- [ ] Claude's work is concrete and reviewable by Codex the next morning.
+- [x] Claude's work is concrete and reviewable by Codex the next morning.
 
