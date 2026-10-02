@@ -68,6 +68,7 @@ export function RegisterScreen({ navigation }: Props) {
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Email"
             value={email}
             onChangeText={setEmail}
             placeholder="you@example.com"
@@ -84,6 +85,7 @@ export function RegisterScreen({ navigation }: Props) {
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Password"
             value={password}
             onChangeText={setPassword}
             placeholder="Min. 8 characters"

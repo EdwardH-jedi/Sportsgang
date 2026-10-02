@@ -199,7 +199,12 @@ export function SegmentedControl<T extends string>({
             accessibilityState={{ selected: active }}
             style={({ pressed }) => [styles.segment, active && styles.segmentActive, pressed && styles.pressed]}
           >
-            <Text style={[styles.segmentText, active && styles.segmentTextActive]} numberOfLines={1}>
+            <Text
+              style={[styles.segmentText, active && styles.segmentTextActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.35}
+            >
               {opt.label}
             </Text>
           </Pressable>
@@ -264,8 +269,12 @@ export function ScreenHeader({
   return (
     <View style={styles.screenHeader}>
       <View style={styles.screenHeaderText}>
-        {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
-        <Text style={styles.screenTitle} accessibilityRole="header" numberOfLines={2}>
+        {eyebrow ? (
+          <Text style={styles.eyebrow} maxFontSizeMultiplier={1.4}>
+            {eyebrow}
+          </Text>
+        ) : null}
+        <Text style={styles.screenTitle} accessibilityRole="header" maxFontSizeMultiplier={1.4}>
           {title}
         </Text>
       </View>
@@ -475,15 +484,18 @@ const styles = StyleSheet.create({
   sectionTitle: { ...typography.h3 },
   sectionHint: { ...typography.bodySmall, marginTop: 2 },
 
+  // Wraps the optional right-hand action under the title at large text
+  // sizes instead of squeezing the title into mid-word line breaks.
   screenHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     paddingTop: spacing.md,
     paddingBottom: spacing.sm,
     gap: spacing.md,
   },
-  screenHeaderText: { flex: 1 },
+  screenHeaderText: { flexGrow: 1, flexShrink: 1, flexBasis: 180 },
   eyebrow: { ...typography.label, color: colors.accent, marginBottom: 2 },
   screenTitle: { ...typography.h1 },
 

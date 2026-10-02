@@ -91,7 +91,7 @@ export function ExploreScreen({ navigation }: ExploreScreenProps) {
       {!focusHydrated && userId ? (
         <LoadingState label="Loading…" />
       ) : view === 'sessions' ? (
-        <SessionsView sport={focusSport} onOpen={(id) => navigation.navigate('SessionDetail', { eventId: id })} onHost={() => navigation.navigate('CreateSession', { sport: focusSport })} />
+        <SessionsView sport={focusSport} currentUserId={userId} onOpen={(id) => navigation.navigate('SessionDetail', { eventId: id })} onHost={() => navigation.navigate('CreateSession', { sport: focusSport })} />
       ) : (
         <PartnersView
           sport={focusSport}
@@ -115,7 +115,17 @@ export function ExploreScreen({ navigation }: ExploreScreenProps) {
 
 // ─── Sessions ────────────────────────────────────────────────────────────────
 
-function SessionsView({ sport, onOpen, onHost }: { sport: FocusSport; onOpen: (id: string) => void; onHost: () => void }) {
+function SessionsView({
+  sport,
+  currentUserId,
+  onOpen,
+  onHost,
+}: {
+  sport: FocusSport;
+  currentUserId: string | null;
+  onOpen: (id: string) => void;
+  onHost: () => void;
+}) {
   const { items, isLoading, error, refresh } = useEvents({ sport, upcoming: true });
   const noun = SESSION_NOUN[sport];
 
@@ -137,7 +147,7 @@ function SessionsView({ sport, onOpen, onHost }: { sport: FocusSport; onOpen: (i
       ) : (
         items.map((event) => (
           <View key={event.id} style={styles.cardGap}>
-            <SessionCard event={event} onPress={() => onOpen(event.id)} />
+            <SessionCard event={event} currentUserId={currentUserId} onPress={() => onOpen(event.id)} />
           </View>
         ))
       )}

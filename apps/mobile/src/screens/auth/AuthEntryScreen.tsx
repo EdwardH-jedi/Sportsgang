@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { colors, radii, spacing, typography } from '../../theme';
@@ -26,15 +26,23 @@ export function AuthEntryScreen({ navigation }: AuthEntryScreenProps) {
         <View style={styles.heroOverlayTop} />
         <View style={styles.heroOverlayBottom} />
 
-        <View style={styles.heroContent}>
+        {/* Scrolls at large accessibility text sizes so the CTAs stay
+            reachable; decorative display type caps its scale. */}
+        <ScrollView contentContainerStyle={styles.heroContent} bounces={false}>
           <View style={styles.brandBlock}>
-            <Text style={styles.wordmark}>sportsgang</Text>
+            <Text style={styles.wordmark} numberOfLines={1} adjustsFontSizeToFit maxFontSizeMultiplier={1.2}>
+              sportsgang
+            </Text>
             <Text style={styles.eyebrow}>Sydney</Text>
           </View>
 
           <View style={styles.headlineBlock}>
-            <Text style={styles.headline}>Find your</Text>
-            <Text style={styles.headline}>next game.</Text>
+            <Text style={styles.headline} maxFontSizeMultiplier={1.3}>
+              Find your
+            </Text>
+            <Text style={styles.headline} maxFontSizeMultiplier={1.3}>
+              next game.
+            </Text>
             <Text style={styles.tagline}>
               Match, chat, and plan your next session.
             </Text>
@@ -59,7 +67,7 @@ export function AuthEntryScreen({ navigation }: AuthEntryScreenProps) {
               <Text style={styles.ctaGhostText}>Log in</Text>
             </Pressable>
           </View>
-        </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -94,7 +102,8 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   heroContent: {
-    flex: 1,
+    flexGrow: 1,
+    gap: spacing.xl,
     justifyContent: 'space-between',
     paddingTop: spacing.xxxl + spacing.lg,
     paddingBottom: spacing.xxl,

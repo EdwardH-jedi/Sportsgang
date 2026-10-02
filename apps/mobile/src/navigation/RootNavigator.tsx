@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { StyleSheet, Text } from 'react-native';
 import {
   CommonActions,
   NavigationContainer,
@@ -80,11 +81,18 @@ function MainTabs() {
         // Label-only tab bar (no icon set is bundled), so the labels carry
         // the whole affordance: larger, centred, readable at large text.
         tabBarIconStyle: { display: 'none' },
-        tabBarLabelStyle: {
-          fontSize: 14,
-          fontWeight: '600',
-          letterSpacing: 0.1,
-        },
+        // Scales with Dynamic Type up to a cap, then shrinks to fit rather
+        // than truncating ("Explo…") at accessibility text sizes.
+        tabBarLabel: ({ color, children }) => (
+          <Text
+            style={[styles.tabLabel, { color }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1.35}
+          >
+            {children}
+          </Text>
+        ),
         tabBarItemStyle: { justifyContent: 'center' },
       }}
     >
@@ -318,3 +326,12 @@ export function RootNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  tabLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.1,
+    paddingHorizontal: 4,
+  },
+});

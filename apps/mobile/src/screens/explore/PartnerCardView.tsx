@@ -42,7 +42,14 @@ export function Avatar({ card, size = 52 }: { card: FeedCard; size?: number }) {
   }
   return (
     <View style={[styles.avatar, styles.avatarFallback, dims]} accessible={false}>
-      <Text style={[styles.avatarText, { fontSize: size * 0.36 }]}>{initials(card.displayName)}</Text>
+      <Text
+        style={[styles.avatarText, { fontSize: size * 0.36 }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        maxFontSizeMultiplier={1}
+      >
+        {initials(card.displayName)}
+      </Text>
     </View>
   );
 }

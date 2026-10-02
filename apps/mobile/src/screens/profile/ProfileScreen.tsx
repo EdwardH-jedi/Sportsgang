@@ -163,7 +163,9 @@ export function ProfileScreen() {
                 />
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback]} accessibilityElementsHidden>
-                  <Text style={styles.avatarText}>{profile.displayName?.charAt(0).toUpperCase() ?? '·'}</Text>
+                  <Text style={styles.avatarText} maxFontSizeMultiplier={1.2}>
+                    {profile.displayName?.charAt(0).toUpperCase() ?? '·'}
+                  </Text>
                 </View>
               )}
               <View style={styles.identityText}>
@@ -361,7 +363,14 @@ const styles = StyleSheet.create({
 
   section: { marginBottom: spacing.lg },
   sportCard: { marginBottom: spacing.sm, gap: spacing.sm },
-  sportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
+  // Wraps the level chip under the sport name at large text sizes.
+  sportHeader: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
   sportName: { ...typography.h3, flexShrink: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   times: { ...typography.bodySmall },
