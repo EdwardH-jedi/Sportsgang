@@ -34,6 +34,7 @@ async def list_events(
     mine: bool = Query(False, description="Only events the caller hosts or has joined"),
     sport: str | None = Query(None),
     mode: str | None = Query(None, description="casual or ranked"),
+    upcoming: bool = Query(False, description="Only sessions starting now or later"),
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
@@ -45,6 +46,7 @@ async def list_events(
         mine=mine,
         sport=sport,
         mode=mode,
+        upcoming=upcoming,
         limit=limit,
         offset=offset,
     )

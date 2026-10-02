@@ -34,7 +34,9 @@ from app.schemas.events import (
     EventListResponse,
     EventParticipantSummary,
     EventSummary,
+    GolfSessionDetails,
     HostAttendanceUpdateRequest,
+    RunSessionDetails,
     SelfAttendanceRequest,
 )
 from app.services.content_moderation import ensure_text_allowed
@@ -81,6 +83,76 @@ async def _get_event_or_404(db: AsyncSession, event_id: UUID) -> Event:
     return e
 
 
+def _run_details(e: Event) -> RunSessionDetails | None:
+    if e.run_distance_km is None:
+        return None
+    return RunSessionDetails(
+        distance_km=e.run_distance_km,
+        pace_mode=e.run_pace_mode,
+        pace_min_sec_per_km=e.run_pace_min_sec_per_km,
+        pace_max_sec_per_km=e.run_pace_max_sec_per_km,
+        group_style=e.run_group_style,
+        beginner_friendly=bool(e.run_beginner_friendly),
+        walk_breaks_ok=bool(e.run_walk_breaks_ok),
+    )
+
+
+def _golf_details(e: Event) -> GolfSessionDetails | None:
+    if e.golf_holes is None:
+        return None
+    return GolfSessionDetails(
+        holes=e.golf_holes,
+        tee_time_status=e.golf_tee_time_status,
+        estimated_cost_cents=e.golf_estimated_cost_cents,
+        handicap_min_tenths=e.golf_handicap_min_tenths,
+        handicap_max_tenths=e.golf_handicap_max_tenths,
+        beginners_welcome=bool(e.golf_beginners_welcome),
+    )
+
+
+def _unprocessable(detail: str) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail)
+
+
+def _validate_session_details(body: CreateEventRequest, sport: str) -> None:
+    """Cross-field rules for v2 running/golf details (CONTRACTS.md §5).
+
+    Every detail is informational for joining; these rules only keep the
+    stored plan coherent. Messages are user-readable because the mobile
+    composer shows them verbatim.
+    """
+    run, golf = body.run_details, body.golf_details
+    if run is None and golf is None:
+        return
+    if run is not None and golf is not None:
+        raise _unprocessable("A session can have running or golf details, not both.")
+    if run is not None and sport != "running":
+        raise _unprocessable("Running details can only be added to a running session.")
+    if golf is not None and sport != "golf":
+        raise _unprocessable("Golf details can only be added to a golf round.")
+    if body.mode != "casual":
+        raise _unprocessable("Running and golf sessions are casual; ranked mode is not available.")
+    if run is not None:
+        if not 2 <= body.capacity <= 50:
+            raise _unprocessable("A group run is 2 to 50 runners, including you.")
+        has_min, has_max = run.pace_min_sec_per_km is not None, run.pace_max_sec_per_km is not None
+        if run.pace_mode == "target_pace":
+            if not (has_min and has_max):
+                raise _unprocessable("A target pace needs both the fastest and slowest pace.")
+            if run.pace_min_sec_per_km > run.pace_max_sec_per_km:
+                raise _unprocessable("The fastest target pace must not be slower than the slowest.")
+        elif has_min or has_max:
+            raise _unprocessable("A social run has no target pace; choose target pace to set one.")
+    if golf is not None:
+        if not 2 <= body.capacity <= 4:
+            raise _unprocessable("A golf group is 2 to 4 players, including you.")
+        has_min, has_max = golf.handicap_min_tenths is not None, golf.handicap_max_tenths is not None
+        if has_min != has_max:
+            raise _unprocessable("Give both ends of the handicap guide, or neither.")
+        if has_min and golf.handicap_min_tenths > golf.handicap_max_tenths:
+            raise _unprocessable("The handicap guide's lower end must not be above its upper end.")
+
+
 async def _to_summary(db: AsyncSession, e: Event, current_user_id: UUID) -> EventSummary:
     count = await _joined_count(db, e.id)
     joined = (await _active_participant(db, e.id, current_user_id)) is not None
@@ -101,6 +173,8 @@ async def _to_summary(db: AsyncSession, e: Event, current_user_id: UUID) -> Even
         status=e.status,
         has_joined=joined,
         description=e.description,
+        run_details=_run_details(e),
+        golf_details=_golf_details(e),
         created_at=e.created_at,
         updated_at=e.updated_at,
     )
@@ -141,10 +215,14 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
     if body.description:
         ensure_text_allowed(body.description, context="event-description")
 
+    sport = body.sport.strip().lower()
+    _validate_session_details(body, sport)
+    run, golf = body.run_details, body.golf_details
+
     e = Event(
         host_user_id=host_user_id,
         title=body.title.strip(),
-        sport=body.sport.strip().lower(),
+        sport=sport,
         mode=body.mode,
         starts_at=body.starts_at,
         location_text=body.location_text.strip(),
@@ -152,6 +230,19 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
         description=(body.description or None),
         visibility=body.visibility,
         status="open",
+        run_distance_km=run.distance_km if run else None,
+        run_pace_mode=run.pace_mode if run else None,
+        run_pace_min_sec_per_km=run.pace_min_sec_per_km if run else None,
+        run_pace_max_sec_per_km=run.pace_max_sec_per_km if run else None,
+        run_group_style=run.group_style if run else None,
+        run_beginner_friendly=run.beginner_friendly if run else None,
+        run_walk_breaks_ok=run.walk_breaks_ok if run else None,
+        golf_holes=golf.holes if golf else None,
+        golf_tee_time_status=golf.tee_time_status if golf else None,
+        golf_estimated_cost_cents=golf.estimated_cost_cents if golf else None,
+        golf_handicap_min_tenths=golf.handicap_min_tenths if golf else None,
+        golf_handicap_max_tenths=golf.handicap_max_tenths if golf else None,
+        golf_beginners_welcome=golf.beginners_welcome if golf else None,
     )
     db.add(e)
     await db.flush()
@@ -186,6 +277,7 @@ async def list_events(
     mine: bool = False,
     sport: str | None = None,
     mode: str | None = None,
+    upcoming: bool = False,
     limit: int = 20,
     offset: int = 0,
 ) -> EventListResponse:
@@ -220,6 +312,9 @@ async def list_events(
                 detail=f"Invalid mode: {mode}",
             )
         base = base.where(Event.mode == mode)
+
+    if upcoming:
+        base = base.where(Event.starts_at >= _utc_now())
 
     base = base.order_by(Event.starts_at.asc())
 
