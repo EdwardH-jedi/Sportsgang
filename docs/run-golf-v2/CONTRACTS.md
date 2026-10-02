@@ -163,8 +163,11 @@ Response additions (all additive):
   }],
   "compatibility": {
     "tier": "compatible",
-    "reasons": [{"code": "golf_mentor_fit", "text": "Welcomes beginners and has played regularly"}],
-    "caveats": [{"code": "handicap_self_reported", "text": "Handicaps are self-reported"}]
+    "reasons": [
+      {"code": "more_experienced", "text": "More experienced than you (plays regularly vs driving-range experience)"},
+      {"code": "welcomes_beginners", "text": "Welcomes beginners"}
+    ],
+    "caveats": [{"code": "handicap_self_reported", "text": "Handicaps are self-reported, not verified"}]
   }
 }
 ```
@@ -175,6 +178,28 @@ Response additions (all additive):
   pace), `needs_setup` (viewer or candidate has not configured v2
   preferences; no compatibility is claimed).
 - Reasons are built only from stored values. No percentages.
+
+### Bilateral rules (`app/services/compatibility.py`)
+
+Each person's own intents must admit the other; a pair is excluded when
+either side does not.
+
+- Golf `any_level`: admits anyone (does not override the other person).
+- Golf `similar_level`: two numeric handicaps → gap ≤ *that person's*
+  tolerance (default 5.0). Fewer than two handicaps → labelled fallback
+  "similar experience" only when both experience bands are equal; never
+  reported as a handicap match.
+- Golf `learn_from_experienced`: needs evidence the other is more
+  experienced — handicap at least 5.0 lower when both are numeric,
+  otherwise a higher stated experience band.
+- Golf `welcome_beginners`: admits someone `new`/`range`, or someone the
+  owner is demonstrably more experienced than (same evidence rule).
+- Running `match_pace`: the other person's *declared* range must overlap.
+  Declared and non-overlapping → excluded; undeclared → `unverified` with a
+  caveat and no "pace overlaps" reason. `social` imposes no pace rule.
+- Fit points (ordering inside a tier only): shared preferred times (2 each,
+  or 2 when either is flexible), shared run distances (2 each, max 4), same
+  group style (2), compatible golf holes preference (1).
 
 ### Client contract
 

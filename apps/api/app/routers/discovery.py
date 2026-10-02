@@ -14,7 +14,9 @@ router = APIRouter(prefix="/discovery", tags=["discovery"])
 async def get_discovery_feed(
     sport: str = Query(..., description="Sport filter: gym, golf, tennis, or running"),
     limit: int = Query(20, ge=1, le=50),
-    offset: int = Query(0, ge=0),
+    offset: int = Query(0, ge=0, description="Legacy paging; ignored when cursor is sent"),
+    cursor: str | None = Query(None, max_length=200, description="next_cursor from the previous page (running/golf)"),
+    strict_pace: bool = Query(False, description="Running only: declared pace ranges must overlap"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> DiscoveryFeedResponse:
@@ -24,6 +26,8 @@ async def get_discovery_feed(
         sport=sport,
         limit=limit,
         offset=offset,
+        cursor=cursor,
+        strict_pace=strict_pace,
     )
 
 

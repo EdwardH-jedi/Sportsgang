@@ -1,6 +1,9 @@
+import base64
+import binascii
 from datetime import datetime
 from uuid import UUID
 
+from fastapi import HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -10,17 +13,23 @@ from app.models.profile import SportProfile, UserProfile
 from app.models.safety import Block
 from app.models.user import User
 from app.schemas.discovery import (
+    CompatibilityNoteResponse,
+    CompatibilityResponse,
     DiscoveryFeedResponse,
     PartnerCardResponse,
     RecordActionResponse,
     SportProfileSummary,
 )
+from app.services import compatibility, sport_preferences
 
 _CURRENT_YEAR = datetime.now().year
 
 _LEVEL_ORDER: dict[str, int] = {"beginner": 0, "intermediate": 1, "advanced": 2}
 
 # Max candidates fetched before scoring — keeps the scoring step bounded.
+# The pool is the newest _SCORE_POOL users with a profile for the sport (after
+# self / inactive / blocked / already-acted-on exclusion). `total` in the
+# response counts eligible rows inside this pool, not global coverage.
 _SCORE_POOL = 200
 
 
@@ -31,8 +40,9 @@ def _score_compatibility(
 ) -> float:
     """Return a [0, 1] compatibility score between actor and target sport profiles.
 
-    Weights: 60% skill-level proximity, 40% preferred-time overlap.
-    'flexible' in either party's times counts as a full time match.
+    Legacy gym/tennis ranking only. Weights: 60% skill-level proximity, 40%
+    preferred-time overlap. 'flexible' in either party's times counts as a
+    full time match. Running/golf use app.services.compatibility instead.
     """
     level_score = 1.0 - abs(_LEVEL_ORDER.get(actor_level, 1) - _LEVEL_ORDER.get(target_sp.level, 1)) / 2.0
 
@@ -48,10 +58,32 @@ def _score_compatibility(
     return 0.6 * level_score + 0.4 * time_score
 
 
+def _summarise(sp: SportProfile) -> SportProfileSummary:
+    return SportProfileSummary(
+        sport=sp.sport,
+        level=sp.level,
+        gym_name=sp.gym_name,
+        golf_club=sp.golf_club,
+        preferences_configured=sport_preferences.is_configured(sp),
+        preferred_times=list(sp.preferred_times or []),
+        golf_handicap_tenths=sp.golf_handicap_tenths,
+        golf_handicap_source=sp.golf_handicap_source,
+        golf_experience=sp.golf_experience,
+        golf_partner_intents=sp.golf_partner_intents,
+        golf_preferred_holes=sp.golf_preferred_holes,
+        run_pace_mode=sp.run_pace_mode,
+        run_pace_min_sec_per_km=sp.run_pace_min_sec_per_km,
+        run_pace_max_sec_per_km=sp.run_pace_max_sec_per_km,
+        run_distances_km=sp.run_distances_km,
+        run_group_style=sp.run_group_style,
+    )
+
+
 def _build_partner_card(
     user: User,
     profile: UserProfile,
     sport_profiles: list[SportProfile],
+    assessment: compatibility.Assessment | None = None,
 ) -> PartnerCardResponse:
     age = _CURRENT_YEAR - profile.birth_year if profile.birth_year else None
     bio_excerpt = profile.bio[:160] if profile.bio else None
@@ -60,6 +92,13 @@ def _build_partner_card(
     # 0th photo for users who have uploaded; photo_urls carries the full set
     # for the V1 detail preview UI.
     photo_urls = [p.photo_url for p in (profile.photos or [])]
+    compat = None
+    if assessment is not None and assessment.tier is not None:
+        compat = CompatibilityResponse(
+            tier=assessment.tier,
+            reasons=[CompatibilityNoteResponse(code=n.code, text=n.text) for n in assessment.reasons],
+            caveats=[CompatibilityNoteResponse(code=n.code, text=n.text) for n in assessment.caveats],
+        )
     return PartnerCardResponse(
         user_id=user.id,
         display_name=profile.display_name,
@@ -69,16 +108,35 @@ def _build_partner_card(
         avatar_url=profile.avatar_url,
         photo_urls=photo_urls,
         age=age,
-        sport_profiles=[
-            SportProfileSummary(
-                sport=sp.sport,
-                level=sp.level,
-                gym_name=sp.gym_name,
-                golf_club=sp.golf_club,
-            )
-            for sp in sport_profiles
-        ],
+        sport_profiles=[_summarise(sp) for sp in sport_profiles],
+        compatibility=compat,
     )
+
+
+# ---------------------------------------------------------------------------
+# Cursor pagination (v2 feeds)
+#
+# Rows are totally ordered by (-tier_rank, -points, user_id). The cursor is the
+# key of the last row a client received; the next page is every row strictly
+# after it. Removing acted-on users between page loads therefore cannot shift
+# unseen candidates behind the client's position the way an offset does.
+# ---------------------------------------------------------------------------
+
+_SortKey = tuple[int, int, str]
+
+
+def _encode_cursor(key: _SortKey) -> str:
+    raw = f"{key[0]}:{key[1]}:{key[2]}".encode()
+    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+
+def _decode_cursor(cursor: str) -> _SortKey:
+    try:
+        padded = cursor + "=" * (-len(cursor) % 4)
+        tier, points, user_id = base64.urlsafe_b64decode(padded.encode()).decode().split(":")
+        return int(tier), int(points), str(UUID(user_id))
+    except (ValueError, binascii.Error, UnicodeDecodeError) as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid cursor") from exc
 
 
 async def get_discovery_feed(
@@ -87,14 +145,27 @@ async def get_discovery_feed(
     sport: str,
     limit: int = 20,
     offset: int = 0,
+    cursor: str | None = None,
+    strict_pace: bool = False,
 ) -> DiscoveryFeedResponse:
     # Fetch actor's sport profile for compatibility scoring.
     actor_sp_stmt = select(SportProfile).where(
         and_(SportProfile.user_id == current_user_id, SportProfile.sport == sport)
     )
     actor_sp = (await db.execute(actor_sp_stmt)).scalar_one_or_none()
-    actor_level = actor_sp.level if actor_sp else "intermediate"
-    actor_times = list(actor_sp.preferred_times or []) if actor_sp else ["flexible"]
+
+    is_v2 = sport in sport_preferences.FOCUS_SPORTS
+    if strict_pace:
+        if sport != "running":
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="The pace filter is only available for running.",
+            )
+        if actor_sp is None or actor_sp.run_pace_min_sec_per_km is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Add your pace range to filter by pace.",
+            )
 
     # IDs the current user has already acted on for this sport
     acted_on_subq = (
@@ -137,6 +208,12 @@ async def get_discovery_feed(
     )
     pool = (await db.execute(pool_stmt)).all()
 
+    if is_v2:
+        return _v2_feed(sport, actor_sp, pool, limit, offset, cursor, strict_pace)
+
+    actor_level = actor_sp.level if actor_sp else "intermediate"
+    actor_times = list(actor_sp.preferred_times or []) if actor_sp else ["flexible"]
+
     # Score and sort descending
     scored = sorted(
         pool,
@@ -148,7 +225,51 @@ async def get_discovery_feed(
     page = scored[offset : offset + limit]
 
     items = [_build_partner_card(user, profile, [sp]) for user, profile, sp in page]
-    return DiscoveryFeedResponse(items=items, total=total, limit=limit, offset=offset)
+    return DiscoveryFeedResponse(items=items, total=total, limit=limit, offset=offset, pool_limit=_SCORE_POOL)
+
+
+def _v2_feed(
+    sport: str,
+    actor_sp: SportProfile | None,
+    pool: list,
+    limit: int,
+    offset: int,
+    cursor: str | None,
+    strict_pace: bool,
+) -> DiscoveryFeedResponse:
+    ranked: list[tuple[_SortKey, tuple, compatibility.Assessment]] = []
+    for row in pool:
+        assessment = compatibility.assess(sport, actor_sp, row[2], strict_pace=strict_pace)
+        if assessment.excluded:
+            continue
+        key = (compatibility.TIER_RANK[assessment.tier], assessment.points, str(row[0].id))
+        ranked.append((key, row, assessment))
+
+    # Higher tier first, then more fit points, then user id for a total order.
+    def _order(key: _SortKey) -> tuple[int, int, str]:
+        return (-key[0], -key[1], key[2])
+
+    ranked.sort(key=lambda item: _order(item[0]))
+
+    if cursor is not None:
+        after = _order(_decode_cursor(cursor))
+        remaining = [item for item in ranked if _order(item[0]) > after]
+        page = remaining[:limit]
+        has_more = len(remaining) > limit
+    else:
+        page = ranked[offset : offset + limit]
+        has_more = len(ranked) > offset + limit
+
+    items = [_build_partner_card(user, profile, [sp], assessment) for _, (user, profile, sp), assessment in page]
+    return DiscoveryFeedResponse(
+        items=items,
+        total=len(ranked),
+        limit=limit,
+        offset=offset,
+        next_cursor=_encode_cursor(page[-1][0]) if page and has_more else None,
+        viewer_setup_required=actor_sp is None or not sport_preferences.is_configured(actor_sp),
+        pool_limit=_SCORE_POOL,
+    )
 
 
 async def record_action(
