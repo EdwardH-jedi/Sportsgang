@@ -147,6 +147,30 @@ it('completes a legacy golf row in place, keeping club and goals', async () => {
   });
 });
 
+it('creates the sport when the user has no row for it yet (Explore “Set up now”)', async () => {
+  useProfileStore.setState({ sportProfiles: [GOLF_LEGACY] });
+  const { getByLabelText, queryByLabelText, nav } = renderEdit('running');
+  // Nothing to remove yet.
+  expect(queryByLabelText(/Remove/)).toBeNull();
+  fireEvent.press(getByLabelText('Beginner'));
+  fireEvent.press(getByLabelText('Social'));
+  fireEvent.press(getByLabelText('Evenings'));
+  fireEvent.press(getByLabelText('Save preferences'));
+  await waitFor(() => expect(nav.goBack).toHaveBeenCalled());
+  const body = mockPost.mock.calls[0][1];
+  expect(body).toMatchObject({
+    sport: 'running',
+    level: 'beginner',
+    preferredTimes: ['evening'],
+    preferencesVersion: 2,
+    runPaceMode: 'social',
+  });
+  // No legacy fields from another sport leak into the new row.
+  expect(body).not.toHaveProperty('golfClub');
+  expect(body).not.toHaveProperty('goals');
+  expect(useProfileStore.getState().sportProfiles?.map((sp) => sp.sport)).toEqual(['golf', 'running']);
+});
+
 it('shows the server’s reason when the save is rejected', async () => {
   mockPost.mockRejectedValueOnce(new Error('Matching pace needs your comfortable pace range.'));
   const { getByLabelText, getByText, nav } = renderEdit('running');
