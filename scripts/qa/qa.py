@@ -912,13 +912,20 @@ def _source_line(name: str, entry: dict, state: dict) -> str:
     if not started_from:
         return f"{name}: start source not recorded"
     note = " (worktree had uncommitted changes then)" if entry.get("source_dirty") else ""
-    if name == "metro":
-        return f"metro: started from {started_from[:12]}{note}; serves apps/mobile live from this worktree"
+    # Neither process reloads: uvicorn runs without --reload, and Metro runs
+    # with CI=1, which disables its file watcher.
+    paths = ("apps/mobile", "packages") if name == "metro" else ("apps/api",)
     head = source_sha()
-    changed = started_from != head and git("diff", "--quiet", started_from, head, "--", "apps/api").returncode != 0
-    if changed or dirty(("apps/api",)):
-        return f"api: started from {started_from[:12]}{note}; apps/api changed since — run qa:restart to load it"
-    return f"api: started from {started_from[:12]}{note}; apps/api unchanged since, so it runs that code"
+    changed = started_from != head and git("diff", "--quiet", started_from, head, "--", *paths).returncode != 0
+    where = ", ".join(paths)
+    if changed:
+        return f"{name}: started from {started_from[:12]}{note}; {where} changed since — run qa:restart"
+    if dirty(paths):
+        return (
+            f"{name}: started from {started_from[:12]} at {entry.get('started_at')}; {where} has uncommitted changes"
+            " — run qa:restart if they are newer"
+        )
+    return f"{name}: started from {started_from[:12]}{note}; {where} unchanged since, so it serves that code"
 
 
 def status(cfg: dict[str, str], state: dict) -> bool:

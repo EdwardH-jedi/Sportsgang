@@ -261,8 +261,10 @@ stated otherwise, start on iPhone 16e. Profile › Log out has no confirm dialog
   this config's DB password), then `npm run qa:up -- --no-open --no-seed`.
   That records ownership and upgrades the running API/Metro records after
   verifying them; it does not restart containers or touch the volume.
-  `npm run qa:restart` then loads new API code (`qa:status` says when
-  `apps/api` changed since the API started).
+  `npm run qa:restart` then loads new code: neither process reloads by
+  itself (Metro runs in CI mode without a file watcher), and `qa:status`
+  says when `apps/api` or `apps/mobile`/`packages` changed since each
+  started.
 - **A second, separate stack** (another worktree): put
   `QA_PROJECT=sportsgang-qa-<name>` and unused ports (`QA_API_PORT`,
   `QA_METRO_PORT`, `QA_PG_PORT`, `QA_REDIS_PORT`) in that worktree's
