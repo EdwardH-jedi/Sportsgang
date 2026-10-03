@@ -22,6 +22,11 @@
  *   in-flight success/error can no longer land. When the viewer no longer
  *   has a pace range, the strict pace filter is switched off rather than
  *   left on (the server would reject it).
+ * - Like, pass and block (review R4) run one at a time behind `actingOn`,
+ *   checked and set synchronously; a refused or stale action sends nothing
+ *   or reports nothing. A successful block bumps the generation, so a first
+ *   or next page requested before it can never bring the person back, and
+ *   drops the card. The server stays the authority (CONTRACTS.md §8).
  */
 
 import { create } from 'zustand';
@@ -35,6 +40,7 @@ import type {
 } from '@protin/shared-types';
 
 import { api, BASE_URL } from '../lib/api';
+import { blockUser } from '../lib/safety';
 import { isFocusSport } from '../lib/sportPreferences';
 import { useProfileStore } from './profile';
 
@@ -72,7 +78,11 @@ interface ExploreState {
   view: ExploreView;
   strictPace: boolean;
   feed: FeedState;
-  /** userId with an action in flight (shared by Explore and PartnerDetail). */
+  /**
+   * userId with an action (like, pass or block) in flight, shared by Explore
+   * and PartnerDetail. Checked and set synchronously, so only one action runs
+   * at a time however fast the taps are.
+   */
   actingOn: string | null;
   hydrateFocus: (userId: string, fallback?: FocusSport | null) => Promise<void>;
   setFocusSport: (sport: FocusSport) => void;
@@ -81,7 +91,19 @@ interface ExploreState {
   /** Load page one for the current sport/filter (no-op if already loaded unless forced). */
   loadFeed: (options?: { force?: boolean }) => Promise<void>;
   fetchMore: () => Promise<void>;
-  recordAction: (card: FeedCard, action: DiscoveryAction) => Promise<RecordActionResponse>;
+  /**
+   * Like/pass. Resolves null without a request when another action is in
+   * flight, and null when the account changed before the response (the
+   * caller must not act on it). Rejects when the request fails.
+   */
+  recordAction: (card: FeedCard, action: DiscoveryAction) => Promise<RecordActionResponse | null>;
+  /**
+   * Block (review R4). False without a request when another action is in
+   * flight, or when the account changed before the response. On success every
+   * in-flight feed page is invalidated and the person leaves the feed.
+   * Rejects when the request fails (the card stays).
+   */
+  blockPartner: (userId: string) => Promise<boolean>;
   reset: () => void;
 }
 
@@ -181,7 +203,6 @@ function watchPreferences(): void {
     if (sport && (state.preferenceRevision?.[sport] ?? 0) !== explore.feed.revision) {
       feedGeneration += 1;
       patch.feed = EMPTY_FEED;
-      patch.actingOn = null;
     }
     if (Object.keys(patch).length > 0) useExploreStore.setState(patch);
   });
@@ -254,7 +275,8 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
     }
 
     const generation = ++feedGeneration;
-    set({ feed: { ...EMPTY_FEED, key, sport, revision, status: 'loading' }, actingOn: null });
+    // actingOn is left alone: a like/pass/block in flight keeps the guard.
+    set({ feed: { ...EMPTY_FEED, key, sport, revision, status: 'loading' } });
     try {
       const data = await api.get<DiscoveryFeedResponse>(feedUrl(sport, strictPace));
       assertFeedShape(data);
@@ -311,6 +333,8 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   },
 
   recordAction: async (card, action) => {
+    if (get().actingOn !== null) return null;
+    const owner = get().ownerId;
     set({ actingOn: card.userId });
     try {
       // Always the sport this card was loaded for — a card left on screen
@@ -320,6 +344,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
         action,
         sport: card.feedSport,
       });
+      if (get().ownerId !== owner) return null;
       const { feed } = get();
       if (feed.sport === card.feedSport) {
         set({ feed: { ...feed, items: feed.items.filter((c) => c.userId !== card.userId) } });
@@ -327,6 +352,29 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       return result;
     } finally {
       if (get().actingOn === card.userId) set({ actingOn: null });
+    }
+  },
+
+  blockPartner: async (userId) => {
+    if (get().actingOn !== null) return false;
+    const owner = get().ownerId;
+    set({ actingOn: userId });
+    try {
+      await blockUser(userId);
+      if (get().ownerId !== owner) return false;
+      // Any page requested before the block may still list this person:
+      // invalidate them all, then drop the card from what is loaded. A first
+      // page that was interrupted is asked for again (the server now
+      // excludes the person); an interrupted "more" can simply be retried.
+      feedGeneration += 1;
+      const { feed } = get();
+      set({
+        feed: { ...feed, items: feed.items.filter((c) => c.userId !== userId), loadingMore: false },
+      });
+      if (feed.status === 'loading') void get().loadFeed({ force: true });
+      return true;
+    } finally {
+      if (get().actingOn === userId) set({ actingOn: null });
     }
   },
 

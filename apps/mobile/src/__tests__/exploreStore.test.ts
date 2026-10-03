@@ -243,7 +243,7 @@ describe('recordAction', () => {
     mockPost.mockResolvedValueOnce({ action: 'like', matchCreated: true, matchId: 'm1' });
     const result = await store().recordAction(store().feed.items[0], 'like');
     expect(mockPost).toHaveBeenCalledWith('/discovery/actions', { targetUserId: 'a', action: 'like', sport: 'running' });
-    expect(result.matchCreated).toBe(true);
+    expect(result?.matchCreated).toBe(true);
     expect(store().feed.items.map((c) => c.userId)).toEqual(['b']);
     expect(store().actingOn).toBeNull();
   });
@@ -277,5 +277,124 @@ describe('recordAction', () => {
     await store().loadFeed();
     expect(findFeedCard('a', 'running')?.displayName).toBe('A');
     expect(findFeedCard('a', 'golf')).toBeUndefined();
+  });
+});
+
+describe('blockPartner (review R4)', () => {
+  const ids = () => store().feed.items.map((c) => c.userId);
+
+  it('a first page requested before the block cannot bring the person back', async () => {
+    mockGet.mockResolvedValueOnce(page([card('a'), card('b')]));
+    await store().loadFeed();
+    const held = deferred<unknown>();
+    mockGet.mockReturnValueOnce(held.promise).mockResolvedValueOnce(page([card('b')]));
+    const reload = store().loadFeed({ force: true });
+    mockPost.mockResolvedValueOnce({ id: 'k1', blockedId: 'a' });
+    expect(await store().blockPartner('a')).toBe(true);
+    expect(mockPost).toHaveBeenCalledWith('/blocks/a');
+    held.resolve(page([card('a'), card('b')]));
+    await reload;
+    await Promise.resolve();
+    // The interrupted first page was asked for again; the stale one was dropped.
+    expect(mockGet).toHaveBeenCalledTimes(3);
+    expect(store().feed.status).toBe('ready');
+    expect(ids()).toEqual(['b']);
+  });
+
+  it('a next page requested before the block is dropped and can be fetched again', async () => {
+    mockGet.mockResolvedValueOnce(page([card('a'), card('b')], 'c1'));
+    await store().loadFeed();
+    const held = deferred<unknown>();
+    mockGet.mockReturnValueOnce(held.promise);
+    const more = store().fetchMore();
+    expect(store().feed.loadingMore).toBe(true);
+    mockPost.mockResolvedValueOnce({ id: 'k1' });
+    await store().blockPartner('a');
+    expect(store().feed.loadingMore).toBe(false);
+    held.resolve(page([card('a'), card('c')]));
+    await more;
+    expect(ids()).toEqual(['b']);
+    mockGet.mockResolvedValueOnce(page([card('c')]));
+    await store().fetchMore();
+    expect(ids()).toEqual(['b', 'c']);
+  });
+
+  it('like/pass and block never overlap, in either order, and repeated taps send once', async () => {
+    mockGet.mockResolvedValueOnce(page([card('a'), card('b')]));
+    await store().loadFeed();
+
+    const blocking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocking.promise);
+    const block = store().blockPartner('a');
+    expect(await store().blockPartner('a')).toBe(false);
+    expect(await store().recordAction(store().feed.items[0], 'like')).toBeNull();
+    expect(await store().recordAction(store().feed.items[1], 'pass')).toBeNull();
+    // A feed reload meanwhile does not release the guard.
+    mockGet.mockResolvedValueOnce(page([card('a'), card('b')]));
+    await store().loadFeed({ force: true });
+    expect(await store().recordAction(store().feed.items[0], 'like')).toBeNull();
+    blocking.resolve({ id: 'k1' });
+    expect(await block).toBe(true);
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/blocks/a']);
+
+    const liking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(liking.promise);
+    const like = store().recordAction(store().feed.items[0], 'like');
+    expect(await store().blockPartner('b')).toBe(false);
+    liking.resolve({ action: 'like', matchCreated: false });
+    expect(await like).toEqual({ action: 'like', matchCreated: false });
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/blocks/a', '/discovery/actions']);
+    expect(store().actingOn).toBeNull();
+  });
+
+  it('a failed block keeps the card and can be retried', async () => {
+    mockGet.mockResolvedValueOnce(page([card('a')]));
+    await store().loadFeed();
+    mockPost.mockRejectedValueOnce(new Error('offline'));
+    await expect(store().blockPartner('a')).rejects.toThrow('offline');
+    expect(ids()).toEqual(['a']);
+    expect(store().actingOn).toBeNull();
+    mockPost.mockResolvedValueOnce({ id: 'k1' });
+    expect(await store().blockPartner('a')).toBe(true);
+    expect(ids()).toEqual([]);
+  });
+
+  it('a block that finishes after an account switch leaves the new account alone', async () => {
+    await store().hydrateFocus('user-1');
+    mockGet.mockResolvedValueOnce(page([card('a')]));
+    await store().loadFeed();
+    const blocking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocking.promise);
+    const block = store().blockPartner('a');
+    await store().hydrateFocus('user-2');
+    mockGet.mockResolvedValueOnce(page([card('a')]));
+    await store().loadFeed();
+    blocking.resolve({ id: 'k1' });
+    expect(await block).toBe(false);
+    expect(ids()).toEqual(['a']);
+    expect(store().feed.status).toBe('ready');
+  });
+
+  it('a like that finishes after an account switch is not reported', async () => {
+    await store().hydrateFocus('user-1');
+    mockGet.mockResolvedValueOnce(page([card('a')]));
+    await store().loadFeed();
+    const liking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(liking.promise);
+    const like = store().recordAction(store().feed.items[0], 'like');
+    store().reset();
+    liking.resolve({ action: 'like', matchCreated: true, matchId: 'm1' });
+    expect(await like).toBeNull();
+  });
+
+  it('removes the person from whichever sport feed is loaded', async () => {
+    mockGet.mockResolvedValueOnce(page([card('a')]));
+    await store().loadFeed();
+    store().setFocusSport('golf');
+    mockGet.mockResolvedValueOnce(page([card('a', 'golf'), card('g', 'golf')]));
+    await store().loadFeed();
+    mockPost.mockResolvedValueOnce({ id: 'k1' });
+    await store().blockPartner('a');
+    expect(ids()).toEqual(['g']);
   });
 });

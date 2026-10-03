@@ -226,7 +226,8 @@ function PartnersView({ sport, ownConfigured, ownHasPaceRange, onSetup, onOpen, 
       setActionError(null);
       try {
         const result = await recordAction(card, action);
-        if (action === 'like' && result.matchCreated && result.matchId) {
+        // null: another action was in flight, or the account changed.
+        if (result && action === 'like' && result.matchCreated && result.matchId) {
           setMatch({ card, matchId: result.matchId });
         }
       } catch (err) {

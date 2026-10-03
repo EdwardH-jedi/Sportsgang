@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { PartnerSportSummary } from '@protin/shared-types';
 
@@ -15,7 +15,6 @@ import {
   paceText,
   TIME_OPTIONS,
 } from '../../lib/sportPreferences';
-import { blockUser } from '../../lib/safety';
 import { findFeedCard, useExploreStore } from '../../stores/explore';
 import { colors, spacing, typography } from '../../theme';
 import type { PartnerDetailScreenProps } from '../../navigation/types';
@@ -60,9 +59,18 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
   // Snapshot at mount: acting removes the card from the feed list.
   const [card] = useState(() => findFeedCard(userId, sport));
   const recordAction = useExploreStore((s) => s.recordAction);
+  const blockPartner = useExploreStore((s) => s.blockPartner);
   const actingOn = useExploreStore((s) => s.actingOn);
   const [error, setError] = useState<string | null>(null);
-  const [blocking, setBlocking] = useState(false);
+  const [pending, setPending] = useState<'like' | 'pass' | 'block' | null>(null);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   if (!card) {
     return (
@@ -80,13 +88,19 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
   const summary = sportSummaryFor(card);
   const tier = card.compatibility ? TIER_LABEL[card.compatibility.tier] : null;
   const meta = [card.age ? `${card.age}` : null, card.suburb].filter(Boolean).join(' · ');
-  const busy = actingOn === card.userId;
+  // Like, pass and block share the store's one-at-a-time guard (review R4).
+  const busy = actingOn !== null;
+  // Navigate only from this screen while it is still the one on top; the
+  // store returns null/false when the account changed meanwhile.
+  const canNavigate = () => mounted.current && navigation.isFocused();
 
   async function act(action: 'like' | 'pass') {
     if (!card || busy) return;
     setError(null);
+    setPending(action);
     try {
       const result = await recordAction(card, action);
+      if (!result || !canNavigate()) return;
       if (action === 'like' && result.matchCreated && result.matchId) {
         navigation.replace('Chat', {
           matchId: result.matchId,
@@ -98,29 +112,29 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
       }
       navigation.goBack();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'That did not go through. Try again.');
+      if (mounted.current) setError(err instanceof Error ? err.message : 'That did not go through. Try again.');
+    } finally {
+      if (mounted.current) setPending(null);
     }
   }
 
   async function block() {
-    if (!card || blocking) return;
-    setBlocking(true);
+    if (!card || busy) return;
     setError(null);
+    setPending('block');
     try {
-      await blockUser(card.userId);
-      // Blocked people are excluded server-side; drop the loaded card too.
-      useExploreStore.setState((s) => ({
-        feed: { ...s.feed, items: s.feed.items.filter((c) => c.userId !== card.userId) },
-      }));
-      navigation.goBack();
+      // The store invalidates every in-flight feed page and drops the card;
+      // the server excludes blocked people from then on.
+      if ((await blockPartner(card.userId)) && canNavigate()) navigation.goBack();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not block this person. Try again.');
-      setBlocking(false);
+      if (mounted.current) setError(err instanceof Error ? err.message : 'Could not block this person. Try again.');
+    } finally {
+      if (mounted.current) setPending(null);
     }
   }
 
   function confirmBlock() {
-    if (!card) return;
+    if (!card || busy) return;
     Alert.alert(`Block ${card.displayName}?`, "You won't see each other in Explore and they can't message you.", [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Block', style: 'destructive', onPress: () => void block() },
@@ -200,7 +214,8 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
           <Button
             label="Show interest"
             onPress={() => act('like')}
-            loading={busy}
+            loading={pending === 'like'}
+            disabled={busy}
             accessibilityHint="If they are interested too, a chat opens"
             style={styles.action}
           />
@@ -214,7 +229,14 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
             variant="ghost"
             onPress={() => navigation.navigate('Report', { reportedUserId: card.userId, reportedName: card.displayName })}
           />
-          <Button label="Block" variant="ghost" onPress={confirmBlock} loading={blocking} testID="partner-block" />
+          <Button
+            label="Block"
+            variant="ghost"
+            onPress={confirmBlock}
+            loading={pending === 'block'}
+            disabled={busy}
+            testID="partner-block"
+          />
         </View>
       </ScrollView>
     </Screen>

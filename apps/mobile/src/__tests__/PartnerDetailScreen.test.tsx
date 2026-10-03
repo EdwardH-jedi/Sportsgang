@@ -66,7 +66,7 @@ const golfer = {
   },
 };
 
-const navigation = { navigate: jest.fn(), goBack: jest.fn(), replace: jest.fn() };
+const navigation = { navigate: jest.fn(), goBack: jest.fn(), replace: jest.fn(), isFocused: jest.fn(() => true) };
 
 async function loadGolfFeed() {
   useExploreStore.getState().reset();
@@ -185,4 +185,139 @@ it('a card that is not in the current sport feed shows an honest fallback', () =
   utils.getByText('This profile is no longer in your feed');
   fireEvent.press(utils.getByLabelText('Back to Explore'));
   expect(navigation.goBack).toHaveBeenCalled();
+});
+
+// ─── Block is a store-owned, serialized mutation (review R4) ────────────────
+
+describe('block races (review R4)', () => {
+  const confirmWith = (style: 'destructive' | 'cancel') =>
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _b, buttons) => {
+      buttons?.find((button) => button.style === style)?.onPress?.();
+    });
+  function deferred<T>() {
+    let resolve!: (v: T) => void;
+    let reject!: (e: Error) => void;
+    const promise = new Promise<T>((a, b) => {
+      resolve = a;
+      reject = b;
+    });
+    return { promise, resolve, reject };
+  }
+  const feedIds = () => useExploreStore.getState().feed.items.map((c) => c.userId);
+
+  beforeEach(() => {
+    navigation.isFocused.mockReturnValue(true);
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it('a feed response requested before the block never brings the card back', async () => {
+    const utils = renderDetail();
+    const held = deferred<unknown>();
+    mockGet.mockReturnValueOnce(held.promise).mockResolvedValueOnce({ items: [], total: 0, limit: 20, nextCursor: null });
+    let reload!: Promise<void>;
+    act(() => {
+      reload = useExploreStore.getState().loadFeed({ force: true });
+    });
+    confirmWith('destructive');
+    mockPost.mockResolvedValueOnce({ id: 'block1', blockedId: 'g1' });
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    await act(async () => {
+      held.resolve({ items: [golfer], total: 1, limit: 20, nextCursor: null });
+      await reload;
+    });
+    expect(feedIds()).not.toContain('g1');
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('Show interest does nothing while a confirmed block is in flight', async () => {
+    const utils = renderDetail();
+    confirmWith('destructive');
+    const blocking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocking.promise);
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    await act(async () => {
+      fireEvent.press(utils.getByLabelText('Show interest'));
+      fireEvent.press(utils.getByLabelText('Pass'));
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/blocks/g1']);
+    expect(navigation.replace).not.toHaveBeenCalled();
+    await act(async () => blocking.resolve({ id: 'block1' }));
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+    expect(navigation.replace).not.toHaveBeenCalled();
+  });
+
+  it('Block does nothing while Show interest is in flight', async () => {
+    const utils = renderDetail();
+    const alert = confirmWith('destructive');
+    const liking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(liking.promise);
+    await act(async () => {
+      fireEvent.press(utils.getByLabelText('Show interest'));
+    });
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    expect(alert).not.toHaveBeenCalled();
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/discovery/actions']);
+    await act(async () => liking.resolve({ action: 'like', matchCreated: true, matchId: 'm9' }));
+    expect(navigation.replace).toHaveBeenCalledWith('Chat', expect.objectContaining({ matchId: 'm9' }));
+  });
+
+  it('Cancel in the block confirmation sends nothing and keeps the card', async () => {
+    const utils = renderDetail();
+    confirmWith('cancel');
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    expect(mockPost).not.toHaveBeenCalled();
+    expect(feedIds()).toEqual(['g1']);
+  });
+
+  it('a block that finishes after leaving the screen does not navigate', async () => {
+    confirmWith('destructive');
+    const blocking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocking.promise);
+    const utils = renderDetail();
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    utils.unmount();
+    await act(async () => blocking.resolve({ id: 'block1' }));
+    expect(navigation.goBack).not.toHaveBeenCalled();
+    expect(feedIds()).not.toContain('g1');
+  });
+
+  it('a block that finishes while another screen is on top does not navigate', async () => {
+    confirmWith('destructive');
+    const blocking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocking.promise);
+    const utils = renderDetail();
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    navigation.isFocused.mockReturnValue(false);
+    await act(async () => blocking.resolve({ id: 'block1' }));
+    expect(navigation.goBack).not.toHaveBeenCalled();
+  });
+
+  it('a like that finishes after the account changed does not open a chat', async () => {
+    await useExploreStore.getState().hydrateFocus('viewer-1', 'golf');
+    mockGet.mockResolvedValueOnce({ items: [golfer], total: 1, limit: 20, offset: 0, nextCursor: null });
+    await useExploreStore.getState().loadFeed();
+    const liking = deferred<unknown>();
+    mockPost.mockReturnValueOnce(liking.promise);
+    const utils = renderDetail();
+    await act(async () => {
+      fireEvent.press(utils.getByLabelText('Show interest'));
+    });
+    act(() => useExploreStore.getState().reset());
+    await act(async () => liking.resolve({ action: 'like', matchCreated: true, matchId: 'm9' }));
+    expect(navigation.replace).not.toHaveBeenCalled();
+    expect(navigation.goBack).not.toHaveBeenCalled();
+  });
 });
