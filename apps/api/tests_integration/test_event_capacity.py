@@ -212,3 +212,176 @@ async def test_running_session_journey_reaches_both_users_plans() -> None:
                 e["id"]: e for e in (await client.get("/events?mine=true&limit=50", headers=host)).json()["items"]
             }
             assert host_mine[event_id]["participant_count"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Leave → rejoin lifecycle (review F1). `joined_at` is TIMESTAMPTZ in the
+# migrated schema, but the ORM declared it naive, so a rejoin's aware UTC value
+# was bound as TIMESTAMP WITHOUT TIME ZONE and asyncpg raised DataError → 500.
+# SQLite never showed it, so these run only against PostgreSQL.
+# ---------------------------------------------------------------------------
+
+
+async def _participant_rows(event_id: str) -> list[dict]:
+    """Every participant row of the event, read straight from PostgreSQL."""
+    reader = create_async_engine(get_settings().async_postgres_url)
+    try:
+        async with reader.connect() as conn:
+            rows = await conn.execute(
+                text(
+                    "SELECT p.id, p.user_id, p.status, p.joined_at, p.left_at, u.email "
+                    "FROM event_participants p JOIN users u ON u.id = p.user_id "
+                    "WHERE p.event_id = :id ORDER BY u.email"
+                ),
+                {"id": event_id},
+            )
+            return [dict(r._mapping) for r in rows]
+    finally:
+        await reader.dispose()
+
+
+async def _me(client: AsyncClient, headers: dict[str, str]) -> str:
+    return (await client.get("/auth/me", headers=headers)).json()["id"]
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+@pytest.mark.parametrize("make_session", [_run_session, _golf_round], ids=["running", "golf"])
+async def test_leave_then_rejoin_reuses_the_participant_row(make_session) -> None:
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, "rejoin-host")
+            guest = await _register(client, "rejoin-guest")
+            guest_id = await _me(client, guest)
+            event_id = (await client.post("/events", json=make_session(capacity=4), headers=host)).json()["id"]
+
+            # Inserted by the column default: an absolute instant (timestamptz).
+            host_row = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) != guest_id)
+            assert host_row["joined_at"].tzinfo is not None
+            assert abs(host_row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+
+            assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+            first = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+            left = await client.post(f"/events/{event_id}/leave", headers=guest)
+            assert left.status_code == 200, left.text
+            assert left.json()["participant_count"] == 1
+
+            rejoin = await client.post(f"/events/{event_id}/join", headers=guest)
+            assert rejoin.status_code == 200, rejoin.text
+            body = rejoin.json()
+            assert body["participant_count"] == 2
+            assert body["has_joined"] is True
+            assert guest_id in {p["user_id"] for p in body["participants"]}
+            # Serialized as an explicit UTC instant.
+            assert all(p["joined_at"].endswith("Z") for p in body["participants"])
+
+            guest_rows = [r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id]
+            assert len(guest_rows) == 1, "rejoin must reactivate, not duplicate"
+            row = guest_rows[0]
+            assert row["id"] == first["id"]
+            assert row["status"] == "joined"
+            assert row["left_at"] is None
+            assert row["joined_at"] >= first["joined_at"]
+            assert abs(row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+
+            # A second join is still a duplicate and does not take a place.
+            again = await client.post(f"/events/{event_id}/join", headers=guest)
+            assert again.status_code == 409, again.text
+            final = (await client.get(f"/events/{event_id}", headers=host)).json()
+            assert final["participant_count"] == 2
+            assert final["spots_left"] == 2
+
+
+async def test_full_round_leave_reopens_and_rejoin_fills_it_again() -> None:
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, "cycle-host")
+            guest = await _register(client, "cycle-guest")
+            outsider = await _register(client, "cycle-outsider")
+            event_id = (await client.post("/events", json=_golf_round(capacity=2), headers=host)).json()["id"]
+
+            joined = await client.post(f"/events/{event_id}/join", headers=guest)
+            assert joined.json()["status"] == "full"
+            blocked = await client.post(f"/events/{event_id}/join", headers=outsider)
+            assert blocked.status_code == 422 and blocked.json()["detail"] == "Event is full"
+
+            for cycle in range(3):
+                left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                assert left.status_code == 200, (cycle, left.text)
+                assert (left.json()["status"], left.json()["spots_left"]) == ("open", 1)
+                back = await client.post(f"/events/{event_id}/join", headers=guest)
+                assert back.status_code == 200, (cycle, back.text)
+                assert (back.json()["status"], back.json()["spots_left"]) == ("full", 0)
+
+            rows = await _participant_rows(event_id)
+            assert sorted(r["status"] for r in rows) == ["joined", "joined"]
+            assert len(rows) == 2
+
+
+async def test_rejected_rejoin_leaves_the_left_row_untouched() -> None:
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, "reject-host")
+            guest = await _register(client, "reject-guest")
+            filler = await _register(client, "reject-filler")
+            guest_id = await _me(client, guest)
+            event_id = (await client.post("/events", json=_golf_round(capacity=2), headers=host)).json()["id"]
+            assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+            assert (await client.post(f"/events/{event_id}/leave", headers=guest)).status_code == 200
+            before = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+
+            # Someone else takes the place; the rejoin fails with nothing written.
+            assert (await client.post(f"/events/{event_id}/join", headers=filler)).status_code == 200
+            full = await client.post(f"/events/{event_id}/join", headers=guest)
+            assert full.status_code == 422 and full.json()["detail"] == "Event is full"
+            after = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+            assert after == before
+
+            # Same for a cancelled event.
+            assert (await client.post(f"/events/{event_id}/cancel", headers=host)).status_code == 200
+            cancelled = await client.post(f"/events/{event_id}/join", headers=guest)
+            assert cancelled.status_code == 422 and cancelled.json()["detail"] == "Cannot join a cancelled event"
+            assert next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id) == before
+            final = (await client.get(f"/events/{event_id}", headers=host)).json()
+            assert (final["status"], final["participant_count"]) == ("cancelled", 2)
+
+
+async def test_concurrent_rejoins_by_one_user_count_once() -> None:
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, "crj-host")
+            guest = await _register(client, "crj-guest")
+            guest_id = await _me(client, guest)
+            event_id = (await client.post("/events", json=_run_session(capacity=3), headers=host)).json()["id"]
+            assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+            assert (await client.post(f"/events/{event_id}/leave", headers=guest)).status_code == 200
+
+            results = await asyncio.gather(*(client.post(f"/events/{event_id}/join", headers=guest) for _ in range(3)))
+            assert sorted(r.status_code for r in results) == [200, 409, 409], [r.text for r in results]
+            guest_rows = [r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id]
+            assert [r["status"] for r in guest_rows] == ["joined"]
+            assert (await client.get(f"/events/{event_id}", headers=host)).json()["participant_count"] == 2
+
+
+async def test_last_place_race_after_a_leave_never_oversubscribes() -> None:
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, "lr-host")
+            leaver = await _register(client, "lr-leaver")
+            event_id = (await client.post("/events", json=_golf_round(capacity=3), headers=host)).json()["id"]
+            assert (await client.post(f"/events/{event_id}/join", headers=leaver)).status_code == 200
+            third = await client.post(f"/events/{event_id}/join", headers=await _register(client, "lr-x"))
+            assert third.json()["status"] == "full"
+            assert (await client.post(f"/events/{event_id}/leave", headers=leaver)).status_code == 200
+
+            # The leaver's rejoin races two newcomers for the single place.
+            newcomers = [await _register(client, f"lr-n{i}") for i in range(2)]
+            results = await asyncio.gather(
+                *(client.post(f"/events/{event_id}/join", headers=h) for h in [leaver, *newcomers])
+            )
+            assert sorted(r.status_code for r in results) == [200, 422, 422], [r.text for r in results]
+            final = (await client.get(f"/events/{event_id}", headers=host)).json()
+            assert (final["participant_count"], final["status"]) == (3, "full")
+            assert sum(r["status"] == "joined" for r in await _participant_rows(event_id)) == 3

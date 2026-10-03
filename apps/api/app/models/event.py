@@ -101,7 +101,11 @@ class EventParticipant(Base):
     event_id: Mapped[UUID] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"), nullable=False, index=True)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="joined")
-    joined_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
+    # TIMESTAMP WITH TIME ZONE, as created by migration 0010. Declaring it
+    # timezone-aware here makes SQLAlchemy bind it as timestamptz; the old
+    # naive declaration bound `::TIMESTAMP WITHOUT TIME ZONE`, which asyncpg
+    # rejects for the aware UTC value a rejoin writes (review F1).
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     left_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     # Attendance lifecycle is independent of participant lifecycle.
     # status='left' means the user departed before attendance was
