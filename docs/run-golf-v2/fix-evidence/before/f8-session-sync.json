@@ -1,0 +1,23 @@
+{
+  "name": "before/f8-session-sync",
+  "command": [
+    "npx",
+    "--no-install",
+    "jest",
+    "--ci",
+    "--runInBand",
+    "--watchman=false",
+    "src/__tests__/sessionListSync.test.tsx"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 1,
+  "elapsed_seconds": 9.9,
+  "finished_at_utc": "2026-10-03T04:08:22+00:00",
+  "head": "541f03512280acb818724456afd2eb88e70558c8",
+  "source_dirty": true,
+  "source_status_sha256": "2a6ec2464e886d3f2634952f59d8e7349c576ab37e1e68ff823ca9f49040f778",
+  "dirty_paths": [
+    "M apps/mobile/src/__tests__/BookingDetailScreen.test.tsx",
+    "?? apps/mobile/src/__tests__/sessionListSync.test.tsx"
+  ]
+}

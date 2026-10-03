@@ -1,0 +1,328 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+.FF.............................F.F.FF                                   [100%]
+=================================== FAILURES ===================================
+_ test_legacy_naive_payload_stores_one_instant_under_any_api_timezone[Australia/Sydney] _
+
+process_tz = 'Australia/Sydney'
+
+    @pytest.mark.parametrize("process_tz", ["UTC", "Australia/Sydney", "America/Los_Angeles"], indirect=True)
+    async def test_legacy_naive_payload_stores_one_instant_under_any_api_timezone(process_tz: str) -> None:
+        day = (datetime.now(timezone.utc) + timedelta(days=20)).date().isoformat()
+        expected = datetime.fromisoformat(f"{day}T09:00:00+00:00")
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                proposer, _, match_id = await _match(client)
+                created = await client.post(
+                    "/bookings",
+                    json={
+                        "match_id": match_id,
+                        "sport": "running",
+                        "starts_at": f"{day}T09:00:00",
+                        "ends_at": f"{day}T10:00:00",
+                    },
+                    headers=proposer,
+                )
+                assert created.status_code == 201, created.text
+>               assert _instant(created.json()["starts_at"]) == expected
+E               AssertionError: assert datetime.datetime(2026, 10, 22, 22, 0, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 23, 9, 0, tzinfo=datetime.timezone.utc)
+E                +  where datetime.datetime(2026, 10, 22, 22, 0, tzinfo=datetime.timezone.utc) = _instant('2026-10-22T22:00:00Z')
+
+tests_integration/test_booking_time.py:110: AssertionError
+_ test_legacy_naive_payload_stores_one_instant_under_any_api_timezone[America/Los_Angeles] _
+
+process_tz = 'America/Los_Angeles'
+
+    @pytest.mark.parametrize("process_tz", ["UTC", "Australia/Sydney", "America/Los_Angeles"], indirect=True)
+    async def test_legacy_naive_payload_stores_one_instant_under_any_api_timezone(process_tz: str) -> None:
+        day = (datetime.now(timezone.utc) + timedelta(days=20)).date().isoformat()
+        expected = datetime.fromisoformat(f"{day}T09:00:00+00:00")
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                proposer, _, match_id = await _match(client)
+                created = await client.post(
+                    "/bookings",
+                    json={
+                        "match_id": match_id,
+                        "sport": "running",
+                        "starts_at": f"{day}T09:00:00",
+                        "ends_at": f"{day}T10:00:00",
+                    },
+                    headers=proposer,
+                )
+                assert created.status_code == 201, created.text
+>               assert _instant(created.json()["starts_at"]) == expected
+E               AssertionError: assert datetime.datetime(2026, 10, 23, 16, 0, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 23, 9, 0, tzinfo=datetime.timezone.utc)
+E                +  where datetime.datetime(2026, 10, 23, 16, 0, tzinfo=datetime.timezone.utc) = _instant('2026-10-23T16:00:00Z')
+
+tests_integration/test_booking_time.py:110: AssertionError
+________________ test_equivalent_offsets_store_the_same_instant ________________
+
+client = <httpx.AsyncClient object at 0x10c64d460>
+
+    async def test_equivalent_offsets_store_the_same_instant(client: AsyncClient) -> None:
+        token, match_id = await _booking_match(client, "equiv")
+        day = _future_day()
+        utc = await _propose(client, token, match_id, f"{day}T09:00:00Z", f"{day}T10:00:00Z")
+        sydney = await _propose(client, token, match_id, f"{day}T20:00:00+11:00", f"{day}T21:00:00+11:00")
+        western = await _propose(client, token, match_id, f"{day}T04:00:00-05:00", f"{day}T05:00:00-05:00")
+        assert {r.status_code for r in (utc, sydney, western)} == {201}
+        expected = datetime.fromisoformat(f"{day}T09:00:00+00:00")
+        for r in (utc, sydney, western):
+>           assert _instant(r.json()["starts_at"]) == expected
+E           AssertionError: assert datetime.datetime(2026, 11, 2, 20, 0, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 11, 2, 9, 0, tzinfo=datetime.timezone.utc)
+E            +  where datetime.datetime(2026, 11, 2, 20, 0, tzinfo=datetime.timezone.utc) = _instant('2026-11-02T20:00:00')
+
+tests/test_bookings.py:645: AssertionError
+____________ test_mixed_naive_and_aware_bounds_compare_as_instants _____________
+
+client = <httpx.AsyncClient object at 0x10c368710>
+
+    async def test_mixed_naive_and_aware_bounds_compare_as_instants(client: AsyncClient) -> None:
+        token, match_id = await _booking_match(client, "mixed")
+        day = _future_day()
+        # naive start (UTC) + aware end: valid one-hour session, not a 500.
+>       ok = await _propose(client, token, match_id, f"{day}T09:00:00", f"{day}T21:00:00+11:00")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bookings.py:665: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_bookings.py:629: in _propose
+    return await client.post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/bookings.py:33: in create_booking
+    return await bookings_service.create_booking(db, current_user.id, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x10c6617f0>
+current_user_id = UUID('15cb1e72-9a11-4efe-abb7-0e5df03f6bfb')
+req = CreateBookingRequest(match_id=UUID('644fbb9c-8bee-4d7d-8638-a7573a0e9f12'), sport='running', starts_at=datetime.dateti..., 9, 0), ends_at=datetime.datetime(2026, 11, 2, 21, 0, tzinfo=TzInfo(39600)), location=None, venue_id=None, notes=None)
+
+    async def create_booking(
+        db: AsyncSession,
+        current_user_id: UUID,
+        req: CreateBookingRequest,
+    ) -> BookingResponse:
+        # Validate the match exists and user is a participant
+        m = (await db.execute(select(Match).where(Match.id == req.match_id))).scalar_one_or_none()
+        if m is None or (m.user1_id != current_user_id and m.user2_id != current_user_id):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
+        if m.status != "active":
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Cannot book on an inactive match",
+            )
+    
+        partner_id = m.user2_id if m.user1_id == current_user_id else m.user1_id
+    
+>       if req.starts_at >= req.ends_at:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: can't compare offset-naive and offset-aware datetimes
+
+app/services/bookings.py:119: TypeError
+__________________ test_sydney_midnight_crosses_the_utc_date ___________________
+
+client = <httpx.AsyncClient object at 0x10c651670>
+
+    async def test_sydney_midnight_crosses_the_utc_date(client: AsyncClient) -> None:
+        token, match_id = await _booking_match(client, "midnight")
+        day = datetime.fromisoformat(_future_day(40))
+        next_day = (day + timedelta(days=1)).date().isoformat()
+        # 00:30 Sydney (AEDT or AEST) on `next_day` is the previous UTC calendar day.
+        r = await _propose(client, token, match_id, f"{next_day}T00:30:00+11:00", f"{next_day}T01:30:00+11:00")
+        assert r.status_code == 201, r.text
+        starts = _instant(r.json()["starts_at"])
+>       assert starts == datetime.fromisoformat(f"{next_day}T00:30:00+11:00")
+E       AssertionError: assert datetime.datetime(2026, 11, 13, 0, 30, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 11, 13, 0, 30, tzinfo=datetime.timezone(datetime.timedelta(seconds=39600)))
+E        +  where datetime.datetime(2026, 11, 13, 0, 30, tzinfo=datetime.timezone(datetime.timedelta(seconds=39600))) = <built-in method fromisoformat of type object at 0x107d85be8>('2026-11-13T00:30:00+11:00')
+E        +    where <built-in method fromisoformat of type object at 0x107d85be8> = datetime.fromisoformat
+
+tests/test_bookings.py:695: AssertionError
+_______________ test_past_check_uses_the_instant_for_every_form ________________
+
+client = <httpx.AsyncClient object at 0x10c663950>
+
+    async def test_past_check_uses_the_instant_for_every_form(client: AsyncClient) -> None:
+        token, match_id = await _booking_match(client, "past")
+        now = datetime.now(timezone.utc)
+    
+        def iso(instant: datetime, offset_hours: int) -> str:
+            return instant.astimezone(timezone(timedelta(hours=offset_hours))).isoformat()
+    
+        two_hours_ago = now - timedelta(hours=2)
+        # +14:00 makes the wall clock look 12 hours in the future; the instant is past.
+        for start in (iso(two_hours_ago, 0), iso(two_hours_ago, 14), two_hours_ago.replace(tzinfo=None).isoformat()):
+>           r = await _propose(client, token, match_id, start, iso(now + timedelta(hours=1), 0))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bookings.py:709: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_bookings.py:629: in _propose
+    return await client.post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/bookings.py:33: in create_booking
+    return await bookings_service.create_booking(db, current_user.id, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x10c6f76e0>
+current_user_id = UUID('31ffa0d5-ecef-4059-8e22-4439164cff37')
+req = CreateBookingRequest(match_id=UUID('007c25de-0985-483b-88aa-4f1f97e3791b'), sport='running', starts_at=datetime.dateti... ends_at=datetime.datetime(2026, 10, 3, 5, 15, 24, 410486, tzinfo=TzInfo(0)), location=None, venue_id=None, notes=None)
+
+    async def create_booking(
+        db: AsyncSession,
+        current_user_id: UUID,
+        req: CreateBookingRequest,
+    ) -> BookingResponse:
+        # Validate the match exists and user is a participant
+        m = (await db.execute(select(Match).where(Match.id == req.match_id))).scalar_one_or_none()
+        if m is None or (m.user1_id != current_user_id and m.user2_id != current_user_id):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
+        if m.status != "active":
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Cannot book on an inactive match",
+            )
+    
+        partner_id = m.user2_id if m.user1_id == current_user_id else m.user1_id
+    
+>       if req.starts_at >= req.ends_at:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: can't compare offset-naive and offset-aware datetimes
+
+app/services/bookings.py:119: TypeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests/test_bookings.py: 18 warnings
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/bookings.py:223: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _check_transition(b, new_status, current_user_id)
+
+tests/test_bookings.py::test_ends_at_before_starts_at_returns_422
+tests/test_bookings.py::test_past_booking_rejected
+tests/test_bookings.py::test_range_is_validated_on_instants_not_wall_clocks
+tests/test_bookings.py::test_range_is_validated_on_instants_not_wall_clocks
+tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/routers/bookings.py:33: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await bookings_service.create_booking(db, current_user.id, req)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests_integration/test_booking_time.py::test_legacy_naive_payload_stores_one_instant_under_any_api_timezone[Australia/Sydney]
+FAILED tests_integration/test_booking_time.py::test_legacy_naive_payload_stores_one_instant_under_any_api_timezone[America/Los_Angeles]
+FAILED tests/test_bookings.py::test_equivalent_offsets_store_the_same_instant
+FAILED tests/test_bookings.py::test_mixed_naive_and_aware_bounds_compare_as_instants
+FAILED tests/test_bookings.py::test_sydney_midnight_crosses_the_utc_date - As...
+FAILED tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+6 failed, 32 passed, 25 warnings in 13.05s

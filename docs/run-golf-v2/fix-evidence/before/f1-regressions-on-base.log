@@ -1,0 +1,2113 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+.....FFF.FF                                                              [100%]
+=================================== FAILURES ===================================
+__________ test_leave_then_rejoin_reuses_the_participant_row[running] __________
+
+>   ???
+
+asyncpg/protocol/prepared_stmt.pyx:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asyncpg/protocol/codecs/base.pyx:251: in asyncpg.protocol.protocol.Codec.encode
+    ???
+asyncpg/protocol/codecs/base.pyx:153: in asyncpg.protocol.protocol.Codec.encode_scalar
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   TypeError: can't subtract offset-naive and offset-aware datetimes
+
+asyncpg/pgproto/codecs/datetime.pyx:152: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10bd1f9a0>
+operation = 'UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID'
+parameters = ('joined', datetime.datetime(2026, 10, 3, 4, 12, 38, 512846, tzinfo=datetime.timezone.utc), None, UUID('9f8385e6-1be6-4f80-a44e-91bac5af2035'))
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+asyncpg/protocol/protocol.pyx:184: in bind_execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.DataError: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 38... (can't subtract offset-naive and offset-aware datetimes)
+
+asyncpg/protocol/prepared_stmt.pyx:204: DataError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10bcc6bd0>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x109f63bf0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10bcbfb90>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10bcc7b00>
+parameters = [('joined', datetime.datetime(2026, 10, 3, 4, 12, 38, 512846, tzinfo=datetime.timezone.utc), None, UUID('9f8385e6-1be6-4f80-a44e-91bac5af2035'))]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10c863c50>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 38... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 38... (can't subtract offset-naive and offset-aware datetimes)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+make_session = <function _run_session at 0x10bb30400>
+
+    @pytest.mark.parametrize("make_session", [_run_session, _golf_round], ids=["running", "golf"])
+    async def test_leave_then_rejoin_reuses_the_participant_row(make_session) -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "rejoin-host")
+                guest = await _register(client, "rejoin-guest")
+                guest_id = await _me(client, guest)
+                event_id = (await client.post("/events", json=make_session(capacity=4), headers=host)).json()["id"]
+    
+                # Inserted by the column default: an absolute instant (timestamptz).
+                host_row = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) != guest_id)
+                assert host_row["joined_at"].tzinfo is not None
+                assert abs(host_row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+    
+                assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+                first = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+                left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                assert left.status_code == 200, left.text
+                assert left.json()["participant_count"] == 1
+    
+>               rejoin = await client.post(f"/events/{event_id}/join", headers=guest)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_event_capacity.py:271: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/events.py:70: in join_event
+    return await events_service.join_event(db, event_id, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/events.py:423: in join_event
+    await db.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py:787: in flush
+    await greenlet_spawn(self.sync_session.flush, objects=objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:203: in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:85: in save_obj
+    _emit_update_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:912: in _emit_update_statements
+    c = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10c863c50>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 38... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 38... (can't subtract offset-naive and offset-aware datetimes)
+E                   [SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]
+E                   [parameters: ('joined', datetime.datetime(2026, 10, 3, 4, 12, 38, 512846, tzinfo=datetime.timezone.utc), None, UUID('9f8385e6-1be6-4f80-a44e-91bac5af2035'))]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+___________ test_leave_then_rejoin_reuses_the_participant_row[golf] ____________
+
+>   ???
+
+asyncpg/protocol/prepared_stmt.pyx:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asyncpg/protocol/codecs/base.pyx:251: in asyncpg.protocol.protocol.Codec.encode
+    ???
+asyncpg/protocol/codecs/base.pyx:153: in asyncpg.protocol.protocol.Codec.encode_scalar
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   TypeError: can't subtract offset-naive and offset-aware datetimes
+
+asyncpg/pgproto/codecs/datetime.pyx:152: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10e35e0e0>
+operation = 'UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID'
+parameters = ('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 161977, tzinfo=datetime.timezone.utc), None, UUID('294af77e-c0bc-4b05-acba-8cc92d38b4e7'))
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+asyncpg/protocol/protocol.pyx:184: in bind_execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.DataError: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+
+asyncpg/protocol/prepared_stmt.pyx:204: DataError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10bcd0aa0>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x109f63bf0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10bcdbb60>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10bcc7b00>
+parameters = [('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 161977, tzinfo=datetime.timezone.utc), None, UUID('294af77e-c0bc-4b05-acba-8cc92d38b4e7'))]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10cd91130>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+make_session = <function _golf_round at 0x10bb30360>
+
+    @pytest.mark.parametrize("make_session", [_run_session, _golf_round], ids=["running", "golf"])
+    async def test_leave_then_rejoin_reuses_the_participant_row(make_session) -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "rejoin-host")
+                guest = await _register(client, "rejoin-guest")
+                guest_id = await _me(client, guest)
+                event_id = (await client.post("/events", json=make_session(capacity=4), headers=host)).json()["id"]
+    
+                # Inserted by the column default: an absolute instant (timestamptz).
+                host_row = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) != guest_id)
+                assert host_row["joined_at"].tzinfo is not None
+                assert abs(host_row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+    
+                assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+                first = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+                left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                assert left.status_code == 200, left.text
+                assert left.json()["participant_count"] == 1
+    
+>               rejoin = await client.post(f"/events/{event_id}/join", headers=guest)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_event_capacity.py:271: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/events.py:70: in join_event
+    return await events_service.join_event(db, event_id, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/events.py:423: in join_event
+    await db.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py:787: in flush
+    await greenlet_spawn(self.sync_session.flush, objects=objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:203: in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:85: in save_obj
+    _emit_update_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:912: in _emit_update_statements
+    c = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10cd91130>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+E                   [SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]
+E                   [parameters: ('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 161977, tzinfo=datetime.timezone.utc), None, UUID('294af77e-c0bc-4b05-acba-8cc92d38b4e7'))]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+___________ test_full_round_leave_reopens_and_rejoin_fills_it_again ____________
+
+>   ???
+
+asyncpg/protocol/prepared_stmt.pyx:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asyncpg/protocol/codecs/base.pyx:251: in asyncpg.protocol.protocol.Codec.encode
+    ???
+asyncpg/protocol/codecs/base.pyx:153: in asyncpg.protocol.protocol.Codec.encode_scalar
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   TypeError: can't subtract offset-naive and offset-aware datetimes
+
+asyncpg/pgproto/codecs/datetime.pyx:152: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10c934be0>
+operation = 'UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID'
+parameters = ('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 908826, tzinfo=datetime.timezone.utc), None, UUID('9d179387-fd08-4e45-9ff6-5644a1531341'))
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+asyncpg/protocol/protocol.pyx:184: in bind_execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.DataError: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+
+asyncpg/protocol/prepared_stmt.pyx:204: DataError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10bce7530>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x109f63bf0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10bce77d0>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10bcc7b00>
+parameters = [('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 908826, tzinfo=datetime.timezone.utc), None, UUID('9d179387-fd08-4e45-9ff6-5644a1531341'))]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10cd927b0>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+    async def test_full_round_leave_reopens_and_rejoin_fills_it_again() -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "cycle-host")
+                guest = await _register(client, "cycle-guest")
+                outsider = await _register(client, "cycle-outsider")
+                event_id = (await client.post("/events", json=_golf_round(capacity=2), headers=host)).json()["id"]
+    
+                joined = await client.post(f"/events/{event_id}/join", headers=guest)
+                assert joined.json()["status"] == "full"
+                blocked = await client.post(f"/events/{event_id}/join", headers=outsider)
+                assert blocked.status_code == 422 and blocked.json()["detail"] == "Event is full"
+    
+                for cycle in range(3):
+                    left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                    assert left.status_code == 200, (cycle, left.text)
+                    assert (left.json()["status"], left.json()["spots_left"]) == ("open", 1)
+>                   back = await client.post(f"/events/{event_id}/join", headers=guest)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_event_capacity.py:314: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/events.py:70: in join_event
+    return await events_service.join_event(db, event_id, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/events.py:423: in join_event
+    await db.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py:787: in flush
+    await greenlet_spawn(self.sync_session.flush, objects=objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:203: in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:85: in save_obj
+    _emit_update_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:912: in _emit_update_statements
+    c = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10cd927b0>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 39... (can't subtract offset-naive and offset-aware datetimes)
+E                   [SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]
+E                   [parameters: ('joined', datetime.datetime(2026, 10, 3, 4, 12, 39, 908826, tzinfo=datetime.timezone.utc), None, UUID('9d179387-fd08-4e45-9ff6-5644a1531341'))]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+________________ test_concurrent_rejoins_by_one_user_count_once ________________
+
+>   ???
+
+asyncpg/protocol/prepared_stmt.pyx:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asyncpg/protocol/codecs/base.pyx:251: in asyncpg.protocol.protocol.Codec.encode
+    ???
+asyncpg/protocol/codecs/base.pyx:153: in asyncpg.protocol.protocol.Codec.encode_scalar
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   TypeError: can't subtract offset-naive and offset-aware datetimes
+
+asyncpg/pgproto/codecs/datetime.pyx:152: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10d72ace0>
+operation = 'UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID'
+parameters = ('joined', datetime.datetime(2026, 10, 3, 4, 12, 41, 134616, tzinfo=datetime.timezone.utc), None, UUID('d344fa53-ea86-4b42-a666-16f4b4001415'))
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+asyncpg/protocol/protocol.pyx:184: in bind_execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.DataError: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 41... (can't subtract offset-naive and offset-aware datetimes)
+
+asyncpg/protocol/prepared_stmt.pyx:204: DataError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10be035f0>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x109f63bf0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10bceccb0>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10bcc7b00>
+parameters = [('joined', datetime.datetime(2026, 10, 3, 4, 12, 41, 134616, tzinfo=datetime.timezone.utc), None, UUID('d344fa53-ea86-4b42-a666-16f4b4001415'))]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10e668410>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 41... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 41... (can't subtract offset-naive and offset-aware datetimes)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+    async def test_concurrent_rejoins_by_one_user_count_once() -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "crj-host")
+                guest = await _register(client, "crj-guest")
+                guest_id = await _me(client, guest)
+                event_id = (await client.post("/events", json=_run_session(capacity=3), headers=host)).json()["id"]
+                assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+                assert (await client.post(f"/events/{event_id}/leave", headers=guest)).status_code == 200
+    
+>               results = await asyncio.gather(*(client.post(f"/events/{event_id}/join", headers=guest) for _ in range(3)))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_event_capacity.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/events.py:70: in join_event
+    return await events_service.join_event(db, event_id, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/events.py:423: in join_event
+    await db.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py:787: in flush
+    await greenlet_spawn(self.sync_session.flush, objects=objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:203: in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:85: in save_obj
+    _emit_update_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:912: in _emit_update_statements
+    c = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10e668410>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 41... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 41... (can't subtract offset-naive and offset-aware datetimes)
+E                   [SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]
+E                   [parameters: ('joined', datetime.datetime(2026, 10, 3, 4, 12, 41, 134616, tzinfo=datetime.timezone.utc), None, UUID('d344fa53-ea86-4b42-a666-16f4b4001415'))]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+___________ test_last_place_race_after_a_leave_never_oversubscribes ____________
+
+>   ???
+
+asyncpg/protocol/prepared_stmt.pyx:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asyncpg/protocol/codecs/base.pyx:251: in asyncpg.protocol.protocol.Codec.encode
+    ???
+asyncpg/protocol/codecs/base.pyx:153: in asyncpg.protocol.protocol.Codec.encode_scalar
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   TypeError: can't subtract offset-naive and offset-aware datetimes
+
+asyncpg/pgproto/codecs/datetime.pyx:152: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10d79ca60>
+operation = 'UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID'
+parameters = ('joined', datetime.datetime(2026, 10, 3, 4, 12, 42, 259197, tzinfo=datetime.timezone.utc), None, UUID('98ea92d9-b447-4c53-98f0-ddccd01e0487'))
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+asyncpg/protocol/protocol.pyx:184: in bind_execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.DataError: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 42... (can't subtract offset-naive and offset-aware datetimes)
+
+asyncpg/protocol/prepared_stmt.pyx:204: DataError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10be10560>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x109f63bf0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10be0a750>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10bcc7b00>
+parameters = [('joined', datetime.datetime(2026, 10, 3, 4, 12, 42, 259197, tzinfo=datetime.timezone.utc), None, UUID('98ea92d9-b447-4c53-98f0-ddccd01e0487'))]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10bdc1310>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 42... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 42... (can't subtract offset-naive and offset-aware datetimes)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+    async def test_last_place_race_after_a_leave_never_oversubscribes() -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "lr-host")
+                leaver = await _register(client, "lr-leaver")
+                event_id = (await client.post("/events", json=_golf_round(capacity=3), headers=host)).json()["id"]
+                assert (await client.post(f"/events/{event_id}/join", headers=leaver)).status_code == 200
+                third = await client.post(f"/events/{event_id}/join", headers=await _register(client, "lr-x"))
+                assert third.json()["status"] == "full"
+                assert (await client.post(f"/events/{event_id}/leave", headers=leaver)).status_code == 200
+    
+                # The leaver's rejoin races two newcomers for the single place.
+                newcomers = [await _register(client, f"lr-n{i}") for i in range(2)]
+>               results = await asyncio.gather(
+                    *(client.post(f"/events/{event_id}/join", headers=h) for h in [leaver, *newcomers])
+                )
+
+tests_integration/test_event_capacity.py:381: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:88: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:680: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:276: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/routers/events.py:70: in join_event
+    return await events_service.join_event(db, event_id, current_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/services/events.py:423: in join_event
+    await db.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py:787: in flush
+    await greenlet_spawn(self.sync_session.flush, objects=objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:203: in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:85: in save_obj
+    _emit_update_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:912: in _emit_update_statements
+    c = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10bdc1310>>
+error = DataError("invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 42... (can't subtract offset-naive and offset-aware datetimes)")
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 4, 12, 42... (can't subtract offset-naive and offset-aware datetimes)
+E                   [SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]
+E                   [parameters: ('joined', datetime.datetime(2026, 10, 3, 4, 12, 42, 259197, tzinfo=datetime.timezone.utc), None, UUID('98ea92d9-b447-4c53-98f0-ddccd01e0487'))]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+app/services/content_moderation.py:53
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:53: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+profanity\s+fixture",
+
+app/services/content_moderation.py:62
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:62: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+sexual\s+fixture",
+
+app/services/content_moderation.py:69
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:69: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+harassment\s+fixture",
+
+app/services/content_moderation.py:84
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:84: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+threat\s+fixture",
+
+app/services/content_moderation.py:94
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:94: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+scam\s+fixture",
+
+app/services/content_moderation.py:101
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:101: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+fraud\s+fixture",
+
+app/services/content_moderation.py:108
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/services/content_moderation.py:108: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+spam\s+fixture",
+
+tests_integration/test_event_capacity.py: 19 warnings
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/app/routers/events.py:70: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests_integration/test_event_capacity.py::test_leave_then_rejoin_reuses_the_participant_row[running]
+FAILED tests_integration/test_event_capacity.py::test_leave_then_rejoin_reuses_the_participant_row[golf]
+FAILED tests_integration/test_event_capacity.py::test_full_round_leave_reopens_and_rejoin_fills_it_again
+FAILED tests_integration/test_event_capacity.py::test_concurrent_rejoins_by_one_user_count_once
+FAILED tests_integration/test_event_capacity.py::test_last_place_race_after_a_leave_never_oversubscribes
+5 failed, 6 passed, 27 warnings in 18.49s

@@ -1,0 +1,467 @@
+FAIL src/__tests__/BookingDetailScreen.test.tsx (5.143 s)
+  BookingDetailScreen
+    ✓ shows a loading indicator while fetching (10 ms)
+    ✓ shows an error message when the API fails (53 ms)
+    ✓ renders booking details after a successful fetch (52 ms)
+    ✓ displays the correct status label for "proposed" (51 ms)
+    ✓ displays the correct status label for "confirmed" (53 ms)
+    ✓ displays the correct status label for "cancelled" (53 ms)
+    ✓ shows only Cancel for the proposer when status is proposed (53 ms)
+    ✓ shows Confirm, Decline, and Cancel for the non-proposer when status is proposed (53 ms)
+    ✓ shows Mark completed, Record no-show, and Cancel when confirmed (52 ms)
+    ✓ does not expose an Add to Calendar control in v1 (52 ms)
+    ✓ calls the correct API endpoint and updates state when Confirm is pressed (54 ms)
+    ✓ calls the correct API endpoint when Cancel is pressed (54 ms)
+    ✓ shows an Alert when a transition API call fails (58 ms)
+    ✓ calls navigation.goBack when the Back button is pressed (52 ms)
+    ✓ renders no action buttons when status is completed (2 ms)
+    ✕ labels a running booking as Running (1006 ms)
+    ✕ labels a tennis booking as Tennis (1003 ms)
+    ✓ labels a golf booking as Golf (53 ms)
+    ✓ labels a gym booking as Gym (52 ms)
+    ✕ shows an unexpected legacy sport honestly instead of guessing Golf (1002 ms)
+    ✕ shows the stored instant in Sydney time with the timezone named (1003 ms)
+
+  ● BookingDetailScreen › labels a running booking as Running
+
+    Unable to find an element with text: Running
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mSession[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View />[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mAwaiting confirmation[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mWith[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mJordan Lee[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mSport[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mGolf[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mStarts[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 07:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mEnds[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 08:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mLocation[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mCity Gym, Sydney CBD[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mNotes[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mBring your towel.[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mCancel[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      377 |       <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+      378 |     );
+    > 379 |     expect(await findByText(label)).toBeTruthy();
+          |                  ^
+      380 |     for (const other of ['Running', 'Tennis', 'Golf', 'Gym'].filter((l) => l !== label)) {
+      381 |       expect(queryByText(other)).toBeNull();
+      382 |     }
+
+      at findByText (src/__tests__/BookingDetailScreen.test.tsx:379:18)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/BookingDetailScreen.test.tsx:383:4)
+
+  ● BookingDetailScreen › labels a tennis booking as Tennis
+
+    Unable to find an element with text: Tennis
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mSession[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View />[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mAwaiting confirmation[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mWith[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mJordan Lee[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mSport[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mGolf[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mStarts[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 07:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mEnds[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 08:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mLocation[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mCity Gym, Sydney CBD[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mNotes[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mBring your towel.[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mCancel[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      377 |       <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+      378 |     );
+    > 379 |     expect(await findByText(label)).toBeTruthy();
+          |                  ^
+      380 |     for (const other of ['Running', 'Tennis', 'Golf', 'Gym'].filter((l) => l !== label)) {
+      381 |       expect(queryByText(other)).toBeNull();
+      382 |     }
+
+      at findByText (src/__tests__/BookingDetailScreen.test.tsx:379:18)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/BookingDetailScreen.test.tsx:383:4)
+
+  ● BookingDetailScreen › shows an unexpected legacy sport honestly instead of guessing Golf
+
+    Unable to find an element with text: Pickleball
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mSession[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View />[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mAwaiting confirmation[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mWith[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mJordan Lee[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mSport[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mGolf[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mStarts[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 07:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mEnds[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 08:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mLocation[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mCity Gym, Sydney CBD[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mNotes[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mBring your towel.[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mCancel[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      388 |       <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+      389 |     );
+    > 390 |     expect(await findByText('Pickleball')).toBeTruthy();
+          |                  ^
+      391 |     expect(queryByText('Golf')).toBeNull();
+      392 |   });
+      393 |
+
+      at Object.findByText (src/__tests__/BookingDetailScreen.test.tsx:390:18)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● BookingDetailScreen › shows the stored instant in Sydney time with the timezone named
+
+    Unable to find an element with text: Fri 10 Apr · 7:00 pm
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mSession[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View />[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mAwaiting confirmation[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mWith[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mJordan Lee[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mSport[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mGolf[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mStarts[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 07:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mEnds[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri, 10 Apr, 08:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mLocation[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mCity Gym, Sydney CBD[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mNotes[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mBring your towel.[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mCancel[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      400 |       <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+      401 |     );
+    > 402 |     expect(await findByText('Fri 10 Apr · 7:00 pm')).toBeTruthy();
+          |                  ^
+      403 |     expect(getByText('Fri 10 Apr · 8:00 pm')).toBeTruthy();
+      404 |     expect(getByText('Times are Sydney time')).toBeTruthy();
+      405 |   });
+
+      at Object.findByText (src/__tests__/BookingDetailScreen.test.tsx:402:18)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+Test Suites: 1 failed, 1 total
+Tests:       4 failed, 17 passed, 21 total
+Snapshots:   0 total
+Time:        5.178 s
+Ran all test suites matching /src\/__tests__\/BookingDetailScreen.test.tsx/i.

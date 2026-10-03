@@ -1,0 +1,17 @@
+# Disposable PostgreSQL 16 + Redis 7 for the run/golf v2 repair verification.
+# Data lives in tmpfs and disappears with the containers. The password is a
+# throwaway value supplied through FIX_PG_PASSWORD at run time (never stored
+# in the repository). Ports bind to localhost only.
+name: claude-sg-fix-20261003
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fixreview
+      POSTGRES_PASSWORD: ${FIX_PG_PASSWORD:?set FIX_PG_PASSWORD}
+      POSTGRES_DB: fix_fresh
+    ports: ["127.0.0.1:55453:5432"]
+    tmpfs: ["/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:56453:6379"]

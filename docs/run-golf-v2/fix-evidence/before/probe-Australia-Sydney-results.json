@@ -1,0 +1,222 @@
+{
+  "_meta": {
+    "process_tz": "Australia/Sydney",
+    "time_tzname": [
+      "AEST",
+      "AEDT"
+    ],
+    "run_at_utc": "2026-10-03T04:03:23.989504+00:00"
+  },
+  "F1_running_leave_rejoin": {
+    "status": "FAIL",
+    "steps": {
+      "event_id": "4d719a79-6ceb-4181-9451-eef505f84042",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 500,
+      "rejoin_detail": {
+        "raw": "Internal Server Error"
+      }
+    },
+    "participant_rows": [
+      [
+        "e0adfbb2-9f9e-4fa7-9955-32dfb2d6e66c",
+        "left"
+      ]
+    ]
+  },
+  "F1_golf_leave_rejoin": {
+    "status": "FAIL",
+    "steps": {
+      "event_id": "fb2c52f9-0361-4dd6-90fa-338dc3d0cf8e",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 500,
+      "rejoin_detail": {
+        "raw": "Internal Server Error"
+      }
+    },
+    "participant_rows": [
+      [
+        "7c694fda-65cc-4d17-bcf9-8d0e6b7ab228",
+        "left"
+      ]
+    ]
+  },
+  "F3_consent_counterexample_excluded": {
+    "status": "FAIL",
+    "learner_sees_mentor": {
+      "tier": "compatible",
+      "reasons": [
+        {
+          "code": "similar_handicap",
+          "text": "Similar level: handicaps 24.0 and 30.0 are within 10.0"
+        },
+        {
+          "code": "more_experienced",
+          "text": "More experienced than you (handicap 24.0 vs 30.0)"
+        },
+        {
+          "code": "time_overlap",
+          "text": "Both prefer mornings"
+        }
+      ],
+      "caveats": [
+        {
+          "code": "handicap_self_reported",
+          "text": "Handicaps are self-reported, not verified"
+        },
+        {
+          "code": "handicap_estimate",
+          "text": "Their handicap is an estimate"
+        }
+      ]
+    },
+    "mentor_sees_learner": {
+      "tier": "compatible",
+      "reasons": [
+        {
+          "code": "similar_handicap",
+          "text": "Similar level: handicaps 24.0 and 30.0 are within 10.0"
+        },
+        {
+          "code": "learner_fit",
+          "text": "Wants to learn from experienced golfers (handicap 24.0 vs 30.0)"
+        },
+        {
+          "code": "time_overlap",
+          "text": "Both prefer mornings"
+        }
+      ],
+      "caveats": [
+        {
+          "code": "handicap_self_reported",
+          "text": "Handicaps are self-reported, not verified"
+        },
+        {
+          "code": "handicap_estimate",
+          "text": "Their handicap is an estimate"
+        }
+      ]
+    }
+  },
+  "F3_welcome_beginners_control_eligible": {
+    "status": "FAIL",
+    "reason_codes": [
+      "more_experienced",
+      "similar_handicap",
+      "time_overlap"
+    ]
+  },
+  "F2_legacy_first_50": {
+    "events_total": 56,
+    "future_event_in_first_50": false,
+    "bookings_total": 57,
+    "confirmed_in_first_50": false,
+    "proposed_in_first_50": false
+  },
+  "F2_segments_complete": {
+    "status": "FAIL",
+    "events_upcoming": [
+      "9db4b147-8112-40c5-a342-5422958dfd1b",
+      "2c1a9c8e-5a7b-4ec8-b312-b501e809bac5",
+      "03843633-82a1-48f0-8cc6-d5c5fa7a64c4",
+      "c0508ab9-41ce-408d-b041-e60b47189b6a",
+      "25e39f8b-ee8f-4694-8a4f-35fda00ac062",
+      "9f6e398b-5f71-4b26-85b0-f942596740f1",
+      "6640c65c-178a-4359-ac75-e50b0fc7acc3",
+      "85be2ffb-a60b-4ab2-9b0c-3716928b5a37",
+      "31d5fd9c-140a-4451-97e1-11c344bc9b9b",
+      "109be0dd-5fcb-412a-83ec-0a11945b5d18",
+      "9b505791-ca15-436b-ad4a-1611fd568d38",
+      "68289de0-ad2f-4745-bd2d-3e5aa9388eba",
+      "66f2e7b9-6f87-4944-8d3a-58481f28ae57",
+      "bfbc1131-601c-4878-b96d-605671150a6e",
+      "e9ccd183-1485-4555-9754-e0deff6d6e50",
+      "b890ee1f-511c-4502-b85f-67a65f4deab4",
+      "f42fefd8-f0ee-4982-ba9e-913fd1d1bfcd",
+      "f92b3cdb-2d26-4c60-a263-4937d50afc16",
+      "4c2df3da-6946-47b1-bd80-02c104169187",
+      "e974dd82-ced1-4353-88e5-ee802f9dbe02"
+    ],
+    "events_upcoming_total": 56,
+    "bookings_upcoming": [
+      "bfbd2dad-ba53-419b-a194-29b5bf260403",
+      "dfeec6bc-e8cb-4612-90d0-ce5ae281ba2a",
+      "ff9c43e0-0a96-49f8-a146-efc9c1449351",
+      "773ee565-d407-40f6-9c59-c41e7897bc27",
+      "38fa6a5b-5a78-419a-9986-2b877109f1f4",
+      "61aaffa0-8740-4a77-8e73-5a93d219e8af",
+      "16b51daf-37f3-477c-8ba9-785e95ca009a",
+      "74e5aa76-1843-4d67-ac36-47a6a6a143d2",
+      "ba78c774-c094-4c88-aecf-977a1bfedccb",
+      "8d8f9656-478a-47da-bc82-a748b51f261c",
+      "72997828-580f-4b1e-ae7d-c5911388d4b6",
+      "b4609f2f-6444-4c58-9d88-42d272e496e3",
+      "975a2948-ec42-4656-bbff-de602a3e01a1",
+      "f60e483a-1f6b-4eb2-a8a2-d73b4500d7fe",
+      "4387ade6-176e-41c9-851a-0f89a8230864",
+      "d5ad185d-eca3-419b-af7f-c41678b3adbb",
+      "d29ea5d1-51c0-430b-9d3e-223a41eae83f",
+      "95deefc5-15cd-4ded-ae96-37acf235c3de",
+      "7e7cfcea-550d-4209-b968-4e5f039c7600",
+      "19b4e533-e125-40f0-a155-2dc24fd23407"
+    ],
+    "bookings_pending": [
+      "bfbd2dad-ba53-419b-a194-29b5bf260403",
+      "dfeec6bc-e8cb-4612-90d0-ce5ae281ba2a",
+      "ff9c43e0-0a96-49f8-a146-efc9c1449351",
+      "773ee565-d407-40f6-9c59-c41e7897bc27",
+      "38fa6a5b-5a78-419a-9986-2b877109f1f4",
+      "61aaffa0-8740-4a77-8e73-5a93d219e8af",
+      "16b51daf-37f3-477c-8ba9-785e95ca009a",
+      "74e5aa76-1843-4d67-ac36-47a6a6a143d2",
+      "ba78c774-c094-4c88-aecf-977a1bfedccb",
+      "8d8f9656-478a-47da-bc82-a748b51f261c",
+      "72997828-580f-4b1e-ae7d-c5911388d4b6",
+      "b4609f2f-6444-4c58-9d88-42d272e496e3",
+      "975a2948-ec42-4656-bbff-de602a3e01a1",
+      "f60e483a-1f6b-4eb2-a8a2-d73b4500d7fe",
+      "4387ade6-176e-41c9-851a-0f89a8230864",
+      "d5ad185d-eca3-419b-af7f-c41678b3adbb",
+      "d29ea5d1-51c0-430b-9d3e-223a41eae83f",
+      "95deefc5-15cd-4ded-ae96-37acf235c3de",
+      "7e7cfcea-550d-4209-b968-4e5f039c7600",
+      "19b4e533-e125-40f0-a155-2dc24fd23407"
+    ],
+    "past_events_seen": 56,
+    "past_events_unique": 56,
+    "past_bookings_seen": 57,
+    "past_bookings_unique": 57,
+    "expected": {
+      "future_event": "930128ac-fa53-42ea-8de3-100d56a6b9a5",
+      "confirmed": "6b4dfd01-997b-42cb-9902-b816796e2f50",
+      "proposed": "acee5a47-80d9-4425-85dc-e76b040b4753"
+    }
+  },
+  "F5_naive_payload_is_utc": {
+    "status": "FAIL",
+    "http": 201,
+    "sent": "2026-10-13T09:00:00",
+    "stored": "2026-10-12T22:00:00Z",
+    "expected": "2026-10-13T09:00:00+00:00"
+  },
+  "F5_offset_payload_normalised": {
+    "status": "PASS",
+    "http": 201,
+    "stored": "2026-10-13T09:00:00Z"
+  },
+  "_summary": {
+    "failed": [
+      "F1_golf_leave_rejoin",
+      "F1_running_leave_rejoin",
+      "F2_segments_complete",
+      "F3_consent_counterexample_excluded",
+      "F3_welcome_beginners_control_eligible",
+      "F5_naive_payload_is_utc"
+    ],
+    "passed": [
+      "F5_offset_payload_normalised"
+    ]
+  }
+}

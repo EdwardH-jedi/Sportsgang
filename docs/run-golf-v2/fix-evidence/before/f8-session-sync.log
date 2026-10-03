@@ -1,0 +1,1732 @@
+FAIL src/__tests__/sessionListSync.test.tsx (9.455 s)
+  Explore sessions after a mutation on the detail screen
+    ✕ shows Full and Joined after taking the final golf place (1281 ms)
+    ✕ restores capacity after leaving and fills it again on rejoin (1172 ms)
+    ✕ updates the list underneath as soon as the mutation succeeds (1122 ms)
+    ✕ keeps the server state when a join is rejected, with no optimistic Joined (1174 ms)
+  create and cancel reach Explore and My Plans
+    ✕ a hosted round appears in the golf list and in My Plans (1204 ms)
+    ✕ a cancelled round leaves the Explore list and moves to Past in My Plans (1270 ms)
+  refresh and request hygiene
+    ✕ shows another account's join after the list is focused again (1055 ms)
+    ✓ does not refetch in a loop while the list is idle (83 ms)
+    ✓ drops a slow list response for the sport the user switched away from (113 ms)
+  more than one page of public sessions
+    ✕ reaches sessions past the first 20 without duplicates (62 ms)
+    ✕ keeps loaded sessions and offers a retry when loading more fails (59 ms)
+
+  ● Explore sessions after a mutation on the detail screen › shows Full and Joined after taking the final golf place
+
+    Unable to find an element with text: 2 golfers · Full
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:282:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● Explore sessions after a mutation on the detail screen › restores capacity after leaving and fills it again on rejoin
+
+    Unable to find an element with text: 2 golfers · 1 spot left
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:297:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● Explore sessions after a mutation on the detail screen › updates the list underneath as soon as the mutation succeeds
+
+    Unable to find an element with text: 2 golfers · Full
+
+    [36m<View>[39m
+      [36m<View[39m
+        [33maccessibilityLabel[39m=[32m"Back"[39m
+        [33maccessibilityRole[39m=[32m"button"[39m
+        [33maccessibilityState[39m=[32m{
+          {
+            "busy": false,
+            "disabled": false,
+          }
+        }[39m
+        [33maccessible[39m=[32m{true}[39m
+      [36m>[39m
+        [36m<Text>[39m
+          [0mBack[0m
+        [36m</Text>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mGolf round[0m
+          [36m</Text>[39m
+          [36m<Text[39m
+            [33maccessibilityRole[39m=[32m"header"[39m
+          [36m>[39m
+            [0mSession g1[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<Text>[39m
+          [0mWed 7 Oct · 8:00 am[0m
+        [36m</Text>[39m
+        [36m<Text>[39m
+          [0mSydney time[0m
+        [36m</Text>[39m
+        [36m<Text>[39m
+          [0mMoore Park Golf[0m
+        [36m</Text>[39m
+        [36m<Text[39m
+          [33mtestID[39m=[32m"session-capacity"[39m
+        [36m>[39m
+          [0m2 golfers · Full[0m
+        [36m</Text>[39m
+        [36m<Text>[39m
+          [0mHosted by [0m
+          [0mBob[0m
+        [36m</Text>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text[39m
+            [33maccessibilityRole[39m=[32m"header"[39m
+          [36m>[39m
+            [0mWho's going[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0m2 of 2, including the host[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mBob[0m
+          [36m</Text>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mHost[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mYou[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mYou're going.[0m
+          [36m</Text>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Leave this round"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "busy": false,
+                "disabled": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+            [33mtestID[39m=[32m"session-leave"[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mLeave this round[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:316:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● Explore sessions after a mutation on the detail screen › keeps the server state when a join is rejected, with no optimistic Joined
+
+    Unable to find an element with text: 2 golfers · Full
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:333:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● create and cancel reach Explore and My Plans › a hosted round appears in the golf list and in My Plans
+
+    Unable to find an element with testID: session-card-new-1
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:363:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● create and cancel reach Explore and My Plans › a cancelled round leaves the Explore list and moves to Past in My Plans
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": 1, "actualStartTime": 1791000499306, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "View", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": 0, "sibling": null, "stateNode": [Object], "subtreeFlags": 1048577, "tag": 5, "treeBaseDuration": 1, "type": "View", "updateQueue": null}}
+
+      382 |     await refocus();
+      383 |
+    > 384 |     await waitFor(() => expect(explore.queryByTestId('session-card-g1')).toBeNull());
+          |                  ^
+      385 |     await waitFor(() => expect(plans.queryByTestId('plan-event:g1')).toBeNull());
+      386 |     fireEvent.press(plans.getByLabelText('Past'));
+      387 |     expect(await plans.findByTestId('plan-event:g1')).toBeTruthy();
+
+      at Object.<anonymous> (src/__tests__/sessionListSync.test.tsx:384:18)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● refresh and request hygiene › shows another account's join after the list is focused again
+
+    Unable to find an element with text: 2 golfers · Full
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mSydney[0m
+            [36m</Text>[39m
+            [36m<Text[39m
+              [33maccessibilityRole[39m=[32m"header"[39m
+            [36m>[39m
+              [0mExplore[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Sport"[39m
+          [33maccessibilityRole[39m=[32m"tablist"[39m
+          [33mtestID[39m=[32m"focus-switch"[39m
+        [36m>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Run"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mRun[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Golf"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mGolf[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Show sessions or partners"[39m
+            [33maccessibilityRole[39m=[32m"tablist"[39m
+            [33mtestID[39m=[32m"view-switch"[39m
+          [36m>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Sessions"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": true,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mSessions[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Partners"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": false,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mPartners[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<RCTRefreshControl />[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Host a round"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "busy": false,
+                "disabled": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mHost a round[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session g1, round, Wed 7 Oct · 8:00 am, Moore Park Golf, 2 golfers · 1 spot left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-g1"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 7 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession g1[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m2 golfers · 1 spot left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      250 |
+      251 | async function settled(utils: ReturnType<typeof render>, id: string, text: string) {
+    > 252 |   await waitFor(() => expect(card(utils, id).getByText(text)).toBeTruthy());
+          |                ^
+      253 | }
+      254 |
+      255 | beforeEach(() => {
+
+      at src/__tests__/sessionListSync.test.tsx:252:16
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at apply (src/__tests__/sessionListSync.test.tsx:251:23)
+      at Object.settled (src/__tests__/sessionListSync.test.tsx:400:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● more than one page of public sessions › reaches sessions past the first 20 without duplicates
+
+    Unable to find an element with text: Show more sessions
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mSydney[0m
+            [36m</Text>[39m
+            [36m<Text[39m
+              [33maccessibilityRole[39m=[32m"header"[39m
+            [36m>[39m
+              [0mExplore[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Sport"[39m
+          [33maccessibilityRole[39m=[32m"tablist"[39m
+          [33mtestID[39m=[32m"focus-switch"[39m
+        [36m>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Run"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mRun[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Golf"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mGolf[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Show sessions or partners"[39m
+            [33maccessibilityRole[39m=[32m"tablist"[39m
+            [33mtestID[39m=[32m"view-switch"[39m
+          [36m>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Sessions"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": true,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mSessions[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Partners"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": false,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mPartners[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<RCTRefreshControl />[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Host a round"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "busy": false,
+                "disabled": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mHost a round[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s00, round, Mon 5 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s00"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 5 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s00[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s01, round, Tue 6 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s01"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 6 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s01[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s02, round, Wed 7 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s02"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 7 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s02[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s03, round, Thu 8 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s03"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 8 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s03[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s04, round, Fri 9 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s04"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 9 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s04[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s05, round, Sat 10 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s05"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 10 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s05[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s06, round, Sun 11 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s06"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSun 11 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s06[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s07, round, Mon 12 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s07"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 12 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s07[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s08, round, Tue 13 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s08"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 13 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s08[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s09, round, Wed 14 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s09"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 14 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s09[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s10, round, Thu 15 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s10"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 15 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s10[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s11, round, Fri 16 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s11"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 16 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s11[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s12, round, Sat 17 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s12"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 17 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s12[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s13, round, Sun 18 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s13"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSun 18 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s13[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s14, round, Mon 19 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s14"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 19 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s14[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s15, round, Tue 20 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s15"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 20 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s15[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s16, round, Wed 21 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s16"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 21 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s16[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s17, round, Thu 22 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s17"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 22 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s17[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s18, round, Fri 23 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s18"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 23 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s18[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s19, round, Sat 24 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s19"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 24 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s19[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      448 |     // A new earlier session shifts the server's offsets between pages.
+      449 |     addEvent({ id: 'a-early', hostUserId: 'carol', startsAt: future(0.5) });
+    > 450 |     fireEvent.press(explore.getByText('Show more sessions'));
+          |                             ^
+      451 |     await waitFor(() => expect(explore.getByTestId('session-card-s22')).toBeTruthy());
+      452 |     expect(explore.getAllByTestId(/^session-card-s/)).toHaveLength(23);
+      453 |     expect(explore.queryByText('Show more sessions')).toBeNull();
+
+      at Object.getByText (src/__tests__/sessionListSync.test.tsx:450:29)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● more than one page of public sessions › keeps loaded sessions and offers a retry when loading more fails
+
+    Unable to find an element with text: Show more sessions
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mSydney[0m
+            [36m</Text>[39m
+            [36m<Text[39m
+              [33maccessibilityRole[39m=[32m"header"[39m
+            [36m>[39m
+              [0mExplore[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Sport"[39m
+          [33maccessibilityRole[39m=[32m"tablist"[39m
+          [33mtestID[39m=[32m"focus-switch"[39m
+        [36m>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Run"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mRun[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Golf"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mGolf[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Show sessions or partners"[39m
+            [33maccessibilityRole[39m=[32m"tablist"[39m
+            [33mtestID[39m=[32m"view-switch"[39m
+          [36m>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Sessions"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": true,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mSessions[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Partners"[39m
+              [33maccessibilityRole[39m=[32m"tab"[39m
+              [33maccessibilityState[39m=[32m{
+                {
+                  "selected": false,
+                }
+              }[39m
+              [33maccessible[39m=[32m{true}[39m
+            [36m>[39m
+              [36m<Text>[39m
+                [0mPartners[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<RCTRefreshControl />[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Host a round"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "busy": false,
+                "disabled": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mHost a round[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s00, round, Mon 5 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s00"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 5 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s00[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s01, round, Tue 6 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s01"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 6 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s01[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s02, round, Wed 7 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s02"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 7 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s02[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s03, round, Thu 8 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s03"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 8 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s03[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s04, round, Fri 9 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s04"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 9 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s04[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s05, round, Sat 10 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s05"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 10 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s05[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s06, round, Sun 11 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s06"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSun 11 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s06[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s07, round, Mon 12 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s07"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 12 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s07[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s08, round, Tue 13 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s08"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 13 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s08[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s09, round, Wed 14 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s09"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 14 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s09[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s10, round, Thu 15 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s10"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 15 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s10[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s11, round, Fri 16 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s11"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 16 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s11[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s12, round, Sat 17 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s12"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 17 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s12[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s13, round, Sun 18 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s13"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSun 18 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s13[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s14, round, Mon 19 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s14"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mMon 19 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s14[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s15, round, Tue 20 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s15"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mTue 20 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s15[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s16, round, Wed 21 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s16"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mWed 21 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s16[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s17, round, Thu 22 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s17"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mThu 22 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s17[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s18, round, Fri 23 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s18"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mFri 23 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s18[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View[39m
+              [33maccessibilityLabel[39m=[32m"Session s19, round, Sat 24 Oct · 8:00 am, Moore Park Golf, 4 golfers · 3 spots left"[39m
+              [33maccessibilityRole[39m=[32m"button"[39m
+              [33maccessible[39m=[32m{true}[39m
+              [33mtestID[39m=[32m"session-card-s19"[39m
+            [36m>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mSat 24 Oct · 8:00 am[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+              [36m<Text>[39m
+                [0mSession s19[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mMoore Park Golf[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0m4 golfers · 3 spots left[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mHosted by [0m
+                [0mBob[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      458 |     await waitFor(() => expect(explore.getByTestId('session-card-s19')).toBeTruthy());
+      459 |     failures.push({ method: 'GET', match: /offset=20/, message: 'Network request failed' });
+    > 460 |     fireEvent.press(explore.getByText('Show more sessions'));
+          |                             ^
+      461 |     expect(await explore.findByText('Could not load more sessions.')).toBeTruthy();
+      462 |     expect(explore.getByTestId('session-card-s19')).toBeTruthy();
+      463 |     fireEvent.press(explore.getByText('Retry'));
+
+      at Object.getByText (src/__tests__/sessionListSync.test.tsx:460:29)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       9 failed, 2 passed, 11 total
+Snapshots:   0 total
+Time:        9.498 s
+Ran all test suites matching /src\/__tests__\/sessionListSync.test.tsx/i.

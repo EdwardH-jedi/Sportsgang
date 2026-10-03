@@ -1,0 +1,20 @@
+{
+  "name": "before/cache-acceptance",
+  "command": [
+    "npx",
+    "--no-install",
+    "jest",
+    "--config",
+    "../../docs/run-golf-v2/review-evidence/jest.review.config.js",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 1,
+  "elapsed_seconds": 1.74,
+  "finished_at_utc": "2026-10-03T04:03:47+00:00",
+  "head": "541f03512280acb818724456afd2eb88e70558c8",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

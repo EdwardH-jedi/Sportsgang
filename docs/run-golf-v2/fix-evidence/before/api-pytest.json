@@ -1,0 +1,19 @@
+{
+  "name": "before/api-pytest",
+  "command": [
+    "uv",
+    "run",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 108.37,
+  "finished_at_utc": "2026-10-03T04:05:43+00:00",
+  "head": "541f03512280acb818724456afd2eb88e70558c8",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

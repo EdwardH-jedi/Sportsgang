@@ -1,0 +1,21 @@
+{
+  "name": "before/mobile-tests",
+  "command": [
+    "npx",
+    "--no-install",
+    "jest",
+    "--ci",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 1,
+  "elapsed_seconds": 23.67,
+  "finished_at_utc": "2026-10-03T04:06:20+00:00",
+  "head": "541f03512280acb818724456afd2eb88e70558c8",
+  "source_dirty": true,
+  "source_status_sha256": "f4534b6336fa0c599083493b1cb24190192111b657a9c36dd9b81e81ffe2b161",
+  "dirty_paths": [
+    "M apps/mobile/src/__tests__/BookingDetailScreen.test.tsx"
+  ]
+}
