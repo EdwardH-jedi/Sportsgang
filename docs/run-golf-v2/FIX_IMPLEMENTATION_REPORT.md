@@ -386,8 +386,9 @@ review-fixes`.
 | `9586c67` | F4 / F6 / F8 | [run 37097145286](https://github.com/EdwardH-jedi/Sportsgang/actions/runs/37097145286) success |
 | `2869f22` | F2 | [run 37098012849](https://github.com/EdwardH-jedi/Sportsgang/actions/runs/37098012849) success |
 | `4361c95`, `06838fd` | checkpoint, after-evidence (docs only) | pushed with the next |
-| `a599c4f` | refresh-inset fix found natively (source) | see addendum |
-| report commit | this report + native evidence (docs only) | see addendum |
+| `a599c4f` | refresh-inset fix found natively (source) | pushed with `417fa28` |
+| `417fa28` | this report + native evidence (docs only; first CI run containing `a599c4f`) | [run 37099725704](https://github.com/EdwardH-jedi/Sportsgang/actions/runs/37099725704) success — lint, typecheck, lint-mobile, test, test-mobile, PostgreSQL and Redis booking journey, docker-build |
+| addendum commit | this CI line and cleanup confirmation (docs only) | reported in the hand-off message |
 
 The final pushed commit is documentation-only on top of the last source
 commit `a599c4f`; the tested source for the mobile rows is `a599c4f` and
@@ -401,7 +402,9 @@ original implementation worktree were not modified.
 ## 11. Cleanup
 
 Metro and the API process started for the native gates were stopped; the
-disposable Docker project `claude-sg-fix-20261003` is removed at the end of
-the session with `docker compose down` (no `-v`; data was tmpfs). The base
+disposable Docker project `claude-sg-fix-20261003` was removed with
+`docker compose down` (no `-v`; data was tmpfs) after CI on `417fa28`
+passed; `docker ps` shows none of its containers and ports 8031/8091 are
+free. The base
 export used for "fails on base" runs lives only in the session scratch
 directory. No user database, volume or other process was touched.
