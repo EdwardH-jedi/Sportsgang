@@ -1,0 +1,50 @@
+{
+  "captured_at_utc": "2026-10-03T11:14:51.809813+00:00",
+  "reviewed_application_sha": "b530e7f3e726b9e830e52259f0ae699725090f5f",
+  "remote_target_sha": "b530e7f3e726b9e830e52259f0ae699725090f5f",
+  "worktree": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test",
+  "recorded_stack_source": "4894f6fc376eeceb9495413c6e7b007515bfd0be",
+  "running_source_verification": "Actual process cwd/argv checked; startup source to reviewed source has no apps/packages/scripts diff; qa:status alone is not a source fingerprint.",
+  "runtime_source_diff_empty": true,
+  "processes": {
+    "api": {
+      "pid": 20592,
+      "actual_ps": "Sat Oct  3 18:56:12 2026     uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8130",
+      "actual_cwd": "p20592\nfcwd\nn/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api",
+      "recorded_started_at": "2026-10-03T08:56:12+00:00",
+      "recorded_cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api"
+    },
+    "metro": {
+      "pid": 19047,
+      "actual_ps": "Sat Oct  3 18:55:43 2026     npm exec expo start --localhost --port 8190",
+      "actual_cwd": "p19047\nfcwd\nn/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/mobile",
+      "recorded_started_at": "2026-10-03T08:55:43+00:00",
+      "recorded_cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/mobile"
+    }
+  },
+  "provider_configuration_disabled": {
+    "GOOGLE_PLACES_API_KEY": true,
+    "GOOGLE_CLIENT_ID": true,
+    "GOOGLE_CLIENT_SECRET": true,
+    "APPLE_CLIENT_ID": true,
+    "APPLE_TEAM_ID": true,
+    "APPLE_KEY_ID": true,
+    "APPLE_PRIVATE_KEY": true,
+    "EXPO_PUSH_URL_is_disabled_loopback": true
+  },
+  "private_file_permissions": {
+    ".qa": "0o700",
+    ".qa/config.env": "0o600",
+    ".qa/state.json": "0o600",
+    ".qa/credentials.json": "0o600",
+    ".qa/tokens.json": "0o600"
+  },
+  "ignored_private_files": [
+    ".qa/config.env",
+    ".qa/state.json",
+    ".qa/credentials.json",
+    ".qa/tokens.json"
+  ],
+  "reviewer_ports_closed": true,
+  "provider_configuration_note": "Launcher redirects Expo push to http://127.0.0.1:9/disabled-in-qa; Google/Apple credentials are blank. Configuration inspection, not a real provider delivery test."
+}

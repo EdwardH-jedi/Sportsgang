@@ -1,0 +1,11 @@
+{
+  "native_proposal_created": true,
+  "other_account_api_confirm": 200,
+  "status": "confirmed",
+  "sport": "running",
+  "starts_at": "2026-10-08T18:15:00Z",
+  "ends_at": "2026-10-08T20:45:00Z",
+  "native_displayed_before_send": "Fri Oct 9 2026 05:15\u201307:45 Sydney",
+  "expected_utc": "2026-10-08T18:15:00Z\u20132026-10-08T20:45:00Z",
+  "matches_expected": true
+}

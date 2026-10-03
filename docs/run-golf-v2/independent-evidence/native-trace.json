@@ -1,0 +1,1977 @@
+[
+  {
+    "step": "join",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0cocysx",
+      "seq": 5,
+      "count": 80,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e68|tap|button|Leave this run||session-leave"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 4 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 4 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|2 of 6, including the host||",
+        "e56|text|text|2 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||",
+        "e64|text|text|You||",
+        "e65|text|text|You||",
+        "e66|text|text|You're going.||",
+        "e67|text|text|You're going.||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "joined-detail",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0cocysx",
+      "seq": 6,
+      "count": 80,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e68|tap|button|Leave this run||session-leave"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 4 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 4 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|2 of 6, including the host||",
+        "e56|text|text|2 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||",
+        "e64|text|text|You||",
+        "e65|text|text|You||",
+        "e66|text|text|You're going.||",
+        "e67|text|text|You're going.||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "back-after-join",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1jz4igi",
+      "seq": 7,
+      "count": 84,
+      "targets": [
+        "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct \u00b7 6:30 am, Bondi Pavilion, 6 runners \u00b7 4 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct \u00b7 6:00 am, Centennial Park, Paddington Gates, 2 runners \u00b7 Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+        "e39|tap|button|Host a run||",
+        "e72|tap|button|Explore||",
+        "e74|tap|button|My Plans||",
+        "e75|tap|button|Chats||",
+        "e76|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "plans-after-join",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1xihg0g",
+      "seq": 9,
+      "count": 63,
+      "targets": [
+        "e36|tap|button|Group run: QA Bondi sunrise 5k, Mon 5 Oct \u00b7 6:30 am, Joined||plan-event:f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e37|tap|button|1:1 session: Running with QA Bob, Fri 9 Oct \u00b7 7:00 am \u2013 8:00 am, Confirmed||plan-booking:fc735f51-5ab7-44a6-bfdc-6128524556ec",
+        "e51|tap|button|Explore||",
+        "e53|tap|button|My Plans||",
+        "e54|tap|button|Chats||",
+        "e55|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e38|text|text|1:1 SESSION||",
+        "e39|text|text|1:1 SESSION||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "open-joined-from-plans",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0cocysx",
+      "seq": 13,
+      "count": 80,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e68|tap|button|Leave this run||session-leave"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 4 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 4 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|2 of 6, including the host||",
+        "e56|text|text|2 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||",
+        "e64|text|text|You||",
+        "e65|text|text|You||",
+        "e66|text|text|You're going.||",
+        "e67|text|text|You're going.||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "leave",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1s85wi9",
+      "seq": 15,
+      "count": 75,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e63|tap|button|Join this run||session-join"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 5 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 5 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|1 of 6, including the host||",
+        "e56|text|text|1 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "plans-after-leave",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0ggqds2",
+      "seq": 17,
+      "count": 62,
+      "targets": [
+        "e36|tap|button|1:1 session: Running with QA Bob, Fri 9 Oct \u00b7 7:00 am \u2013 8:00 am, Confirmed||plan-booking:fc735f51-5ab7-44a6-bfdc-6128524556ec",
+        "e50|tap|button|Explore||",
+        "e52|tap|button|My Plans||",
+        "e53|tap|button|Chats||",
+        "e54|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e37|text|text|1:1 SESSION||",
+        "e38|text|text|1:1 SESSION||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "explore-after-leave",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1lxrehj",
+      "seq": 19,
+      "count": 84,
+      "targets": [
+        "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct \u00b7 6:30 am, Bondi Pavilion, 6 runners \u00b7 5 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct \u00b7 6:00 am, Centennial Park, Paddington Gates, 2 runners \u00b7 Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+        "e39|tap|button|Host a run||",
+        "e72|tap|button|Explore||",
+        "e74|tap|button|My Plans||",
+        "e75|tap|button|Chats||",
+        "e76|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "reopen",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1s85wi9",
+      "seq": 21,
+      "count": 75,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e63|tap|button|Join this run||session-join"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 5 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 5 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|1 of 6, including the host||",
+        "e56|text|text|1 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "rejoin",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0cocysx",
+      "seq": 23,
+      "count": 80,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e68|tap|button|Leave this run||session-leave"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 4 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 4 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|2 of 6, including the host||",
+        "e56|text|text|2 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||",
+        "e64|text|text|You||",
+        "e65|text|text|You||",
+        "e66|text|text|You're going.||",
+        "e67|text|text|You're going.||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "restore-unjoined",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1s85wi9",
+      "seq": 25,
+      "count": 75,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e63|tap|button|Join this run||session-join"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e29|text|text|Mon 5 Oct \u00b7 6:30 am||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Bondi Pavilion||",
+        "e33|text|text|Bondi Pavilion||",
+        "e35|text|text|5 km||",
+        "e36|text|text|5 km||",
+        "e38|text|text|Target 5:45\u20136:15 /km||",
+        "e39|text|text|Target 5:45\u20136:15 /km||",
+        "e41|text|text|Stay together||",
+        "e42|text|text|Stay together||",
+        "e43|text|text|6 runners \u00b7 5 spots left||session-capacity",
+        "e44|text|text|6 runners \u00b7 5 spots left||",
+        "e45|text|text|Hosted by QA Bob||",
+        "e46|text|text|Hosted by QA Bob||",
+        "e47|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e48|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e52|text|text|QA demo session. Easy coastal loop, regroup at the pavilion.||",
+        "e55|text|text|1 of 6, including the host||",
+        "e56|text|text|1 of 6, including the host||",
+        "e58|text|text|QA Bob||",
+        "e59|text|text|QA Bob||",
+        "e61|text|text|Host||",
+        "e62|text|text|Host||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "explore-restored",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1lxrehj",
+      "seq": 27,
+      "count": 84,
+      "targets": [
+        "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct \u00b7 6:30 am, Bondi Pavilion, 6 runners \u00b7 5 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct \u00b7 6:00 am, Centennial Park, Paddington Gates, 2 runners \u00b7 Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+        "e39|tap|button|Host a run||",
+        "e72|tap|button|Explore||",
+        "e74|tap|button|My Plans||",
+        "e75|tap|button|Chats||",
+        "e76|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "17pro-disposable-login",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0lln7j9",
+      "seq": 7,
+      "count": 64,
+      "targets": [
+        "e37|typeText|text-field|Display name|How you'll appear to others|",
+        "e42|tap|button|Birth year|Not selected|",
+        "e45|tap|button|Sydney suburb|Not selected|",
+        "e46|tap|button|Continue||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|YOUR SYDNEY SUBURB *||",
+        "e44|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "picker-options",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0yn598c",
+      "seq": 13,
+      "count": 33,
+      "targets": [],
+      "scroll": [],
+      "text": [
+        "e18|text|text|SPORTSGANG||",
+        "e19|text|text|SPORTSGANG||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "picker-options",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1nb9f3n",
+      "seq": 17,
+      "count": 27,
+      "targets": [],
+      "scroll": [],
+      "text": [
+        "e18|text|text|SPORTSGANG||",
+        "e19|text|text|SPORTSGANG||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "picker-done",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "11epmzt",
+      "seq": 20,
+      "count": 58,
+      "targets": [
+        "e37|typeText|text-field|Display name|How you'll appear to others|",
+        "e42|tap|button|Birth year|Not selected|",
+        "e45|tap|button|Sydney suburb|Not selected|",
+        "e46|tap|button|Continue||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|YOUR SYDNEY SUBURB *||",
+        "e44|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "picker-birth-year",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1cajk74",
+      "seq": 22,
+      "count": 157,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e43|tap|button|Birth year|expanded, Not selected|",
+        "e46|tap|button|Sydney suburb|Not selected|",
+        "e47|tap|button|Continue||",
+        "e67|tap|button|Close Birth year||",
+        "e74|tap|button|2008||",
+        "e75|tap|button|2007||",
+        "e76|tap|button|2006||",
+        "e77|tap|button|2005||",
+        "e78|tap|button|2004||",
+        "e79|tap|button|2003||",
+        "e80|tap|button|2002||",
+        "e81|tap|button|2001||",
+        "e82|tap|button|2000||",
+        "e83|tap|button|1999||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e71|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e44|text|text|YOUR SYDNEY SUBURB *||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "birth-year-options",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1cajk74",
+      "seq": 23,
+      "count": 157,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e43|tap|button|Birth year|expanded, Not selected|",
+        "e46|tap|button|Sydney suburb|Not selected|",
+        "e47|tap|button|Continue||",
+        "e67|tap|button|Close Birth year||",
+        "e74|tap|button|2008||",
+        "e75|tap|button|2007||",
+        "e76|tap|button|2006||",
+        "e77|tap|button|2005||",
+        "e78|tap|button|2004||",
+        "e79|tap|button|2003||",
+        "e80|tap|button|2002||",
+        "e81|tap|button|2001||",
+        "e82|tap|button|2000||",
+        "e83|tap|button|1999||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e71|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e44|text|text|YOUR SYDNEY SUBURB *||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "birth-year-selected",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "01tqxxo",
+      "seq": 25,
+      "count": 108,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e42|tap|button|Birth year|2000|",
+        "e47|tap|button|Sydney suburb|Not selected|",
+        "e48|tap|button|Continue||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|Age: 26||",
+        "e44|text|text|Age: 26||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||",
+        "e46|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "reopened-selected-birth-year",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0tgon7p",
+      "seq": 27,
+      "count": 159,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e43|tap|button|Birth year|expanded, 2000|",
+        "e48|tap|button|Sydney suburb|Not selected|",
+        "e49|tap|button|Continue||",
+        "e69|tap|button|Close Birth year||",
+        "e76|tap|button|2008||",
+        "e77|tap|button|2007||",
+        "e78|tap|button|2006||",
+        "e79|tap|button|2005||",
+        "e80|tap|button|2004||",
+        "e81|tap|button|2003||",
+        "e82|tap|button|2002||",
+        "e83|tap|button|2001||",
+        "e84|tap|button|2000||",
+        "e85|tap|button|1999||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e73|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e44|text|text|Age: 26||",
+        "e45|text|text|Age: 26||",
+        "e46|text|text|YOUR SYDNEY SUBURB *||",
+        "e47|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "birth-year-done",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "01tqxxo",
+      "seq": 29,
+      "count": 108,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e42|tap|button|Birth year|2000|",
+        "e47|tap|button|Sydney suburb|Not selected|",
+        "e48|tap|button|Continue||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|Age: 26||",
+        "e44|text|text|Age: 26||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||",
+        "e46|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "suburb-open",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "08yenax",
+      "seq": 31,
+      "count": 269,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e73|typeText|text-field|Search options|Search|",
+        "e42|tap|button|Birth year|2000|",
+        "e48|tap|button|Sydney suburb|expanded, Not selected|",
+        "e49|tap|button|Continue||",
+        "e69|tap|button|Close Sydney suburb||",
+        "e78|tap|button|Abbotsford||",
+        "e79|tap|button|Alexandria||",
+        "e80|tap|button|Allawah||",
+        "e81|tap|button|Annandale||",
+        "e82|tap|button|Arncliffe||",
+        "e83|tap|button|Artarmon||",
+        "e84|tap|button|Ashbury||",
+        "e85|tap|button|Ashfield||",
+        "e86|tap|button|Auburn||",
+        "e87|tap|button|Avalon Beach||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e75|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|Age: 26||",
+        "e44|text|text|Age: 26||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||",
+        "e46|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "suburb-selected",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0d1p566",
+      "seq": 33,
+      "count": 108,
+      "targets": [
+        "e37|typeText|text-field|Display name||",
+        "e42|tap|button|Birth year|2000|",
+        "e47|tap|button|Sydney suburb|Annandale|",
+        "e48|tap|button|Continue||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|STEP 1 OF 4||",
+        "e27|text|text|STEP 1 OF 4||",
+        "e28|text|text|GETTING STARTED||",
+        "e29|text|text|GETTING STARTED||",
+        "e30|text|text|Your profile||",
+        "e31|text|text|Your profile||",
+        "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+        "e34|text|text|DISPLAY NAME *||",
+        "e35|text|text|DISPLAY NAME *||",
+        "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e40|text|text|BIRTH YEAR *||",
+        "e41|text|text|BIRTH YEAR *||",
+        "e43|text|text|Age: 26||",
+        "e44|text|text|Age: 26||",
+        "e45|text|text|YOUR SYDNEY SUBURB *||",
+        "e46|text|text|YOUR SYDNEY SUBURB *||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "disposable-onboarding-complete",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1xbkbgm",
+      "seq": 49,
+      "count": 84,
+      "targets": [
+        "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct \u00b7 6:30 am, Bondi Pavilion, 6 runners \u00b7 5 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct \u00b7 6:00 am, Centennial Park, Paddington Gates, 2 runners \u00b7 Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+        "e39|tap|button|Host a run||",
+        "e72|tap|button|Explore||",
+        "e74|tap|button|My Plans||",
+        "e75|tap|button|Chats||",
+        "e76|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "strict-enabled-before-clear",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1pvv584",
+      "seq": 52,
+      "count": 92,
+      "targets": [
+        "e42|tap|button|View QA Alice||",
+        "e48|tap|button|Pass||",
+        "e49|tap|button|Show interest||",
+        "e51|tap|button|View QA Bob||",
+        "e57|tap|button|Pass||",
+        "e58|tap|button|Show interest||",
+        "e80|tap|button|Explore||",
+        "e82|tap|button|My Plans||",
+        "e83|tap|button|Chats||",
+        "e84|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "pace-cleared-return-explore-no-manual-refresh",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0vvu92y",
+      "seq": 58,
+      "count": 135,
+      "targets": [
+        "e77|tap|button|Remove running from my profile||",
+        "e45|typeText|text-field|Fastest|5:30|",
+        "e47|typeText|text-field|Slowest|6:15|",
+        "e76|tap|button|Save preferences||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e38|text|text|Minutes per km, e.g. 5:30 to 6:15. We match you with runners whose range overlaps.||",
+        "e39|text|text|Minutes per km, e.g. 5:30 to 6:15. We match you with runners whose range overlaps.||",
+        "e40|text|text|Fastest *||",
+        "e41|text|text|Fastest *||",
+        "e42|text|text|Slowest *||",
+        "e43|text|text|Slowest *||",
+        "e50|text|text|Optional. Choose any.||",
+        "e51|text|text|Optional. Choose any.||",
+        "e61|text|text|Optional.||",
+        "e62|text|text|Optional.||",
+        "e68|text|text|Choose any that apply, or Flexible.||",
+        "e69|text|text|Choose any that apply, or Flexible.||",
+        "e74|text|text|Matching pace needs your comfortable pace range.||",
+        "e75|text|text|Matching pace needs your comfortable pace range.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "Attempt remained on Match-pace validation error after clearing required bounds. The later social-cleared-saved-auto-feed capture is the successful save/automatic feed result."
+  },
+  {
+    "step": "social-cleared-saved-auto-feed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1ikut23",
+      "seq": 64,
+      "count": 115,
+      "targets": [
+        "e42|tap|button|View QA Mod Target||",
+        "e45|tap|button|Pass||",
+        "e46|tap|button|Show interest||",
+        "e48|tap|button|View QA Cara||",
+        "e52|tap|button|Pass||",
+        "e53|tap|button|Show interest||",
+        "e103|tap|button|Explore||",
+        "e105|tap|button|My Plans||",
+        "e106|tap|button|Chats||",
+        "e107|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-report-opens",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0o8faxd",
+      "seq": 69,
+      "count": 53,
+      "targets": [
+        "e36|typeText|text-field|Describe what happened\u2026||",
+        "e19|tap|button|Back||"
+      ],
+      "scroll": [
+        "e23|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Report||",
+        "e21|text|text|Report||",
+        "e26|text|text|Why are you reporting Review Block Target?||",
+        "e27|text|text|Why are you reporting Review Block Target?||",
+        "e33|text|text|ADDITIONAL CONTEXT (OPTIONAL)||",
+        "e34|text|text|ADDITIONAL CONTEXT (OPTIONAL)||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-report-submitted",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "07i6e6s",
+      "seq": 70,
+      "count": 34,
+      "targets": [
+        "e19|tap|button|Back||",
+        "e26|tap|button|Done||"
+      ],
+      "scroll": [],
+      "text": [
+        "e20|text|text|Report||",
+        "e21|text|text|Report||",
+        "e22|text|text|Report submitted||",
+        "e23|text|text|Report submitted||",
+        "e24|text|text|Thanks for helping keep SportsGang safe. We'll review this user.||",
+        "e25|text|text|Thanks for helping keep SportsGang safe. We'll review this user.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-block-success-list",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0lmcclm",
+      "seq": 80,
+      "count": 97,
+      "targets": [
+        "e56|tap|button|Edit running preferences||",
+        "e30|tap|button|Edit profile||edit-profile",
+        "e62|tap|button|Add golf||",
+        "e66|tap|button|Photos & bio||",
+        "e67|tap|button|Partner preferences||",
+        "e68|tap|button|Blocked users||",
+        "e85|tap|button|Explore||",
+        "e87|tap|button|My Plans||",
+        "e88|tap|button|Chats||",
+        "e89|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e25|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e28|text|text|ACCOUNT||",
+        "e29|text|text|ACCOUNT||",
+        "e34|text|text|ReviewNativeTester||",
+        "e35|text|text|ReviewNativeTester||",
+        "e36|text|text|Annandale||",
+        "e37|text|text|Annandale||",
+        "e40|text|text|These decide who you see \u2014 and who sees you.||",
+        "e41|text|text|These decide who you see \u2014 and who sees you.||",
+        "e43|text|text|Running||",
+        "e44|text|text|Running||",
+        "e46|text|text|Intermediate||",
+        "e47|text|text|Intermediate||",
+        "e49|text|text|Social runner||",
+        "e50|text|text|Social runner||",
+        "e52|text|text|Pace not shared||",
+        "e53|text|text|Pace not shared||",
+        "e54|text|text|Mornings||",
+        "e55|text|text|Mornings||",
+        "e58|text|text|Golf||",
+        "e59|text|text|Golf||",
+        "e60|text|text|Not on your profile yet.||",
+        "e61|text|text|Not on your profile yet.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "Attempt to navigate to the block list; this capture is not proof of the list. The later native-blocked-name capture verifies the actual named row."
+  },
+  {
+    "step": "native-blocked-name",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1ru53cp",
+      "seq": 84,
+      "count": 49,
+      "targets": [
+        "e31|tap|button|Unblock Review Block Target||",
+        "e19|tap|button|Back||"
+      ],
+      "scroll": [
+        "e25|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Blocked Users||",
+        "e21|text|text|Blocked Users||",
+        "e22|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e23|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e29|text|text|Review Block Target||",
+        "e30|text|text|Review Block Target||",
+        "e32|text|text|Blocked Oct 3, 2026||",
+        "e33|text|text|Blocked Oct 3, 2026||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-unblock-success",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1ulsi5v",
+      "seq": 87,
+      "count": 95,
+      "targets": [
+        "e31|tap|button|Unblock Review Block Target||",
+        "e19|tap|button|Back||",
+        "e78|tap|button|Cancel||",
+        "e79|tap|button|Unblock||"
+      ],
+      "scroll": [
+        "e25|swipe|scroll-view|||",
+        "e57|swipe|other|Unblock this user?||",
+        "e62|swipe|scroll-view|||",
+        "e75|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Blocked Users||",
+        "e21|text|text|Blocked Users||",
+        "e22|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e23|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e29|text|text|Review Block Target||",
+        "e30|text|text|Review Block Target||",
+        "e32|text|text|Blocked Oct 3, 2026||",
+        "e33|text|text|Blocked Oct 3, 2026||",
+        "e64|text|text|Unblock this user?||",
+        "e65|text|text|They may be able to interact with you again in supported areas.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "An expired target left confirmation pending. The later native-unblock-confirmed capture verifies successful unblock."
+  },
+  {
+    "step": "native-unblock-confirmed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1tyr9ww",
+      "seq": 89,
+      "count": 35,
+      "targets": [
+        "e19|tap|button|Back||"
+      ],
+      "scroll": [],
+      "text": [
+        "e20|text|text|Blocked Users||",
+        "e21|text|text|Blocked Users||",
+        "e22|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e23|text|text|People you block are restricted from supported interactions such as joining your games where supported.||",
+        "e24|text|text|No blocked users||",
+        "e25|text|text|No blocked users||",
+        "e26|text|text|You haven't blocked anyone yet.||",
+        "e27|text|text|You haven't blocked anyone yet.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-booking-confirmed-sydney-time",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0706pv4",
+      "seq": 96,
+      "count": 70,
+      "targets": [
+        "e19|tap|button|Back||",
+        "e56|tap|button|Mark completed||",
+        "e57|tap|button|Record no-show||",
+        "e58|tap|button|Cancel||"
+      ],
+      "scroll": [
+        "e23|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Session||",
+        "e21|text|text|Session||",
+        "e27|text|text|CONFIRMED||",
+        "e28|text|text|CONFIRMED||",
+        "e30|text|text|WITH||",
+        "e31|text|text|WITH||",
+        "e32|text|text|Review Block Target||",
+        "e33|text|text|Review Block Target||",
+        "e35|text|text|SPORT||",
+        "e36|text|text|SPORT||",
+        "e37|text|text|Running||",
+        "e38|text|text|Running||",
+        "e40|text|text|STARTS||",
+        "e41|text|text|STARTS||",
+        "e42|text|text|Thu 8 Oct \u00b7 6:30 am||",
+        "e43|text|text|Thu 8 Oct \u00b7 6:30 am||",
+        "e45|text|text|ENDS||",
+        "e46|text|text|ENDS||",
+        "e47|text|text|Thu 8 Oct \u00b7 7:30 am||",
+        "e48|text|text|Thu 8 Oct \u00b7 7:30 am||",
+        "e49|text|text|Times are Sydney time||",
+        "e50|text|text|Times are Sydney time||",
+        "e52|text|text|LOCATION||",
+        "e53|text|text|LOCATION||",
+        "e54|text|text|Review Sydney 06:30||",
+        "e55|text|text|Review Sydney 06:30||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-plans-events-source-failed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1vwkeqq",
+      "seq": 99,
+      "count": 69,
+      "targets": [
+        "e40|tap|button|Retry||",
+        "e57|tap|button|Explore||",
+        "e59|tap|button|My Plans||",
+        "e60|tap|button|Chats||",
+        "e61|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e38|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||",
+        "e39|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||",
+        "e42|text|text|No pending requests||",
+        "e43|text|text|No pending requests||",
+        "e44|text|text|Session proposals from your chats stay here until they are confirmed or declined.||",
+        "e45|text|text|Session proposals from your chats stay here until they are confirmed or declined.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-one-source-retained-upcoming",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0l4gax4",
+      "seq": 100,
+      "count": 65,
+      "targets": [
+        "e41|tap|button|1:1 session: Running with Review Block Target, Thu 8 Oct \u00b7 6:30 am \u2013 7:30 am, Confirmed||plan-booking:79099e8a-5934-4ed8-9cf2-97fbcc089455",
+        "e40|tap|button|Retry||",
+        "e53|tap|button|Explore||",
+        "e55|tap|button|My Plans||",
+        "e56|tap|button|Chats||",
+        "e57|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e38|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||",
+        "e39|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-both-sources-retain-booking",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0l4gax4",
+      "seq": 102,
+      "count": 65,
+      "targets": [
+        "e41|tap|button|1:1 session: Running with Review Block Target, Thu 8 Oct \u00b7 6:30 am \u2013 7:30 am, Confirmed||plan-booking:79099e8a-5934-4ed8-9cf2-97fbcc089455",
+        "e40|tap|button|Retry||",
+        "e53|tap|button|Explore||",
+        "e55|tap|button|My Plans||",
+        "e56|tap|button|Chats||",
+        "e57|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e38|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||",
+        "e39|text|text|Couldn't refresh your group sessions. Showing what was loaded earlier.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "This attempt had not established both-source failure. Use native-both-sources-refresh-failed for the actual both-source refresh result."
+  },
+  {
+    "step": "native-both-sources-refresh-failed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1js30wk",
+      "seq": 106,
+      "count": 65,
+      "targets": [
+        "e41|tap|button|1:1 session: Running with Review Block Target, Thu 8 Oct \u00b7 6:30 am \u2013 7:30 am, Confirmed||plan-booking:79099e8a-5934-4ed8-9cf2-97fbcc089455",
+        "e40|tap|button|Retry||",
+        "e53|tap|button|Explore||",
+        "e55|tap|button|My Plans||",
+        "e56|tap|button|Chats||",
+        "e57|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e38|text|text|Couldn't refresh your plans. Showing what was loaded earlier.||",
+        "e39|text|text|Couldn't refresh your plans. Showing what was loaded earlier.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-plans-retry-recovered",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1uluw0a",
+      "seq": 108,
+      "count": 60,
+      "targets": [
+        "e36|tap|button|1:1 session: Running with Review Block Target, Thu 8 Oct \u00b7 6:30 am \u2013 7:30 am, Confirmed||plan-booking:79099e8a-5934-4ed8-9cf2-97fbcc089455",
+        "e48|tap|button|Explore||",
+        "e50|tap|button|My Plans||",
+        "e51|tap|button|Chats||",
+        "e52|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e33|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-booking-initial-fetch-failed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0gknoev",
+      "seq": 110,
+      "count": 34,
+      "targets": [
+        "e19|tap|button|Back||",
+        "e26|tap|button|Try again||"
+      ],
+      "scroll": [],
+      "text": [
+        "e20|text|text|Session||",
+        "e21|text|text|Session||",
+        "e22|text|text|Could not load this session||",
+        "e23|text|text|Could not load this session||",
+        "e24|text|text|Independent review injected local failure||",
+        "e25|text|text|Independent review injected local failure||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-booking-offline-back-retry-recovered",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0706pv4",
+      "seq": 116,
+      "count": 70,
+      "targets": [
+        "e19|tap|button|Back||",
+        "e56|tap|button|Mark completed||",
+        "e57|tap|button|Record no-show||",
+        "e58|tap|button|Cancel||"
+      ],
+      "scroll": [
+        "e23|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Session||",
+        "e21|text|text|Session||",
+        "e27|text|text|CONFIRMED||",
+        "e28|text|text|CONFIRMED||",
+        "e30|text|text|WITH||",
+        "e31|text|text|WITH||",
+        "e32|text|text|Review Block Target||",
+        "e33|text|text|Review Block Target||",
+        "e35|text|text|SPORT||",
+        "e36|text|text|SPORT||",
+        "e37|text|text|Running||",
+        "e38|text|text|Running||",
+        "e40|text|text|STARTS||",
+        "e41|text|text|STARTS||",
+        "e42|text|text|Thu 8 Oct \u00b7 6:30 am||",
+        "e43|text|text|Thu 8 Oct \u00b7 6:30 am||",
+        "e45|text|text|ENDS||",
+        "e46|text|text|ENDS||",
+        "e47|text|text|Thu 8 Oct \u00b7 7:30 am||",
+        "e48|text|text|Thu 8 Oct \u00b7 7:30 am||",
+        "e49|text|text|Times are Sydney time||",
+        "e50|text|text|Times are Sydney time||",
+        "e52|text|text|LOCATION||",
+        "e53|text|text|LOCATION||",
+        "e54|text|text|Review Sydney 06:30||",
+        "e55|text|text|Review Sydney 06:30||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-chat-booking-time",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1v4n3g4",
+      "seq": 120,
+      "count": 55,
+      "targets": [
+        "e42|typeText|text-field|Message\u2026||",
+        "e19|tap|button|Back||",
+        "e22|tap|button|Propose a session||",
+        "e23|tap|button|More options||",
+        "e27|tap|button|Find a meeting spot||",
+        "e34|tap|button|Open session confirmed||"
+      ],
+      "scroll": [
+        "e31|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Review Block Target||",
+        "e21|text|text|Review Block Target||",
+        "e25|text|text|PLAN A SESSION||",
+        "e26|text|text|PLAN A SESSION||",
+        "e28|text|text|Find a meeting spot and propose a time.||",
+        "e29|text|text|Find a meeting spot and propose a time.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-composer-proposal-sent",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0909ju3",
+      "seq": 139,
+      "count": 62,
+      "targets": [
+        "e45|typeText|text-field|Anything your partner should know\u2026||",
+        "e41|typeText|text-field||Or type a location, e.g. Bondi gym|",
+        "e19|tap|button|Back||",
+        "e28|tap|button|Choose date||",
+        "e31|tap|button|Choose start time||",
+        "e34|tap|button|Choose end time||",
+        "e39|tap|button|Choose a court or venue||"
+      ],
+      "scroll": [
+        "e23|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e26|text|text|DATE||",
+        "e27|text|text|DATE||",
+        "e20|text|text|Propose a session||",
+        "e21|text|text|Propose a session||",
+        "e29|text|text|START TIME||",
+        "e30|text|text|START TIME||",
+        "e32|text|text|END TIME||",
+        "e33|text|text|END TIME||",
+        "e35|text|text|Times are Sydney time (AEST/AEDT).||",
+        "e36|text|text|Times are Sydney time (AEST/AEDT).||",
+        "e37|text|text|COURT / VENUE (OPTIONAL)||",
+        "e38|text|text|COURT / VENUE (OPTIONAL)||",
+        "e42|text|text|NOTES (OPTIONAL)||",
+        "e43|text|text|NOTES (OPTIONAL)||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "This attempt had not yet submitted the proposal. Native wheel captures and native-composer-wire.json record the later committed/submitted bounds and API confirmation."
+  },
+  {
+    "step": "native-wheel-done-committed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0bfcig7",
+      "seq": 175,
+      "count": 61,
+      "targets": [
+        "e47|typeText|text-field|Anything your partner should know\u2026||",
+        "e43|typeText|text-field||Or type a location, e.g. Bondi gym|",
+        "e19|tap|button|Back||",
+        "e28|tap|button|Choose date||",
+        "e31|tap|button|Choose start time||",
+        "e34|tap|button|Choose end time||",
+        "e41|tap|button|Choose a court or venue||"
+      ],
+      "scroll": [
+        "e23|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e20|text|text|Propose a session||",
+        "e21|text|text|Propose a session||",
+        "e26|text|text|DATE||",
+        "e27|text|text|DATE||",
+        "e29|text|text|START TIME||",
+        "e30|text|text|START TIME||",
+        "e32|text|text|END TIME||",
+        "e33|text|text|END TIME||",
+        "e35|text|text|Times are Sydney time (AEST/AEDT).||",
+        "e36|text|text|Times are Sydney time (AEST/AEDT).||",
+        "e37|text|text|Sessions can be up to 4 hours long.||",
+        "e38|text|text|Sessions can be up to 4 hours long.||",
+        "e39|text|text|COURT / VENUE (OPTIONAL)||",
+        "e40|text|text|COURT / VENUE (OPTIONAL)||",
+        "e44|text|text|NOTES (OPTIONAL)||",
+        "e45|text|text|NOTES (OPTIONAL)||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-first-load-both-sources-fail",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1bhi042",
+      "seq": 188,
+      "count": 50,
+      "targets": [
+        "e37|tap|button|Try again||",
+        "e41|tap|button|Explore||",
+        "e43|tap|button|My Plans||",
+        "e44|tap|button|Chats||",
+        "e45|tap|button|Profile||"
+      ],
+      "scroll": [],
+      "text": [
+        "e24|text|text|SYDNEY TIME||",
+        "e25|text|text|SYDNEY TIME||",
+        "e33|text|text|Could not load your plans||",
+        "e34|text|text|Could not load your plans||",
+        "e35|text|text|Independent review injected local failure||",
+        "e36|text|text|Independent review injected local failure||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-select-large-text-no-results",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0gc56dv",
+      "seq": 201,
+      "count": 159,
+      "targets": [
+        "e51|typeText|text-field|Bio Tell partners a bit about yourself...||",
+        "e32|typeText|text-field|Display name|ReviewNativeTester|",
+        "e82|typeText|text-field|Search options|zzz|",
+        "e23|tap|button|Cancel||",
+        "e38|tap|button|Sydney suburb|expanded, Annandale|",
+        "e44|tap|button|Replace photos||",
+        "e80|tap|button|Close Sydney suburb||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e84|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|Edit profile||",
+        "e25|text|text|Edit profile||",
+        "e27|text|text|Basic info||",
+        "e28|text|text|Basic info||",
+        "e29|text|text|DISPLAY NAME *||",
+        "e30|text|text|DISPLAY NAME *||",
+        "e33|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e34|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e35|text|text|YOUR SYDNEY SUBURB *||",
+        "e36|text|text|YOUR SYDNEY SUBURB *||",
+        "e40|text|text|Photos||",
+        "e41|text|text|Photos||",
+        "e42|text|text|No photos saved yet.||",
+        "e43|text|text|No photos saved yet.||",
+        "e45|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e46|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e87|text|text|No matches||",
+        "e88|text|text|No matches||",
+        "e48|text|text|Bio||",
+        "e49|text|text|Bio||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-select-search-reset-reopened",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0whg1ay",
+      "seq": 206,
+      "count": 278,
+      "targets": [
+        "e51|typeText|text-field|Bio Tell partners a bit about yourself...||",
+        "e32|typeText|text-field|Display name|ReviewNativeTester|",
+        "e82|typeText|text-field|Search options|Search|",
+        "e23|tap|button|Cancel||",
+        "e38|tap|button|Sydney suburb|expanded, Annandale|",
+        "e44|tap|button|Replace photos||",
+        "e80|tap|button|Close Sydney suburb||",
+        "e87|tap|button|Abbotsford||",
+        "e88|tap|button|Alexandria||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e84|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|Edit profile||",
+        "e25|text|text|Edit profile||",
+        "e27|text|text|Basic info||",
+        "e28|text|text|Basic info||",
+        "e29|text|text|DISPLAY NAME *||",
+        "e30|text|text|DISPLAY NAME *||",
+        "e33|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e34|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e35|text|text|YOUR SYDNEY SUBURB *||",
+        "e36|text|text|YOUR SYDNEY SUBURB *||",
+        "e40|text|text|Photos||",
+        "e41|text|text|Photos||",
+        "e42|text|text|No photos saved yet.||",
+        "e43|text|text|No photos saved yet.||",
+        "e45|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e46|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e48|text|text|Bio||",
+        "e49|text|text|Bio||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-select-backdrop-dismissed",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0whg1ay",
+      "seq": 207,
+      "count": 278,
+      "targets": [
+        "e51|typeText|text-field|Bio Tell partners a bit about yourself...||",
+        "e32|typeText|text-field|Display name|ReviewNativeTester|",
+        "e82|typeText|text-field|Search options|Search|",
+        "e23|tap|button|Cancel||",
+        "e38|tap|button|Sydney suburb|expanded, Annandale|",
+        "e44|tap|button|Replace photos||",
+        "e80|tap|button|Close Sydney suburb||",
+        "e87|tap|button|Abbotsford||",
+        "e88|tap|button|Alexandria||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||",
+        "e84|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|Edit profile||",
+        "e25|text|text|Edit profile||",
+        "e27|text|text|Basic info||",
+        "e28|text|text|Basic info||",
+        "e29|text|text|DISPLAY NAME *||",
+        "e30|text|text|DISPLAY NAME *||",
+        "e33|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e34|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e35|text|text|YOUR SYDNEY SUBURB *||",
+        "e36|text|text|YOUR SYDNEY SUBURB *||",
+        "e40|text|text|Photos||",
+        "e41|text|text|Photos||",
+        "e42|text|text|No photos saved yet.||",
+        "e43|text|text|No photos saved yet.||",
+        "e45|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e46|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e48|text|text|Bio||",
+        "e49|text|text|Bio||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null,
+    "review_note": "This attempt did not dismiss the modal. The later native-select-backdrop-dismissed-verified capture records the actual physical backdrop dismissal."
+  },
+  {
+    "step": "native-select-backdrop-dismissed-verified",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1ob8kaj",
+      "seq": 211,
+      "count": 278,
+      "targets": [
+        "e51|typeText|text-field|Bio Tell partners a bit about yourself...||",
+        "e32|typeText|text-field|Display name|ReviewNativeTester|",
+        "e23|tap|button|Cancel||",
+        "e38|tap|button|Sydney suburb|Annandale|",
+        "e44|tap|button|Replace photos||"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|Edit profile||",
+        "e25|text|text|Edit profile||",
+        "e27|text|text|Basic info||",
+        "e28|text|text|Basic info||",
+        "e29|text|text|DISPLAY NAME *||",
+        "e30|text|text|DISPLAY NAME *||",
+        "e33|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e34|text|text|Use English letters, numbers, spaces, - ' . only.||",
+        "e35|text|text|YOUR SYDNEY SUBURB *||",
+        "e36|text|text|YOUR SYDNEY SUBURB *||",
+        "e40|text|text|Photos||",
+        "e41|text|text|Photos||",
+        "e42|text|text|No photos saved yet.||",
+        "e43|text|text|No photos saved yet.||",
+        "e45|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e46|text|text|Replacing photos uploads a fresh 1-4 set from your library.||",
+        "e48|text|text|Bio||",
+        "e49|text|text|Bio||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "native-account-deleted-signed-out",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "0hj9n0b",
+      "seq": 220,
+      "count": 52,
+      "targets": [
+        "e34|tap|button|Get started||",
+        "e35|tap|button|Log in||"
+      ],
+      "scroll": [
+        "e21|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e24|text|text|sportsgang||",
+        "e25|text|text|sportsgang||",
+        "e26|text|text|SYDNEY||",
+        "e27|text|text|SYDNEY||",
+        "e28|text|text|Find your||",
+        "e29|text|text|Find your||",
+        "e30|text|text|next game.||",
+        "e31|text|text|next game.||",
+        "e32|text|text|Match, chat, and plan your next session.||",
+        "e33|text|text|Match, chat, and plan your next session.||"
+      ],
+      "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+    },
+    "didError": false,
+    "error": null
+  },
+  {
+    "step": "alice-restored-session-final",
+    "capture": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1lxrehj",
+      "seq": 29,
+      "count": 84,
+      "targets": [
+        "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct \u00b7 6:30 am, Bondi Pavilion, 6 runners \u00b7 5 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+        "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct \u00b7 6:00 am, Centennial Park, Paddington Gates, 2 runners \u00b7 Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+        "e39|tap|button|Host a run||",
+        "e72|tap|button|Explore||",
+        "e74|tap|button|My Plans||",
+        "e75|tap|button|Chats||",
+        "e76|tap|button|Profile||"
+      ],
+      "scroll": [
+        "e36|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e25|text|text|SYDNEY||",
+        "e26|text|text|SYDNEY||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    },
+    "didError": false,
+    "error": null
+  }
+]

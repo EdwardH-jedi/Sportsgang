@@ -1,0 +1,256 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+........................................................................ [  9%]
+........................................................................ [ 19%]
+........................................................................ [ 28%]
+........................................................................ [ 38%]
+........................................................................ [ 47%]
+........................................................................ [ 57%]
+........................................................................ [ 67%]
+........................................................................ [ 76%]
+........................................................................ [ 86%]
+........................................................................ [ 95%]
+................................                                         [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests/test_auth.py: 13 warnings
+tests/test_bookings.py: 31 warnings
+tests/test_challenges.py: 22 warnings
+tests/test_chat.py: 8 warnings
+tests/test_discovery.py: 12 warnings
+tests/test_discovery_v2.py: 11 warnings
+tests/test_events.py: 70 warnings
+tests/test_events_v2.py: 36 warnings
+tests/test_google_calendar.py: 8 warnings
+tests/test_honor_system.py: 16 warnings
+tests/test_matches.py: 12 warnings
+tests/test_notifications.py: 11 warnings
+tests/test_plan_segments.py: 8 warnings
+tests/test_profile.py: 8 warnings
+tests/test_rank.py: 33 warnings
+tests/test_safety.py: 20 warnings
+tests/test_tournaments.py: 17 warnings
+tests/test_venues.py: 42 warnings
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/.venv/lib/python3.12/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 23 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/test_auth.py: 6 warnings
+tests/test_bookings.py: 31 warnings
+tests/test_challenges.py: 22 warnings
+tests/test_chat.py: 8 warnings
+tests/test_discovery.py: 12 warnings
+tests/test_discovery_v2.py: 11 warnings
+tests/test_events.py: 70 warnings
+tests/test_events_v2.py: 36 warnings
+tests/test_google_calendar.py: 8 warnings
+tests/test_honor_system.py: 16 warnings
+tests/test_matches.py: 12 warnings
+tests/test_notifications.py: 11 warnings
+tests/test_plan_segments.py: 8 warnings
+tests/test_profile.py: 8 warnings
+tests/test_rank.py: 33 warnings
+tests/test_safety.py: 20 warnings
+tests/test_tournaments.py: 17 warnings
+tests/test_venues.py: 42 warnings
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/.venv/lib/python3.12/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 23 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+tests/test_bookings.py: 18 warnings
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/bookings.py:251: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _check_transition(b, new_status, current_user_id)
+
+tests/test_bookings.py::test_ends_at_before_starts_at_returns_422
+tests/test_bookings.py::test_past_booking_rejected
+tests/test_bookings.py::test_mixed_naive_and_aware_bounds_compare_as_instants
+tests/test_bookings.py::test_range_is_validated_on_instants_not_wall_clocks
+tests/test_bookings.py::test_range_is_validated_on_instants_not_wall_clocks
+tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+tests/test_bookings.py::test_past_check_uses_the_instant_for_every_form
+tests/test_venues.py::test_create_booking_with_mismatched_venue_sport_returns_422
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/bookings.py:41: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await bookings_service.create_booking(db, current_user.id, req)
+
+tests/test_challenges.py::test_user_cannot_challenge_themselves
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/challenges.py:38: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await challenges_service.create_challenge(
+
+tests/test_challenges.py::test_cannot_accept_declined_or_cancelled_challenge
+tests/test_challenges.py::test_cannot_accept_declined_or_cancelled_challenge
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/challenges.py:85: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await challenges_service.accept_challenge(db, current_user_id=current_user.id, challenge_id=challenge_id)
+
+tests/test_challenges.py::test_winner_and_loser_must_be_participants
+tests/test_challenges.py::test_cannot_submit_before_accepted
+tests/test_challenges.py::test_verified_challenge_cannot_double_apply_honor
+tests/test_challenges.py::test_verified_challenge_cannot_double_apply_honor
+tests/test_challenges.py::test_cannot_submit_after_dispute
+tests/test_challenges.py::test_cannot_submit_after_dispute
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/challenges.py:113: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await challenges_service.submit_challenge_result(
+
+tests/test_chat.py::test_send_message_blocked_by_moderation_returns_422_and_does_not_persist
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/chat.py:64: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    ensure_text_allowed(body, context="chat")
+
+tests/test_content_moderation.py::test_ensure_text_allowed_raises_422_with_safe_detail
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/tests/test_content_moderation.py:201: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    ensure_text_allowed("BANNED_PROFANITY_FIXTURE", context="chat")
+
+tests/test_discovery_v2.py::test_strict_pace_needs_the_viewers_own_range
+tests/test_discovery_v2.py::test_strict_pace_needs_the_viewers_own_range
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/discovery.py:23: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await discovery_service.get_discovery_feed(
+
+tests/test_discovery_v2.py::test_invalid_cursor_is_rejected
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/discovery.py:255: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    after = _order(_decode_cursor(cursor))
+
+tests/test_events.py::test_create_event_blocked_by_moderation_returns_422
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:219: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    ensure_text_allowed(body.title, context="event-title")
+
+tests/test_events.py::test_create_event_blocked_when_description_violates
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:221: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    ensure_text_allowed(body.description, context="event-description")
+
+tests/test_events.py::test_create_event_rejects_private_for_now
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:31: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.create_event(db, current_user.id, body)
+
+tests/test_events.py::test_capacity_enforced_and_status_flips_to_full
+tests/test_events.py::test_cancelled_event_cannot_be_joined
+tests/test_events.py::test_completed_event_cannot_be_joined
+tests/test_events_v2.py::test_golf_capacity_counts_the_host_and_rejects_the_fifth
+tests/test_events_v2.py::test_join_after_cancel_or_complete_keeps_server_reason
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+tests/test_events.py::test_left_participant_cannot_be_marked
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:124: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.host_update_attendance(db, event_id, current_user.id, body)
+
+tests/test_events.py::test_cancelled_event_attendance_update_rejected
+tests/test_events.py::test_cancelled_event_blocks_attendance_updates
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:683: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _ensure_attendance_event_mutable(e)
+
+tests/test_events.py::test_cancelled_event_attendance_update_rejected
+tests/test_events.py::test_cancelled_event_blocks_attendance_updates
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:729: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _ensure_attendance_event_mutable(e)
+
+tests/test_events.py::test_completed_event_cannot_be_cancelled
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:96: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.cancel_event(db, event_id, current_user.id)
+
+tests/test_events.py::test_host_cannot_complete_before_starts_at
+tests/test_events.py::test_cancelled_event_cannot_be_completed
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:105: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.complete_event(db, event_id, current_user.id)
+
+tests/test_events.py::test_host_attendance_before_starts_at_rejected
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:684: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _ensure_attendance_time_eligible(e)
+
+tests/test_events.py::test_participant_self_attendance_before_starts_at_rejected
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:730: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _ensure_attendance_time_eligible(e)
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body0-running session]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:135: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("Running details can only be added to a running session.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body1-golf round]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:137: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("Golf details can only be added to a golf round.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body2-not both]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:133: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("A session can have running or golf details, not both.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body3-casual]
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body4-casual]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:139: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("Running and golf sessions are casual; ranked mode is not available.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body5-2 to 4]
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body6-2 to 4]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:153: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("A golf group is 2 to 4 players, including you.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body7-2 to 50]
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body8-2 to 50]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:142: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("A group run is 2 to 50 runners, including you.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body9-both]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:146: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("A target pace needs both the fastest and slowest pace.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body10-fastest]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:148: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("The fastest target pace must not be slower than the slowest.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body11-social run]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:150: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("A social run has no target pace; choose target pace to set one.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body12-both ends]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:156: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("Give both ends of the handicap guide, or neither.")
+
+tests/test_events_v2.py::test_cross_field_rules_return_readable_422[body13-lower end]
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/services/events.py:158: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    raise _unprocessable("The handicap guide's lower end must not be above its upper end.")
+
+tests/test_google_calendar.py::test_sync_booking_requires_confirmed_status
+tests/test_google_calendar.py::test_sync_booking_requires_google_connection
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/google_calendar.py:84: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await gcal_service.sync_booking(db, booking_id, current_user.id)
+
+tests/test_honor_system.py::test_service_rejects_self_match
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/tests/test_honor_system.py:557: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    await record_match_result_for_honor(
+
+tests/test_notifications.py::test_process_pending_notifications_handles_naive_scheduled_at
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/tests/test_notifications.py:239: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    naive_scheduled = datetime.utcnow() - timedelta(hours=72)
+
+tests/test_plan_segments.py::test_segment_needs_mine_and_a_known_value
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/events.py:49: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.list_events(
+
+tests/test_safety.py::test_cannot_report_self
+tests/test_safety.py::test_cannot_report_own_event
+tests/test_safety.py::test_event_report_user_target_mismatch_rejected
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/safety.py:29: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await safety_service.create_report(db, current_user.id, req)
+
+tests/test_safety.py::test_cannot_block_self
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/safety.py:58: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await safety_service.block_user(db, current_user.id, blocked_user_id)
+
+tests/test_sport_preferences_v2.py: 12 warnings
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/.venv/lib/python3.12/site-packages/fastapi/routing.py:328: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await dependant.call(**values)
+
+tests/test_tournaments.py::test_capacity_enforced_and_status_flips_to_full
+tests/test_tournaments.py::test_cannot_join_cancelled_tournament
+tests/test_tournaments.py::test_cannot_join_closed_tournament
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/tournaments.py:71: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await tournaments_service.join_tournament(db, tournament_id, current_user.id)
+
+tests/test_tournaments.py::test_cannot_leave_completed_or_cancelled
+tests/test_tournaments.py::test_cannot_leave_completed_or_cancelled
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/app/routers/tournaments.py:80: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await tournaments_service.leave_tournament(db, tournament_id, current_user.id)
+
+tests/test_venues.py::test_nearby_lat_without_lng_returns_422
+  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/apps/api/.venv/lib/python3.12/site-packages/slowapi/extension.py:734: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    response = await func(*args, **kwargs)  # type: ignore
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+752 passed, 850 warnings in 116.48s (0:01:56)

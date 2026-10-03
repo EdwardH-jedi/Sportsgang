@@ -1,0 +1,554 @@
+[
+  {
+    "type": "Application",
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "height": 874,
+      "width": 402
+    }
+  },
+  {
+    "type": "StaticText",
+    "AXLabel": "SYDNEY",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "height": 16,
+      "y": 78,
+      "width": 354
+    }
+  },
+  {
+    "type": "StaticText",
+    "AXLabel": "SYDNEY",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "height": 16,
+      "y": 78,
+      "width": 354
+    }
+  },
+  {
+    "type": "Heading",
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "y": 96,
+      "height": 36,
+      "width": 354
+    }
+  },
+  {
+    "type": "Heading",
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "y": 96,
+      "height": 36,
+      "width": 354
+    }
+  },
+  {
+    "type": "Group",
+    "AXLabel": "Sport",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "y": 140,
+      "height": 48,
+      "width": 354
+    }
+  },
+  {
+    "type": "GenericElement",
+    "AXLabel": "Run",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 28,
+      "height": 40,
+      "y": 144,
+      "width": 173
+    }
+  },
+  {
+    "type": "GenericElement",
+    "AXLabel": "Golf",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 201,
+      "y": 144,
+      "height": 40,
+      "width": 173
+    }
+  },
+  {
+    "type": "Group",
+    "AXLabel": "Show sessions or partners",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "y": 196,
+      "height": 48,
+      "width": 354
+    }
+  },
+  {
+    "type": "GenericElement",
+    "AXLabel": "Sessions",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 28,
+      "height": 40,
+      "y": 200,
+      "width": 173
+    }
+  },
+  {
+    "type": "GenericElement",
+    "AXLabel": "Partners",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 201,
+      "y": 200,
+      "height": 40,
+      "width": 173
+    }
+  },
+  {
+    "type": "GenericElement",
+    "AXLabel": "Matching pace only",
+    "AXValue": "checkbox, unchecked",
+    "traits": [],
+    "frame": {
+      "x": 24,
+      "height": 63,
+      "y": 260,
+      "width": 354
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Mod Target",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 356,
+      "height": 172,
+      "width": 320
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 544,
+      "height": 50,
+      "width": 157.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 206.6666717529297,
+      "y": 544,
+      "height": 50,
+      "width": 154.3333282470703
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Cara",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 644,
+      "height": 172,
+      "width": 320
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 832,
+      "height": 50,
+      "width": 157.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 206.6666717529297,
+      "y": 832,
+      "height": 50,
+      "width": 154.3333282470703
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View Review Block Target",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 932,
+      "height": 172,
+      "width": 320
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 1120,
+      "height": 50,
+      "width": 157.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 206.6666717529297,
+      "y": 1120,
+      "height": 50,
+      "width": 154.3333282470703
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Dan",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 1220,
+      "height": 226,
+      "width": 320
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 1462,
+      "height": 50,
+      "width": 157.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 206.6666717529297,
+      "y": 1462,
+      "height": 50,
+      "width": 154.3333282470703
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Alice",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "x": 41,
+      "y": 1562,
+      "height": 226,
+      "width": 320
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 157.6666717529297,
+      "y": 1804,
+      "height": 50,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 154.3333282470703,
+      "y": 1804,
+      "height": 50,
+      "x": 206.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Bob",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 320,
+      "y": 1904,
+      "height": 192,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 157.6666717529297,
+      "y": 2112,
+      "height": 50,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 154.3333282470703,
+      "y": 2112,
+      "height": 50,
+      "x": 206.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Fern",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 320,
+      "y": 2212,
+      "height": 192,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 157.6666717529297,
+      "y": 2420,
+      "height": 50,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 154.3333282470703,
+      "y": 2420,
+      "height": 50,
+      "x": 206.6666717529297
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "View QA Eve",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 320,
+      "y": 2520,
+      "height": 110,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Pass",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 157.6666717529297,
+      "y": 2646,
+      "height": 50,
+      "x": 41
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Show interest",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 154.3333282470703,
+      "y": 2646,
+      "height": 50,
+      "x": 206.6666717529297
+    }
+  },
+  {
+    "type": "StaticText",
+    "AXLabel": "That's everyone who fits for now. We check the 200 newest running members.",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 354,
+      "y": 2753,
+      "height": 36,
+      "x": 24
+    }
+  },
+  {
+    "type": "StaticText",
+    "AXLabel": "That's everyone who fits for now. We check the 200 newest running members.",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "width": 354,
+      "y": 2753,
+      "height": 36,
+      "x": 24
+    }
+  },
+  {
+    "type": "Slider",
+    "AXLabel": "Vertical scroll bar, 5 pages",
+    "AXValue": "0%",
+    "traits": [],
+    "frame": {
+      "width": 30,
+      "y": 252,
+      "height": 543,
+      "x": 369
+    }
+  },
+  {
+    "type": "Slider",
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "traits": [],
+    "frame": {
+      "width": 402,
+      "y": 762,
+      "height": 30,
+      "x": 0
+    }
+  },
+  {
+    "type": "Slider",
+    "AXLabel": "Vertical scroll bar, 5 pages",
+    "AXValue": "0%",
+    "traits": [],
+    "frame": {
+      "width": 30,
+      "y": 252,
+      "height": 543,
+      "x": 369
+    }
+  },
+  {
+    "type": "Slider",
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "traits": [],
+    "frame": {
+      "width": 402,
+      "y": 762,
+      "height": 30,
+      "x": 0
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "height": 48,
+      "width": 100.66666412353516,
+      "y": 796,
+      "x": 0
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "height": 48,
+      "y": 796,
+      "x": 100.66666412353516,
+      "width": 100.33333587646484
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "height": 48,
+      "width": 100.66665649414062,
+      "x": 201,
+      "y": 796
+    }
+  },
+  {
+    "type": "Button",
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "traits": [],
+    "frame": {
+      "height": 48,
+      "y": 796,
+      "x": 301.6666564941406,
+      "width": 100.33334350585938
+    }
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "AXLabel": "Sydney suburb",
+    "AXValue": "expanded, Annandale",
+    "traits": [],
+    "type": "Button",
+    "frame": {
+      "x": 49,
+      "width": 304,
+      "y": 339.3333282470703,
+      "height": 59
+    }
+  },
+  {
+    "AXLabel": "Sydney suburb",
+    "AXValue": null,
+    "traits": [],
+    "type": "Heading",
+    "frame": {
+      "x": 16,
+      "y": 246.6666717529297,
+      "height": 278.6666259765625,
+      "width": 219
+    }
+  },
+  {
+    "AXLabel": "Sydney suburb",
+    "AXValue": null,
+    "traits": [],
+    "type": "Heading",
+    "frame": {
+      "x": 16,
+      "y": 246.6666717529297,
+      "height": 278.6666259765625,
+      "width": 219
+    }
+  },
+  {
+    "AXLabel": "Close Sydney suburb",
+    "AXValue": null,
+    "traits": [],
+    "type": "Button",
+    "frame": {
+      "width": 151,
+      "y": 350.33333587646484,
+      "height": 71.66668701171875,
+      "x": 235
+    }
+  },
+  {
+    "AXLabel": "Search options",
+    "AXValue": "Search",
+    "traits": [],
+    "type": "TextField",
+    "frame": {
+      "width": 368,
+      "y": 534.3333282470703,
+      "height": 94.66668701171875,
+      "x": 17
+    }
+  },
+  {
+    "AXLabel": "Annandale",
+    "AXValue": null,
+    "traits": [],
+    "type": "Button",
+    "frame": {
+      "width": 370,
+      "y": 973.0000152587891,
+      "height": 111.6666259765625,
+      "x": 16
+    }
+  }
+]

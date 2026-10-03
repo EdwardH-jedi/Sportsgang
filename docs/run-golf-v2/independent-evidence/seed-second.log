@@ -1,0 +1,2 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+{"accounts": 8, "match": "f3e9d040-7995-47aa-8b84-2421a9274ec1", "sessions": 26, "history_sessions_added": 0, "history_bookings_added": 0}

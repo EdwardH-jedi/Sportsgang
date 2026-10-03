@@ -1,0 +1,13 @@
+{
+  "deviceTimezone": "UTC",
+  "naiveParsedInstant": "2026-10-02T15:30:00.000Z",
+  "awareParsedInstant": "2026-10-02T15:30:00.000Z",
+  "naiveVisible": "3:30 PM",
+  "correctVisible": "3:30 PM",
+  "naiveBlockDate": "02/10/2026",
+  "correctBlockDate": "02/10/2026",
+  "mixedNaiveTimeline": [
+    "2026-10-02T15:30:00",
+    "2026-10-02T15:31:00"
+  ]
+}

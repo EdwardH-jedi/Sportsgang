@@ -1,0 +1,16 @@
+
+> qa:status
+> python3 scripts/qa/qa.py status
+
+[qa] worktree /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test
+[qa] source b530e7f3e726 (stack last started from 4894f6fc376e)
+   OK  containers   sportsgang-qa postgres + redis
+   OK  api          pid 20592 http://127.0.0.1:8130 health=200
+   OK  auth read    QA Alice signed in; 55 past sessions in her My Plans
+   OK  metro        pid 19047 port 8190 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8130 (expected http://127.0.0.1:8130)
+   fixtures     {'qa_users': 8, 'qa_sessions': 81, 'qa_bookings': 57, 'qa_history_sessions': 55, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8190
+   credentials  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/credentials.json
+   manifest     /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/manifest.json
+   logs         /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/logs

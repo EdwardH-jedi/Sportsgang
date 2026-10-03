@@ -1,0 +1,11 @@
+{
+  "propose_status": 201,
+  "sport": "running",
+  "status": "proposed",
+  "starts_at": "2026-10-07T19:30:00Z",
+  "ends_at": "2026-10-07T20:30:00Z",
+  "created_at": "2026-10-03T10:36:53.402003",
+  "location": "Review Sydney 06:30",
+  "expected_sydney": "2026-10-08 06:30\u201307:30 AEDT",
+  "source": "disposable target API proposal; tester native confirmation pending"
+}

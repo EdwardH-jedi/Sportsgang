@@ -1,0 +1,106 @@
+{
+  "match_created": true,
+  "block_status": 201,
+  "blocker_post_messages": 201,
+  "blocker_get_messages": 200,
+  "blocker_match_visible": true,
+  "blocked_post_messages": 201,
+  "blocked_get_messages": 200,
+  "blocked_match_visible": true,
+  "blocked_can_propose_booking": 201,
+  "blocker_discovery_excludes_other": true,
+  "blocked_discovery_excludes_other": true,
+  "block_list_names": [
+    null,
+    "Same Name",
+    "Same Name"
+  ],
+  "block_list_ids_distinct": true,
+  "block_list_exposed_fields": [
+    "blocked_display_name",
+    "blocked_id",
+    "blocker_id",
+    "created_at",
+    "id"
+  ],
+  "blocked_users_own_list_total": 0,
+  "duplicate_name_unblock_correct_row": true,
+  "report_status": 201,
+  "delete_disposable_status": 204,
+  "deleted_token_status": 401,
+  "db_timezone": "UTC",
+  "timestamp_schema": [
+    {
+      "table_name": "blocks",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "bookings",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "bookings",
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "calendar_booking_syncs",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "joined_at",
+      "data_type": "timestamp with time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "google_calendar_tokens",
+      "column_name": "connected_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "messages",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "notification_events",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "push_tokens",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "reports",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "column_default": "now()"
+    }
+  ],
+  "session_timezone_default_cast": {
+    "UTC": {
+      "instant": "2026-10-03T10:07:44.545659+00:00",
+      "naive": "2026-10-03T10:07:44.545659"
+    },
+    "Australia/Sydney": {
+      "instant": "2026-10-03T10:07:44.545659+00:00",
+      "naive": "2026-10-03T20:07:44.545659"
+    }
+  },
+  "http_created_at": "2026-10-02T15:30:00",
+  "http_booking_created_at": "2026-10-03T10:07:44.462157"
+}

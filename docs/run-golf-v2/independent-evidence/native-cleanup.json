@@ -1,0 +1,5 @@
+{
+  "target_api_delete": 204,
+  "tester_old_token_after_native_delete": 401,
+  "target_old_token_after_delete": 401
+}

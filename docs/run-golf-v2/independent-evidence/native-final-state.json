@@ -1,0 +1,95 @@
+{
+  "iphone16e": {
+    "schema": "xcodebuildmcp.output.capture-result",
+    "schemaVersion": "2",
+    "didError": false,
+    "error": null,
+    "data": {
+      "summary": {
+        "status": "SUCCEEDED"
+      },
+      "artifacts": {
+        "simulatorId": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+      },
+      "capture": {
+        "type": "runtime-snapshot",
+        "rs": "1",
+        "screenHash": "1lxrehj",
+        "seq": 30,
+        "count": 84,
+        "targets": [
+          "e40|tap|button|QA Bondi sunrise 5k, run, Mon 5 Oct · 6:30 am, Bondi Pavilion, 6 runners · 5 spots left||session-card-f06cb93f-5918-496e-a4e7-dafcb6427ce8",
+          "e41|tap|button|QA Full Centennial 10k, run, Thu 8 Oct · 6:00 am, Centennial Park, Paddington Gates, 2 runners · Full||session-card-2942a64f-2a07-4207-86a4-3ab1bdac196e",
+          "e39|tap|button|Host a run||",
+          "e72|tap|button|Explore||",
+          "e74|tap|button|My Plans||",
+          "e75|tap|button|Chats||",
+          "e76|tap|button|Profile||"
+        ],
+        "scroll": [
+          "e36|swipe|scroll-view|||"
+        ],
+        "text": [
+          "e25|text|text|SYDNEY||",
+          "e26|text|text|SYDNEY||"
+        ],
+        "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+      }
+    },
+    "nextSteps": [
+      "Refresh after layout changes: snapshot_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\" })",
+      "Wait for UI to settle: wait_for_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", predicate: \"settled\" })",
+      "Batch same-screen taps: batch({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", steps: [{\"action\":\"tap\",\"elementRef\":\"e39\"},{\"action\":\"tap\",\"elementRef\":\"e72\"}] })",
+      "Tap an elementRef: tap({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", elementRef: \"e40\" })",
+      "Scroll visible content: swipe({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", withinElementRef: \"e36\", direction: \"up\", distance: 0.5 })"
+    ]
+  },
+  "iphone17pro": {
+    "schema": "xcodebuildmcp.output.capture-result",
+    "schemaVersion": "2",
+    "didError": false,
+    "error": null,
+    "data": {
+      "summary": {
+        "status": "SUCCEEDED"
+      },
+      "artifacts": {
+        "simulatorId": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+      },
+      "capture": {
+        "type": "runtime-snapshot",
+        "rs": "1",
+        "screenHash": "1ptvsvz",
+        "seq": 221,
+        "count": 52,
+        "targets": [
+          "e34|tap|button|Get started||",
+          "e35|tap|button|Log in||"
+        ],
+        "scroll": [
+          "e21|swipe|scroll-view|||"
+        ],
+        "text": [
+          "e24|text|text|sportsgang||",
+          "e25|text|text|sportsgang||",
+          "e26|text|text|SYDNEY||",
+          "e27|text|text|SYDNEY||",
+          "e28|text|text|Find your||",
+          "e29|text|text|Find your||",
+          "e30|text|text|next game.||",
+          "e31|text|text|next game.||",
+          "e32|text|text|Match, chat, and plan your next session.||",
+          "e33|text|text|Match, chat, and plan your next session.||"
+        ],
+        "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+      }
+    },
+    "nextSteps": [
+      "Refresh after layout changes: snapshot_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\" })",
+      "Wait for UI to settle: wait_for_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", predicate: \"settled\" })",
+      "Batch same-screen taps: batch({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", steps: [{\"action\":\"tap\",\"elementRef\":\"e34\"},{\"action\":\"tap\",\"elementRef\":\"e35\"}] })",
+      "Tap an elementRef: tap({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", elementRef: \"e34\" })",
+      "Scroll visible content: swipe({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", withinElementRef: \"e21\", direction: \"up\", distance: 0.5 })"
+    ]
+  }
+}

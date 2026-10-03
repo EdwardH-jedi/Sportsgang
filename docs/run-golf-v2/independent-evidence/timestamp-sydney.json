@@ -1,0 +1,13 @@
+{
+  "deviceTimezone": "Australia/Sydney",
+  "naiveParsedInstant": "2026-10-02T05:30:00.000Z",
+  "awareParsedInstant": "2026-10-02T15:30:00.000Z",
+  "naiveVisible": "Oct 2",
+  "correctVisible": "1:30 AM",
+  "naiveBlockDate": "02/10/2026",
+  "correctBlockDate": "03/10/2026",
+  "mixedNaiveTimeline": [
+    "2026-10-02T15:30:00",
+    "2026-10-02T15:31:00"
+  ]
+}

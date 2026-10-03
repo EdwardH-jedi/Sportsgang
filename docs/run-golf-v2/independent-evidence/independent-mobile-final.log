@@ -1,0 +1,13 @@
+
+> @protin/mobile@0.1.0 test:ci
+> jest --passWithNoTests --ci --runInBand --watchman=false --runTestsByPath src/__tests__/codex-review-block.test.tsx src/__tests__/codex-review-booking.test.tsx src/__tests__/codex-review-plans.test.tsx
+
+PASS src/__tests__/codex-review-booking.test.tsx
+PASS src/__tests__/codex-review-plans.test.tsx
+PASS src/__tests__/codex-review-block.test.tsx
+
+Test Suites: 3 passed, 3 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        1.123 s, estimated 2 s
+Ran all test suites within paths "src/__tests__/codex-review-block.test.tsx", "src/__tests__/codex-review-booking.test.tsx", "src/__tests__/codex-review-plans.test.tsx".

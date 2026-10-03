@@ -1,0 +1,22 @@
+{
+  "first_run_accounts": 8,
+  "first_run_history_added": {
+    "history_sessions_added": 55,
+    "history_bookings_added": 55
+  },
+  "second_run_history_added": {
+    "history_sessions_added": 0,
+    "history_bookings_added": 0
+  },
+  "fixture_session_ids_preserved": true,
+  "fixture_booking_ids_preserved": true,
+  "edited_name_preserved": true,
+  "edited_suburb_preserved": true,
+  "edited_pace_preserved": true,
+  "private_files_modes": {
+    "manifest.json": "0o600",
+    "credentials.json": "0o600",
+    "tokens.json": "0o600"
+  },
+  "human_database_touched": false
+}
