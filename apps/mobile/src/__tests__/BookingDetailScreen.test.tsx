@@ -150,6 +150,26 @@ describe('BookingDetailScreen', () => {
     await waitFor(() => getByText('Not found'));
   });
 
+  it('keeps Back and a working retry when the booking cannot be loaded', async () => {
+    mockApiGet.mockRejectedValueOnce(new Error('Cannot reach the server'));
+    const navigation = makeNavigation();
+    const { getByText, getByLabelText, findByText } = render(
+      <BookingDetailScreen
+        route={makeRoute() as any}
+        navigation={navigation as any}
+      />
+    );
+    await findByText('Cannot reach the server');
+
+    fireEvent.press(getByLabelText('Back'));
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+
+    mockApiGet.mockResolvedValueOnce(makeBooking());
+    fireEvent.press(getByText('Try again'));
+    await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(() => getByText('Cannot reach the server')).toThrow());
+  });
+
   // ── Detail display ─────────────────────────────────────────────────────────
 
   it('renders booking details after a successful fetch', async () => {

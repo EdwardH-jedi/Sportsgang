@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Screen } from '../../components/Screen';
+import { ErrorState } from '../../components/ui';
 import { api } from '../../lib/api';
 import { formatSydneyDateTime } from '../../lib/sydneyTime';
 import { useAuthStore } from '../../stores/auth';
@@ -142,31 +143,42 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
     );
   }
 
+  const header = (
+    <View style={styles.header}>
+      <Pressable
+        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+        onPress={() => navigation.goBack()}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+      >
+        <Text style={styles.backText}>{'←'}</Text>
+      </Pressable>
+      <View style={styles.headerCenter}>
+        <Text style={styles.headerTitle}>Session</Text>
+      </View>
+      <View style={styles.headerSpacer} />
+    </View>
+  );
+
   if (error || !booking) {
+    // Keep a way back and a retry: offline, this used to be a dead end.
     return (
-      <Screen padded>
-        <Text style={styles.errorText}>{error ?? 'Booking not found.'}</Text>
+      <Screen padded={false}>
+        {header}
+        <View style={styles.errorBody}>
+          {error ? (
+            <ErrorState title="Could not load this session" body={error} onAction={() => void fetchBooking()} />
+          ) : (
+            <Text style={styles.errorText}>Booking not found.</Text>
+          )}
+        </View>
       </Screen>
     );
   }
 
   return (
     <Screen padded={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Text style={styles.backText}>{'←'}</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Session</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
+      {header}
 
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -433,6 +445,9 @@ const styles = StyleSheet.create({
   },
   actionButtonTextGhost: {
     color: colors.textPrimary,
+  },
+  errorBody: {
+    padding: spacing.md,
   },
   errorText: {
     ...typography.body,
