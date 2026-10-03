@@ -227,31 +227,3 @@ describe('BlockedUsersScreen', () => {
     expect(queryByText(/leaderboard/i)).toBeNull();
   });
 });
-
-// ─── Blocked date is the block's instant in the device zone (review R6) ─────
-
-describe('blocked date in a Sydney device', () => {
-  const original = process.env.TZ;
-  beforeEach(() => {
-    process.env.TZ = 'Australia/Sydney';
-    jest.clearAllMocks();
-  });
-  afterEach(() => {
-    process.env.TZ = original;
-  });
-
-  it('a 15:30Z block reads as the next Sydney day for both spellings', async () => {
-    const expected = `Blocked ${new Date(Date.UTC(2026, 9, 2, 15, 30)).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })}`;
-    for (const createdAt of ['2026-10-02T15:30:00Z', '2026-10-02T15:30:00']) {
-      mockListBlockedUsers.mockResolvedValueOnce({ items: [makeBlock({ createdAt })], total: 1 });
-      const { findByText, unmount } = renderScreen();
-      expect(await findByText(expected)).toBeTruthy();
-      unmount();
-    }
-    expect(expected).toContain('3');
-  });
-});

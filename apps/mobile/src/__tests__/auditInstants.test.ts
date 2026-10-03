@@ -1,22 +1,21 @@
 /**
+ * @jest-environment ./jest.sydney-env.js
+ *
  * API timestamps are read as instants, whatever the device zone (review R6,
  * docs/run-golf-v2/CONTRACTS.md §9). CI runs in UTC, where reading an
- * offset-free value as device-local time looks right; these tests pin the
- * device zone to Australia/Sydney (Node applies process.env.TZ at runtime).
+ * offset-free value as device-local time looks right, so this file runs as
+ * a phone set to Australia/Sydney (jest.sydney-env.js).
  */
 
 import { compareTimeline, formatPreviewTimestamp } from '../lib/messages';
 import { parseInstant } from '../lib/instant';
 
-const ORIGINAL_TZ = process.env.TZ;
-beforeEach(() => {
-  process.env.TZ = 'Australia/Sydney';
-});
-afterEach(() => {
-  process.env.TZ = ORIGINAL_TZ;
-});
-
 const AT_1530Z = Date.UTC(2026, 9, 2, 15, 30); // 1:30 am Sat 3 Oct in Sydney (AEST)
+
+it('runs as a Sydney device', () => {
+  const d = new Date(AT_1530Z);
+  expect([d.getDate(), d.getHours(), d.getMinutes()]).toEqual([3, 1, 30]);
+});
 
 describe('parseInstant', () => {
   it('honours explicit offsets', () => {

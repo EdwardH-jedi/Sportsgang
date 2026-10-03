@@ -233,8 +233,12 @@ describe('MyPlansScreen', () => {
     expect(screen.getByText('Golf with Alex')).toBeTruthy();
     expect(screen.getByText('Sunrise 5k')).toBeTruthy();
 
+    // The notice now stays until the retry has succeeded (review R7), so the
+    // retry's requests are flushed inside act before checking it cleared.
     routeApi(ok([booking()]), ok([event()]));
-    fireEvent.press(screen.getByLabelText('Retry'));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
     await waitFor(() => expect(screen.queryByText(/Couldn't refresh/)).toBeNull());
   });
 
