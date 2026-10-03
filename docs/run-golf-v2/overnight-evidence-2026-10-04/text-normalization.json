@@ -1,0 +1,503 @@
+{
+  "policy": "Presentation text strips trailing line whitespace and extra terminal blank lines; gzip copies preserve exact original bytes. No application files touched.",
+  "files": [
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/more-checks.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/more-checks.json.gz",
+      "original_sha256": "3106b6dfc21207c3c4ebf7841d89c5a40ff2ee6f0bbb7f4fa21494b925c9d47a",
+      "presentation_sha256": "cf87936db953bfa225ce9aa1531351384a791da0f75ba5395a28589bf7447255"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/f-regressions-UTC.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/f-regressions-UTC.json.gz",
+      "original_sha256": "7eee6764097acaf400a894cca064047596f95a8c52e16e256d81de3fa037806c",
+      "presentation_sha256": "cc661c201fe35a9c8db7c04fa27f327ed3330bad5d443e5476f98c91913e88b8"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-down.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-down.log.gz",
+      "original_sha256": "9f4795be3a84b2cff2fefdc7ca5015b427977addf10c3da879830c09e6b73ab2",
+      "presentation_sha256": "a39f3c92ec746998d797717872b95c19ec7efac03d5046042406d568757e2e21"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-up-again.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-up-again.log.gz",
+      "original_sha256": "34e25e0e1d716669a8953d9be17a653b87f4212c45be5f0919a2c762442a16db",
+      "presentation_sha256": "28752b9fbafd14a476e7c067aa6d960819f3a85cb7d14fd3e19585ff2a04e2b6"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/review-metadata.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/review-metadata.json.gz",
+      "original_sha256": "182c4cdc682758595dc407ffb17c854741162fa43eae0db1a8d1bc6354398ea9",
+      "presentation_sha256": "0922d3452a288d6004275ec18a06b93fdaa5839164ea00fb5aa897da5c26e986"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-launcher.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-launcher.log.gz",
+      "original_sha256": "3810afb4b11b2adfdfefafce098d1fa232308c9c2e2b3ad431f927888ae0aa9c",
+      "presentation_sha256": "8184f1951fe772ae6e9fa79e0d6206fb6a4573d406b780c5b98040448d742656"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-probes-verified.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-probes-verified.log.gz",
+      "original_sha256": "4cb448a51a8741b622246e9853c156ec5cd2438678970f35a9f1c3fdd4f1b8b1",
+      "presentation_sha256": "aa246f782128eb12369e22a2e1564123275fd50f3eb16a85807c0a4389df053b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-launcher-host-zone.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-launcher-host-zone.log.gz",
+      "original_sha256": "1b9949c843d779e26fea7daa6286faa2e37bdcfe68b57f6e8afb67fc70aced36",
+      "presentation_sha256": "a829aa69383b75d459a3e2ad052d2fa24b7feed6064f8f50f160461680ac4f1a"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-legacy-adoption.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-legacy-adoption.json.gz",
+      "original_sha256": "1279d92d3470b1a1f03431a566cb3c123f7bd227884d725802e865e8d98eb5b9",
+      "presentation_sha256": "0846f0e85f006e4c39d3e5b6a126bb7c208e990fea0d78a7af9678088f3d27f8"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/r6-overlap.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/r6-overlap.json.gz",
+      "original_sha256": "3937c65bb34530d0db57d6180589a5dc82d581f8599e2e8dd9555177836886c1",
+      "presentation_sha256": "72f009be92c3af3c9cb2ae894453745fa3079980f7b97c8dc2601d849f899b11"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-final-down.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-final-down.log.gz",
+      "original_sha256": "9b811df0a1209c074b896000a69e2a396542ac1049d7be2f8f658c5ac36ad336",
+      "presentation_sha256": "248db99df02849d63ab76ba440005177c138d2e63ab6604ba0d2421f3cc553c8"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-up.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-up.log.gz",
+      "original_sha256": "1ae2b39de4d35a86c88c3db45d69f3e328907b20f274e7967d6fc5dfe1b309e3",
+      "presentation_sha256": "1590f0ff8a88649cc7f87f763d4954d51740520812cc730bd5d2ddff1e925071"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-probes-final.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-probes-final.log.gz",
+      "original_sha256": "397d8eacc902bdd235588269e5282f91d5f4cbcf1a31cd5bc7f6e502b2de1efd",
+      "presentation_sha256": "f154046e381cb3b49144a553ab678ba885a4a9502bcdcbd9f4eb7801c3959a95"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-lifecycle.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-lifecycle.json.gz",
+      "original_sha256": "23e4a47b1f0a1cb0316652a52edee8b0ad3e40fb93bb3754c493c2b63e7f8fa5",
+      "presentation_sha256": "ff216c675bdec868154d9012478fe2368ffbc67de5d28efbd8ba24c49e669d40"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/shared-typecheck.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/shared-typecheck.log.gz",
+      "original_sha256": "4f3e9ab6ee548e8b9597bc3259533059136bbdaf0f67cb6a089d0e52e117661e",
+      "presentation_sha256": "5e4dff67cdccdb519e71c288f2e6d03a22bc897622ad6004049d239dedafea36"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/checks.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/checks.json.gz",
+      "original_sha256": "bcad6beb4b18ebd77528c0074d9952db189846e89585a8096aef6905b31d9abc",
+      "presentation_sha256": "b89ebf6a5d760536584a30add2c7f6d9306d632390f22f92a77740e5c5a63b82"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/create-legacy-db.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/create-legacy-db.log.gz",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "presentation_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-real-legacy-adoption.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-real-legacy-adoption.log.gz",
+      "original_sha256": "ab895ee0db2cccb2c46db82d6c40439feb14baee2c439638242b8daa93588a9d",
+      "presentation_sha256": "57cf5cf7fc9e199cf462369a4ab3ee57dcdc2e26d98680f20de102fd733d0ca0"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-lint.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-lint.log.gz",
+      "original_sha256": "82185739745a9c9be23cc5f2d819b32f6585cce861a817334295ff3e2da914d4",
+      "presentation_sha256": "8ae4c63116360e3e734c8e841d4577ae411b5954288620970497a7bfeebc2b5f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-probes.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-probes.log.gz",
+      "original_sha256": "d8e36441fbc5418d77fdc6986cfabeb91f0efc3433a08f9b053334e890b4157d",
+      "presentation_sha256": "0b63012a9342a581b5c7f6f9613e501214d613c17ac18efa223d31a368c2e2c5"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/integration-sydney.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/integration-sydney.log.gz",
+      "original_sha256": "7603bcac5b5df35fcd1c5aaaa99edeb7b2ea6017d5bbe2a88d575a571e0682c5",
+      "presentation_sha256": "4348c53b5296f784a3ecc713be07a4c85ee202ae6ca71305a01954fbcb91f759"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/worktrees-before.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/worktrees-before.json.gz",
+      "original_sha256": "9c82c53824019a9766f4eccee48e3728dc38cd23365d480f91989a0c912587ea",
+      "presentation_sha256": "a9218d6ff69ce0de2253a16b94a69edabc268efc87b966dbbf618d2a5ebb07cd"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/qa-edge-records.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/qa-edge-records.json.gz",
+      "original_sha256": "a51edd841f6c544f798a70a767190c426dd963ddec4f02f8208ff9dbd819f61a",
+      "presentation_sha256": "9dca30060ad9c3f7ece1dab5ef73f0329318be3ff987551dbf90a26dc608035b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-tests.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-tests.log.gz",
+      "original_sha256": "3d5ad99907b76c8bba9407ba6a8fe469ade5d0dd1fe2fb018ae5597947792806",
+      "presentation_sha256": "e317bfac59fb103c34e34b0f72d09c688c809bd1b3e836d09980f326f73fdbd9"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/human-private-hashes-before.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/human-private-hashes-before.json.gz",
+      "original_sha256": "047cd8b05a749b761d52c12dbc90db01eff03b7248656b8b307116327b9f970a",
+      "presentation_sha256": "770dae887c7694b350fcece928519199dde49b09631701c55c7a18dc52219ac9"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/f-regressions-Australia-Sydney.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/f-regressions-Australia-Sydney.json.gz",
+      "original_sha256": "947ca67c94b8173189c2ebf0d4c380fcd8ca53e0366b1d02d439531d8f41d0e4",
+      "presentation_sha256": "3edea86b354280068e7f6462b95428e2447e630802f312d33451385502093053"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native-device.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/native-device.json.gz",
+      "original_sha256": "388fa4ff3e50b097381c404d77ef14b474d3c0592cc6409221e12c9495abb3be",
+      "presentation_sha256": "c54fe80b76cfd314fe40b0e41b7efa842c50da6b3526004bd9fc4f0b7f6b3a0c"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/r1-results.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/r1-results.json.gz",
+      "original_sha256": "75960027247d729380a6fd56660a8c1f162e2868b447a39e794749518b1c146c",
+      "presentation_sha256": "94cbc9f50a0081ea14522c91d50179420b7249532cb38d88b3b503b36d3062f3"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/review-cleanup.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/review-cleanup.log.gz",
+      "original_sha256": "269a70dee0d926c2c17afb29c822095625ba92e07ac6c23afedec6f96e199851",
+      "presentation_sha256": "43828fab9dd3d480fc22dd82172a053bdf5922ac314667a6a443bef9774d8c19"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/generated-cache-restoration.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/generated-cache-restoration.json.gz",
+      "original_sha256": "1ed429ff7857fce58f22f430b7f8fbe383f4a7968d079a2609b6b31a5b23aed8",
+      "presentation_sha256": "15b50014f1ff119281d0b1297d1ec9b2a122446f9debfac1100657b28a5c1b9a"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/final-preservation.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/final-preservation.json.gz",
+      "original_sha256": "2a703eaa26002f5f61fa4e4490341743ba739e3967d17d305a04b81a46b1b63a",
+      "presentation_sha256": "b35c5a89c79f954b97a566639bd6ff97d002408be1dd222501523181b85787f2"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-typecheck.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/mobile-typecheck.log.gz",
+      "original_sha256": "e96b4b6696feafb0ef61a1beea466f79a3da3d302b0dfd95f2958ae9884108d0",
+      "presentation_sha256": "cb0ebc084de58756f7dde6141bd980c9a01f21956f78132a15bea03d05710955"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/26-chats-empty.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/26-chats-empty.json.gz",
+      "original_sha256": "151bba10a9b4ed5c0ceadc2582be9c8ea0e9c4fb04b371dd943296a427eb3ffc",
+      "presentation_sha256": "19df5782d1cd4f2eca3b39d8ad3ad5a6a1da4ee6e8abd1074d7f2cdb3bcfc09f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/47-large-text-dismiss.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/47-large-text-dismiss.json.gz",
+      "original_sha256": "08ee658465b06ed45366f7f9c368b201df4030ab93618270639abd4341bed06a",
+      "presentation_sha256": "f4898ceb909d06b7eaa8819a2408e1c93eedf4f156f4e151730bcf4a836e8b2f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/45-default-text-control.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/45-default-text-control.json.gz",
+      "original_sha256": "0dffea47088f8f35263b4753e050f69028303607d8a7354602a4cc6cbe8c6c07",
+      "presentation_sha256": "b31dcc3762f86ba27abc3d485604225306ce0a9df1447bb230f3b4b3d7f48832"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/05-alice-explore.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/05-alice-explore.json.gz",
+      "original_sha256": "760212e04c38b8d15cd83e712029b599b8c4c200d96f2742943417de5bb198f6",
+      "presentation_sha256": "dca93c599dc157708f4a3973857e53d62d8d554beb4a3f3730bd04b7509a64fe"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/16-wheel-15-to30.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/16-wheel-15-to30.json.gz",
+      "original_sha256": "db15dfe3dd073a8725f6f4af7d89708649c2b80282c9e886a7984138f9ec7875",
+      "presentation_sha256": "1150dcf2bd2e3f3678086937c402fca9285396536d848aa02ee2b887e0612382"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/29-retry-held.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/29-retry-held.json.gz",
+      "original_sha256": "9e8d8f3db54ff8ca2316ea3f987dce21a331e25c1428e448c1c419e52aa62029",
+      "presentation_sha256": "588127c0b2164855a162f387df3efece33bcc2cfb5e8e9d5e5b9ed796f76e15b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/15-wheel-minute15.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/15-wheel-minute15.json.gz",
+      "original_sha256": "44b4d6b9689b8999dd7c6e179f6364fe64ab288eebd951e4adbad06dcdf0ccf5",
+      "presentation_sha256": "58f5d182cc5f168fe283de6bf98d3c3dfa6e5e075a77c32001d9190945cc3e7e"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/06-explore.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/06-explore.json.gz",
+      "original_sha256": "5264b6e1538f516646f54c621cefa274280b18ce63ecc4f6566ab83177a19c56",
+      "presentation_sha256": "2bfd4061cf26af0db00b429face280fd0f93ca4210869e0d5edbc1c16b960cb2"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/35-unblock-dialog.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/35-unblock-dialog.json.gz",
+      "original_sha256": "258e91d107dbe17cfc921653ba789445e1bd3d89080d8a90bfadf55bf10dc5d7",
+      "presentation_sha256": "00b151012a78f11cb0647a704465d82a7121aba207fa29246ee720c9a9a1a812"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/20-composer-scroll.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/20-composer-scroll.json.gz",
+      "original_sha256": "4cb2506565c9f67d0e51d4a9d3ef4507415f140accbb9159bfb3e493b74c1f11",
+      "presentation_sha256": "fb825f776fc1ddd6b89b989a9f3ed29dfb0f1bf566725608cd0222371464b680"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/32-profile.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/32-profile.json.gz",
+      "original_sha256": "842dbc00d05623fd4254aa869fb2e204819d14f483897a0582de00460a75b3c2",
+      "presentation_sha256": "d3ba71826cc8f81d33120cdbe5d4b7e857db6bcc1db34283f6655723fd376e02"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/31-recovered.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/31-recovered.json.gz",
+      "original_sha256": "741704d8b6f359a129427ceedf5f60e25a8b69eb537725d64e13182876756fed",
+      "presentation_sha256": "173ef264b090c8f5f6f918c958c021440746688a9794934be02621d7ba0f8f96"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/40-gesture-settled.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/40-gesture-settled.json.gz",
+      "original_sha256": "a61d4ac902419a331ddea83f08a0c462e4c1b5b47840d889b9d937692bd56b97",
+      "presentation_sha256": "89de9a05139100095e9aee3e7df4bf1c5e594dcd93812e20b0e3fe66209d66f4"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/held-transport.log",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/held-transport.log.gz",
+      "original_sha256": "0ad7cca00216d56c2e921e1462257b8e4d4acaf26a60f4818ef57018814f1d0f",
+      "presentation_sha256": "3c64dab7f7d5af8a5de4e0b35a8074edcc045c032246462ccfb3edf5fae01594"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/04-login-form.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/04-login-form.json.gz",
+      "original_sha256": "88aaa6ff511634fc8997f3f08498297d7292308702d65cdce7fd80145c0151b4",
+      "presentation_sha256": "2399c5237c309cff6839436453bbf3d1fb07ec54f5ddf368df7860e19e46afd1"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/03-app-ready.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/03-app-ready.json.gz",
+      "original_sha256": "63b2d499fe189c41f178288118b85ab5dc68efd4c40dbfc084ccd681c3bf9f22",
+      "presentation_sha256": "4ae75badb474e49204286f49edb6633b734d4829393a42cdce792ebae3357f91"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/07-chats.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/07-chats.json.gz",
+      "original_sha256": "b4c508a228b70b6e24c9a3736e6994527474d2eca72ba4d8fdaaacc0b51e70a9",
+      "presentation_sha256": "712f096999b946dbaff623fa0e6a203a447f75f5b9fc881c183a5628daf0f7b5"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/10-composer.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/10-composer.json.gz",
+      "original_sha256": "72a30915f00d3aa31a3700bb30ab2822e674758c390fc08e07728a86e7af596a",
+      "presentation_sha256": "d9236fbf09819e5faba9087889bfaee315bea712a6df168393c1c44fbf36775f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/33-profile-settings.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/33-profile-settings.json.gz",
+      "original_sha256": "bc9eb47dbecc70c92640a1c93e6c91b84ec2dd66be62b3a3f8d93edd2d8640dc",
+      "presentation_sha256": "9c965ef76adb7dc8b6065e0615d3176fd556d81bf7419c948f6ccf733e8a7ec4"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/17-hour11.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/17-hour11.json.gz",
+      "original_sha256": "63de3f71e91ffe0428aae1224b90daa2e5a6a783ea08323f22ba9e5311f56feb",
+      "presentation_sha256": "3d5cd52d3a9bdf08d84c26a331666d997c4702a6be4e2b79edbe3cfe0b7cd0aa"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/37-chat-return.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/37-chat-return.json.gz",
+      "original_sha256": "4c8e278898c5f5ddb2a228c7781e5eef96d2d0bd1389dec541cd815129b9f331",
+      "presentation_sha256": "842a4445777e1a35c9a8677a15f49a4a71813c7310f4647b572117ef12c1a2c2"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/24-block-confirm.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/24-block-confirm.json.gz",
+      "original_sha256": "f3672c592f295733c49a35b59824e5282bf61b35b05ad8806c82b4760066a1e8",
+      "presentation_sha256": "6d797dd3e02a25c38eb9a2af47eeca30f3dc02a5f2083c9549a0d4618c41ec54"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/19-reopen-1130.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/19-reopen-1130.json.gz",
+      "original_sha256": "955b50d25f97b3f6b45e48436db824dd8d03f84987a2bc4a06dcc4d61ba5c3fd",
+      "presentation_sha256": "c41e3c4ba24b6dbdfd4bcde875c1645e7b799296275c854b7b80428c930e1b14"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/large-text-setting.txt",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/large-text-setting.txt.gz",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "presentation_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/30-retry-timeout.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/30-retry-timeout.json.gz",
+      "original_sha256": "82e78a2cf317002c770df16256e07f1fb8c7f1d498553b5ef11675e58d8538e1",
+      "presentation_sha256": "db1d44de741408eae4a79ab02b7aec3e0c7f630a2331ff23bb6795d1015e44e7"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/13-wheel-minute45.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/13-wheel-minute45.json.gz",
+      "original_sha256": "6020f429fc6efd86ca398927c028e5a7cc789b3b2e2b0215d28b3e2d5966af2d",
+      "presentation_sha256": "c5648b990b6561917c09eb10f0250f60baa54447e6aaba2cf2aae7a82e4b927f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/08-chats-physical.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/08-chats-physical.json.gz",
+      "original_sha256": "a1b351ce2578a46c84377ed90ec6b77e4d2cfd1771793e2b72b1f68f035f3ca8",
+      "presentation_sha256": "8be17cc9e0a8d85b4b327f0851e42b456378dcfd354e9c3e1790cb035b0ede9e"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/21-end-autoshift-reopen.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/21-end-autoshift-reopen.json.gz",
+      "original_sha256": "eae0e9382774ec1918de88d83d49f28afe65a2e3a84da471153664f04a869171",
+      "presentation_sha256": "4054433bcc2faa180b8781de20bac893e4856e5421cae53bfc7ac13db480304b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/41-gesture-committed.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/41-gesture-committed.json.gz",
+      "original_sha256": "5baaa3b47d64fb0c3e911ab67d45dc78ab5cf708bd6041d7aaecb5fbd5eb980b",
+      "presentation_sha256": "8e4fd5f64d685285d9cf3c48b2fdecb40afbb404a6227dff8332442cffa60034"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/25-chats-after-block.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/25-chats-after-block.json.gz",
+      "original_sha256": "439f421ef6ca4280397c210b93a2ceb840e84d296eca61dc819f4f90f8c62e35",
+      "presentation_sha256": "f5da41c31733262adbe8519356fc21dbaf774849eca38d33f876bba5cf0b490d"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/27-plans-loaded.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/27-plans-loaded.json.gz",
+      "original_sha256": "9fdffa0613cab7979812388a10d666a57c1c05baa249c6064ad85d9268ee0327",
+      "presentation_sha256": "38544505b03a0f5b26fe26626c614c6a2c654b6b0166080636e622896f147cc1"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/46-default-text-refreshed.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/46-default-text-refreshed.json.gz",
+      "original_sha256": "afde064dd0b40d010a2530241069e9911f66093e4f2469977b7fd50117e804d7",
+      "presentation_sha256": "fc247dff546cf6afe19d5351be0a995bc8fc7f7c69f901f5e9257f0b85f4695a"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/01-launched.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/01-launched.json.gz",
+      "original_sha256": "d51bade16e7957351e55e77c6261b0480d334d548abe4c95c823e31c196eb029",
+      "presentation_sha256": "9057d01043d6f06bc9c7a82df356ca6751cc7dc7d83f40eec4a7e9ca4e5b88b4"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/12-wheel-minute30.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/12-wheel-minute30.json.gz",
+      "original_sha256": "4e894d80ba88641df6aa193bd59e36fd3ffc044803300e6a26b285c845b5198d",
+      "presentation_sha256": "e97e23664ba1a049603bde9d36592d736780dfe398c77ffb88144211aab45c0f"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/proposal-wire-and-storage.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/proposal-wire-and-storage.json.gz",
+      "original_sha256": "ede72f8c7926cd419a48788bc79346999750f9ea26eea4fc7c40f0187991cac9",
+      "presentation_sha256": "58c7f334826c0efafdb3905b145e198d20a161b83d8337e291c29f799c595753"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/23-chat-options.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/23-chat-options.json.gz",
+      "original_sha256": "5096bbe11bda1adf9a5d4d58c4451bec6af85b870dc53bf12c0721fef76c8b7b",
+      "presentation_sha256": "7053bf812a6d59cc4ef3667e0c3ff360409a8171eafb5bb591b01a5d4ebed282"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/22-proposal-detail.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/22-proposal-detail.json.gz",
+      "original_sha256": "b91953abc65d8300d60b1c262b2e4ef28ddd75b28126c0eb393f6b9b8de96e33",
+      "presentation_sha256": "60959ef97966e2e82561a66dd5feb27c81de5b74c82fc250994aa5705064a4a8"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/09-chat.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/09-chat.json.gz",
+      "original_sha256": "b12d36b71f9edc15d67eb0be759d7ce2c10ae34b7740384ff368f0d361ef4577",
+      "presentation_sha256": "e43a9de8c5affe1ba5a46fae933c8dd0f702e59b7e302ae3e9fa08c3a47673ff"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/11-start-wheel.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/11-start-wheel.json.gz",
+      "original_sha256": "e8f38916db1942bd50d4f7d27c6cac5605b5a659892f87365bf14d4f70cb0eb0",
+      "presentation_sha256": "2b4cd73e7ee6b0a500529256d5b778d74b5570848117a7c39ff275ade3d7a839"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/44-large-text-wheel.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/44-large-text-wheel.json.gz",
+      "original_sha256": "1fefaf2d18d1206ce07708efd5285721cb058cf65d4d4c6b6f0c8f0eb763124b",
+      "presentation_sha256": "f2bc3c8c6fe341d21195eb714cb3ee666916069b9b2b12d720db4b53b44a70c8"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/42-large-text-form.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/42-large-text-form.json.gz",
+      "original_sha256": "a48197139a9a72dcc998ebc3b92c31b122cb563859fbf2b211f2fddf18261f41",
+      "presentation_sha256": "a9b94149b16e4a5a2c8ee2f461fbc5f656f7dcc9c6d9b4739004d762ff2ade9b"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/39-gesture-before.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/39-gesture-before.json.gz",
+      "original_sha256": "1a2a126a997112fc984767fe6fbd486237cb80413650c762da9e1c6fbefcc10e",
+      "presentation_sha256": "42b05c90565b7ec27b72334c34b92e682e085fd3d9a7dbc37a542fab61e101aa"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/34-blocked-users.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/34-blocked-users.json.gz",
+      "original_sha256": "786cd01f234c789b3484848e80230548067cecbd4d4020996557d4342f47c0cf",
+      "presentation_sha256": "8656ad823b5188de782fee6e48e2fff9a3ab5f099a040663e15e2524c2716854"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/02-opened.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/02-opened.json.gz",
+      "original_sha256": "9351e8fc29c47d5251f977e6d2f69f12931f83b9a6ac54962a3962b2735a3cbc",
+      "presentation_sha256": "f0e2d753eba59b5be0949c38813ffeed30df6a62c124156b06ac498f67e19fe5"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/28-plans-refresh-failed.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/28-plans-refresh-failed.json.gz",
+      "original_sha256": "e09ece32bbcc84db12658ad204f044ddb0935d535408d6995b5882192e475dd3",
+      "presentation_sha256": "c37f641a65883305d8cc6c0aeaba500090f2f6d65dfdc599b0195267247cb493"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/native-block-server-checks.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/native-block-server-checks.json.gz",
+      "original_sha256": "018550445ae66c16ae2caeb3c8fff557ff8808ca390f47f58525e43f61de27cc",
+      "presentation_sha256": "14f15057dcbae2250010a91d56656862659548d1d6c96d9f0613775d753ff274"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/36-chat-restored.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/36-chat-restored.json.gz",
+      "original_sha256": "82be87365fc36990cedaa672d4d66338119e4fa2d0414ffbb3de457f687457e9",
+      "presentation_sha256": "d423a3815e243616ddc5d832e8be59b6c763dc1cec2fd51a7947b82bed72feed"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/43-gesture-final.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/43-gesture-final.json.gz",
+      "original_sha256": "46fc5d4f5258cc069fa1d00e3777afa046763f39e49216ea11f08ec47cbfe2af",
+      "presentation_sha256": "9c256e06285765f0bf57329d0ecb3a4396e15c9ef85d45c5ff12b34cf959585e"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/38-new-proposal.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/38-new-proposal.json.gz",
+      "original_sha256": "344c64c56c0712c278bc8fd2d7b769bc9a1b0aaab0a2a5a328726c8ec203b493",
+      "presentation_sha256": "0ae2dd70c3c941f8bf13a093927250cda06d57538c9e4bee01a2a305aa2a8dc2"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/18-done-autoshift.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/18-done-autoshift.json.gz",
+      "original_sha256": "c6a772133a0e0467403b8bb05392a05d7e179409828e183d001b72a6064394dc",
+      "presentation_sha256": "0ccf1e247712a18060c6fa9fd74c4bacb0c4cf7cb937a673c2c3a206cf5479a5"
+    },
+    {
+      "path": "docs/run-golf-v2/overnight-evidence-2026-10-04/native/14-wheel-45-to30.json",
+      "original_gzip": "docs/run-golf-v2/overnight-evidence-2026-10-04/raw-text-originals/14-wheel-45-to30.json.gz",
+      "original_sha256": "a2254742d65b11f181be3dc6f42523185925fefb58ecf30b6760eae2051ded88",
+      "presentation_sha256": "46f18292bedeafa4ec35fac2938ae1e30a54f2b407d5b8d31fee9e8ad9a9edfb"
+    }
+  ]
+}

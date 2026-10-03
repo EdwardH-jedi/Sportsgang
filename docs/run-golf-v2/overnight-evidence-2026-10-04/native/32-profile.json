@@ -1,0 +1,769 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "y": 0,
+      "width": 390,
+      "x": 0,
+      "height": 844
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "ACCOUNT",
+    "AXValue": null,
+    "frame": {
+      "width": 210,
+      "x": 24,
+      "height": 16,
+      "y": 63
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "ACCOUNT",
+    "AXValue": null,
+    "frame": {
+      "width": 210,
+      "x": 24,
+      "height": 16,
+      "y": 63
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Edit profile",
+    "AXValue": null,
+    "frame": {
+      "width": 116,
+      "x": 250,
+      "height": 44,
+      "y": 73
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": "edit-profile"
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "width": 210,
+      "x": 24,
+      "height": 36,
+      "y": 81
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "width": 210,
+      "x": 24,
+      "height": 36,
+      "y": 81
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Alice",
+    "AXValue": null,
+    "frame": {
+      "width": 228,
+      "x": 121,
+      "height": 30,
+      "y": 147
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Alice",
+    "AXValue": null,
+    "frame": {
+      "width": 228,
+      "x": 121,
+      "height": 30,
+      "y": 147
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Newtown",
+    "AXValue": null,
+    "frame": {
+      "width": 228,
+      "x": 121,
+      "height": 22,
+      "y": 179
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Newtown",
+    "AXValue": null,
+    "frame": {
+      "width": 228,
+      "x": 121,
+      "height": 22,
+      "y": 179
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Your sports",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 26,
+      "y": 247
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Your sports",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 26,
+      "y": 247
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "These decide who you see \u2014 and who sees you.",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 18,
+      "y": 275
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "These decide who you see \u2014 and who sees you.",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 18,
+      "y": 275
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Running",
+    "AXValue": null,
+    "frame": {
+      "width": 71.66666412353516,
+      "x": 41,
+      "height": 26,
+      "y": 318
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Running",
+    "AXValue": null,
+    "frame": {
+      "width": 71.66666412353516,
+      "x": 41,
+      "height": 26,
+      "y": 318
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Intermediate",
+    "AXValue": null,
+    "frame": {
+      "width": 79,
+      "x": 260,
+      "height": 18,
+      "y": 322
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Intermediate",
+    "AXValue": null,
+    "frame": {
+      "width": 79,
+      "x": 260,
+      "height": 18,
+      "y": 322
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Pace 5:30\u20136:15 /km",
+    "AXValue": null,
+    "frame": {
+      "width": 125.66667175292969,
+      "x": 51,
+      "height": 18,
+      "y": 356
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Pace 5:30\u20136:15 /km",
+    "AXValue": null,
+    "frame": {
+      "width": 125.66667175292969,
+      "x": 51,
+      "y": 356,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "5 \u00b7 10 km",
+    "AXValue": null,
+    "frame": {
+      "x": 200.6666717529297,
+      "width": 56.99998474121094,
+      "y": 356,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "5 \u00b7 10 km",
+    "AXValue": null,
+    "frame": {
+      "x": 200.6666717529297,
+      "width": 56.99998474121094,
+      "y": 356,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Stay together",
+    "AXValue": null,
+    "frame": {
+      "x": 51,
+      "width": 86.33332824707031,
+      "y": 386,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Stay together",
+    "AXValue": null,
+    "frame": {
+      "width": 86.33332824707031,
+      "x": 51,
+      "y": 386,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mornings",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "width": 308,
+      "y": 416,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mornings",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "x": 41,
+      "y": 416,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Edit running preferences",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "width": 308,
+      "y": 442,
+      "height": 50
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Golf",
+    "AXValue": null,
+    "frame": {
+      "width": 36,
+      "x": 41,
+      "y": 534,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Golf",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "width": 36,
+      "y": 534,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Beginner",
+    "AXValue": null,
+    "frame": {
+      "width": 55.666656494140625,
+      "x": 283.3333282470703,
+      "y": 538,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Beginner",
+    "AXValue": null,
+    "frame": {
+      "width": 55.666656494140625,
+      "x": 283.3333282470703,
+      "y": 538,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Handicap 30.0 (estimate)",
+    "AXValue": null,
+    "frame": {
+      "width": 160.6666717529297,
+      "x": 51,
+      "y": 572,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Handicap 30.0 (estimate)",
+    "AXValue": null,
+    "frame": {
+      "x": 51,
+      "width": 160.6666717529297,
+      "y": 572,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Driving range",
+    "AXValue": null,
+    "frame": {
+      "x": 235.6666717529297,
+      "width": 84.99998474121094,
+      "y": 572,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Driving range",
+    "AXValue": null,
+    "frame": {
+      "x": 235.6666717529297,
+      "width": 84.99998474121094,
+      "y": 572,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Learn from experienced golfers",
+    "AXValue": null,
+    "frame": {
+      "width": 197.3333282470703,
+      "x": 51,
+      "y": 602,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Learn from experienced golfers",
+    "AXValue": null,
+    "frame": {
+      "x": 51,
+      "width": 197.3333282470703,
+      "y": 602,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mornings",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "x": 41,
+      "y": 632,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mornings",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "width": 308,
+      "y": 632,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Edit golf preferences",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "x": 41,
+      "y": 658,
+      "height": 50
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Settings",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "y": 757,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Settings",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 342,
+      "y": 757,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Photos & bio",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "x": 41,
+      "y": 792,
+      "height": 55.66668701171875
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Partner preferences",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "height": 55.6666259765625,
+      "y": 847.6666679382324,
+      "x": 41
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked users",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "height": 52,
+      "x": 41,
+      "y": 903.3333358764648
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Safety Center",
+    "AXValue": null,
+    "frame": {
+      "height": 55.3333740234375,
+      "width": 308,
+      "x": 41,
+      "y": 955.3333282470703
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Legal",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 26,
+      "x": 24,
+      "y": 1035.6666870117188
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Legal",
+    "AXValue": null,
+    "frame": {
+      "height": 26,
+      "width": 342,
+      "x": 24,
+      "y": 1035.6666870117188
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Privacy Policy",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "height": 52,
+      "y": 1070.6666870117188,
+      "x": 41
+    },
+    "enabled": true,
+    "type": "Link",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Terms of Service",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "height": 52,
+      "y": 1122.6666870117188,
+      "x": 41
+    },
+    "enabled": true,
+    "type": "Link",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Support",
+    "AXValue": null,
+    "frame": {
+      "width": 308,
+      "height": 52,
+      "x": 41,
+      "y": 1174.6666870117188
+    },
+    "enabled": true,
+    "type": "Link",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Log out",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 50,
+      "y": 1259.6666259765625,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Delete my account",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 44,
+      "x": 24,
+      "y": 1325.6666259765625
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 390,
+      "height": 30,
+      "y": 732,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "width": 390,
+      "x": 0,
+      "y": 732
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.66666412353516,
+      "x": 0,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.33333587646484,
+      "y": 766,
+      "x": 97.66666412353516
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "width": 97.66665649414062,
+      "height": 48,
+      "x": 195,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "width": 97.33334350585938,
+      "height": 48,
+      "y": 766,
+      "x": 292.6666564941406
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  }
+]

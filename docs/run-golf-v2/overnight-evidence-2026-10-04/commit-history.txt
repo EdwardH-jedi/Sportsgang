@@ -1,0 +1,12 @@
+cd567c8 docs(run-golf-v2): R6 deployment rule; precise qa:status wording
+0de3180 docs(run-golf-v2): R1–R7 implementation report and evidence
+ecd1e86 test(mobile): run the Sydney-device tests in a Sydney process (R6, R7)
+1aaa262 fix(mobile): Chats refreshes on focus, so a blocked chat leaves the list (R1)
+ab5c95e fix(mobile): My Plans keeps the stale notice until a retry succeeds (R7)
+1f0ddf8 fix(time): audit timestamps are aware instants end to end (R6)
+334f5be fix(qa): status no longer claims Metro reloads source (R2 follow-up)
+2eda444 fix(mobile): time wheel commits the row that was tapped (R5)
+eb15191 fix(mobile): blocking is a store-owned, serialized mutation (R4)
+5e52573 fix(mobile): Booking Detail is bound to its route and account (R3)
+9884a71 fix(qa): QA lifecycle ownership fails closed (R2)
+977216d fix(safety): enforce bilateral blocking at every contact boundary (R1)

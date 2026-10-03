@@ -1,0 +1,71 @@
+d0:block PASS 201
+d0:a:get:/matches/8eb84a8e-7468-4f52-a7c7-85ee120168a5/messages: PASS 403
+d0:a:post:/matches/8eb84a8e-7468-4f52-a7c7-85ee120168a5/messages: PASS 403
+d0:a:post:/bookings: PASS 403
+d0:a:post:/challenges: PASS 403
+d0:a:post:/discovery/actions:like PASS 403
+d0:a:post:/discovery/actions:pass PASS 403
+d0:a:post:/discovery/actions:save PASS 403
+d0:a:match-total PASS 0
+d0:a:booking-detail PASS 200
+d0:a:booking-list PASS 200
+d0:a:report PASS 201
+d0:b:get:/matches/8eb84a8e-7468-4f52-a7c7-85ee120168a5/messages: PASS 403
+d0:b:post:/matches/8eb84a8e-7468-4f52-a7c7-85ee120168a5/messages: PASS 403
+d0:b:post:/bookings: PASS 403
+d0:b:post:/challenges: PASS 403
+d0:b:post:/discovery/actions:like PASS 403
+d0:b:post:/discovery/actions:pass PASS 403
+d0:b:post:/discovery/actions:save PASS 403
+d0:b:match-total PASS 0
+d0:b:booking-detail PASS 200
+d0:b:booking-list PASS 200
+d0:b:report PASS 201
+d0:confirm PASS 403
+d0:challenge-accept PASS 403
+d0:decline PASS 200
+d0:complete PASS 200
+d0:retained-message-row PASS 1
+d0:unblock PASS 204
+d0:restored-history PASS 1
+d1:block PASS 201
+d1:a:get:/matches/519b72e4-b124-40d0-9e77-699e008c6f8c/messages: PASS 403
+d1:a:post:/matches/519b72e4-b124-40d0-9e77-699e008c6f8c/messages: PASS 403
+d1:a:post:/bookings: PASS 403
+d1:a:post:/challenges: PASS 403
+d1:a:post:/discovery/actions:like PASS 403
+d1:a:post:/discovery/actions:pass PASS 403
+d1:a:post:/discovery/actions:save PASS 403
+d1:a:match-total PASS 0
+d1:a:booking-detail PASS 200
+d1:a:booking-list PASS 200
+d1:a:report PASS 201
+d1:b:get:/matches/519b72e4-b124-40d0-9e77-699e008c6f8c/messages: PASS 403
+d1:b:post:/matches/519b72e4-b124-40d0-9e77-699e008c6f8c/messages: PASS 403
+d1:b:post:/bookings: PASS 403
+d1:b:post:/challenges: PASS 403
+d1:b:post:/discovery/actions:like PASS 403
+d1:b:post:/discovery/actions:pass PASS 403
+d1:b:post:/discovery/actions:save PASS 403
+d1:b:match-total PASS 0
+d1:b:booking-detail PASS 200
+d1:b:booking-list PASS 200
+d1:b:report PASS 201
+d1:confirm PASS 403
+d1:challenge-accept PASS 403
+d1:decline PASS 200
+d1:complete PASS 200
+d1:retained-message-row PASS 1
+d1:unblock PASS 204
+d1:restored-history PASS 1
+admission-check -> block -> registration FAIL remains connected after block
+restriction-check -> block -> actual broadcast FAIL ['stored before block']
+proposal-check -> block -> delayed push FAIL ['proposal_received']
+existing commitment cancellation notification PASS ['booking_cancelled']
+fresh actor state after pair lock:send FAIL 201
+deactivated actor next HTTP auth:send PASS 401
+fresh actor state after pair lock:like FAIL 200
+deactivated actor next HTTP auth:like PASS 401
+fresh actor state after pair lock:proposal FAIL 201
+deactivated actor next HTTP auth:proposal PASS 401
+RESULTS {'PASS': 64, 'FAIL': 6, 'HARNESS_ERROR': 0}

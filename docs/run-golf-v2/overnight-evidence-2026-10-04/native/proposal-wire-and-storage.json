@@ -1,0 +1,19 @@
+{
+  "ui_sydney": "2026-10-05 11:30 to 12:30",
+  "api": {
+    "id": "7aa1cd22-b20c-4c03-bee9-93609de05a34",
+    "sport": "running",
+    "status": "proposed",
+    "starts_at": "2026-10-05T00:30:00Z",
+    "ends_at": "2026-10-05T01:30:00Z",
+    "created_at": "2026-10-03T17:29:22.306688Z",
+    "updated_at": "2026-10-03T17:29:22.306688Z"
+  },
+  "postgres": {
+    "id": "7aa1cd22-b20c-4c03-bee9-93609de05a34",
+    "starts_at": "2026-10-05T00:30:00+00:00",
+    "ends_at": "2026-10-05T01:30:00+00:00",
+    "status": "proposed"
+  },
+  "partner_confirmation_via_API": "confirmed"
+}

@@ -1,0 +1,249 @@
+[
+  {
+    "AXLabel": " ",
+    "AXValue": null,
+    "frame": {
+      "y": 0,
+      "width": 390,
+      "x": 0,
+      "height": 844
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "y": 0,
+      "width": 390,
+      "x": 0,
+      "height": 844
+    },
+    "enabled": true,
+    "type": "Group",
+    "AXUniqueId": "card:host.exp.Exponent:sceneID:host.exp.Exponent-default"
+  },
+  {
+    "AXLabel": "4:12\u202fAM",
+    "AXValue": null,
+    "frame": {
+      "y": 15.666666666666686,
+      "x": 36,
+      "width": 32,
+      "height": 18.66666666666667
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Cellular",
+    "AXValue": "No signal",
+    "frame": {
+      "y": 19,
+      "x": 302.3333333333333,
+      "width": 17,
+      "height": 11.333333333333336
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": null,
+    "AXValue": "SSID, 3 of 3 Wi-Fi bars",
+    "frame": {
+      "y": 18.333333333333314,
+      "width": 16.666666666666686,
+      "x": 324.6666666666667,
+      "height": 12
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": "3 of 3 Wi-Fi bars"
+  },
+  {
+    "AXLabel": "100% battery power",
+    "AXValue": "Not charging",
+    "frame": {
+      "y": 18.666666666666686,
+      "x": 346.6666666666667,
+      "width": 25,
+      "height": 12
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "\u201cExpo Go\u201d Would Like to Send You Notifications",
+    "AXValue": null,
+    "frame": {
+      "y": 321.3333333333333,
+      "x": 35,
+      "height": 214.33333333333331,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Sheet",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "\u201cExpo Go\u201d Would Like to Send You Notifications",
+    "AXValue": null,
+    "frame": {
+      "y": 343.3333333333333,
+      "x": 65,
+      "height": 42.333333333333314,
+      "width": 260
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.",
+    "AXValue": null,
+    "frame": {
+      "y": 393.3333333333333,
+      "x": 65,
+      "height": 58,
+      "width": 260
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 321.3333333333333,
+      "width": 30,
+      "x": 322,
+      "height": 134.33333333333331
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 422.66666666666663,
+      "width": 320,
+      "x": 35,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 321.3333333333333,
+      "width": 30,
+      "x": 322,
+      "height": 134.33333333333331
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 422.66666666666663,
+      "width": 320,
+      "x": 35,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Don\u2019t Allow",
+    "AXValue": null,
+    "frame": {
+      "y": 471.6666666666667,
+      "width": 140,
+      "x": 51,
+      "height": 48.00000000000006
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Allow",
+    "AXValue": null,
+    "frame": {
+      "y": 471.6666666666667,
+      "width": 140,
+      "x": 199,
+      "height": 48.00000000000006
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 455.6666666666667,
+      "width": 30,
+      "x": 322,
+      "height": 80.00000000000006
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 502.6666666666667,
+      "width": 320,
+      "x": 35,
+      "height": 30.000000000000057
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 455.6666666666667,
+      "width": 30,
+      "x": 322,
+      "height": 80.00000000000006
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 502.6666666666667,
+      "width": 320,
+      "x": 35,
+      "height": 30.000000000000057
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

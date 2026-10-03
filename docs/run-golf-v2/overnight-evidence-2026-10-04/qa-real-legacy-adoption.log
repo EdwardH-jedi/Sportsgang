@@ -1,0 +1,42 @@
+[qa] stopped metro (pid 69067)
+[qa] stopped api (pid 68955)
+ Container sg-codex-r1r7-real-postgres-1 Stopping
+ Container sg-codex-r1r7-real-redis-1 Stopping
+ Container sg-codex-r1r7-real-redis-1 Stopped
+ Container sg-codex-r1r7-real-postgres-1 Stopped
+[qa] containers stopped; demo data kept in volume sg-codex-r1r7-real_pgdata
+[qa] starting PostgreSQL and Redis (project sportsgang-qa)
+ Container sg-codex-r1r7-real-redis-1 Starting
+ Container sg-codex-r1r7-real-postgres-1 Starting
+ Container sg-codex-r1r7-real-redis-1 Started
+ Container sg-codex-r1r7-real-postgres-1 Started
+ Container sg-codex-r1r7-real-postgres-1 Waiting
+ Container sg-codex-r1r7-real-redis-1 Waiting
+ Container sg-codex-r1r7-real-redis-1 Healthy
+ Container sg-codex-r1r7-real-postgres-1 Healthy
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8144 (pid 79414)
+[qa] Metro up on port 8194 (pid 79433)
+LEGACY PROCESS CHECKS {"api": {"pid": 79414, "identity": {"pgid": 79414, "lstart": "Sun Oct 4 04:05:11 2026", "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8144", "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api"}, "check": ["legacy", "pid 79414 matches its legacy record"]}, "metro": {"pid": 79433, "identity": {"pgid": 79433, "lstart": "Sun Oct 4 04:05:12 2026", "command": "npm exec expo start --localhost --port 8194", "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/mobile"}, "check": ["legacy", "pid 79433 matches its legacy record"]}}
+[qa] adopted project sg-codex-r1r7-real for this worktree (/private/tmp/sportsgang-r1-r7-review-bootstrap/owners/sg-codex-r1r7-real.json)
+[qa] adopted running api pid 79414 (identity verified, record upgraded)
+[qa] adopted running metro pid 79433 (identity verified, record upgraded)
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] worktree /private/tmp/sportsgang-r1-r7-review-20261004
+[qa] HEAD cd567c80af2f + uncommitted changes
+[qa] api: started from cd567c80af2f; apps/api unchanged since, so it serves that code
+[qa] metro: started from cd567c80af2f at 2026-10-03T17:05:12+00:00; apps/mobile, packages has uncommitted changes — run qa:restart if they are newer
+[qa] ERROR: environment is not ready (see status above)
+   OK  ownership    project sg-codex-r1r7-real owned by this worktree (adopted 2026-10-03T17:05:13+00:00)
+   OK  containers   sg-codex-r1r7-real postgres + redis
+   OK  api          running: pid 79414 identity verified; http://127.0.0.1:8144 health=200
+   BAD auth read    no cached QA token (run qa:seed)
+   OK  metro        running: pid 79433 identity verified; port 8194 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8144 (expected http://127.0.0.1:8144)
+   fixtures     {'qa_users': 0, 'qa_sessions': 0, 'qa_bookings': 0, 'qa_history_sessions': 0, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8194
+   credentials  /private/tmp/sportsgang-r1-r7-review-20261004/.qa/credentials.json
+   manifest     /private/tmp/sportsgang-r1-r7-review-20261004/.qa/manifest.json
+   logs         /private/tmp/sportsgang-r1-r7-review-20261004/.qa/logs
+up exit 1 (no seeded auth is expected yet)
+REAL LEGACY ADOPTION True

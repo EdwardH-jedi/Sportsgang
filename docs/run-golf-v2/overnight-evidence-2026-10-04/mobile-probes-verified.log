@@ -1,0 +1,329 @@
+FAIL src/__tests__/codex-overnight-booking.test.tsx
+  ● R3 old transition cannot become current on route A -> B -> A
+
+    Unable to find an element with text: Confirmed
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mSession[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View />[39m
+      [36m</View>[39m
+      [36m<RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mCancelled[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mWith[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mPartner A[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mSport[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mGym[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mStarts[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri 10 Apr · 7:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mEnds[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mFri 10 Apr · 8:00 pm[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<Text>[39m
+              [0mTimes are Sydney time[0m
+            [36m</Text>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mLocation[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mCity Gym, Sydney CBD[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+            [36m<View>[39m
+              [36m<Text>[39m
+                [0mNotes[0m
+              [36m</Text>[39m
+              [36m<Text>[39m
+                [0mBring your towel.[0m
+              [36m</Text>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+          [36m<View />[39m
+        [36m</View>[39m
+      [36m</RCTScrollView>[39m
+    [36m</View>[39m
+
+      134 |  const u=render(screen('A'));await u.findByText('Partner A');await act(async()=>{fireEvent.press(u.getByText('Cancel'));});
+      135 |  u.rerender(screen('B'));await u.findByText('Partner B');u.rerender(screen('A'));await u.findByText('Confirmed');await act(async()=>transition.resolve(book('A','cancelled')));
+    > 136 |  expect(mockApiPost).toHaveBeenCalledWith('/bookings/A/cancel',{});expect(u.getByText('Confirmed')).toBeTruthy();expect(u.queryByText('Cancelled')).toBeNull();
+          |                                                                             ^
+      137 | });
+      138 | it('R3 old transition failure cannot alert after account A -> B -> A',async()=>{
+      139 |  const transition=hold<any>();mockApiGet.mockResolvedValueOnce(book('A')).mockResolvedValueOnce(book('A')).mockResolvedValueOnce(book('A'));mockApiPost.mockReturnValueOnce(transition.promise);
+
+      at Object.getByText (src/__tests__/codex-overnight-booking.test.tsx:136:77)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R3 old transition failure cannot alert after account A -> B -> A
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "Error", "obsolete failure"
+
+      140 |  const u=render(screen('A'));await u.findByText('Partner A');await act(async()=>{fireEvent.press(u.getByText('Cancel'));});
+      141 |  mockUserId='account-b';u.rerender(screen('A'));await act(async()=>{});mockUserId='proposer-111';u.rerender(screen('A'));await act(async()=>{});await act(async()=>transition.reject(new Error('obsolete failure')));
+    > 142 |  expect(Alert.alert).not.toHaveBeenCalled();
+          |                          ^
+      143 | });
+      144 | it('R3 old confirmation dialog must expire across A -> B -> A',async()=>{
+      145 |  mockApiGet.mockResolvedValueOnce(book('A','confirmed')).mockResolvedValueOnce(book('B','confirmed')).mockResolvedValueOnce(book('A','confirmed'));mockApiPost.mockResolvedValue(book('A','no_show'));
+
+      at Object.toHaveBeenCalled (src/__tests__/codex-overnight-booking.test.tsx:142:26)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R3 old confirmation dialog must expire across A -> B -> A
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "/bookings/A/no-show", {}
+
+      146 |  const u=render(screen('A'));await u.findByText('Partner A');fireEvent.press(u.getByText('Record no-show'));const buttons=(Alert.alert as jest.Mock).mock.calls[0][2];
+      147 |  u.rerender(screen('B'));await u.findByText('Partner B');u.rerender(screen('A'));await u.findByText('Partner A');await act(async()=>buttons.find((b:any)=>b.text==='Record no-show').onPress());
+    > 148 |  expect(mockApiPost).not.toHaveBeenCalled();
+          |                          ^
+      149 | });
+      150 | it('CONTROL old confirmation dialog sends nothing after route A -> B',async()=>{
+      151 |  mockApiGet.mockResolvedValueOnce(book('A','confirmed')).mockResolvedValueOnce(book('B','confirmed'));
+
+      at Object.toHaveBeenCalled (src/__tests__/codex-overnight-booking.test.tsx:148:26)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R3 confirmation dialog must send nothing after unmount
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "/bookings/A/no-show", {}
+
+      155 | it('R3 confirmation dialog must send nothing after unmount',async()=>{
+      156 |  mockApiGet.mockResolvedValueOnce(book('A','confirmed'));mockApiPost.mockResolvedValue(book('A','no_show'));
+    > 157 |  const u=render(screen('A'));await u.findByText('Partner A');fireEvent.press(u.getByText('Record no-show'));const buttons=(Alert.alert as jest.Mock).mock.calls[0][2];u.unmount();await act(async()=>buttons.find((b:any)=>b.text==='Record no-show').onPress());expect(mockApiPost).not.toHaveBeenCalled();
+          |                                                                                                                                                                                                                                                                                          ^
+      158 | });
+      159 |
+
+      at Object.toHaveBeenCalled (src/__tests__/codex-overnight-booking.test.tsx:157:282)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+FAIL src/__tests__/codex-overnight-matches.test.tsx
+  ● Console
+
+    console.error
+      An update to VirtualizedList inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  ● R1/R4 old focus response cannot restore a blocked chat after newer empty list
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": 0, "actualStartTime": 1791046967403, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": 0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": 0, "type": "Text", "updateQueue": null}}
+
+      128 |  const old=hold<any>();mockApiGet.mockResolvedValueOnce(response).mockReturnValueOnce(old.promise).mockResolvedValueOnce(emptyResponse);
+      129 |  const u=render(<MatchesScreen/>);await u.findByText('Jordan Lee');await act(async()=>{mockFocus.current?.();});await act(async()=>{mockFocus.current?.();});await u.findByText('No chats yet');await act(async()=>old.resolve(response));
+    > 130 |  expect(u.queryByText('Jordan Lee')).toBeNull();expect(u.getByText('No chats yet')).toBeTruthy();
+          |                                      ^
+      131 | });
+      132 | it('R4 retained screen clears matches immediately on owner replacement',async()=>{
+      133 |  mockApiGet.mockResolvedValueOnce(response);const u=render(<MatchesScreen/>);await u.findByText('Jordan Lee');mockCurrentUserId='account-b';u.rerender(<MatchesScreen/>);
+
+      at Object.toBeNull (src/__tests__/codex-overnight-matches.test.tsx:130:38)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R4 retained screen clears matches immediately on owner replacement
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": 0, "actualStartTime": 1791046967442, "alternate": [FiberNode], "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": 0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": 0, "type": "Text", "updateQueue": null}}
+
+      132 | it('R4 retained screen clears matches immediately on owner replacement',async()=>{
+      133 |  mockApiGet.mockResolvedValueOnce(response);const u=render(<MatchesScreen/>);await u.findByText('Jordan Lee');mockCurrentUserId='account-b';u.rerender(<MatchesScreen/>);
+    > 134 |  expect(u.queryByText('Jordan Lee')).toBeNull();
+          |                                      ^
+      135 | });
+      136 | it('R1 follow-up successful focus refresh recovers initial fetch failure',async()=>{
+      137 |  mockApiGet.mockRejectedValueOnce(new Error('initial offline')).mockResolvedValueOnce(response);const u=render(<MatchesScreen/>);await u.findByText('initial offline');await act(async()=>{mockFocus.current?.();});
+
+      at Object.toBeNull (src/__tests__/codex-overnight-matches.test.tsx:134:38)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R1 follow-up successful focus refresh recovers initial fetch failure
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": 0, "actualStartTime": 1791046967815, "alternate": [FiberNode], "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": 0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": 0, "type": "Text", "updateQueue": null}}
+
+      136 | it('R1 follow-up successful focus refresh recovers initial fetch failure',async()=>{
+      137 |  mockApiGet.mockRejectedValueOnce(new Error('initial offline')).mockResolvedValueOnce(response);const u=render(<MatchesScreen/>);await u.findByText('initial offline');await act(async()=>{mockFocus.current?.();});
+    > 138 |  expect(u.queryByText('initial offline')).toBeNull();expect(u.getByText('Jordan Lee')).toBeTruthy();
+          |                                           ^
+      139 | });
+      140 | it('CONTROL first focus fetches once and next focus removes blocked chat',async()=>{
+      141 |  mockApiGet.mockResolvedValueOnce(response).mockResolvedValueOnce(emptyResponse);const u=render(<MatchesScreen/>);await u.findByText('Jordan Lee');expect(mockApiGet).toHaveBeenCalledTimes(1);await act(async()=>{mockFocus.current?.();});expect(u.getByText('No chats yet')).toBeTruthy();expect(mockApiGet).toHaveBeenCalledTimes(2);
+
+      at Object.toBeNull (src/__tests__/codex-overnight-matches.test.tsx:138:43)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+FAIL src/__tests__/codex-overnight-partner.test.tsx
+  ● R4 block dialog opened for owner A cannot execute for owner B
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "/blocks/g1"
+
+      93 | it('R4 block dialog opened for owner A cannot execute for owner B',async()=>{
+      94 |  await useExploreStore.getState().hydrateFocus('a');useExploreStore.getState().setFocusSport('golf');mockGet.mockResolvedValueOnce({items:[golfer],total:1,limit:20,offset:0,nextCursor:null});await useExploreStore.getState().loadFeed();jest.spyOn(Alert,'alert').mockImplementation(()=>{});
+    > 95 |  const u=renderDetail();fireEvent.press(u.getByText('Block'));const buttons=(Alert.alert as jest.Mock).mock.calls[0][2];await act(async()=>useExploreStore.getState().hydrateFocus('b'));mockPost.mockResolvedValue({});await act(async()=>buttons.find((b:any)=>b.text==='Block').onPress());expect(mockPost).not.toHaveBeenCalled();
+         |                                                                                                                                                                                                                                                                                                                    ^
+      96 | });
+      97 | it('CONTROL block completed after focus loss does not navigate',async()=>{
+      98 |  let resolve!:(v:any)=>void;mockPost.mockReturnValueOnce(new Promise(a=>{resolve=a;}));jest.spyOn(Alert,'alert').mockImplementation((_t,_b,buttons)=>{buttons?.find(b=>b.text==='Block')?.onPress?.();});const u=renderDetail();fireEvent.press(u.getByText('Block'));navigation.isFocused.mockReturnValue(false);await act(async()=>resolve({}));expect(navigation.goBack).not.toHaveBeenCalled();expect(navigation.replace).not.toHaveBeenCalled();
+
+      at Object.toHaveBeenCalled (src/__tests__/codex-overnight-partner.test.tsx:95:308)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+FAIL src/__tests__/codex-overnight-store.test.tsx
+  ● R4 block completion from previous owner epoch returns stale after A -> B -> A
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      65 |
+      66 | it('R4 block completion from previous owner epoch returns stale after A -> B -> A',async()=>{
+    > 67 |  await store().hydrateFocus('a');mockGet.mockResolvedValueOnce(page([card('target')]));await store().loadFeed();const blocked=deferred<any>();mockPost.mockReturnValueOnce(blocked.promise);const action=store().blockPartner('target');await store().hydrateFocus('b');await store().hydrateFocus('a');mockGet.mockResolvedValueOnce(page([card('target')]));await store().loadFeed();blocked.resolve({});expect(await action).toBe(false);
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+      68 | });
+      69 | it('R4 old action finally cannot release a new same-target block guard',async()=>{
+      70 |  await store().hydrateFocus('a');const old=deferred<any>(),fresh=deferred<any>();mockPost.mockReturnValueOnce(old.promise).mockReturnValueOnce(fresh.promise);
+
+      at Object.toBe (src/__tests__/codex-overnight-store.test.tsx:67:417)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R4 old action finally cannot release a new same-target block guard
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "target"
+    Received: null
+
+      70 |  await store().hydrateFocus('a');const old=deferred<any>(),fresh=deferred<any>();mockPost.mockReturnValueOnce(old.promise).mockReturnValueOnce(fresh.promise);
+      71 |  const oldAction=store().blockPartner('target');await store().hydrateFocus('b');await store().hydrateFocus('a');const newAction=store().blockPartner('target');old.resolve({});await oldAction;
+    > 72 |  expect(store().actingOn).toBe('target');fresh.resolve({});await newAction;
+         |                           ^
+      73 | });
+      74 | it('R4 like completion from previous owner epoch must return null after A -> B -> A',async()=>{
+      75 |  await store().hydrateFocus('a');const held=deferred<any>();mockPost.mockReturnValueOnce(held.promise);const liking=store().recordAction({...card('target'),feedSport:'running'} as any,'like');await store().hydrateFocus('b');await store().hydrateFocus('a');held.resolve({matchCreated:true,matchId:'old-match'});expect(await liking).toBeNull();
+
+      at Object.toBe (src/__tests__/codex-overnight-store.test.tsx:72:27)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● R4 like completion from previous owner epoch must return null after A -> B -> A
+
+    expect(received).toBeNull()
+
+    Received: {"matchCreated": true, "matchId": "old-match"}
+
+      73 | });
+      74 | it('R4 like completion from previous owner epoch must return null after A -> B -> A',async()=>{
+    > 75 |  await store().hydrateFocus('a');const held=deferred<any>();mockPost.mockReturnValueOnce(held.promise);const liking=store().recordAction({...card('target'),feedSport:'running'} as any,'like');await store().hydrateFocus('b');await store().hydrateFocus('a');held.resolve({matchCreated:true,matchId:'old-match'});expect(await liking).toBeNull();
+         |                                                                                                                                                                                                                                                                                                                                            ^
+      76 | });
+      77 | it('CONTROL block with held next page cannot resurrect blocked target',async()=>{
+      78 |  await store().hydrateFocus('a');mockGet.mockResolvedValueOnce(page([card('target')],'cursor'));await store().loadFeed();const more=deferred<any>();mockGet.mockReturnValueOnce(more.promise);const paging=store().fetchMore();mockPost.mockResolvedValueOnce({});expect(await store().blockPartner('target')).toBe(true);more.resolve(page([card('target')]));await paging;expect(store().feed.items).toEqual([]);
+
+      at Object.toBeNull (src/__tests__/codex-overnight-store.test.tsx:75:332)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+Test Suites: 4 failed, 4 total
+Tests:       11 failed, 5 passed, 16 total
+Snapshots:   0 total
+Time:        4.082 s, estimated 7 s
+Ran all test suites within paths "src/__tests__/codex-overnight-booking.test.tsx", "src/__tests__/codex-overnight-matches.test.tsx", "src/__tests__/codex-overnight-store.test.tsx", "src/__tests__/codex-overnight-partner.test.tsx".
+Test results written to: ../../docs/run-golf-v2/overnight-evidence-2026-10-04/mobile-probe-results-verified.json

@@ -1,0 +1,7 @@
+[qa] stopped metro (pid 51811)
+[qa] stopped api (pid 52055)
+ Container sg-codex-r1r7-real-postgres-1 Stopping
+ Container sg-codex-r1r7-real-redis-1 Stopping
+ Container sg-codex-r1r7-real-redis-1 Stopped
+ Container sg-codex-r1r7-real-postgres-1 Stopped
+[qa] containers stopped; demo data kept in volume sg-codex-r1r7-real_pgdata

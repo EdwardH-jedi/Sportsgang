@@ -1,0 +1,95 @@
+apps/api/app/routers/chat.py:91:    await db.rollback()
+apps/api/app/routers/chat.py:94:    await chat_service.connections.connect(room, websocket)
+apps/api/app/services/notifications.py:35:    "proposal_received": ("New session proposal", "{partner} wants to book a {sport} session with you."),
+apps/api/app/services/notifications.py:191:        if event.notification_type == "proposal_received" and event.booking_id is not None:
+apps/api/app/services/notifications.py:199:        fresh_token = await _get_latest_push_token(db, event.user_id)
+apps/api/app/services/notifications.py:200:        token = fresh_token or event.push_token
+apps/api/app/services/safety.py:43:async def _lock_pair(db: AsyncSession, a: UUID, b: UUID, *, exclusive: bool) -> list[User]:
+apps/api/app/services/safety.py:70:    restricted = len(users) != 2 or not all(u.is_active for u in users)
+apps/api/app/services/chat.py:87:class ConnectionManager:
+apps/api/app/services/chat.py:93:    async def connect(self, room: str, ws: WebSocket) -> None:
+apps/api/app/services/chat.py:124:async def deliver_message(db: AsyncSession, msg: MessageResponse) -> bool:
+apps/api/app/services/chat.py:149:async def close_pair_rooms(db: AsyncSession, a: UUID, b: UUID) -> None:
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:62:  const blockPartner = useExploreStore((s) => s.blockPartner);
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:63:  const actingOn = useExploreStore((s) => s.actingOn);
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:69:    mounted.current = true;
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:71:      mounted.current = false;
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:92:  const busy = actingOn !== null;
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:95:  const canNavigate = () => mounted.current && navigation.isFocused();
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:103:      if (!result || !canNavigate()) return;
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:114:    } catch (err) {
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:115:      if (mounted.current) setError(err instanceof Error ? err.message : 'That did not go through. Try again.');
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:117:      if (mounted.current) setPending(null);
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:128:      if ((await blockPartner(card.userId)) && canNavigate()) navigation.goBack();
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:129:    } catch (err) {
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:130:      if (mounted.current) setError(err instanceof Error ? err.message : 'Could not block this person. Try again.');
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:132:      if (mounted.current) setPending(null);
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:136:  function confirmBlock() {
+apps/mobile/src/screens/explore/PartnerDetailScreen.tsx:235:            onPress={confirmBlock}
+apps/mobile/src/stores/explore.ts:9: * - Every load bumps a generation counter; a response from an older
+apps/mobile/src/stores/explore.ts:10: *   generation (e.g. a slow running response after switching to golf) is
+apps/mobile/src/stores/explore.ts:21: *   sport also drops it at once and bumps the generation, so an older
+apps/mobile/src/stores/explore.ts:25: * - Like, pass and block (review R4) run one at a time behind `actingOn`,
+apps/mobile/src/stores/explore.ts:27: *   or reports nothing. A successful block bumps the generation, so a first
+apps/mobile/src/stores/explore.ts:86:  actingOn: string | null;
+apps/mobile/src/stores/explore.ts:106:  blockPartner: (userId: string) => Promise<boolean>;
+apps/mobile/src/stores/explore.ts:128:// before a reset/switch can never match the current generation again.
+apps/mobile/src/stores/explore.ts:218:  actingOn: null,
+apps/mobile/src/stores/explore.ts:227:      set({ ownerId: userId, focusHydrated: false, view: 'sessions', strictPace: false, feed: EMPTY_FEED, actingOn: null });
+apps/mobile/src/stores/explore.ts:232:    } catch {
+apps/mobile/src/stores/explore.ts:247:      void SecureStore.setItemAsync(focusStorageKey(ownerId), sport).catch(() => {
+apps/mobile/src/stores/explore.ts:277:    const generation = ++feedGeneration;
+apps/mobile/src/stores/explore.ts:278:    // actingOn is left alone: a like/pass/block in flight keeps the guard.
+apps/mobile/src/stores/explore.ts:283:      if (generation !== feedGeneration) return;
+apps/mobile/src/stores/explore.ts:298:    } catch (err) {
+apps/mobile/src/stores/explore.ts:299:      if (generation !== feedGeneration) return;
+apps/mobile/src/stores/explore.ts:309:    const generation = feedGeneration;
+apps/mobile/src/stores/explore.ts:316:      if (generation !== feedGeneration || get().feed.key !== key) return;
+apps/mobile/src/stores/explore.ts:317:      const current = get().feed;
+apps/mobile/src/stores/explore.ts:329:    } catch (err) {
+apps/mobile/src/stores/explore.ts:330:      if (generation !== feedGeneration || get().feed.key !== key) return;
+apps/mobile/src/stores/explore.ts:336:    if (get().actingOn !== null) return null;
+apps/mobile/src/stores/explore.ts:338:    set({ actingOn: card.userId });
+apps/mobile/src/stores/explore.ts:347:      if (get().ownerId !== owner) return null;
+apps/mobile/src/stores/explore.ts:354:      if (get().actingOn === card.userId) set({ actingOn: null });
+apps/mobile/src/stores/explore.ts:358:  blockPartner: async (userId) => {
+apps/mobile/src/stores/explore.ts:359:    if (get().actingOn !== null) return false;
+apps/mobile/src/stores/explore.ts:361:    set({ actingOn: userId });
+apps/mobile/src/stores/explore.ts:364:      if (get().ownerId !== owner) return false;
+apps/mobile/src/stores/explore.ts:377:      if (get().actingOn === userId) set({ actingOn: null });
+apps/mobile/src/stores/explore.ts:390:      actingOn: null,
+apps/mobile/src/screens/matches/MatchesScreen.tsx:128:  const [matches, setMatches] = useState<Match[]>([]);
+apps/mobile/src/screens/matches/MatchesScreen.tsx:139:      setMatches(data.items);
+apps/mobile/src/screens/matches/MatchesScreen.tsx:140:    } catch (err) {
+apps/mobile/src/screens/matches/MatchesScreen.tsx:152:      setMatches(data.items);
+apps/mobile/src/screens/matches/MatchesScreen.tsx:153:    } catch (err) {
+apps/mobile/src/screens/matches/MatchesScreen.tsx:173:  const focusedOnce = useRef(false);
+apps/mobile/src/screens/matches/MatchesScreen.tsx:176:      if (!focusedOnce.current) {
+apps/mobile/src/screens/matches/MatchesScreen.tsx:177:        focusedOnce.current = true;
+apps/mobile/src/screens/matches/MatchesScreen.tsx:182:        .then((data) => setMatches(data.items))
+apps/mobile/src/screens/matches/MatchesScreen.tsx:183:        .catch(() => {});
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:86:  const bindingRef = useRef(binding);
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:87:  bindingRef.current = binding;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:88:  const generation = useRef(0);
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:89:  const actingOn = useRef<string | null>(null);
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:96:    mounted.current = true;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:98:      mounted.current = false;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:109:    const gen = ++generation.current;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:110:    const current = () => mounted.current && gen === generation.current && bindingRef.current === binding;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:120:    } catch (err) {
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:130:  const performTransition = useCallback(
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:134:      if (!booking || !binding || bindingRef.current !== binding || actingOn.current === binding) return;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:136:      actingOn.current = binding;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:138:      const current = () => mounted.current && bindingRef.current === binding;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:142:        generation.current += 1; // an older in-flight fetch must not undo this
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:144:      } catch (err) {
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:148:        if (actingOn.current === binding) actingOn.current = null;
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:149:        if (mounted.current) setActingBinding((b) => (b === binding ? null : b));
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:168:          onPress: () => performTransition('no-show'),
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:172:  }, [performTransition]);
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:283:                    onPress={() => performTransition('cancel')}
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:290:                      onPress={() => performTransition('confirm')}
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:295:                      onPress={() => performTransition('decline')}
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:300:                      onPress={() => performTransition('cancel')}
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:310:                  onPress={() => performTransition('complete')}
+apps/mobile/src/screens/bookings/BookingDetailScreen.tsx:320:                  onPress={() => performTransition('cancel')}

@@ -1,0 +1,223 @@
+[
+  {
+    "AXLabel": " ",
+    "AXValue": null,
+    "frame": {
+      "width": 390,
+      "height": 844,
+      "y": 0,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "4:09\u202fAM",
+    "AXValue": null,
+    "frame": {
+      "x": 34.666666666666664,
+      "height": 18.66666666666667,
+      "width": 34.99999999999999,
+      "y": 15.666666666666666
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Cellular",
+    "AXValue": "No signal",
+    "frame": {
+      "x": 302.3333333333333,
+      "width": 17,
+      "height": 11.333333333333336,
+      "y": 19
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": null,
+    "AXValue": "SSID, 3 of 3 Wi-Fi bars",
+    "frame": {
+      "width": 16.666666666666686,
+      "height": 12,
+      "x": 324.6666666666667,
+      "y": 18.333333333333332
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": "3 of 3 Wi-Fi bars"
+  },
+  {
+    "AXLabel": "100% battery power",
+    "AXValue": "Not charging",
+    "frame": {
+      "width": 25,
+      "x": 346.6666666666667,
+      "height": 12,
+      "y": 18.666666666666668
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open in \u201cExpo Go\u201d?",
+    "AXValue": null,
+    "frame": {
+      "width": 320,
+      "x": 35,
+      "y": 365.3333333333333,
+      "height": 126.33333333333331
+    },
+    "enabled": true,
+    "type": "Sheet",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open in \u201cExpo Go\u201d?",
+    "AXValue": null,
+    "frame": {
+      "x": 65,
+      "height": 20.333333333333314,
+      "y": 387.3333333333333,
+      "width": 260
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 322,
+      "height": 46.333333333333314,
+      "y": 365.3333333333333,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 23.16666666666663,
+      "x": 35,
+      "y": 385.5,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 322,
+      "height": 46.333333333333314,
+      "y": 365.3333333333333,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 35,
+      "height": 23.16666666666663,
+      "y": 385.5,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Cancel",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "x": 51,
+      "y": 427.6666666666667,
+      "width": 140
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open",
+    "AXValue": null,
+    "frame": {
+      "x": 199,
+      "height": 48,
+      "y": 427.6666666666667,
+      "width": 140
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 80,
+      "x": 322,
+      "y": 411.6666666666667,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "x": 35,
+      "y": 458.6666666666667,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 80,
+      "x": 322,
+      "y": 411.6666666666667,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 35,
+      "height": 30,
+      "y": 458.6666666666667,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

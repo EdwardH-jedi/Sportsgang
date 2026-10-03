@@ -1,0 +1,37 @@
+[qa] created project sg-codex-r1r7-real for this worktree (/private/tmp/sportsgang-r1-r7-review-bootstrap/owners/sg-codex-r1r7-real.json)
+[qa] starting PostgreSQL and Redis (project sg-codex-r1r7-real)
+ Network sg-codex-r1r7-real_default Creating
+ Network sg-codex-r1r7-real_default Created
+ Volume sg-codex-r1r7-real_pgdata Creating
+ Volume sg-codex-r1r7-real_pgdata Created
+ Container sg-codex-r1r7-real-postgres-1 Creating
+ Container sg-codex-r1r7-real-redis-1 Creating
+ Container sg-codex-r1r7-real-postgres-1 Created
+ Container sg-codex-r1r7-real-redis-1 Created
+ Container sg-codex-r1r7-real-postgres-1 Starting
+ Container sg-codex-r1r7-real-redis-1 Starting
+ Container sg-codex-r1r7-real-postgres-1 Started
+ Container sg-codex-r1r7-real-redis-1 Started
+ Container sg-codex-r1r7-real-redis-1 Waiting
+ Container sg-codex-r1r7-real-postgres-1 Waiting
+ Container sg-codex-r1r7-real-redis-1 Healthy
+ Container sg-codex-r1r7-real-postgres-1 Healthy
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8144 (pid 68955)
+[qa] Metro up on port 8194 (pid 69067)
+[qa] worktree /private/tmp/sportsgang-r1-r7-review-20261004
+[qa] HEAD cd567c80af2f + uncommitted changes
+[qa] api: started from cd567c80af2f (worktree had uncommitted changes then); apps/api unchanged since, so it serves that code
+[qa] metro: started from cd567c80af2f at 2026-10-03T17:02:06+00:00; apps/mobile, packages has uncommitted changes — run qa:restart if they are newer
+[qa] ERROR: environment is not ready (see status above)
+   OK  ownership    project sg-codex-r1r7-real owned by this worktree (created 2026-10-03T17:01:55+00:00)
+   OK  containers   sg-codex-r1r7-real postgres + redis
+   OK  api          running: pid 68955 identity verified; http://127.0.0.1:8144 health=200
+   BAD auth read    no cached QA token (run qa:seed)
+   OK  metro        running: pid 69067 identity verified; port 8194 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8144 (expected http://127.0.0.1:8144)
+   fixtures     {'qa_users': 0, 'qa_sessions': 0, 'qa_bookings': 0, 'qa_history_sessions': 0, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8194
+   credentials  /private/tmp/sportsgang-r1-r7-review-20261004/.qa/credentials.json
+   manifest     /private/tmp/sportsgang-r1-r7-review-20261004/.qa/manifest.json
+   logs         /private/tmp/sportsgang-r1-r7-review-20261004/.qa/logs

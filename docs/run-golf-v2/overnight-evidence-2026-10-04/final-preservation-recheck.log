@@ -1,0 +1,27 @@
+reviewer containers removed PASS
+reviewer simulator removed PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 original untracked content PASS
+human private hash .qa/config.env PASS
+human private hash .qa/state.json PASS
+human api remains alive PASS
+human metro remains alive PASS
+human api HTTP health PASS
+human metro HTTP health PASS
+human container sportsgang-qa-postgres-1 running PASS
+human container sportsgang-qa-redis-1 running PASS
+pinned app/delivery tracked files unchanged PASS
+FINAL 26 checks True

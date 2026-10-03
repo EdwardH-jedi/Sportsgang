@@ -1,0 +1,11 @@
+[qa] created project qa-test-667ecba7 for this worktree (/private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-lr7g3_uo/owners/qa-test-667ecba7.json)
+[qa] ERROR: refusing: project qa-test-667ecba7 is owned by /private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-lr7g3_uo/deleted-worktree (that path no longer exists); run QA from there, or set QA_PROJECT and free ports in /private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-lr7g3_uo/wt-a/.qa/config.env for a separate instance
+{'name': 'stale nonexistent owner path refuses takeover', 'actual': 'refused', 'expected': 'refused', 'status': 'PASS'}
+{'name': 'stale owner record preserved', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'interrupted owner write fails closed', 'actual': 'JSONDecodeError before mutation', 'expected': 'JSONDecodeError before mutation', 'status': 'PASS'}
+{'name': 'interrupted record preserved', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'api doc-only later HEAD remains same source', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'api changed code requires restart', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'metro doc-only later HEAD remains same source', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'metro changed code requires restart', 'actual': True, 'expected': True, 'status': 'PASS'}
+RESULT 8 checks True

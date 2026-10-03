@@ -1,0 +1,34 @@
+reviewer Compose cleanup PASS
+reviewer probe container cleanup sg-codex-r1r7-pg PASS
+reviewer probe container cleanup sg-codex-r1r7-redis PASS
+reviewer simulator removed PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2 original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test original untracked content PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 HEAD PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 status PASS
+/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7 original untracked content PASS
+human private hash .qa/config.env PASS
+human private hash .qa/state.json PASS
+human api remains alive PASS
+human metro remains alive PASS
+human api HTTP health PASS
+human metro HTTP health PASS
+human container sportsgang-qa-postgres-1 running PASS
+human container sportsgang-qa-redis-1 running PASS
+pinned app/delivery tracked files unchanged FAIL
+FINAL 28 checks False
+Traceback (most recent call last):
+  File "/private/tmp/sportsgang-r1-r7-review-bootstrap/finalize_review.py", line 58, in <module>
+    if not report['all_pass']:raise RuntimeError('Preservation verification failed; inspect receipt')
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Preservation verification failed; inspect receipt

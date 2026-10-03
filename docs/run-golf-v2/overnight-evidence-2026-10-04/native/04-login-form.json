@@ -1,0 +1,236 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "width": 390,
+      "y": 0,
+      "height": 844,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "sportsgang",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 79,
+      "height": 33.666664123535156,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "sportsgang",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 79,
+      "height": 33.666664123535156,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "WELCOME BACK",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 132.66666412353516,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "WELCOME BACK",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 132.66666412353516,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Log in",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 160.66666412353516,
+      "height": 36,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Log in",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 160.66666412353516,
+      "height": 36,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "EMAIL",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 228.6666717529297,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "EMAIL",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 228.6666717529297,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Email",
+    "AXValue": "you@example.com",
+    "frame": {
+      "width": 340,
+      "y": 249.6666717529297,
+      "height": 52.33332824707031,
+      "x": 25
+    },
+    "enabled": true,
+    "type": "TextField",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PASSWORD",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 319.00000762939453,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PASSWORD",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 319.00000762939453,
+      "height": 16,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Password",
+    "AXValue": "Your password",
+    "frame": {
+      "width": 340,
+      "y": 340.00000762939453,
+      "height": 52.333343505859375,
+      "x": 25
+    },
+    "enabled": true,
+    "type": "TextField",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Log in",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 417.3333435058594,
+      "height": 52,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Sign in with Apple",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "y": 501.3333282470703,
+      "height": 52,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Sign up",
+    "AXValue": null,
+    "frame": {
+      "width": 218.66668701171875,
+      "y": 585.3333435058594,
+      "height": 22,
+      "x": 85.66666793823242
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 47.33,
+      "height": 30,
+      "width": 295.34000000000003,
+      "y": 811
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "x": 47.33,
+      "y": 811,
+      "width": 295.34000000000003
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

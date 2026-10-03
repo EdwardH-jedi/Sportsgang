@@ -1,0 +1,82 @@
+d0:block PASS 201
+d0:a:get:/matches/664fd5a1-8ed2-4498-a1a0-8c66b2d61731/messages: PASS 403
+d0:a:post:/matches/664fd5a1-8ed2-4498-a1a0-8c66b2d61731/messages: PASS 403
+d0:a:post:/bookings: PASS 403
+d0:a:post:/challenges: PASS 403
+d0:a:post:/discovery/actions:like PASS 403
+d0:a:post:/discovery/actions:pass PASS 403
+d0:a:post:/discovery/actions:save PASS 403
+d0:a:match-total PASS 0
+d0:a:booking-detail PASS 200
+d0:a:booking-list PASS 200
+d0:a:report PASS 201
+d0:b:get:/matches/664fd5a1-8ed2-4498-a1a0-8c66b2d61731/messages: PASS 403
+d0:b:post:/matches/664fd5a1-8ed2-4498-a1a0-8c66b2d61731/messages: PASS 403
+d0:b:post:/bookings: PASS 403
+d0:b:post:/challenges: PASS 403
+d0:b:post:/discovery/actions:like PASS 403
+d0:b:post:/discovery/actions:pass PASS 403
+d0:b:post:/discovery/actions:save PASS 403
+d0:b:match-total PASS 0
+d0:b:booking-detail PASS 200
+d0:b:booking-list PASS 200
+d0:b:report PASS 201
+d0:confirm PASS 403
+d0:challenge-accept PASS 403
+d0:decline PASS 200
+d0:complete PASS 200
+d0:cancel-confirmed PASS 200
+d0:no-show PASS 200
+d0:retained-message-row PASS 1
+d0:unblock PASS 204
+d0:restored-history PASS 1
+d1:block PASS 201
+d1:a:get:/matches/2a007360-3f63-41d7-a5a5-fef3409209e3/messages: PASS 403
+d1:a:post:/matches/2a007360-3f63-41d7-a5a5-fef3409209e3/messages: PASS 403
+d1:a:post:/bookings: PASS 403
+d1:a:post:/challenges: PASS 403
+d1:a:post:/discovery/actions:like PASS 403
+d1:a:post:/discovery/actions:pass PASS 403
+d1:a:post:/discovery/actions:save PASS 403
+d1:a:match-total PASS 0
+d1:a:booking-detail PASS 200
+d1:a:booking-list PASS 200
+d1:a:report PASS 201
+d1:b:get:/matches/2a007360-3f63-41d7-a5a5-fef3409209e3/messages: PASS 403
+d1:b:post:/matches/2a007360-3f63-41d7-a5a5-fef3409209e3/messages: PASS 403
+d1:b:post:/bookings: PASS 403
+d1:b:post:/challenges: PASS 403
+d1:b:post:/discovery/actions:like PASS 403
+d1:b:post:/discovery/actions:pass PASS 403
+d1:b:post:/discovery/actions:save PASS 403
+d1:b:match-total PASS 0
+d1:b:booking-detail PASS 200
+d1:b:booking-list PASS 200
+d1:b:report PASS 201
+d1:confirm PASS 403
+d1:challenge-accept PASS 403
+d1:decline PASS 200
+d1:complete PASS 200
+d1:cancel-confirmed PASS 200
+d1:no-show PASS 200
+d1:retained-message-row PASS 1
+d1:unblock PASS 204
+d1:restored-history PASS 1
+blocked account deletion PASS 204
+deleted token auth PASS 401
+deletion cascades retained message PASS 0
+admission-check -> block -> registration FAIL remains connected after block
+live admission + broadcast barriers -> committed block -> wire frame FAIL stored before block
+proposal-check -> delayed token lookup -> block -> push invocation FAIL ['proposal_received']
+existing commitment cancellation notification PASS ['booking_cancelled']
+fresh actor state after pair lock:send FAIL 201
+inactive actor prohibited persisted rows:send FAIL 1
+deactivated actor next HTTP auth:send PASS 401
+fresh actor state after pair lock:like FAIL 200
+inactive actor prohibited persisted rows:like FAIL 1
+deactivated actor next HTTP auth:like PASS 401
+fresh actor state after pair lock:proposal FAIL 201
+inactive actor prohibited persisted rows:proposal FAIL 1
+deactivated actor next HTTP auth:proposal PASS 401
+separate notification process token lookup -> block -> provider invocation FAIL ['proposal_received']
+RESULTS {'PASS': 71, 'FAIL': 10, 'HARNESS_ERROR': 0}

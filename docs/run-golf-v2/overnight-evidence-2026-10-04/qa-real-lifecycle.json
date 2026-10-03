@@ -1,0 +1,86 @@
+[
+  {
+    "name": "qa-real-restart exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  },
+  {
+    "name": "restart replaces API and Metro PIDs",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "restart preserves database marker",
+    "actual": "104",
+    "expected": "104",
+    "status": "PASS"
+  },
+  {
+    "name": "restart verified children",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "qa-real-down exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  },
+  {
+    "name": "down removes recorded children",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "down stops review containers",
+    "actual": false,
+    "expected": false,
+    "status": "PASS"
+  },
+  {
+    "name": "qa-real-up-again exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  },
+  {
+    "name": "down/up preserves database marker",
+    "actual": "104",
+    "expected": "104",
+    "status": "PASS"
+  },
+  {
+    "name": "qa-real-reset exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  },
+  {
+    "name": "reset removes review database marker",
+    "actual": "t",
+    "expected": "t",
+    "status": "PASS"
+  },
+  {
+    "name": "reset reseeds eight accounts",
+    "actual": "8",
+    "expected": "8",
+    "status": "PASS"
+  },
+  {
+    "name": "qa-real-final-status exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  },
+  {
+    "name": "qa-real-final-down exit",
+    "actual": 0,
+    "expected": 0,
+    "status": "PASS"
+  }
+]

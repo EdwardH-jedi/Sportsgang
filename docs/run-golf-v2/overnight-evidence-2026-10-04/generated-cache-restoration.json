@@ -1,0 +1,7 @@
+{
+  "path": "packages/shared-types/tsconfig.tsbuildinfo",
+  "reason": "typecheck regenerated tracked incremental cache in dedicated reviewer worktree; restored exact delivery-base blob",
+  "generated_hash": "ca1e095d1cc56e6bb81015e43b47bae8dd0e67ad805aeb047bbdc84f9cc2c9f7",
+  "restored_hash": "2d799917237784686dfff38e0fa71aabfd1b5038762716a0adfb1761f62dee9d",
+  "baseline_hash": "2d799917237784686dfff38e0fa71aabfd1b5038762716a0adfb1761f62dee9d"
+}

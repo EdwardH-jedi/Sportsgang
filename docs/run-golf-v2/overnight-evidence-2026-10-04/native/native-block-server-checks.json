@@ -1,0 +1,58 @@
+[
+  {
+    "actor": "alice",
+    "method": "GET",
+    "path": "/matches/5903664b-d75a-48ac-8662-565cc95239d4/messages",
+    "status": 403,
+    "match_total": null
+  },
+  {
+    "actor": "alice",
+    "method": "POST",
+    "path": "/matches/5903664b-d75a-48ac-8662-565cc95239d4/messages",
+    "status": 403,
+    "match_total": null
+  },
+  {
+    "actor": "alice",
+    "method": "GET",
+    "path": "/matches",
+    "status": 200,
+    "match_total": 0
+  },
+  {
+    "actor": "alice",
+    "method": "GET",
+    "path": "/bookings/7aa1cd22-b20c-4c03-bee9-93609de05a34",
+    "status": 200,
+    "match_total": null
+  },
+  {
+    "actor": "bob",
+    "method": "GET",
+    "path": "/matches/5903664b-d75a-48ac-8662-565cc95239d4/messages",
+    "status": 403,
+    "match_total": null
+  },
+  {
+    "actor": "bob",
+    "method": "POST",
+    "path": "/matches/5903664b-d75a-48ac-8662-565cc95239d4/messages",
+    "status": 403,
+    "match_total": null
+  },
+  {
+    "actor": "bob",
+    "method": "GET",
+    "path": "/matches",
+    "status": 200,
+    "match_total": 0
+  },
+  {
+    "actor": "bob",
+    "method": "GET",
+    "path": "/bookings/7aa1cd22-b20c-4c03-bee9-93609de05a34",
+    "status": 200,
+    "match_total": null
+  }
+]

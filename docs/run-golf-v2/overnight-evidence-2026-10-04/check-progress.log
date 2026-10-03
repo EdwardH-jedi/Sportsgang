@@ -1,0 +1,15 @@
+pg-start 0
+redis-start 0
+migration 0
+ruff-check 0
+ruff-format 0
+api-tests 0
+integration 0
+pg-sydney-default 0
+integration-sydney 1
+mobile-lint 0
+mobile-typecheck 0
+shared-typecheck 0
+mobile-tests 0
+ios-export 0
+qa-launcher 1

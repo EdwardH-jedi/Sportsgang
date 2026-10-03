@@ -1,0 +1,21 @@
+{'name': 'qa-real-restart exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 5.25
+{'name': 'restart replaces API and Metro PIDs', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'restart preserves database marker', 'actual': '104', 'expected': '104', 'status': 'PASS'}
+{'name': 'restart verified children', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'qa-real-down exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 1.31
+{'name': 'down removes recorded children', 'actual': True, 'expected': True, 'status': 'PASS'}
+{'name': 'down stops review containers', 'actual': False, 'expected': False, 'status': 'PASS'}
+{'name': 'qa-real-up-again exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 6.23
+{'name': 'down/up preserves database marker', 'actual': '104', 'expected': '104', 'status': 'PASS'}
+{'name': 'qa-real-reset exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 133.07
+{'name': 'reset removes review database marker', 'actual': 't', 'expected': 't', 'status': 'PASS'}
+{'name': 'reset reseeds eight accounts', 'actual': '8', 'expected': '8', 'status': 'PASS'}
+{'name': 'qa-real-final-status exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 0.39
+{'name': 'qa-real-final-down exit', 'actual': 0, 'expected': 0, 'status': 'PASS'}
+seconds 1.24
+RESULT 14 PASS 0 FAIL

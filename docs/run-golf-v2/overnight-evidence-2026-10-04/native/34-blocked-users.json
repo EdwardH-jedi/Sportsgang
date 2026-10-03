@@ -1,0 +1,210 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "height": 844,
+      "x": 0,
+      "y": 0,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Back",
+    "AXValue": null,
+    "frame": {
+      "height": 34.333335876464844,
+      "x": 16,
+      "y": 79,
+      "width": 21.333332061767578
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Users",
+    "AXValue": null,
+    "frame": {
+      "height": 26,
+      "x": 127.33333206176758,
+      "y": 83.33333206176758,
+      "width": 124.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Users",
+    "AXValue": null,
+    "frame": {
+      "height": 26,
+      "x": 127.33333206176758,
+      "y": 83.33333206176758,
+      "width": 124.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "People you block are restricted from supported interactions such as joining your games where supported.",
+    "AXValue": null,
+    "frame": {
+      "height": 82,
+      "x": 0,
+      "y": 130.33333587646484,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "People you block are restricted from supported interactions such as joining your games where supported.",
+    "AXValue": null,
+    "frame": {
+      "height": 82,
+      "x": 0,
+      "y": 130.33333587646484,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked user QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 76.00001525878906,
+      "x": 24,
+      "y": 228.3333282470703,
+      "width": 342
+    },
+    "enabled": true,
+    "type": "Group",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 22.000015258789062,
+      "x": 41,
+      "y": 245.3333282470703,
+      "width": 204
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 22.000015258789062,
+      "x": 41,
+      "y": 245.3333282470703,
+      "width": 204
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Unblock QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 34.00001525878906,
+      "x": 261,
+      "y": 249.3333282470703,
+      "width": 88
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Oct 4, 2026",
+    "AXValue": null,
+    "frame": {
+      "height": 18,
+      "y": 269.3333282470703,
+      "x": 41,
+      "width": 204
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Oct 4, 2026",
+    "AXValue": null,
+    "frame": {
+      "height": 18,
+      "x": 41,
+      "y": 269.3333282470703,
+      "width": 204
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 563.3366717529296,
+      "y": 233.3333282470703,
+      "x": 357,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "x": 47.32999491373698,
+      "y": 810.6666615804036,
+      "width": 295.34001017252604
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 357,
+      "y": 233.3333282470703,
+      "height": 563.3366717529296,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 810.6666615804036,
+      "x": 47.32999491373698,
+      "height": 30,
+      "width": 295.34001017252604
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

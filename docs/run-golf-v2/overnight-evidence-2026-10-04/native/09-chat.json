@@ -1,0 +1,275 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "height": 844,
+      "y": 0,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Back",
+    "AXValue": null,
+    "frame": {
+      "width": 28,
+      "x": 16,
+      "y": 79,
+      "height": 34.333335876464844
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "width": 65.33333587646484,
+      "x": 108.66666793823242,
+      "y": 83.33333206176758,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "width": 65.33333587646484,
+      "x": 108.66666793823242,
+      "y": 83.33333206176758,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Propose a session",
+    "AXValue": null,
+    "frame": {
+      "width": 103.66665649414062,
+      "x": 239,
+      "y": 84.33333206176758,
+      "height": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "More options",
+    "AXValue": null,
+    "frame": {
+      "width": 27.333343505859375,
+      "x": 346.66666412353516,
+      "y": 82.33333206176758,
+      "height": 28
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PLAN A SESSION",
+    "AXValue": null,
+    "frame": {
+      "width": 179.3333282470703,
+      "x": 16,
+      "y": 138.33333587646484,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PLAN A SESSION",
+    "AXValue": null,
+    "frame": {
+      "width": 179.3333282470703,
+      "x": 16,
+      "y": 138.33333587646484,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot",
+    "AXValue": null,
+    "frame": {
+      "width": 162.6666717529297,
+      "x": 211.3333282470703,
+      "y": 147.33333587646484,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot and propose a time.",
+    "AXValue": null,
+    "frame": {
+      "width": 179.3333282470703,
+      "x": 16,
+      "y": 156.33333587646484,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot and propose a time.",
+    "AXValue": null,
+    "frame": {
+      "width": 179.3333282470703,
+      "x": 16,
+      "y": 156.33333587646484,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Hi Alice \u2014 keen for an easy run this week? (QA demo chat)",
+    "AXValue": null,
+    "frame": {
+      "width": 234.66665649414062,
+      "x": 33,
+      "y": 226.3333282470703,
+      "height": 40.00001525878906
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Hi Alice \u2014 keen for an easy run this week? (QA demo chat)",
+    "AXValue": null,
+    "frame": {
+      "width": 234.66665649414062,
+      "x": 33,
+      "y": 226.3333282470703,
+      "height": 40.00001525878906
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open session proposal",
+    "AXValue": null,
+    "frame": {
+      "width": 358,
+      "x": 16,
+      "y": 283.3333282470703,
+      "height": 220
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open session confirmed",
+    "AXValue": null,
+    "frame": {
+      "width": 358,
+      "x": 16,
+      "y": 515.3333282470703,
+      "height": 164
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 390,
+      "x": 0,
+      "y": 708.9999949137369,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 0,
+      "height": 30,
+      "y": 708.9999949137369,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Message\u2026",
+    "AXValue": null,
+    "frame": {
+      "x": 17,
+      "height": 49,
+      "y": 752.0000152587891,
+      "width": 277.3333435058594
+    },
+    "enabled": true,
+    "type": "TextArea",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 261.3333435058594,
+      "height": 49,
+      "y": 752.0000152587891,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 21.330015258789103,
+      "height": 24.5,
+      "y": 773.5000152587891,
+      "width": 273.00332824707027
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Send",
+    "AXValue": null,
+    "frame": {
+      "x": 303.3333435058594,
+      "height": 48,
+      "y": 754.0000152587891,
+      "width": 70.66665649414062
+    },
+    "enabled": false,
+    "type": "Button",
+    "AXUniqueId": null
+  }
+]

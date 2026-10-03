@@ -1,0 +1,249 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "width": 390,
+      "height": 844,
+      "y": 0,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SYDNEY TIME",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 16,
+      "y": 63,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SYDNEY TIME",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 16,
+      "y": 63,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 36,
+      "y": 81,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 36,
+      "y": 81,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Filter plans",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 48,
+      "y": 125,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Group",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Upcoming",
+    "AXValue": null,
+    "frame": {
+      "width": 111.33332824707031,
+      "height": 40,
+      "y": 129,
+      "x": 28
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Pending (1)",
+    "AXValue": null,
+    "frame": {
+      "width": 111.33334350585938,
+      "height": 40,
+      "y": 129,
+      "x": 139.33333587646484
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Past",
+    "AXValue": null,
+    "frame": {
+      "width": 111.33332824707031,
+      "height": 40,
+      "y": 129,
+      "x": 250.6666717529297
+    },
+    "enabled": true,
+    "type": "GenericElement",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "1:1 session: Running with QA Bob, Mon 5 Oct \u00b7 11:30 am \u2013 12:30 pm, Confirmed",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 110,
+      "y": 189,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": "plan-booking:7aa1cd22-b20c-4c03-bee9-93609de05a34"
+  },
+  {
+    "AXLabel": "1:1 session: Running with QA Bob, Sat 10 Oct \u00b7 7:00 am \u2013 8:00 am, Confirmed",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "height": 134,
+      "y": 315,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": "plan-booking:7ba57e99-d867-46b2-ab28-f8b003c14529"
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 30,
+      "height": 576,
+      "y": 189,
+      "x": 357
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 732,
+      "width": 390,
+      "x": 0,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 189,
+      "width": 30,
+      "x": 357,
+      "height": 576
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 732,
+      "width": 390,
+      "x": 0,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "frame": {
+      "y": 766,
+      "width": 97.66666412353516,
+      "x": 0,
+      "height": 48
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "y": 766,
+      "width": 97.33333587646484,
+      "x": 97.66666412353516,
+      "height": 48
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "y": 766,
+      "width": 97.66665649414062,
+      "x": 195,
+      "height": 48
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "y": 766,
+      "width": 97.33334350585938,
+      "x": 292.6666564941406,
+      "height": 48
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  }
+]

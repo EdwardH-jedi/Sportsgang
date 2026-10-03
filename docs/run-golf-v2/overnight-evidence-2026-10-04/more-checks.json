@@ -1,0 +1,62 @@
+[
+  {
+    "name": "r1-probe-verified",
+    "args": [
+      "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/bin/python",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/probe_r1.py"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "audit-sydney-configured",
+    "args": [
+      "uv",
+      "run",
+      "--frozen",
+      "pytest",
+      "tests_integration/test_audit_instants.py",
+      "-q"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "f-regressions-UTC",
+    "args": [
+      "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/bin/python",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/adapted_probe_findings.py",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/f-regressions-UTC.json"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "f-regressions-Australia-Sydney",
+    "args": [
+      "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/bin/python",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/adapted_probe_findings.py",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/f-regressions-Australia-Sydney.json"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "create-legacy-db",
+    "args": [
+      "docker",
+      "exec",
+      "sg-codex-r1r7-pg",
+      "createdb",
+      "-U",
+      "review",
+      "sg_legacy"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "populated-upgrade",
+    "args": [
+      "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/bin/python",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/adapted_verify_populated_upgrade.py",
+      "/private/tmp/sportsgang-r1-r7-review-20261004/docs/run-golf-v2/overnight-evidence-2026-10-04/populated-upgrade.json"
+    ],
+    "exit": 0
+  }
+]

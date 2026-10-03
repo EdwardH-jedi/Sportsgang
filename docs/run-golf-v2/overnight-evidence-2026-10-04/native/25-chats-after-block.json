@@ -1,0 +1,444 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "y": 0,
+      "height": 844,
+      "x": 0,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Back",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 79,
+      "width": 28,
+      "height": 34.333335876464844
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 108.66666793823242,
+      "y": 83.33333206176758,
+      "width": 65.33333587646484,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 108.66666793823242,
+      "y": 83.33333206176758,
+      "width": 65.33333587646484,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Propose a session",
+    "AXValue": null,
+    "frame": {
+      "x": 239,
+      "y": 84.33333206176758,
+      "width": 103.66665649414062,
+      "height": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "More options",
+    "AXValue": null,
+    "frame": {
+      "x": 346.66666412353516,
+      "y": 82.33333206176758,
+      "width": 27.333343505859375,
+      "height": 28
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PLAN A SESSION",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 138.33333587646484,
+      "width": 179.3333282470703,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "PLAN A SESSION",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 138.33333587646484,
+      "width": 179.3333282470703,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot",
+    "AXValue": null,
+    "frame": {
+      "x": 211.3333282470703,
+      "y": 147.33333587646484,
+      "width": 162.6666717529297,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot and propose a time.",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 156.33333587646484,
+      "width": 179.3333282470703,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find a meeting spot and propose a time.",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 156.33333587646484,
+      "width": 179.3333282470703,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Hi Alice \u2014 keen for an easy run this week? (QA demo chat)",
+    "AXValue": null,
+    "frame": {
+      "x": 33,
+      "y": 132.3333282470703,
+      "width": 234.66665649414062,
+      "height": 40.00001525878906
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Hi Alice \u2014 keen for an easy run this week? (QA demo chat)",
+    "AXValue": null,
+    "frame": {
+      "x": 33,
+      "y": 132.3333282470703,
+      "width": 234.66665649414062,
+      "height": 40.00001525878906
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open session proposal",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 189.3333282470703,
+      "width": 358,
+      "height": 220
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open session confirmed",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 421.3333282470703,
+      "width": 358,
+      "height": 164
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Open session confirmed",
+    "AXValue": null,
+    "frame": {
+      "width": 358,
+      "x": 16,
+      "height": 140,
+      "y": 597.3333282470703
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 390,
+      "x": 0,
+      "height": 30,
+      "y": 708.9999949137369
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 390,
+      "x": 0,
+      "height": 30,
+      "y": 708.9999949137369
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Message\u2026",
+    "AXValue": null,
+    "frame": {
+      "width": 277.3333435058594,
+      "x": 17,
+      "height": 49,
+      "y": 752.0000152587891
+    },
+    "enabled": true,
+    "type": "TextArea",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 30,
+      "x": 261.3333435058594,
+      "height": 49,
+      "y": 752.0000152587891
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 273.00332824707027,
+      "x": 21.330015258789103,
+      "height": 24.5,
+      "y": 773.5000152587891
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Send",
+    "AXValue": null,
+    "frame": {
+      "width": 70.66665649414062,
+      "x": 303.3333435058594,
+      "height": 48,
+      "y": 754.0000152587891
+    },
+    "enabled": false,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "User blocked",
+    "AXValue": null,
+    "frame": {
+      "x": 35,
+      "height": 172.33333333333331,
+      "width": 320,
+      "y": 342.3333333333333
+    },
+    "enabled": true,
+    "type": "Sheet",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "User blocked",
+    "AXValue": null,
+    "frame": {
+      "x": 65,
+      "y": 364.3333333333333,
+      "width": 260,
+      "height": 20.333333333333314
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "You won't be matched or contacted by this user.",
+    "AXValue": null,
+    "frame": {
+      "y": 392.3333333333333,
+      "x": 65,
+      "width": 260,
+      "height": 38
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 322,
+      "y": 342.3333333333333,
+      "width": 30,
+      "height": 92.33333333333331
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 35,
+      "height": 30,
+      "width": 320,
+      "y": 401.66666666666663
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 342.3333333333333,
+      "height": 92.33333333333331,
+      "width": 30,
+      "x": 322
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 401.66666666666663,
+      "x": 35,
+      "width": 320,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "OK",
+    "AXValue": null,
+    "frame": {
+      "x": 51,
+      "y": 450.6666666666667,
+      "height": 48,
+      "width": 288
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 80.00000000000006,
+      "x": 322,
+      "width": 30,
+      "y": 434.6666666666667
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 481.6666666666667,
+      "height": 30,
+      "x": 35,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 322,
+      "height": 80.00000000000006,
+      "y": 434.6666666666667,
+      "width": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 481.6666666666667,
+      "height": 30,
+      "x": 35,
+      "width": 320
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

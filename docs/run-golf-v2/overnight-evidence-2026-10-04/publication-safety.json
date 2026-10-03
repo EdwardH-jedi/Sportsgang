@@ -1,0 +1,10 @@
+{
+  "utc_time": "2026-10-03T18:18:03.665353+00:00",
+  "candidate_files_scanned": 279,
+  "private_values_not_published": true,
+  "JWT_literal_matches": 0,
+  "credential_files_included": false,
+  "png_scope": "fresh simulator captures reviewed; no typed-password plaintext shown",
+  "total_candidate_bytes": 13691712,
+  "largest_file_bytes": 2649151
+}

@@ -1,0 +1,234 @@
+[
+  {
+    "name": "pg-start",
+    "command": [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "sg-codex-r1r7-pg",
+      "--label",
+      "review=sg-r1r7-20261004",
+      "-e",
+      "POSTGRES_USER=review",
+      "-e",
+      "POSTGRES_DB=sg_review",
+      "-e",
+      "POSTGRES_PASSWORD",
+      "-p",
+      "127.0.0.1:55504:5432",
+      "--tmpfs",
+      "/var/lib/postgresql/data",
+      "postgres:16-alpine"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 0.43
+  },
+  {
+    "name": "redis-start",
+    "command": [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "sg-codex-r1r7-redis",
+      "--label",
+      "review=sg-r1r7-20261004",
+      "-p",
+      "127.0.0.1:56504:6379",
+      "redis:7-alpine"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 0.22
+  },
+  {
+    "name": "migration",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 0,
+    "seconds": 3.29
+  },
+  {
+    "name": "ruff-check",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "ruff",
+      "check",
+      "."
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 0,
+    "seconds": 0.69
+  },
+  {
+    "name": "ruff-format",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "ruff",
+      "format",
+      "--check",
+      "."
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "name": "api-tests",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "pytest",
+      "-q"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 0,
+    "seconds": 134.99
+  },
+  {
+    "name": "integration",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "pytest",
+      "tests_integration",
+      "-q",
+      "-rs"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 0,
+    "seconds": 29.33
+  },
+  {
+    "name": "pg-sydney-default",
+    "command": [
+      "docker",
+      "exec",
+      "sg-codex-r1r7-pg",
+      "psql",
+      "-U",
+      "review",
+      "-d",
+      "sg_review",
+      "-c",
+      "ALTER DATABASE sg_review SET timezone TO 'Australia/Sydney'"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 0.18
+  },
+  {
+    "name": "integration-sydney",
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "pytest",
+      "tests_integration",
+      "-q",
+      "-rs"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api",
+    "exit": 1,
+    "seconds": 29.08
+  },
+  {
+    "name": "mobile-lint",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "-w",
+      "@protin/mobile"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 2.58
+  },
+  {
+    "name": "mobile-typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "-w",
+      "@protin/mobile"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 2.06
+  },
+  {
+    "name": "shared-typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "-w",
+      "@protin/shared-types"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 1.9
+  },
+  {
+    "name": "mobile-tests",
+    "command": [
+      "npm",
+      "run",
+      "test:ci",
+      "-w",
+      "@protin/mobile",
+      "--",
+      "--runInBand",
+      "--watchman=false"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 0,
+    "seconds": 27.11
+  },
+  {
+    "name": "ios-export",
+    "command": [
+      "npx",
+      "--no-install",
+      "expo",
+      "export",
+      "--platform",
+      "ios",
+      "--output-dir",
+      "/private/tmp/sportsgang-r1-r7-review-bootstrap/ios-export"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/mobile",
+    "exit": 0,
+    "seconds": 10.51
+  },
+  {
+    "name": "qa-launcher",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "scripts/qa/test_qa.py",
+      "-v"
+    ],
+    "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004",
+    "exit": 1,
+    "seconds": 179.73
+  }
+]

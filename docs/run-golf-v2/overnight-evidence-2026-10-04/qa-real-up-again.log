@@ -1,0 +1,27 @@
+[qa] starting PostgreSQL and Redis (project sg-codex-r1r7-real)
+ Container sg-codex-r1r7-real-postgres-1 Starting
+ Container sg-codex-r1r7-real-redis-1 Starting
+ Container sg-codex-r1r7-real-postgres-1 Started
+ Container sg-codex-r1r7-real-redis-1 Started
+ Container sg-codex-r1r7-real-redis-1 Waiting
+ Container sg-codex-r1r7-real-postgres-1 Waiting
+ Container sg-codex-r1r7-real-postgres-1 Healthy
+ Container sg-codex-r1r7-real-redis-1 Healthy
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8144 (pid 51575)
+[qa] Metro up on port 8194 (pid 51811)
+[qa] worktree /private/tmp/sportsgang-r1-r7-review-20261004
+[qa] HEAD cd567c80af2f + uncommitted changes
+[qa] api: started from cd567c80af2f (worktree had uncommitted changes then); apps/api unchanged since, so it serves that code
+[qa] metro: started from cd567c80af2f at 2026-10-03T17:57:54+00:00; apps/mobile, packages has uncommitted changes — run qa:restart if they are newer
+   OK  ownership    project sg-codex-r1r7-real owned by this worktree (adopted 2026-10-03T17:05:13+00:00)
+   OK  containers   sg-codex-r1r7-real postgres + redis
+   OK  api          running: pid 51575 identity verified; http://127.0.0.1:8144 health=200
+   OK  auth read    QA Alice signed in; 55 past sessions in her My Plans
+   OK  metro        running: pid 51811 identity verified; port 8194 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8144 (expected http://127.0.0.1:8144)
+   fixtures     {'qa_users': 8, 'qa_sessions': 81, 'qa_bookings': 58, 'qa_history_sessions': 55, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8194
+   credentials  /private/tmp/sportsgang-r1-r7-review-20261004/.qa/credentials.json
+   manifest     /private/tmp/sportsgang-r1-r7-review-20261004/.qa/manifest.json
+   logs         /private/tmp/sportsgang-r1-r7-review-20261004/.qa/logs

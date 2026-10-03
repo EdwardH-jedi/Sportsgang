@@ -1,0 +1,379 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 844
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Back",
+    "AXValue": null,
+    "frame": {
+      "x": 16,
+      "y": 79,
+      "width": 21.333332061767578,
+      "height": 34.333335876464844
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Users",
+    "AXValue": null,
+    "frame": {
+      "x": 127.33333206176758,
+      "y": 83.33333206176758,
+      "width": 124.33333587646484,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Users",
+    "AXValue": null,
+    "frame": {
+      "x": 127.33333206176758,
+      "y": 83.33333206176758,
+      "width": 124.33333587646484,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "People you block are restricted from supported interactions such as joining your games where supported.",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "y": 130.33333587646484,
+      "width": 390,
+      "height": 82
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "People you block are restricted from supported interactions such as joining your games where supported.",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "y": 130.33333587646484,
+      "width": 390,
+      "height": 82
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked user QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "y": 228.3333282470703,
+      "width": 342,
+      "height": 76.00001525878906
+    },
+    "enabled": true,
+    "type": "Group",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "y": 245.3333282470703,
+      "width": 204,
+      "height": 22.000015258789062
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "y": 245.3333282470703,
+      "width": 204,
+      "height": 22.000015258789062
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Unblock QA Bob",
+    "AXValue": null,
+    "frame": {
+      "x": 261,
+      "y": 249.3333282470703,
+      "width": 88,
+      "height": 34.00001525878906
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Oct 4, 2026",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "y": 269.3333282470703,
+      "width": 204,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Blocked Oct 4, 2026",
+    "AXValue": null,
+    "frame": {
+      "x": 41,
+      "y": 269.3333282470703,
+      "width": 204,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 357,
+      "y": 233.3333282470703,
+      "width": 30,
+      "height": 563.3366717529296
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 47.32999491373698,
+      "y": 810.6666615804036,
+      "width": 295.34001017252604,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 357,
+      "y": 233.3333282470703,
+      "width": 30,
+      "height": 563.3366717529296
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 295.34001017252604,
+      "x": 47.32999491373698,
+      "height": 30,
+      "y": 810.6666615804036
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Unblock this user?",
+    "AXValue": null,
+    "frame": {
+      "width": 320,
+      "x": 35,
+      "y": 342.3333333333333,
+      "height": 172.33333333333331
+    },
+    "enabled": true,
+    "type": "Sheet",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Unblock this user?",
+    "AXValue": null,
+    "frame": {
+      "width": 260,
+      "x": 65,
+      "y": 364.3333333333333,
+      "height": 20.333333333333314
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "They may be able to interact with you again in supported areas.",
+    "AXValue": null,
+    "frame": {
+      "width": 260,
+      "x": 65,
+      "y": 392.3333333333333,
+      "height": 38
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 342.3333333333333,
+      "width": 30,
+      "height": 92.33333333333331,
+      "x": 322
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 320,
+      "y": 401.66666666666663,
+      "height": 30,
+      "x": 35
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 30,
+      "height": 92.33333333333331,
+      "y": 342.3333333333333,
+      "x": 322
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "y": 401.66666666666663,
+      "width": 320,
+      "height": 30,
+      "x": 35
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Cancel",
+    "AXValue": null,
+    "frame": {
+      "y": 450.6666666666667,
+      "width": 140,
+      "height": 48,
+      "x": 51
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Unblock",
+    "AXValue": null,
+    "frame": {
+      "width": 140,
+      "height": 48,
+      "y": 450.6666666666667,
+      "x": 199
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 30,
+      "height": 80.00000000000006,
+      "y": 434.6666666666667,
+      "x": 322
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "width": 320,
+      "y": 481.6666666666667,
+      "x": 35
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "width": 30,
+      "y": 434.6666666666667,
+      "height": 80.00000000000006,
+      "x": 322
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "width": 320,
+      "y": 481.6666666666667,
+      "x": 35
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

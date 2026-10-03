@@ -1,0 +1,50 @@
+[
+  {
+    "name": "stale nonexistent owner path refuses takeover",
+    "actual": "refused",
+    "expected": "refused",
+    "status": "PASS"
+  },
+  {
+    "name": "stale owner record preserved",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "interrupted owner write fails closed",
+    "actual": "JSONDecodeError before mutation",
+    "expected": "JSONDecodeError before mutation",
+    "status": "PASS"
+  },
+  {
+    "name": "interrupted record preserved",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "api doc-only later HEAD remains same source",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "api changed code requires restart",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "metro doc-only later HEAD remains same source",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  },
+  {
+    "name": "metro changed code requires restart",
+    "actual": true,
+    "expected": true,
+    "status": "PASS"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "height": 844,
+      "width": 390,
+      "y": 0,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "MUTUAL INTEREST",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "y": 63,
+      "width": 342,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "MUTUAL INTEREST",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "y": 63,
+      "width": 342,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "height": 36,
+      "y": 81,
+      "width": 342,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "height": 36,
+      "width": 342,
+      "y": 81,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Q, QA Bob, 4:10\u202fAM, Hi Alice \u2014 keen for an easy run this week? (QA demo chat), Bondi, Running \u00b7 Intermediate",
+    "AXValue": null,
+    "frame": {
+      "height": 115,
+      "width": 342,
+      "y": 141,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "y": 732,
+      "width": 390,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "y": 732,
+      "width": 390,
+      "x": 0
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "width": 97.66666412353516,
+      "height": 48,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "x": 97.66666412353516,
+      "width": 97.33333587646484,
+      "y": 766,
+      "height": 48
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "x": 195,
+      "width": 97.66665649414062,
+      "height": 48,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "x": 292.6666564941406,
+      "width": 97.33334350585938,
+      "height": 48,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  }
+]

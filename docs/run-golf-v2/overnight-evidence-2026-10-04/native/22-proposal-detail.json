@@ -1,0 +1,353 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "height": 844,
+      "x": 0,
+      "y": 0,
+      "width": 390
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Back",
+    "AXValue": null,
+    "frame": {
+      "height": 34.333335876464844,
+      "y": 79,
+      "x": 16,
+      "width": 28
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Session",
+    "AXValue": null,
+    "frame": {
+      "height": 26,
+      "y": 83.33333206176758,
+      "x": 159,
+      "width": 68
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Session",
+    "AXValue": null,
+    "frame": {
+      "height": 26,
+      "width": 68,
+      "x": 159,
+      "y": 83.33333206176758
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "AWAITING CONFIRMATION",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "y": 159.33333587646484,
+      "x": 41,
+      "width": 175.3333282470703
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "AWAITING CONFIRMATION",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "y": 159.33333587646484,
+      "width": 175.3333282470703,
+      "x": 41
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "WITH",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "width": 114,
+      "x": 24,
+      "y": 196.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "WITH",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "width": 114,
+      "x": 24,
+      "y": 196.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 22,
+      "y": 196.33333587646484,
+      "x": 138,
+      "width": 228
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "QA Bob",
+    "AXValue": null,
+    "frame": {
+      "height": 22,
+      "y": 196.33333587646484,
+      "x": 138,
+      "width": 228
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SPORT",
+    "AXValue": null,
+    "frame": {
+      "height": 16.000015258789062,
+      "width": 114,
+      "x": 24,
+      "y": 243.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SPORT",
+    "AXValue": null,
+    "frame": {
+      "height": 16.000015258789062,
+      "y": 243.33333587646484,
+      "width": 114,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Running",
+    "AXValue": null,
+    "frame": {
+      "height": 22.000015258789062,
+      "width": 228,
+      "x": 138,
+      "y": 243.33333587646484
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Running",
+    "AXValue": null,
+    "frame": {
+      "height": 22.000015258789062,
+      "y": 243.33333587646484,
+      "x": 138,
+      "width": 228
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "STARTS",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "y": 290.33333587646484,
+      "width": 114,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "STARTS",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 114,
+      "y": 290.33333587646484,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mon 5 Oct \u00b7 11:30 am",
+    "AXValue": null,
+    "frame": {
+      "x": 138,
+      "y": 290.33333587646484,
+      "width": 228,
+      "height": 22
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mon 5 Oct \u00b7 11:30 am",
+    "AXValue": null,
+    "frame": {
+      "x": 138,
+      "width": 228,
+      "y": 290.33333587646484,
+      "height": 22
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "ENDS",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 114,
+      "y": 337.33333587646484,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "ENDS",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 114,
+      "y": 337.33333587646484,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mon 5 Oct \u00b7 12:30 pm",
+    "AXValue": null,
+    "frame": {
+      "x": 138,
+      "y": 337.33333587646484,
+      "width": 228,
+      "height": 22
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Mon 5 Oct \u00b7 12:30 pm",
+    "AXValue": null,
+    "frame": {
+      "x": 138,
+      "y": 337.33333587646484,
+      "width": 228,
+      "height": 22
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Times are Sydney time",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 342,
+      "y": 376.33333587646484,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Times are Sydney time",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "width": 342,
+      "y": 376.33333587646484,
+      "height": 18
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Cancel",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "y": 426.33333587646484,
+      "width": 342,
+      "height": 54
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 47.33,
+      "width": 295.34000000000003,
+      "y": 811.0000025431315,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 47.33,
+      "y": 811.0000025431315,
+      "width": 295.34000000000003,
+      "height": 30
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

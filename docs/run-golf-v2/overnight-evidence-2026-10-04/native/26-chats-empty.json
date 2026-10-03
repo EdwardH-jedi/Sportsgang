@@ -1,0 +1,184 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "width": 390,
+      "x": 0,
+      "height": 844,
+      "y": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "MUTUAL INTEREST",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "y": 63,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "MUTUAL INTEREST",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 16,
+      "y": 63
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "y": 81,
+      "height": 36
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "width": 342,
+      "x": 24,
+      "height": 36,
+      "y": 81
+    },
+    "enabled": true,
+    "type": "Heading",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "No chats yet",
+    "AXValue": null,
+    "frame": {
+      "width": 108,
+      "x": 141,
+      "y": 323,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "No chats yet",
+    "AXValue": null,
+    "frame": {
+      "width": 108,
+      "x": 141,
+      "y": 323,
+      "height": 26
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "When you and someone both show interest in Explore, your chat opens here.\nUse it to agree a time and propose a session.",
+    "AXValue": null,
+    "frame": {
+      "width": 294,
+      "x": 48,
+      "height": 88,
+      "y": 357
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "When you and someone both show interest in Explore, your chat opens here.\nUse it to agree a time and propose a session.",
+    "AXValue": null,
+    "frame": {
+      "width": 294,
+      "x": 48,
+      "y": 357,
+      "height": 88
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Go to Explore",
+    "AXValue": null,
+    "frame": {
+      "width": 151,
+      "x": 119.66666412353516,
+      "y": 461,
+      "height": 50
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Explore",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.66666412353516,
+      "x": 0,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "My Plans",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.33333587646484,
+      "y": 766,
+      "x": 97.66666412353516
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Chats",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.66665649414062,
+      "x": 195,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Profile",
+    "AXValue": null,
+    "frame": {
+      "height": 48,
+      "width": 97.33334350585938,
+      "x": 292.6666564941406,
+      "y": 766
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  }
+]

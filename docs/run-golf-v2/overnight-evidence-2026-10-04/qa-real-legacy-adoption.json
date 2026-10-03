@@ -1,0 +1,48 @@
+{
+  "before": {
+    "api": {
+      "pid": 79414,
+      "identity": {
+        "pgid": 79414,
+        "lstart": "Sun Oct 4 04:05:11 2026",
+        "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8144",
+        "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/api"
+      },
+      "check": [
+        "legacy",
+        "pid 79414 matches its legacy record"
+      ]
+    },
+    "metro": {
+      "pid": 79433,
+      "identity": {
+        "pgid": 79433,
+        "lstart": "Sun Oct 4 04:05:12 2026",
+        "command": "npm exec expo start --localhost --port 8194",
+        "cwd": "/private/tmp/sportsgang-r1-r7-review-20261004/apps/mobile"
+      },
+      "check": [
+        "legacy",
+        "pid 79433 matches its legacy record"
+      ]
+    }
+  },
+  "after": {
+    "api": {
+      "pid": 79414,
+      "check": [
+        "running",
+        "pid 79414 identity verified"
+      ]
+    },
+    "metro": {
+      "pid": 79433,
+      "check": [
+        "running",
+        "pid 79433 identity verified"
+      ]
+    }
+  },
+  "same_pids": true,
+  "owner_how": "adopted"
+}

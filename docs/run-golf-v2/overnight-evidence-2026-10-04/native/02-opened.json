@@ -1,0 +1,15 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "width": 390,
+      "height": 844,
+      "x": 0,
+      "y": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  }
+]

@@ -1,0 +1,2 @@
+sportsgang-qa-redis-1 127.0.0.1:56470->6379/tcp
+sportsgang-qa-postgres-1 127.0.0.1:55470->5432/tcp

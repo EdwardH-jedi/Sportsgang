@@ -1,0 +1,249 @@
+[
+  {
+    "AXLabel": "Expo Go",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "height": 844,
+      "width": 390,
+      "y": 0
+    },
+    "enabled": true,
+    "type": "Application",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "sportsgang",
+    "AXValue": null,
+    "frame": {
+      "x": 85,
+      "y": 88,
+      "width": 219.66665649414062,
+      "height": 52.66667175292969
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "sportsgang",
+    "AXValue": null,
+    "frame": {
+      "height": 52.66667175292969,
+      "y": 88,
+      "width": 219.66665649414062,
+      "x": 85
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SYDNEY",
+    "AXValue": null,
+    "frame": {
+      "x": 167.6666717529297,
+      "y": 144.66666793823242,
+      "width": 54.666656494140625,
+      "height": 16
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "SYDNEY",
+    "AXValue": null,
+    "frame": {
+      "height": 16,
+      "y": 144.66666793823242,
+      "width": 54.666656494140625,
+      "x": 167.6666717529297
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find your",
+    "AXValue": null,
+    "frame": {
+      "x": 116,
+      "y": 343,
+      "width": 157.66665649414062,
+      "height": 46
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Find your",
+    "AXValue": null,
+    "frame": {
+      "x": 116,
+      "y": 343,
+      "width": 157.66665649414062,
+      "height": 46
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "next game.",
+    "AXValue": null,
+    "frame": {
+      "x": 100.33333587646484,
+      "y": 405,
+      "width": 189,
+      "height": 46
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "next game.",
+    "AXValue": null,
+    "frame": {
+      "x": 100.33333587646484,
+      "y": 405,
+      "width": 189,
+      "height": 46
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Match, chat, and plan your next session.",
+    "AXValue": null,
+    "frame": {
+      "x": 42.33333396911621,
+      "y": 467,
+      "width": 305.33331298828125,
+      "height": 33
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Match, chat, and plan your next session.",
+    "AXValue": null,
+    "frame": {
+      "height": 33,
+      "y": 467,
+      "width": 305.33331298828125,
+      "x": 42.33333396911621
+    },
+    "enabled": true,
+    "type": "StaticText",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Get started",
+    "AXValue": null,
+    "frame": {
+      "x": 24,
+      "y": 682,
+      "width": 342,
+      "height": 52
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Log in",
+    "AXValue": null,
+    "frame": {
+      "height": 54,
+      "y": 742,
+      "width": 342,
+      "x": 24
+    },
+    "enabled": true,
+    "type": "Button",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 749.3400000000001,
+      "y": 47.329999999999984,
+      "width": 30,
+      "x": 357
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "height": 30,
+      "y": 811,
+      "width": 295.34000000000003,
+      "x": 47.33
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Vertical scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 357,
+      "y": 47.329999999999984,
+      "width": 30,
+      "height": 749.3400000000001
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Horizontal scroll bar, 1 page",
+    "AXValue": "0%",
+    "frame": {
+      "x": 47.33,
+      "height": 30,
+      "width": 295.34000000000003,
+      "y": 811
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Bottom Sheet",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "height": 679.3333129882812,
+      "width": 390,
+      "y": 409.6666564941406
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  },
+  {
+    "AXLabel": "Bottom Sheet",
+    "AXValue": null,
+    "frame": {
+      "x": 0,
+      "height": 679.3333129882812,
+      "width": 390,
+      "y": 409.6666564941406
+    },
+    "enabled": true,
+    "type": "Slider",
+    "AXUniqueId": null
+  }
+]

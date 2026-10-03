@@ -1,0 +1,210 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+...FF........................                                            [100%]
+=================================== FAILURES ===================================
+_____________________________ test_booking_journey _____________________________
+
+    async def test_booking_journey() -> None:
+        # Run separately from the SQLite unit suite, after `alembic upgrade head`.
+        # No dependency overrides: this must use PostgreSQL and Redis from the env.
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                health = await client.get("/health")
+                assert health.status_code == 200, health.text
+                assert health.json()["checks"] == {"db": "ok", "redis": "ok"}
+
+                async def register() -> tuple[dict[str, str], str]:
+                    response = await client.post(
+                        "/auth/register",
+                        json={"email": f"integration-{uuid4().hex}@example.com", "password": "integration-password-123"},
+                    )
+                    assert response.status_code == 201, response.text
+                    headers = {"Authorization": f"Bearer {response.json()['access_token']}"}
+                    me = await client.get("/auth/me", headers=headers)
+                    assert me.status_code == 200, me.text
+                    return headers, me.json()["id"]
+
+>               proposer, proposer_id = await register()
+                                        ^^^^^^^^^^^^^^^^
+
+tests_integration/test_booking_journey.py:31:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    async def register() -> tuple[dict[str, str], str]:
+        response = await client.post(
+            "/auth/register",
+            json={"email": f"integration-{uuid4().hex}@example.com", "password": "integration-password-123"},
+        )
+>       assert response.status_code == 201, response.text
+E       AssertionError: {"error":"Rate limit exceeded: 3 per 1 minute"}
+E       assert 429 == 201
+E        +  where 429 = <Response [429 Too Many Requests]>.status_code
+
+tests_integration/test_booking_journey.py:25: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  slowapi:extension.py:510 ratelimit 3 per 1 minute (127.0.0.1) exceeded at endpoint: /auth/register
+___ test_legacy_naive_payload_stores_one_instant_under_any_api_timezone[UTC] ___
+
+process_tz = 'UTC'
+
+    @pytest.mark.parametrize("process_tz", ["UTC", "Australia/Sydney", "America/Los_Angeles"], indirect=True)
+    async def test_legacy_naive_payload_stores_one_instant_under_any_api_timezone(process_tz: str) -> None:
+        day = (datetime.now(timezone.utc) + timedelta(days=20)).date().isoformat()
+        expected = datetime.fromisoformat(f"{day}T09:00:00+00:00")
+>       async with app.router.lifespan_context(app):
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_booking_time.py:96:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:217: in __aexit__
+    await anext(self.gen)
+app/main.py:42: in lifespan
+    await redis_pool.aclose()
+.venv/lib/python3.12/site-packages/redis/asyncio/connection.py:1181: in aclose
+    await self.disconnect()
+.venv/lib/python3.12/site-packages/redis/asyncio/connection.py:1177: in disconnect
+    raise exc
+.venv/lib/python3.12/site-packages/redis/asyncio/connection.py:438: in disconnect
+    self._writer.close()  # type: ignore[union-attr]
+    ^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:358: in close
+    return self._transport.close()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:1213: in close
+    super().close()
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:875: in close
+    self._loop.call_soon(self._call_connection_lost, None)
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:799: in call_soon
+    self._check_closed()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_UnixSelectorEventLoop running=False closed=True debug=False>
+
+    def _check_closed(self):
+        if self._closed:
+>           raise RuntimeError('Event loop is closed')
+E           RuntimeError: Event loop is closed
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:545: RuntimeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+  /private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+  /private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+tests_integration/test_contact_restriction.py::test_live_websocket_block_closes_sockets_and_refuses_reconnect
+  /private/tmp/sportsgang-r1-r7-review-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+tests_integration/test_event_capacity.py: 21 warnings
+  /private/tmp/sportsgang-r1-r7-review-20261004/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 failed, 27 passed, 30 warnings in 28.67s

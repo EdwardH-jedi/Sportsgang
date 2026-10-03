@@ -1,0 +1,2 @@
+[qa] stopped api (pid 79414)
+[qa] API stopped; Metro, containers and data untouched. Bring it back with: npm run qa:up -- --no-open --no-seed
