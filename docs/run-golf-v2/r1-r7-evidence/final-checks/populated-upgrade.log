@@ -1,0 +1,15 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+{
+  "failed": [],
+  "passed": [
+    "joined_at_is_timestamptz",
+    "legacy_booking_sport_and_status_kept",
+    "legacy_left_participant_rejoins_same_row",
+    "legacy_login",
+    "legacy_match_messages_readable",
+    "legacy_rows_in_my_plans_segments",
+    "legacy_sport_rows_readable",
+    "retained_rows_and_columns_unchanged",
+    "v2_columns_null_on_legacy_rows"
+  ]
+}

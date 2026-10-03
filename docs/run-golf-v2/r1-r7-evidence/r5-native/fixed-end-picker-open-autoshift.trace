@@ -1,0 +1,10 @@
+[wheel] +131784ms Hour render selectedIndex=10 position=10 contentOffsetProp=440
+[wheel] +131791ms Minute render selectedIndex=0 position=0 contentOffsetProp=0
+[wheel] +131797ms Hour render selectedIndex=12 position=10 contentOffsetProp=440
+[wheel] +131802ms Minute render selectedIndex=2 position=0 contentOffsetProp=0
+[wheel] +131805ms Hour scrollToRow 12 animated=false
+[wheel] +131805ms Minute scrollToRow 2 animated=false
+[wheel] +131808ms Hour scroll y=528
+[wheel] +131808ms Hour momentumEnd y=528 target=12 position=12
+[wheel] +131808ms Minute scroll y=88
+[wheel] +131808ms Minute momentumEnd y=88 target=2 position=2

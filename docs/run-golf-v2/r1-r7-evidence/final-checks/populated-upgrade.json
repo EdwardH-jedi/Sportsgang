@@ -1,0 +1,106 @@
+{
+  "database": "fix_legacy",
+  "run_at_utc": "2026-10-03T14:48:39+00:00",
+  "upgrade_to_0015": "INFO  [alembic.runtime.migration] Running upgrade 0014 -> 0015, add apple_refresh_token to users (Sign in with Apple revocation) | current: 0015",
+  "fixture_ids": {
+    "ann": "392e60f5-e2fa-433c-ac5a-a26204989cb1",
+    "ben": "d22fec99-6220-4b6c-a3b9-864e1f13f3ce",
+    "cat": "dcf49474-78b3-4f27-be2a-5201b79910e5",
+    "match": "5f8dfb90-e1d3-4b11-9514-1e6a9e36f41a",
+    "b_conf": "8bef4d06-856c-49c8-88ec-8b882bfa3fcd",
+    "b_prop": "1005f84c-7b1f-4302-b2f1-22fad2b4f4c4",
+    "b_done": "f8b0a6c6-4542-412d-b317-71f4a9c41085",
+    "e_future": "4a863d1e-d20e-4d8a-bc8b-d992b8d97208",
+    "e_past": "e4b2bb7f-1191-421f-92aa-47f5f47baebe",
+    "left_participant": "5b188561-1bf2-462d-ae09-8bc15dbd4bf6"
+  },
+  "upgrade_to_head": "INFO  [alembic.runtime.migration] Running upgrade 0015 -> 0016, run + golf v2: sport preference and group-session detail columns | current: 0016 (head)",
+  "checks": {
+    "retained_rows_and_columns_unchanged": {
+      "status": "PASS",
+      "counts": {
+        "users": 3,
+        "user_profiles": 3,
+        "sport_profiles": 8,
+        "identity_preferences": 2,
+        "matches": 1,
+        "messages": 1,
+        "bookings": 3,
+        "events": 2,
+        "event_participants": 4
+      },
+      "changed": []
+    },
+    "v2_columns_null_on_legacy_rows": {
+      "status": "PASS",
+      "sport_profiles_with_v2": 0,
+      "events_with_v2": 0
+    },
+    "joined_at_is_timestamptz": {
+      "status": "PASS",
+      "data_type": "timestamp with time zone"
+    },
+    "legacy_login": {
+      "status": "PASS"
+    },
+    "legacy_sport_rows_readable": {
+      "status": "PASS",
+      "sports": [
+        "golf",
+        "gym",
+        "running",
+        "tennis"
+      ]
+    },
+    "legacy_match_messages_readable": {
+      "status": "PASS"
+    },
+    "legacy_left_participant_rejoins_same_row": {
+      "status": "PASS",
+      "http": 200,
+      "rows": [
+        [
+          "5b188561-1bf2-462d-ae09-8bc15dbd4bf6",
+          "joined"
+        ]
+      ]
+    },
+    "legacy_rows_in_my_plans_segments": {
+      "status": "PASS",
+      "segments": {
+        "booking_upcoming": [
+          "8bef4d06-856c-49c8-88ec-8b882bfa3fcd"
+        ],
+        "booking_pending": [
+          "1005f84c-7b1f-4302-b2f1-22fad2b4f4c4"
+        ],
+        "booking_past": [
+          "f8b0a6c6-4542-412d-b317-71f4a9c41085"
+        ],
+        "event_upcoming": [
+          "4a863d1e-d20e-4d8a-bc8b-d992b8d97208"
+        ],
+        "event_past": [
+          "e4b2bb7f-1191-421f-92aa-47f5f47baebe"
+        ]
+      }
+    },
+    "legacy_booking_sport_and_status_kept": {
+      "status": "PASS"
+    }
+  },
+  "summary": {
+    "failed": [],
+    "passed": [
+      "joined_at_is_timestamptz",
+      "legacy_booking_sport_and_status_kept",
+      "legacy_left_participant_rejoins_same_row",
+      "legacy_login",
+      "legacy_match_messages_readable",
+      "legacy_rows_in_my_plans_segments",
+      "legacy_sport_rows_readable",
+      "retained_rows_and_columns_unchanged",
+      "v2_columns_null_on_legacy_rows"
+    ]
+  }
+}

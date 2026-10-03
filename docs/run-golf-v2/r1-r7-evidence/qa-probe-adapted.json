@@ -1,0 +1,11 @@
+{
+  "unrelated_child_cwd": "/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/tmpzlomsi8d",
+  "claimed_cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7/apps/api",
+  "check_proc": "foreign",
+  "check_proc_detail": "pid 44024 does not match its legacy record: cwd /private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/tmpzlomsi8d (recorded /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7/apps/api); command '/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -c import time; time.sleep(300) --port 8130' (recorded 'uv run uvicorn app.main:app --port 8130'); start time cannot be compared",
+  "stop_proc_refused": true,
+  "stop_proc_message": "[qa] ERROR: refusing to stop sacrificial dummy only: pid 44024 does not match its legacy record: cwd /private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/tmpzlomsi8d (recorded /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7/apps/api); command '/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -c import time; time.sleep(300) --port 8130' (recorded 'uv run uvicorn app.main:app --port 8130'); start time cannot be compared",
+  "unrelated_child_still_running": true,
+  "compose_project_default": "sportsgang-qa",
+  "project_is_configurable": true
+}

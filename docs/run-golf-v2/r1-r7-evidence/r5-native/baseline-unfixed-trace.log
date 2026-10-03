@@ -1,0 +1,86 @@
+[wheel] +187553ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +187567ms Minute render selectedIndex=0 contentOffsetProp=0
+[wheel] +187576ms Hour effect scrollTo y=396 animated=false
+[wheel] +187576ms Minute effect scrollTo y=0 animated=false
+[wheel] +212796ms Minute press index=2 last=0
+[wheel] +212812ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +212819ms Minute render selectedIndex=2 contentOffsetProp=88
+[wheel] +212830ms Minute effect scrollTo y=88 animated=false
+[wheel] +212838ms Minute scroll y=88
+[wheel] +212851ms Minute scroll y=88
+[wheel] +212868ms Minute scroll y=89
+[wheel] +212884ms Minute scroll y=91
+[wheel] +212900ms Minute scroll y=93
+[wheel] +212917ms Minute scroll y=96
+[wheel] +212934ms Minute scroll y=99
+[wheel] +212950ms Minute scroll y=103
+[wheel] +212967ms Minute scroll y=107
+[wheel] +212984ms Minute scroll y=110
+[wheel] +213000ms Minute scroll y=114
+[wheel] +213017ms Minute scroll y=118
+[wheel] +213034ms Minute scroll y=121
+[wheel] +213051ms Minute scroll y=124
+[wheel] +213067ms Minute scroll y=127
+[wheel] +213084ms Minute scroll y=129
+[wheel] +213101ms Minute scroll y=131
+[wheel] +213117ms Minute scroll y=132
+[wheel] +213135ms Minute scroll y=132
+[wheel] +213135ms Minute momentumEnd y=132 last=2
+[wheel] +213136ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +213141ms Minute render selectedIndex=3 contentOffsetProp=132
+[wheel] +213144ms Minute effect scrollTo y=132 animated=false
+[wheel] +285472ms Minute press index=2 last=3
+[wheel] +285487ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +285500ms Minute render selectedIndex=2 contentOffsetProp=88
+[wheel] +285504ms Minute effect scrollTo y=88 animated=false
+[wheel] +285507ms Minute scroll y=88
+[wheel] +285518ms Minute scroll y=88
+[wheel] +285535ms Minute scroll y=87
+[wheel] +285553ms Minute scroll y=86
+[wheel] +285568ms Minute scroll y=83
+[wheel] +285585ms Minute scroll y=81
+[wheel] +285603ms Minute scroll y=78
+[wheel] +285618ms Minute scroll y=74
+[wheel] +285635ms Minute scroll y=71
+[wheel] +285651ms Minute scroll y=67
+[wheel] +285668ms Minute scroll y=63
+[wheel] +285685ms Minute scroll y=59
+[wheel] +285701ms Minute scroll y=56
+[wheel] +285718ms Minute scroll y=53
+[wheel] +285735ms Minute scroll y=50
+[wheel] +285751ms Minute scroll y=47
+[wheel] +285768ms Minute scroll y=46
+[wheel] +285785ms Minute scroll y=45
+[wheel] +285801ms Minute scroll y=44
+[wheel] +285818ms Minute scroll y=44
+[wheel] +285818ms Minute momentumEnd y=44 last=2
+[wheel] +285819ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +285824ms Minute render selectedIndex=1 contentOffsetProp=44
+[wheel] +285828ms Minute effect scrollTo y=44 animated=false
+[wheel] +351470ms Minute press index=2 last=1
+[wheel] +351484ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +351491ms Minute render selectedIndex=2 contentOffsetProp=88
+[wheel] +351494ms Minute effect scrollTo y=88 animated=false
+[wheel] +351496ms Minute scroll y=88
+[wheel] +351519ms Minute scroll y=89
+[wheel] +351535ms Minute scroll y=90
+[wheel] +351552ms Minute scroll y=92
+[wheel] +351569ms Minute scroll y=94
+[wheel] +351585ms Minute scroll y=97
+[wheel] +351602ms Minute scroll y=100
+[wheel] +351619ms Minute scroll y=104
+[wheel] +351635ms Minute scroll y=108
+[wheel] +351652ms Minute scroll y=111
+[wheel] +351669ms Minute scroll y=115
+[wheel] +351685ms Minute scroll y=119
+[wheel] +351703ms Minute scroll y=122
+[wheel] +351719ms Minute scroll y=125
+[wheel] +351736ms Minute scroll y=128
+[wheel] +351752ms Minute scroll y=130
+[wheel] +351769ms Minute scroll y=131
+[wheel] +351786ms Minute scroll y=132
+[wheel] +351802ms Minute scroll y=132
+[wheel] +351802ms Minute momentumEnd y=132 last=2
+[wheel] +351805ms Hour render selectedIndex=9 contentOffsetProp=396
+[wheel] +351817ms Minute render selectedIndex=3 contentOffsetProp=132
+[wheel] +351819ms Minute effect scrollTo y=132 animated=false

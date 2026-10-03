@@ -1,0 +1,23 @@
+93845 Minute press index=1 position=2
+93845 Minute scrollToRow 1 animated=true
+93846 Hour render selectedIndex=9 position=9 contentOffsetProp=396
+93850 Minute render selectedIndex=1 position=1 contentOffsetProp=0
+93879 Minute scroll y=88
+93895 Minute scroll y=87
+93912 Minute scroll y=85
+93928 Minute scroll y=83
+93945 Minute scroll y=80
+93962 Minute scroll y=77
+93978 Minute scroll y=74
+93995 Minute scroll y=70
+94012 Minute scroll y=66
+94029 Minute scroll y=62
+94046 Minute scroll y=58
+94062 Minute scroll y=55
+94079 Minute scroll y=52
+94096 Minute scroll y=49
+94113 Minute scroll y=47
+94129 Minute scroll y=45
+94146 Minute scroll y=44
+94163 Minute scroll y=44
+94163 Minute momentumEnd y=44 target=1 position=1

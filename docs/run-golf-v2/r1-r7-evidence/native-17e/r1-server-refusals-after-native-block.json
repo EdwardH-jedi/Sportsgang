@@ -1,0 +1,40 @@
+{
+ "bob": {
+  "POST message": [
+   403,
+   {
+    "detail": "You can't contact this person."
+   }
+  ],
+  "GET messages": 403,
+  "GET /matches total": 0,
+  "POST booking": [
+   403,
+   {
+    "detail": "You can't contact this person."
+   }
+  ]
+ },
+ "alice": {
+  "POST message": [
+   403,
+   {
+    "detail": "You can't contact this person."
+   }
+  ],
+  "GET messages": 403,
+  "GET /matches total": 0,
+  "POST booking": [
+   403,
+   {
+    "detail": "You can't contact this person."
+   }
+  ]
+ },
+ "alice GET /blocks": [
+  {
+   "blocked_display_name": "QA Bob",
+   "created_at": "2026-10-03T14:37:36.448592Z"
+  }
+ ]
+}

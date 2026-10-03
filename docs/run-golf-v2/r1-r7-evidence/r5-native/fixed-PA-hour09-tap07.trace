@@ -1,0 +1,24 @@
+65459 Hour press index=7 position=9
+65459 Hour scrollToRow 7 animated=true
+65461 Hour render selectedIndex=7 position=7 contentOffsetProp=396
+65467 Minute render selectedIndex=0 position=0 contentOffsetProp=0
+65491 Hour scroll y=396
+65508 Hour scroll y=394
+65524 Hour scroll y=392
+65541 Hour scroll y=388
+65557 Hour scroll y=383
+65574 Hour scroll y=377
+65590 Hour scroll y=370
+65607 Hour scroll y=363
+65624 Hour scroll y=355
+65640 Hour scroll y=348
+65657 Hour scroll y=340
+65674 Hour scroll y=333
+65691 Hour scroll y=326
+65708 Hour scroll y=321
+65724 Hour scroll y=316
+65741 Hour scroll y=312
+65758 Hour scroll y=309
+65774 Hour scroll y=308
+65791 Hour scroll y=308
+65791 Hour momentumEnd y=308 target=7 position=7

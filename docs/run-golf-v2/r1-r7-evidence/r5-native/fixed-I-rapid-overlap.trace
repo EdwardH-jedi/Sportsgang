@@ -1,0 +1,46 @@
+175324 Minute press index=2 position=3
+175327 Minute scrollToRow 2 animated=true
+175330 Hour render selectedIndex=8 position=8 contentOffsetProp=396
+175337 Minute render selectedIndex=2 position=2 contentOffsetProp=0
+175375 Minute scroll y=131
+175390 Minute scroll y=130
+175406 Minute scroll y=128
+175423 Minute scroll y=125
+175439 Minute scroll y=122
+175456 Minute scroll y=119
+175473 Minute scroll y=115
+175489 Minute scroll y=111
+175506 Minute scroll y=107
+175523 Minute scroll y=104
+175539 Minute scroll y=100
+175556 Minute scroll y=97
+175573 Minute scroll y=94
+175589 Minute scroll y=92
+175606 Minute scroll y=90
+175623 Minute scroll y=89
+175639 Minute scroll y=88
+175660 Minute scroll y=88
+175660 Minute momentumEnd y=88 target=2 position=2
+175819 Minute press index=1 position=2
+175819 Minute scrollToRow 1 animated=true
+175820 Hour render selectedIndex=8 position=8 contentOffsetProp=396
+175829 Minute render selectedIndex=1 position=1 contentOffsetProp=0
+175856 Minute scroll y=87
+175873 Minute scroll y=86
+175890 Minute scroll y=84
+175906 Minute scroll y=82
+175923 Minute scroll y=79
+175940 Minute scroll y=76
+175957 Minute scroll y=72
+175974 Minute scroll y=68
+175990 Minute scroll y=64
+176007 Minute scroll y=61
+176023 Minute scroll y=57
+176040 Minute scroll y=54
+176056 Minute scroll y=51
+176073 Minute scroll y=48
+176089 Minute scroll y=46
+176106 Minute scroll y=45
+176123 Minute scroll y=44
+176139 Minute scroll y=44
+176139 Minute momentumEnd y=44 target=1 position=1
