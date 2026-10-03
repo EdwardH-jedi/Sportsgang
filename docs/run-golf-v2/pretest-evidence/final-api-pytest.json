@@ -1,0 +1,21 @@
+{
+  "name": "../pretest-evidence/final-api-pytest",
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs"
+  ],
+  "cwd": "apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 112.21,
+  "finished_at_utc": "2026-10-03T08:51:55+00:00",
+  "head": "5b154b9e1dd5f865f7f728313049a89c0f377eb4",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

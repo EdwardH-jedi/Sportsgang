@@ -4,15 +4,19 @@ Author: Claude (implementer). Everything here is **implementer
 verification**, not an independent review; `CODEX_REVIEW_AFTER_FIXES.md`
 does not exist yet and is not written by this task.
 
-## 0. Checkpoint
+## 0. Status: READY_FOR_LOCAL_MANUAL_TEST
+
+The local stack runs and the automated prerequisites are verified. This does
+**not** mean App Store/release readiness or provider verification; see §5.
 
 | Item | Value |
 | --- | --- |
-| Status | in progress |
-| Phase | C — native checks: picker, moderation, network done; iPhone 17 Pro layout next |
 | Branch / worktree | `chore/run-golf-v2-home-test-ready` in `.claude/worktrees/run-golf-v2-home-test` |
-| Base | `origin/fix/run-golf-v2-review-fixes` = `07893825ffa4250a400608f81605d474ad62558b` (last app-source commit `a599c4f`) |
-| Next action | iPhone 17 Pro layout pass; then runbook, PRETEST_VERIFICATION.md, final checks, push |
+| Base | `origin/fix/run-golf-v2-review-fixes` = `07893825ffa4250a400608f81605d474ad62558b` |
+| Final app/API source | `5b154b9` (every later commit is docs/evidence only); pushed HEAD and CI in §6 |
+| Start / recover | `npm run qa:up` · status `npm run qa:status` · runbook `HOME_TEST_RUNBOOK.md` |
+| Credentials / manifest | `.qa/credentials.json` · `.qa/manifest.json` (git-ignored, mode 600 / dir 700) |
+| Review status | implementer verification only (`PRETEST_VERIFICATION.md`); no independent or Codex review was run |
 
 ## 1. Phase A — starting state (2026-10-03 17:56 AEST)
 
@@ -47,7 +51,7 @@ failure not exercised; only iPhone 16e re-run; picker accessibility
 observation; Apple sign-in, real push, physical device, dev-client
 unverified.
 
-## Progress log (checkpoint)
+## 2. Progress log
 
 - QA stack: `npm run qa:up` / `qa:status` / `qa:seed` / `qa:restart` / `qa:down` / `qa:reset -- --yes`
   implemented in `scripts/qa/`; lifecycle verified (`pretest-evidence/qa-lifecycle.log`).
@@ -80,3 +84,51 @@ unverified.
   `MyPlansScreen.test.tsx` (2 fail on the old screen). Found: booking detail offline was a dead end (red text, no Back,
   no retry). Fixed (`a2f2186`): header kept + shared error state with Try again; regression in
   `BookingDetailScreen.test.tsx`. Re-verified natively: error with Back/Try again → API restarted → Try again loads.
+
+## 3. QA stack (Phase D/E)
+
+- **Launcher:** `scripts/qa/qa.py` (stdlib only) and `scripts/qa/compose.qa.yml`.
+  - npm scripts: `qa:up`, `qa:status`, `qa:seed`, `qa:open`, `qa:down`, `qa:restart`, `qa:stop-api`, `qa:reset`.
+  - Compose project `sportsgang-qa`, DB `sportsgang_qa`, named volume `sportsgang-qa_pgdata`. Ports on 127.0.0.1: PG 55470, Redis 56470, API 8130, Metro 8190; a busy port is skipped.
+  - Credentials are generated into `.qa/config.env`, which is ignored.
+  - Processes are detached and tracked by PID plus a command-line marker; only owned processes are ever stopped.
+- **Lifecycle verified** (`pretest-evidence/qa-lifecycle.log`):
+  - up → status → repeated up (same PIDs) → repeated seed (adds 0) → down (volume kept) → up → status: same counts.
+  - Since then: `qa:restart` ×3, `qa:stop-api` → `qa:up -- --no-open --no-seed` (API only), and device mode → simulator mode switch (`qa-device-mode.log`).
+- **Backend target:**
+  - `qa:status` reads the app config Metro actually serves and requires its `apiUrl` to equal the QA API.
+  - Metro is started with inherited `EXPO_PUBLIC_*` removed, so the app cannot silently target a remote backend.
+- **Fixtures** (`scripts/qa/seed_qa.py`): 8 accounts (Alice, Bob, Cara, Dan, Fern, Eve, Newbie, Mod Target).
+  - Sessions: run with spots, golf with one place, full run, cancelled run, and 22 paging runs.
+  - Social graph: an Alice↔Bob match + message, a pending and a confirmed 1:1 booking.
+  - History: 55 + 55 past rows.
+  - Counts: `qa_users 8, qa_sessions 81, qa_bookings 57, history 55`, migration 0016.
+  - Seeding is idempotent and keeps tester edits. It works within the real rate limits by backing off; no limits are disabled.
+
+## 4. Final verification (Phase G) — HEAD `5b154b9`
+
+| Check | Exit | Result | Evidence |
+| --- | --- | --- | --- |
+| Fresh disposable PG 16 + Redis 7 (`claude-sg-pretest`, tmpfs, recreated) → `alembic upgrade head` | 0 | 0001 → 0016 | `final-migrate-fresh.log` |
+| `uv run pytest tests_integration -q` | 0 | 22 passed, 0 skipped | `final-integration.log` |
+| `uv run ruff check .` / `ruff format --check .` | 0 / 0 | clean | `final-ruff-*.log` |
+| `uv run pytest -q` | 0 | 752 passed, 0 skipped | `final-api-pytest.log` |
+| mobile `lint` / `typecheck`; shared-types `typecheck` | 0 / 0 / 0 | clean | `final-mobile-*.log`, `final-shared-types-typecheck.log` |
+| `npm run test:ci --workspace @protin/mobile -- --runInBand` | 0 | 878 passed, 62 suites, 0 skipped | `final-mobile-tests.log` |
+| `expo export --platform ios` | 0 | Hermes bundle 4.41 MB (bundle only, not native execution, not a release build) | `final-ios-export.log` |
+
+- The new regressions are collected by the normal suites: `Select.test.tsx`, `PartnerDetailScreen.test.tsx`, `BlockedUsersScreen.test.tsx`, `MyPlansScreen.test.tsx`, `BookingDetailScreen.test.tsx` and `test_safety.py`.
+- Native evidence is listed in `PRETEST_VERIFICATION.md` §7.
+- The running QA stack serves the final source; `qa:status` prints the SHA.
+
+## 5. Pending manual and provider checks
+
+| Check | Status |
+| --- | --- |
+| Runbook scenarios 1–13 by a human | pending (you) |
+| Sign in with Apple | BLOCKED: needs a signed build; no signing identities |
+| Push delivery | BLOCKED: needs a physical device + dev build + Expo push credentials |
+| Physical iPhone | not run: paired iPhone was unavailable; LAN mode is prepared and was checked from a simulator |
+| Release/dev-client build | not run: no remote EAS builds by instruction, no local signing |
+| My Plans one-source failure natively | not prepared; Jest only |
+| Naive timestamps (Chats list time) | found, not fixed: needs a migration decision (`PRETEST_VERIFICATION.md` §3) |

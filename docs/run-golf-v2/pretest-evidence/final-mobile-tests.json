@@ -1,0 +1,22 @@
+{
+  "name": "../pretest-evidence/final-mobile-tests",
+  "command": [
+    "npm",
+    "run",
+    "test:ci",
+    "--workspace",
+    "@protin/mobile",
+    "--",
+    "--runInBand"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "elapsed_seconds": 22.12,
+  "finished_at_utc": "2026-10-03T08:52:23+00:00",
+  "head": "5b154b9e1dd5f865f7f728313049a89c0f377eb4",
+  "source_dirty": true,
+  "source_status_sha256": "c3fc22833cc0250ef5e37893e8587fef28bb9c672de84c3a91c082174ccc52b3",
+  "dirty_paths": [
+    "M packages/shared-types/tsconfig.tsbuildinfo"
+  ]
+}

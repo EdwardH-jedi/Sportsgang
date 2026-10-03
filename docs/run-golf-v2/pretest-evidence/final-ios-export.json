@@ -1,0 +1,21 @@
+{
+  "name": "../pretest-evidence/final-ios-export",
+  "command": [
+    "npx",
+    "--no-install",
+    "expo",
+    "export",
+    "--platform",
+    "ios",
+    "--output-dir",
+    "/private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/home/ios-export-final"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 0,
+  "elapsed_seconds": 6.89,
+  "finished_at_utc": "2026-10-03T08:53:17+00:00",
+  "head": "5b154b9e1dd5f865f7f728313049a89c0f377eb4",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}
