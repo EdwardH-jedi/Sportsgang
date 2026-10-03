@@ -14,6 +14,7 @@ The local stack runs and the automated prerequisites are verified. This does
 | Branch / worktree | `chore/run-golf-v2-home-test-ready` in `.claude/worktrees/run-golf-v2-home-test` |
 | Base | `origin/fix/run-golf-v2-review-fixes` = `07893825ffa4250a400608f81605d474ad62558b` |
 | Final app/API source | `5b154b9` (every later commit is docs/evidence only); pushed HEAD and CI in §6 |
+| Running now | QA API `127.0.0.1:8130` + Metro `8190` (simulator mode) + `sportsgang-qa` containers; QA Alice signed in on iPhone 16e |
 | Start / recover | `npm run qa:up` · status `npm run qa:status` · runbook `HOME_TEST_RUNBOOK.md` |
 | Credentials / manifest | `.qa/credentials.json` · `.qa/manifest.json` (git-ignored, mode 600 / dir 700) |
 | Review status | implementer verification only (`PRETEST_VERIFICATION.md`); no independent or Codex review was run |
@@ -132,3 +133,15 @@ unverified.
 | Release/dev-client build | not run: no remote EAS builds by instruction, no local signing |
 | My Plans one-source failure natively | not prepared; Jest only |
 | Naive timestamps (Chats list time) | found, not fixed: needs a migration decision (`PRETEST_VERIFICATION.md` §3) |
+
+## 6. Push, CI and hand-over state
+
+| Item | Value |
+| --- | --- |
+| Pushed | `chore/run-golf-v2-home-test-ready` (upstream set; normal pushes only, no force) |
+| CI on `4894f6f` (last app/API/launcher change + docs) | success — lint, typecheck, lint-mobile, test, test-mobile, PostgreSQL and Redis booking journey, docker-build: https://github.com/EdwardH-jedi/Sportsgang/actions/runs/37111312458 |
+| CI on earlier heads | `3d6bcf8`, `60d7c12`, `ff2fb3b`, `5302f44`: success |
+| QA data | `npm run qa:reset -- --yes` run at 18:56 AEST so `qa.newbie` is profile-less again; reseeded 8 accounts / 81 sessions / 57 bookings / 55 history (`pretest-evidence/qa-reset.log`) |
+| Left running | QA stack on source `4894f6f` (`npm run qa:status` → all OK); Expo Go open on both simulators |
+| Stopped | temporary verification services `claude-sg-pretest` (tmpfs; `compose down`, no volume flag) |
+| Untouched | `feat/run-first-ui` checkout and its untracked files, the other worktrees, other databases/ports/processes |

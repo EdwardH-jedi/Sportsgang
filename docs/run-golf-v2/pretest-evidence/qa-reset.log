@@ -1,0 +1,62 @@
+### qa:reset -- --yes (2026-10-03 18:56 AEST)
+[qa] resetting the sportsgang_qa database (QA stack only)
+[qa] stopped api (pid 19034)
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8130 (pid 20592)
+[qa] seeding demo fixtures (idempotent; a first run waits out the real register/login rate limits)
+  registered qa.alice@example.com
+  registered qa.bob@example.com
+  registered qa.cara@example.com
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  registered qa.dan@example.com
+  registered qa.fern@example.com
+  registered qa.eve@example.com
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  rate limited on /auth/register; waiting 21s (limits stay enabled)
+  registered qa.newbie@example.com
+  registered qa.mod@example.com
+  created match QA Alice ↔ QA Bob
+  created pending booking (Bob → Alice)
+  created confirmed booking (Alice ↔ Bob)
+  created session QA Bondi sunrise 5k
+  created session QA Moore Park 9
+  created session QA Full Centennial 10k
+  created session QA Cancelled Sunday run
+  created session QA Extra run 01
+  created session QA Extra run 02
+  created session QA Extra run 03
+  created session QA Extra run 04
+  created session QA Extra run 05
+  created session QA Extra run 06
+  created session QA Extra run 07
+  created session QA Extra run 08
+  created session QA Extra run 09
+  created session QA Extra run 10
+  created session QA Extra run 11
+  created session QA Extra run 12
+  created session QA Extra run 13
+  created session QA Extra run 14
+  created session QA Extra run 15
+  created session QA Extra run 16
+  created session QA Extra run 17
+  created session QA Extra run 18
+  created session QA Extra run 19
+  created session QA Extra run 20
+  created session QA Extra run 21
+  created session QA Extra run 22
+{"accounts": 8, "match": "2dca11b1-7761-470c-aea7-00f7e3ac8cf5", "sessions": 26, "history_sessions_added": 55, "history_bookings_added": 55}
+[qa] worktree /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test
+[qa] source 4894f6fc376e (stack last started from 4894f6fc376e)
+   OK  containers   sportsgang-qa postgres + redis
+   OK  api          pid 20592 http://127.0.0.1:8130 health=200
+   OK  auth read    QA Alice signed in; 55 past sessions in her My Plans
+   OK  metro        pid 19047 port 8190 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8130 (expected http://127.0.0.1:8130)
+   fixtures     {'qa_users': 8, 'qa_sessions': 81, 'qa_bookings': 57, 'qa_history_sessions': 55, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8190
+   credentials  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/credentials.json
+   manifest     /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/manifest.json
+   logs         /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/logs
