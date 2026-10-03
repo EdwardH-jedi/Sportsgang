@@ -5,16 +5,19 @@
  *   Pending  — 1:1 proposals still waiting on someone (never shown as confirmed)
  *   Past     — completed, cancelled, declined, no-show and past items
  *
- * Bookings and group sessions load independently; if one source fails the
- * other still renders with an inline retry notice. Times are Sydney time.
+ * Bookings and group sessions load independently and per segment, so past
+ * history never pushes future plans out; every segment can show more. If one
+ * source fails the other still renders with an inline retry notice. Times are
+ * Sydney time.
  */
 
 import { useCallback, useState, type ReactNode } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Screen } from '../../components/Screen';
 import {
+  Button,
   Card,
   EmptyState,
   ErrorState,
@@ -47,8 +50,23 @@ const EMPTY_COPY: Record<PlanSegment, { title: string; body: string }> = {
 
 export function MyPlansScreen({ navigation }: PlansScreenProps) {
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
-  const { segments, hasBookings, hasEvents, bookingsError, eventsError, isLoading, isRefreshing, load, refresh } =
-    usePlans(currentUserId);
+  const {
+    segments,
+    totals,
+    hasMore,
+    loadingMore,
+    loadMoreError,
+    hasBookings,
+    hasEvents,
+    bookingsError,
+    eventsError,
+    isLoading,
+    isRefreshing,
+    load,
+    refresh,
+    loadMore,
+    retryFailed,
+  } = usePlans(currentUserId);
   const [segment, setSegment] = useState<PlanSegment>('upcoming');
 
   useFocusEffect(
@@ -65,10 +83,11 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
     [navigation]
   );
 
-  const count = (s: PlanSegment) => segments[s].length;
+  // The server's total, not just what is loaded so far.
+  const pendingCount = totals.pending;
   const options = [
     { value: 'upcoming' as const, label: 'Upcoming' },
-    { value: 'pending' as const, label: count('pending') > 0 ? `Pending (${count('pending')})` : 'Pending' },
+    { value: 'pending' as const, label: pendingCount > 0 ? `Pending (${pendingCount})` : 'Pending' },
     { value: 'past' as const, label: 'Past' },
   ];
 
@@ -101,17 +120,35 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
               <InlineNotice
                 text="Couldn't load your 1:1 sessions. Group sessions are still shown."
                 actionLabel="Retry"
-                onAction={refresh}
+                onAction={() => void retryFailed()}
               />
             ) : null}
             {eventsError ? (
               <InlineNotice
                 text="Couldn't load your group sessions. 1:1 sessions are still shown."
                 actionLabel="Retry"
-                onAction={refresh}
+                onAction={() => void retryFailed()}
               />
             ) : null}
           </View>
+        }
+        ListFooterComponent={
+          loadingMore[segment] ? (
+            <ActivityIndicator style={styles.footer} color={colors.accent} accessibilityLabel="Loading more plans" />
+          ) : loadMoreError[segment] ? (
+            <InlineNotice
+              text="Couldn't load more plans."
+              actionLabel="Retry"
+              onAction={() => void loadMore(segment)}
+            />
+          ) : hasMore[segment] ? (
+            <Button
+              label="Show more"
+              variant="secondary"
+              onPress={() => void loadMore(segment)}
+              testID={`plans-more-${segment}`}
+            />
+          ) : null
         }
         ListEmptyComponent={
           <EmptyState
@@ -177,4 +214,5 @@ const styles = StyleSheet.create({
   title: { ...typography.h3, marginTop: spacing.xs },
   when: { fontSize: 15, fontWeight: '600', color: colors.textPrimary, marginTop: 2 },
   location: { ...typography.body, marginTop: 2 },
+  footer: { marginVertical: spacing.lg },
 });

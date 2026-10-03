@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, not_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.booking import Booking
@@ -170,6 +170,18 @@ async def create_booking(
     return await _to_response(db, booking, current_user_id)
 
 
+# My Plans segments (docs/run-golf-v2/CONTRACTS.md §6), mirroring the mobile
+# buildPlanItems lifecycle: a proposal is pending until it starts, a
+# confirmed booking is upcoming until it ends, everything else is past.
+_CONFIRMED_STATUSES: tuple[str, ...] = ("confirmed", "accepted")
+
+
+def _segment_clauses(cutoff: datetime):
+    pending = and_(Booking.status == "proposed", Booking.starts_at > cutoff)
+    upcoming = and_(Booking.status.in_(_CONFIRMED_STATUSES), Booking.ends_at > cutoff)
+    return {"pending": pending, "upcoming": upcoming, "past": not_(or_(pending, upcoming))}
+
+
 async def list_bookings(
     db: AsyncSession,
     current_user_id: UUID,
@@ -177,6 +189,8 @@ async def list_bookings(
     offset: int = 0,
     statuses: list[str] | None = None,
     match_id: UUID | None = None,
+    segment: str | None = None,
+    as_of: datetime | None = None,
 ) -> BookingListResponse:
     # Participant gate stays at the SQL layer so a non-participant filtering
     # by match_id can never see another match's bookings — the backend
@@ -190,8 +204,23 @@ async def list_bookings(
         where_clauses.append(Booking.status.in_(statuses))
     if match_id is not None:
         where_clauses.append(Booking.match_id == match_id)
+    # Stable order: starts_at, then id, so equal start times page
+    # deterministically. Past is newest first.
+    order = (Booking.starts_at.asc(), Booking.id.asc())
+    if segment is not None:
+        # One `as_of` per request generation keeps every page of a segment
+        # classified against the same instant; offset-free means UTC.
+        if as_of is None:
+            cutoff = datetime.now(tz=timezone.utc)
+        elif as_of.tzinfo is None:
+            cutoff = as_of.replace(tzinfo=timezone.utc)
+        else:
+            cutoff = as_of.astimezone(timezone.utc)
+        where_clauses.append(_segment_clauses(cutoff)[segment])
+        if segment == "past":
+            order = (Booking.starts_at.desc(), Booking.id.desc())
     base_where = and_(*where_clauses)
-    stmt = select(Booking).where(base_where).order_by(Booking.starts_at.asc()).offset(offset).limit(limit)
+    stmt = select(Booking).where(base_where).order_by(*order).offset(offset).limit(limit)
     bookings = list((await db.execute(stmt)).scalars().all())
 
     count_stmt = select(func.count()).select_from(Booking).where(base_where)

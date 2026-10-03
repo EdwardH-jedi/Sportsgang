@@ -52,6 +52,10 @@ export interface ListEventsParams {
   mode?: EventMode;
   /** Only sessions starting now or later. */
   upcoming?: boolean;
+  /** My Plans segment (needs `mine`); Past comes newest first. */
+  segment?: 'upcoming' | 'past';
+  /** ISO instant the segment is computed at. */
+  asOf?: string;
   limit?: number;
   offset?: number;
 }
@@ -62,6 +66,8 @@ function buildQuery(params: ListEventsParams): string {
   if (params.upcoming) qs.set('upcoming', 'true');
   if (params.sport) qs.set('sport', params.sport);
   if (params.mode) qs.set('mode', params.mode);
+  if (params.segment) qs.set('segment', params.segment);
+  if (params.asOf) qs.set('as_of', params.asOf);
   if (params.limit !== undefined) qs.set('limit', String(params.limit));
   if (params.offset !== undefined) qs.set('offset', String(params.offset));
   const out = qs.toString();

@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
@@ -35,6 +37,10 @@ async def list_events(
     sport: str | None = Query(None),
     mode: str | None = Query(None, description="casual or ranked"),
     upcoming: bool = Query(False, description="Only sessions starting now or later"),
+    segment: Literal["upcoming", "past"] | None = Query(
+        None, description="My Plans segment; requires mine=true. Past is newest first."
+    ),
+    as_of: datetime | None = Query(None, description="Instant the segment is computed at (default: now)"),
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
@@ -47,6 +53,8 @@ async def list_events(
         sport=sport,
         mode=mode,
         upcoming=upcoming,
+        segment=segment,
+        as_of=as_of,
         limit=limit,
         offset=offset,
     )

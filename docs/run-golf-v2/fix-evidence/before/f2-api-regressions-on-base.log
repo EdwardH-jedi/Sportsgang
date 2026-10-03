@@ -1,0 +1,263 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+F.FFFF.FF                                                                [100%]
+=================================== FAILURES ===================================
+________________ test_event_segments_follow_the_plans_lifecycle ________________
+
+client = <httpx.AsyncClient object at 0x10d91b2c0>
+
+    async def test_event_segments_follow_the_plans_lifecycle(client: AsyncClient) -> None:
+        me, me_id = await _user(client, "me")
+        _, sam_id = await _user(client, "sam")
+        hosting = await _event(me_id, NOW + timedelta(days=2))
+        joined_full = await _event(sam_id, NOW + timedelta(days=1), status="full", members=(me_id,))
+        cancelled_future = await _event(me_id, NOW + timedelta(days=3), status="cancelled")
+        completed_future_dated = await _event(sam_id, NOW + timedelta(days=4), status="completed", members=(me_id,))
+        started = await _event(sam_id, NOW - timedelta(hours=2), members=(me_id,))
+        old = await _event(me_id, NOW - timedelta(days=30), status="completed")
+        await _event(sam_id, NOW + timedelta(days=5))  # not mine
+    
+        upcoming = await _mine(client, me, f"segment=upcoming&as_of={AS_OF}")
+>       assert _ids(upcoming) == [joined_full, hosting]
+E       AssertionError: assert ['d231fa51-40...7e350e658119'] == ['b3054444-ec...bffa7721f3c2']
+E         
+E         At index 0 diff: 'd231fa51-40fb-46b1-a025-a2aa42afa8d4' != 'b3054444-ec60-4134-88ed-a00148badcfe'
+E         Left contains 4 more items, first extra item: 'b3054444-ec60-4134-88ed-a00148badcfe'
+E         Use -v to get more diff
+
+tests/test_plan_segments.py:128: AssertionError
+______________ test_as_of_fixes_the_classification_for_every_page ______________
+
+client = <httpx.AsyncClient object at 0x10e4f3050>
+
+    async def test_as_of_fixes_the_classification_for_every_page(client: AsyncClient) -> None:
+        me, me_id = await _user(client, "me")
+        soon = await _event(me_id, NOW + timedelta(minutes=30))
+        before = (NOW + timedelta(minutes=29)).isoformat().replace("+00:00", "Z")
+        after = (NOW + timedelta(minutes=31)).isoformat().replace("+00:00", "Z")
+        assert _ids(await _mine(client, me, f"segment=upcoming&as_of={before}")) == [soon]
+>       assert _ids(await _mine(client, me, f"segment=past&as_of={before}")) == []
+E       AssertionError: assert ['d55c5c67-50...8411ed7ab6db'] == []
+E         
+E         Left contains one more item: 'd55c5c67-505b-43c6-a294-8411ed7ab6db'
+E         Use -v to get more diff
+
+tests/test_plan_segments.py:171: AssertionError
+________________ test_equal_start_times_page_deterministically _________________
+
+client = <httpx.AsyncClient object at 0x10d985c40>
+
+    async def test_equal_start_times_page_deterministically(client: AsyncClient) -> None:
+        me, me_id = await _user(client, "me")
+        same = NOW + timedelta(days=3)
+        ids = [await _event(me_id, same) for _ in range(5)]
+        seen: list[str] = []
+        for offset in range(0, 6, 2):
+            page = await _mine(client, me, f"segment=upcoming&as_of={AS_OF}&limit=2&offset={offset}")
+            assert page["total"] == 5
+            seen += _ids(page)
+>       assert seen == sorted(ids)  # id breaks the tie, no duplicates, nothing skipped
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ['6d2411ea-d8...604aca79d101'] == ['4eb044c6-8d...31fad34e2c7b']
+E         
+E         At index 0 diff: '6d2411ea-d8f9-4918-86e9-3f4a38753e9e' != '4eb044c6-8d18-4914-89e6-604aca79d101'
+E         Use -v to get more diff
+
+tests/test_plan_segments.py:188: AssertionError
+__________________ test_segment_needs_mine_and_a_known_value ___________________
+
+client = <httpx.AsyncClient object at 0x10d987260>
+
+    async def test_segment_needs_mine_and_a_known_value(client: AsyncClient) -> None:
+        me, _ = await _user(client, "me")
+        r = await client.get(f"/events?segment=upcoming&as_of={AS_OF}", headers=me)
+>       assert r.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_plan_segments.py:198: AssertionError
+_______________ test_booking_segments_follow_the_plans_lifecycle _______________
+
+client = <httpx.AsyncClient object at 0x10e4f3c80>
+
+    async def test_booking_segments_follow_the_plans_lifecycle(client: AsyncClient) -> None:
+        me = await _user(client, "me")
+        alex = await _user(client, "alex")
+        match_id = await _match(client, me, alex)
+        me_id, alex_id = me[1], alex[1]
+        proposal = await _booking(match_id, alex_id, me_id, NOW + timedelta(days=2), "proposed")
+        stale_proposal = await _booking(match_id, me_id, alex_id, NOW - timedelta(days=1), "proposed")
+        confirmed = await _booking(match_id, me_id, alex_id, NOW + timedelta(days=1), "confirmed")
+        in_progress = await _booking(match_id, me_id, alex_id, NOW - timedelta(minutes=30), "confirmed", hours=2)
+        ended = await _booking(match_id, me_id, alex_id, NOW - timedelta(days=2), "confirmed")
+        cancelled_future = await _booking(match_id, me_id, alex_id, NOW + timedelta(days=3), "cancelled")
+        completed_future_dated = await _booking(match_id, me_id, alex_id, NOW + timedelta(days=4), "completed")
+        declined = await _booking(match_id, alex_id, me_id, NOW + timedelta(days=5), "declined")
+    
+        q = f"as_of={AS_OF}"
+        pending = await _bookings(client, me[0], f"segment=pending&{q}")
+>       assert (_ids(pending), pending["total"]) == ([proposal], 1)
+E       AssertionError: assert (['69b96fc4-f...b68', ...], 8) == (['29ec639e-e...97ff4378'], 1)
+E         
+E         At index 0 diff: ['69b96fc4-f76e-4659-86e1-57a9f988e906', '802b0bae-65b6-4199-bc72-5608cb06f433', 'bf73de86-b03a-47dd-821d-4209e6efe607', 'dd02d1ef-cfc2-453c-b528-7f51169c9f7c', '29ec639e-e855-4d31-8d8e-0f1797ff4378', 'b369ff1d-7545-4666-aa6d-ee9f8876eb68', '78048233-f950-48ea-9971-cf4e5e73ba40', '387fb029-9dbb-4913-b93e-7fa8b7e20063'] != ['29ec639e-e855-4d31-8d8e-0f1797ff4378']
+E         Use -v to get more diff
+
+tests/test_plan_segments.py:257: AssertionError
+_______________ test_history_never_displaces_upcoming_or_pending _______________
+
+client = <httpx.AsyncClient object at 0x10e4cbe00>
+
+    async def test_history_never_displaces_upcoming_or_pending(client: AsyncClient) -> None:
+        me = await _user(client, "me")
+        alex = await _user(client, "alex")
+        match_id = await _match(client, me, alex)
+        history = [await _booking(match_id, me[1], alex[1], NOW - timedelta(days=100 - i), "completed") for i in range(55)]
+        confirmed = await _booking(match_id, me[1], alex[1], NOW + timedelta(days=6), "confirmed")
+        proposal = await _booking(match_id, alex[1], me[1], NOW + timedelta(days=7), "proposed")
+    
+        # The old client's first page of 50 holds only history.
+        legacy = await _bookings(client, me[0], "limit=50")
+        assert confirmed not in _ids(legacy) and proposal not in _ids(legacy)
+    
+        q = f"as_of={AS_OF}&limit=20"
+>       assert _ids(await _bookings(client, me[0], f"segment=upcoming&{q}")) == [confirmed]
+E       AssertionError: assert ['d5f88211-60...a05ab45', ...] == ['df30768c-57...b7ac8156a722']
+E         
+E         At index 0 diff: 'd5f88211-608a-4a69-b6f6-f6ccb83ef0f4' != 'df30768c-57da-4c14-a222-b7ac8156a722'
+E         Left contains 19 more items, first extra item: 'dfd7ca6f-5cfb-4bce-a2ec-155984a132b7'
+E         Use -v to get more diff
+
+tests/test_plan_segments.py:293: AssertionError
+______________ test_history_never_hides_future_plans_on_postgres _______________
+
+    async def test_history_never_hides_future_plans_on_postgres() -> None:
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        as_of = now.isoformat().replace("+00:00", "Z")
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                me, me_id = await _register(client, "me")
+                partner, partner_id = await _register(client, "partner")
+                for headers, target in ((me, partner_id), (partner, me_id)):
+                    liked = await client.post(
+                        "/discovery/actions",
+                        json={"target_user_id": target, "action": "like", "sport": "running"},
+                        headers=headers,
+                    )
+                match_id = liked.json()["match_id"]
+    
+                # 55 completed past sessions and 55 completed past bookings; three
+                # of each share a start time to exercise the id tie-break.
+                history_at = [now - timedelta(days=200 - i) for i in range(52)] + [now - timedelta(days=10)] * 3
+                event_rows = [{"id": str(uuid4()), "host": me_id, "at": at} for at in history_at]
+                await _sql(
+                    "INSERT INTO events (id, host_user_id, title, sport, mode, starts_at, location_text, capacity,"
+                    " visibility, status, created_at, updated_at) VALUES (:id, :host, 'Old run', 'running', 'casual',"
+                    " :at, 'Centennial Park', 4, 'public', 'completed', now(), now())",
+                    event_rows,
+                )
+                await _sql(
+                    "INSERT INTO event_participants (id, event_id, user_id, status, joined_at)"
+                    " VALUES (:pid, :id, :host, 'joined', now())",
+                    [{**row, "pid": str(uuid4())} for row in event_rows],
+                )
+                booking_rows = [
+                    {
+                        "id": str(uuid4()),
+                        "m": match_id,
+                        "p": me_id,
+                        "q": partner_id,
+                        "at": at,
+                        "end": at + timedelta(hours=1),
+                    }
+                    for at in history_at
+                ]
+                await _sql(
+                    "INSERT INTO bookings (id, match_id, proposer_id, partner_id, sport, starts_at, ends_at, status,"
+                    " created_at, updated_at) VALUES (:id, :m, :p, :q, 'running', :at, :end, 'completed', now(), now())",
+                    booking_rows,
+                )
+    
+                # Future commitments through the API.
+                future_run = await client.post(
+                    "/events",
+                    json={
+                        "title": "Saturday 10k",
+                        "sport": "running",
+                        "mode": "casual",
+                        "starts_at": (now + timedelta(days=5)).isoformat(),
+                        "location_text": "Centennial Park",
+                        "capacity": 6,
+                        "run_details": {"distance_km": 10, "pace_mode": "social", "group_style": "stay_together"},
+                    },
+                    headers=me,
+                )
+                assert future_run.status_code == 201, future_run.text
+                cancelled_future = await client.post(
+                    "/events",
+                    json={
+                        "title": "Called off",
+                        "sport": "running",
+                        "mode": "casual",
+                        "starts_at": (now + timedelta(days=6)).isoformat(),
+                        "location_text": "Bondi",
+                        "capacity": 6,
+                    },
+                    headers=me,
+                )
+                assert (await client.post(f"/events/{cancelled_future.json()['id']}/cancel", headers=me)).status_code == 200
+                start = now + timedelta(days=3)
+                confirmed = await client.post(
+                    "/bookings",
+                    json={
+                        "match_id": match_id,
+                        "sport": "running",
+                        "starts_at": start.isoformat(),
+                        "ends_at": (start + timedelta(hours=1)).isoformat(),
+                    },
+                    headers=me,
+                )
+                assert (
+                    await client.post(f"/bookings/{confirmed.json()['id']}/confirm", headers=partner)
+                ).status_code == 200
+                proposed = await client.post(
+                    "/bookings",
+                    json={
+                        "match_id": match_id,
+                        "sport": "running",
+                        "starts_at": (start + timedelta(days=1)).isoformat(),
+                        "ends_at": (start + timedelta(days=1, hours=1)).isoformat(),
+                    },
+                    headers=partner,
+                )
+                assert proposed.status_code == 201, proposed.text
+    
+                # The unfixed client's view: none of the future plans in the first 50.
+                legacy_events = (await client.get("/events?mine=true&limit=50", headers=me)).json()
+                assert future_run.json()["id"] not in {e["id"] for e in legacy_events["items"]}
+                legacy_bookings = (await client.get("/bookings?limit=50", headers=me)).json()
+                assert confirmed.json()["id"] not in {b["id"] for b in legacy_bookings["items"]}
+    
+                # Segments: Upcoming / Pending independent of history.
+                up_events, up_totals = await _all_pages(client, me, f"/events?mine=true&segment=upcoming&as_of={as_of}")
+>               assert (up_events, up_totals) == ([future_run.json()["id"]], {1})
+E               AssertionError: assert (['4c70c9a9-d...', ...], {57}) == (['abecb039-6...ce57b8'], {1})
+E                 
+E                 At index 0 diff: ['4c70c9a9-d269-4e16-a05b-d89430bf163c', 'f94291bc-3949-4e3d-8faf-e7e524a4145b', '7393551e-b698-4335-8e4e-a348d26294e0', '67943c82-68d8-4d31-a89b-864f30a9c836', '86837d31-38e7-404a-9cfb-eba26698ed07', '3da9824e-25e3-4d76-b91f-97e6125c28ae', 'cdad37e7-690d-4d66-b7c0-2f99fc635cfd', '1d1cdf78-918c-4451-88b1-94998bf35f3b', '82f9efda-f022-47df-843d-7933be092e0f', '57c5bc52-d96b-4421-b920-5da445ce0c3f', '17466309-4b35-4e5f-939c-b9384d155097', '109501da-831f-4532-a1a7-54924a14ec84', 'b8f3ac3d-ae31-4a72-9dca-2f212ed470cb', '6a0f29bf-0130-46dd-8c55-b18a7916a1e8'...
+E                 
+E                 ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests_integration/test_my_plans_segments.py:182: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_plan_segments.py::test_event_segments_follow_the_plans_lifecycle
+FAILED tests/test_plan_segments.py::test_as_of_fixes_the_classification_for_every_page
+FAILED tests/test_plan_segments.py::test_equal_start_times_page_deterministically
+FAILED tests/test_plan_segments.py::test_segment_needs_mine_and_a_known_value
+FAILED tests/test_plan_segments.py::test_booking_segments_follow_the_plans_lifecycle
+FAILED tests/test_plan_segments.py::test_history_never_displaces_upcoming_or_pending
+FAILED tests_integration/test_my_plans_segments.py::test_history_never_hides_future_plans_on_postgres
+7 failed, 2 passed, 1 warning in 3.52s

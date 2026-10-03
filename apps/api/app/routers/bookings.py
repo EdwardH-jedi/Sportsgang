@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -17,11 +19,17 @@ async def list_bookings(
     offset: int = Query(0, ge=0),
     status: str | None = Query(None),
     match_id: UUID | None = Query(None),
+    segment: Literal["upcoming", "pending", "past"] | None = Query(
+        None, description="My Plans segment. Past is newest first."
+    ),
+    as_of: datetime | None = Query(None, description="Instant the segment is computed at (default: now)"),
     current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> BookingListResponse:
     statuses = [s.strip() for s in status.split(",") if s.strip()] if status else None
-    return await bookings_service.list_bookings(db, current_user.id, limit, offset, statuses, match_id)
+    return await bookings_service.list_bookings(
+        db, current_user.id, limit, offset, statuses, match_id, segment=segment, as_of=as_of
+    )
 
 
 @router.post("", response_model=BookingResponse, status_code=201)

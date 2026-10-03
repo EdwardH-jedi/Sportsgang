@@ -1,0 +1,425 @@
+FAIL src/__tests__/myPlansPaging.test.tsx (10.813 s)
+  history never hides future plans
+    ✕ shows upcoming and pending plans behind 55+ past items in each source (1044 ms)
+    ✕ pages through all of Past, newest first, without duplicates or gaps (1005 ms)
+  more than one page in a segment
+    ✕ Upcoming interleaves both sources and only ever shows a complete prefix (1006 ms)
+    ✕ Pending pages too (1011 ms)
+    ✕ keeps equal start times and identical booking/event ids apart, in a fixed order (1007 ms)
+  failures
+    ✕ a failed source keeps the other visible and recovers on retry (1010 ms)
+    ✕ a failed "show more" keeps what is loaded and retries that page (1007 ms)
+  changes and account switches
+    ✕ a refresh picks up new and changed commitments (1007 ms)
+    ✕ a late answer for the previous account is never shown to the next one (1006 ms)
+    ✕ every row lands in the segment the server returned it for (1009 ms)
+
+  ● history never hides future plans › shows upcoming and pending plans behind 55+ past items in each source
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 5
+    + Received  + 1
+
+    - Array [
+    -   "booking:confirmed-1",
+    -   "event:future-run",
+    -   "event:joined-run",
+    - ]
+    + Array []
+
+      251 |     seedLongHistory();
+      252 |     renderPlans();
+    > 253 |     await waitFor(() => expect(shownKeys()).toEqual(['booking:confirmed-1', 'event:future-run', 'event:joined-run']));
+          |                  ^
+      254 |     expect(screen.getByLabelText('Pending (1)')).toBeTruthy();
+      255 |     fireEvent.press(screen.getByLabelText('Pending (1)'));
+      256 |     await waitFor(() => expect(shownKeys()).toEqual(['booking:proposal-1']));
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:253:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● history never hides future plans › pages through all of Past, newest first, without duplicates or gaps
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      261 |     seedLongHistory();
+      262 |     renderPlans();
+    > 263 |     await waitFor(() => expect(shownKeys().length).toBeGreaterThan(0));
+          |                  ^
+      264 |     fireEvent.press(screen.getByLabelText('Past'));
+      265 |     await waitFor(() => expect(shownKeys().length).toBeGreaterThan(0));
+      266 |     const full = expected('past');
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:263:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● more than one page in a segment › Upcoming interleaves both sources and only ever shows a complete prefix
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      282 |     }
+      283 |     renderPlans();
+    > 284 |     await waitFor(() => expect(shownKeys().length).toBeGreaterThan(0));
+          |                  ^
+      285 |     const full = expected('upcoming');
+      286 |     expect(full).toHaveLength(50);
+      287 |     expect(shownKeys()).toEqual(full.slice(0, shownKeys().length));
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:284:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● more than one page in a segment › Pending pages too
+
+    Unable to find an element with accessibility label: Pending (23)
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mSydney time[0m
+            [36m</Text>[39m
+            [36m<Text[39m
+              [33maccessibilityRole[39m=[32m"header"[39m
+            [36m>[39m
+              [0mMy Plans[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Filter plans"[39m
+          [33maccessibilityRole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Upcoming"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mUpcoming[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Pending"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mPending[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Past"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mPast[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View[39m
+        [33maccessibilityRole[39m=[32m"alert"[39m
+        [33mtestID[39m=[32m"plans-error"[39m
+      [36m>[39m
+        [36m<Text>[39m
+          [0mCould not load your plans[0m
+        [36m</Text>[39m
+        [36m<Text>[39m
+          [0msegment and as_of expected: /bookings?status=proposed,confirmed,completed,cancelled,declined,no_show&limit=50[0m
+        [36m</Text>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Try again"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessibilityState[39m=[32m{
+            {
+              "busy": false,
+              "disabled": false,
+            }
+          }[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mTry again[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      294 |     for (let i = 0; i < 23; i += 1) addBooking(`p${String(i).padStart(2, '0')}`, 1 + i, 'proposed', 'alex');
+      295 |     renderPlans();
+    > 296 |     fireEvent.press(await screen.findByLabelText('Pending (23)'));
+          |                                  ^
+      297 |     await waitFor(() => expect(shownKeys()).toHaveLength(20));
+      298 |     await showAll('pending');
+      299 |     expect(shownKeys()).toEqual(expected('pending'));
+
+      at Object.findByLabelText (src/__tests__/myPlansPaging.test.tsx:296:34)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● more than one page in a segment › keeps equal start times and identical booking/event ids apart, in a fixed order
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 6
+    + Received  + 1
+
+    - Array [
+    -   "booking:a",
+    -   "booking:x",
+    -   "event:b",
+    -   "event:x",
+    - ]
+    + Array []
+
+      306 |     addEvent('b', 2);
+      307 |     renderPlans();
+    > 308 |     await waitFor(() => expect(shownKeys()).toEqual(['booking:a', 'booking:x', 'event:b', 'event:x']));
+          |                  ^
+      309 |   });
+      310 | });
+      311 |
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:308:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● failures › a failed source keeps the other visible and recovers on retry
+
+    Unable to find an element with text: /Couldn't load your 1:1 sessions/
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<View>[39m
+            [36m<Text>[39m
+              [0mSydney time[0m
+            [36m</Text>[39m
+            [36m<Text[39m
+              [33maccessibilityRole[39m=[32m"header"[39m
+            [36m>[39m
+              [0mMy Plans[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Filter plans"[39m
+          [33maccessibilityRole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Upcoming"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mUpcoming[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Pending"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mPending[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Past"[39m
+            [33maccessibilityRole[39m=[32m"tab"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "selected": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mPast[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View[39m
+        [33maccessibilityRole[39m=[32m"alert"[39m
+        [33mtestID[39m=[32m"plans-error"[39m
+      [36m>[39m
+        [36m<Text>[39m
+          [0mCould not load your plans[0m
+        [36m</Text>[39m
+        [36m<Text>[39m
+          [0mHTTP 500[0m
+        [36m</Text>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Try again"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessibilityState[39m=[32m{
+            {
+              "busy": false,
+              "disabled": false,
+            }
+          }[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mTry again[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      315 |     failures.push({ match: /^\/bookings/, message: 'HTTP 500', times: 3 });
+      316 |     renderPlans();
+    > 317 |     expect(await screen.findByText(/Couldn't load your 1:1 sessions/)).toBeTruthy();
+          |                         ^
+      318 |     expect(shownKeys()).toEqual(['event:future-run', 'event:joined-run']);
+      319 |     fireEvent.press(screen.getByLabelText('Retry'));
+      320 |     await waitFor(() => expect(shownKeys()).toEqual(['booking:confirmed-1', 'event:future-run', 'event:joined-run']));
+
+      at Object.findByText (src/__tests__/myPlansPaging.test.tsx:317:25)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● failures › a failed "show more" keeps what is loaded and retries that page
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      326 |     seedLongHistory();
+      327 |     renderPlans();
+    > 328 |     await waitFor(() => expect(shownKeys().length).toBeGreaterThan(0));
+          |                  ^
+      329 |     fireEvent.press(screen.getByLabelText('Past'));
+      330 |     await waitFor(() => expect(screen.getByTestId('plans-more-past')).toBeTruthy());
+      331 |     const before = shownKeys();
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:328:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● changes and account switches › a refresh picks up new and changed commitments
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "event:future-run",
+    - ]
+    + Array []
+
+      345 |     addEvent('future-run', 5);
+      346 |     renderPlans();
+    > 347 |     await waitFor(() => expect(shownKeys()).toEqual(['event:future-run']));
+          |                  ^
+      348 |     // Meanwhile: the proposal is confirmed, a new run is joined, the old one cancelled.
+      349 |     bookings.get('proposal-1')!.status = 'confirmed';
+      350 |     addEvent('new-run', 2, 'open', 'sam', ['me']);
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:347:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● changes and account switches › a late answer for the previous account is never shown to the next one
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      362 |     holds.push({ match: /^\/events.*segment=upcoming/, release: new Promise<void>((r) => (release = r)) });
+      363 |     renderPlans();
+    > 364 |     await waitFor(() => expect(calls.some((c) => c.includes('segment=upcoming'))).toBe(true));
+          |                  ^
+      365 |     // Switch account while the first account's upcoming request is in flight.
+      366 |     viewer = 'other';
+      367 |     addEvent('theirs', 4, 'open', 'other');
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:364:18)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● changes and account switches › every row lands in the segment the server returned it for
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      390 |     ] as const) {
+      391 |       fireEvent.press(screen.getByLabelText(label));
+    > 392 |       await waitFor(() => expect(shownKeys().length).toBeGreaterThan(0));
+          |                    ^
+      393 |       await showAll(segment);
+      394 |       expect(shownKeys()).toEqual(expected(segment));
+      395 |     }
+
+      at Object.<anonymous> (src/__tests__/myPlansPaging.test.tsx:392:20)
+      at asyncGeneratorStep (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../../../../../../../../Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+Test Suites: 1 failed, 1 total
+Tests:       10 failed, 10 total
+Snapshots:   0 total
+Time:        10.867 s
+Ran all test suites matching /src\/__tests__\/myPlansPaging.test.tsx/i.

@@ -182,10 +182,17 @@ describe('MyPlansScreen', () => {
     expect(screen.getByText('Sun 4 Oct · 7:30 am – 8:30 am')).toBeTruthy(); // AEDT, after the change
     expect(screen.getByText('Golf with Alex')).toBeTruthy();
     expect(screen.getByText('Group run')).toBeTruthy();
-    expect(mockGet).toHaveBeenCalledWith(
-      '/bookings?status=proposed,confirmed,completed,cancelled,declined,no_show&limit=50'
-    );
-    expect(mockGet).toHaveBeenCalledWith('/events?mine=true&limit=50');
+    // Each source is read per segment at one fixed as_of (review F2).
+    const asOf = encodeURIComponent(new Date(NOW).toISOString());
+    for (const segment of ['upcoming', 'pending', 'past']) {
+      expect(mockGet).toHaveBeenCalledWith(
+        `/bookings?status=proposed,confirmed,completed,cancelled,declined,no_show&segment=${segment}&as_of=${asOf}&limit=20&offset=0`
+      );
+    }
+    for (const segment of ['upcoming', 'past']) {
+      expect(mockGet).toHaveBeenCalledWith(`/events?mine=true&segment=${segment}&as_of=${asOf}&limit=20&offset=0`);
+    }
+    expect(mockGet).toHaveBeenCalledTimes(5);
   });
 
   it('shows pending proposals only under Pending', async () => {
@@ -241,7 +248,8 @@ describe('MyPlansScreen', () => {
     routeApi(ok([booking()]), ok([event()]));
     renderScreen();
     await screen.findByText('Golf with Alex');
-    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+    // One load = 3 booking segments + 2 session segments.
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(5));
     expect(screen.getAllByText('Golf with Alex')).toHaveLength(1);
   });
 });

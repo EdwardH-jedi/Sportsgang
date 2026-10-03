@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, not_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.event import (
@@ -46,6 +46,11 @@ _VISIBLE_STATUSES: frozenset[str] = frozenset({"open", "full"})
 
 # Statuses a participant can leave from.
 _LEAVABLE_STATUSES: frozenset[str] = frozenset({"open", "full"})
+
+# My Plans segments for `mine=true` (docs/run-golf-v2/CONTRACTS.md §6) mirror
+# the mobile buildPlanItems lifecycle: a session is upcoming until it starts
+# unless it was cancelled or completed; everything else is past.
+_TERMINAL_STATUSES: tuple[str, ...] = ("cancelled", "completed")
 
 
 # ---------------------------------------------------------------------------
@@ -278,9 +283,16 @@ async def list_events(
     sport: str | None = None,
     mode: str | None = None,
     upcoming: bool = False,
+    segment: str | None = None,
+    as_of: datetime | None = None,
     limit: int = 20,
     offset: int = 0,
 ) -> EventListResponse:
+    if segment is not None and not mine:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="segment is only available with mine=true",
+        )
     base = select(Event)
     if mine:
         # Events the user has joined (active) OR hosts.
@@ -316,7 +328,20 @@ async def list_events(
     if upcoming:
         base = base.where(Event.starts_at >= _utc_now())
 
-    base = base.order_by(Event.starts_at.asc())
+    # Stable order: starts_at, then id, so equal start times page
+    # deterministically. Past is newest first.
+    order = (Event.starts_at.asc(), Event.id.asc())
+    if segment is not None:
+        # One `as_of` per request generation keeps every page of a segment
+        # classified against the same instant.
+        cutoff = _as_utc_instant(as_of) if as_of is not None else _utc_now()
+        is_upcoming = and_(Event.status.not_in(_TERMINAL_STATUSES), Event.starts_at > cutoff)
+        if segment == "upcoming":
+            base = base.where(is_upcoming)
+        else:
+            base = base.where(not_(is_upcoming))
+            order = (Event.starts_at.desc(), Event.id.desc())
+    base = base.order_by(*order)
 
     rows = list((await db.execute(base.offset(offset).limit(limit))).scalars().all())
     total = int((await db.execute(select(func.count()).select_from(base.subquery()))).scalar_one())
@@ -598,6 +623,11 @@ def _ensure_attendance_event_mutable(e: Event) -> None:
 
 def _utc_now() -> datetime:
     return datetime.now(tz=timezone.utc)
+
+
+def _as_utc_instant(value: datetime) -> datetime:
+    """An offset-free `as_of` is read as UTC, like every other API instant."""
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
 
 
 def _event_has_started(e: Event, *, now: datetime | None = None) -> bool:

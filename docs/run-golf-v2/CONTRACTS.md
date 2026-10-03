@@ -320,15 +320,44 @@ Responses (`EventSummary` / `EventDetail`) add `run_details` and
 
 ## 6. My Plans (client aggregation)
 
-Sources, fetched independently:
+Sources, fetched independently **per segment** (review F2 — the client used
+to read only the first 50 rows of each source in `starts_at` order, so 51+
+past items hid every future plan):
 
-- `GET /bookings?status=proposed,confirmed,completed,cancelled,declined,no_show`
-- `GET /events?mine=true` (hosted or currently joined, every status)
+- `GET /bookings?status=proposed,confirmed,completed,cancelled,declined,no_show&segment=upcoming|pending|past&as_of=…&limit=…&offset=…`
+- `GET /events?mine=true&segment=upcoming|past&as_of=…&limit=…&offset=…`
+  (hosted or currently joined, every status)
 
-Items carry `{source: 'booking' | 'event', id}`; a booking id never collides
-with an event id in the UI. Booking `proposed` stays "Pending"; nothing is
-shown as confirmed unless the API says so. A failure of one source is shown
-with retry while the other source still renders.
+Segment rules (API and the mobile `buildPlanItems` agree; `as_of` is one
+instant per load, offset-free means UTC, default now):
+
+| Source | Upcoming | Pending | Past |
+| --- | --- | --- | --- |
+| Booking | `confirmed`/`accepted` and `ends_at > as_of` | `proposed` and `starts_at > as_of` | everything else (ended, never-confirmed past proposals, cancelled / declined / completed / no-show — even when future-dated) |
+| Session | not `cancelled`/`completed` and `starts_at > as_of` | — | everything else |
+
+- Order is `(starts_at, id)` ascending for Upcoming/Pending and descending
+  for Past, so equal start times page deterministically. `total` is the
+  segment total. Without `segment` both endpoints behave as before (all
+  rows, ascending; `id` now breaks ties). `segment` on `/events` requires
+  `mine=true` (422 otherwise). Authorization is unchanged: participant-only
+  bookings, hosted-or-joined sessions.
+- The client loads the first page (20) of every (segment, source) with one
+  `as_of`, shows each segment as the merged prefix that is complete (never
+  past a source's last loaded row while that source has more), and offers
+  "Show more" per segment; a refresh re-reads as many rows as were shown
+  (up to 50 per source).
+- Items carry `{source: 'booking' | 'event', id}`; a booking id never
+  collides with an event id in the UI, and a row seen twice keeps its newest
+  version. Booking `proposed` stays "Pending"; nothing is shown as confirmed
+  unless the API says so. A failure of one source is shown with retry while
+  the other source still renders; a failed "show more" keeps the loaded rows
+  and retries that page. Successful session mutations, focus and
+  pull-to-refresh reload; an account switch drops the previous account's
+  data and late responses.
+- Known limit of offset paging inside one generation: a plan that changes
+  segment between two page loads can be missed or repeated until the next
+  refresh (repeats are de-duplicated).
 
 ## 7. Time
 
