@@ -1,0 +1,64 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "\n📷 Snapshot UI\n\nTargets (4) — ref|action|role|label|value|id\n  e37|typeText|text-field|Display name|Codex New Runner With A Long Name|\n  e43|tap|button|Birth year||\n  e46|tap|button|Sydney suburb||\n  e47|tap|button|Continue||\n\nScroll (1) — ref|action|role|label|value|id\n  e19|swipe|scroll-view|||\n\nTips\n  - Use target refs with tap, type_text, long_press, and touch.\n  - Use scroll refs with swipe.\n  - Refs are snapshot-specific; after snapshot_ui or wait_for_ui, use refs from the latest output.\n  - Use wait_for_ui for text/assertions or changing UI.\n\n✅ Runtime UI snapshot captured with 66 elements, 4 likely targets, and 1 scroll area.\n\nNext steps:\n1. Refresh after layout changes: snapshot_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\" })\n2. Wait for UI to settle: wait_for_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", predicate: \"settled\" })\n3. Batch same-screen taps: batch({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", steps: [{\"action\":\"tap\",\"elementRef\":\"e43\"},{\"action\":\"tap\",\"elementRef\":\"e46\"}] })\n4. Tap an elementRef: tap({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", elementRef: \"e43\" })\n5. Scroll visible content: swipe({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", withinElementRef: \"e19\", direction: \"up\", distance: 0.5 })\n"
+    }
+  ],
+  "structuredContent": {
+    "schema": "xcodebuildmcp.output.capture-result",
+    "schemaVersion": "2",
+    "didError": false,
+    "error": null,
+    "data": {
+      "summary": {
+        "status": "SUCCEEDED"
+      },
+      "artifacts": {
+        "simulatorId": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+      },
+      "capture": {
+        "type": "runtime-snapshot",
+        "rs": "1",
+        "screenHash": "18tv71p",
+        "seq": 50,
+        "count": 66,
+        "targets": [
+          "e37|typeText|text-field|Display name|Codex New Runner With A Long Name|",
+          "e43|tap|button|Birth year||",
+          "e46|tap|button|Sydney suburb||",
+          "e47|tap|button|Continue||"
+        ],
+        "scroll": [
+          "e19|swipe|scroll-view|||"
+        ],
+        "text": [
+          "e26|text|text|STEP 1 OF 4||",
+          "e27|text|text|STEP 1 OF 4||",
+          "e28|text|text|GETTING STARTED||",
+          "e29|text|text|GETTING STARTED||",
+          "e30|text|text|Your profile||",
+          "e31|text|text|Your profile||",
+          "e32|text|text|The basics first. Next you'll choose running, golf or both.||",
+          "e33|text|text|The basics first. Next you'll choose running, golf or both.||",
+          "e34|text|text|DISPLAY NAME *||",
+          "e35|text|text|DISPLAY NAME *||",
+          "e38|text|text|Use English letters, numbers, spaces, - ' . only.||",
+          "e39|text|text|Use English letters, numbers, spaces, - ' . only.||",
+          "e40|text|text|BIRTH YEAR *||",
+          "e41|text|text|BIRTH YEAR *||",
+          "e44|text|text|YOUR SYDNEY SUBURB *||",
+          "e45|text|text|YOUR SYDNEY SUBURB *||"
+        ],
+        "udid": "EC0E6542-A25C-4EBC-ACFF-F5FF62723171"
+      }
+    },
+    "nextSteps": [
+      "Refresh after layout changes: snapshot_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\" })",
+      "Wait for UI to settle: wait_for_ui({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", predicate: \"settled\" })",
+      "Batch same-screen taps: batch({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", steps: [{\"action\":\"tap\",\"elementRef\":\"e43\"},{\"action\":\"tap\",\"elementRef\":\"e46\"}] })",
+      "Tap an elementRef: tap({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", elementRef: \"e43\" })",
+      "Scroll visible content: swipe({ simulatorId: \"EC0E6542-A25C-4EBC-ACFF-F5FF62723171\", withinElementRef: \"e19\", direction: \"up\", distance: 0.5 })"
+    ]
+  }
+}

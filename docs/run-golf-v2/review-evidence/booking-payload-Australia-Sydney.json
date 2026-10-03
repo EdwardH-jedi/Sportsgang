@@ -1,0 +1,11 @@
+{
+  "name": "booking-payload-Australia-Sydney",
+  "command": [
+    "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/api/.venv/bin/python",
+    "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/docs/run-golf-v2/review-evidence/probe_booking_payload.py"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 0.98,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

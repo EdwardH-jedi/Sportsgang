@@ -1,0 +1,24 @@
+{
+  "accounts": {
+    "Alice": {
+      "id": "6c11cac2-d2c0-41a6-a63b-26f97eb00394",
+      "email": "codex-Alice-c85f18d@example.com"
+    },
+    "Bob": {
+      "id": "6a9d2416-3a7e-4453-aa92-d3e59a078c62",
+      "email": "codex-Bob-0b58c74@example.com"
+    },
+    "Outsider": {
+      "id": "eeff8aee-3eb8-4a8f-bdd4-13cf9f6ba168",
+      "email": "codex-Outsider-8e761ba@example.com"
+    }
+  },
+  "legacy_graph": {
+    "match": "64144396-3040-4c00-88a2-eb8e61a23c5d",
+    "message": "35dd9d9d-00af-4c81-8ecc-283f1a1e65ec",
+    "booking": "98a81660-bfa4-4c31-8304-f52f5549ad1a"
+  },
+  "run_join_plans": "PASS",
+  "outsider_message_booking_host_attendance": "PASS",
+  "event": "9fba5d65-8fcf-4e02-b7e8-061d71b6112f"
+}

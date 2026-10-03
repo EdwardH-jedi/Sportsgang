@@ -1,0 +1,74 @@
+{
+  "accounts": {
+    "Alice": {
+      "id": "bbb30721-a097-407d-92bc-830ad3ee351a",
+      "email": "codex-Alice-9bc37bc@example.com"
+    },
+    "Bob": {
+      "id": "346548e5-f607-4962-b0a5-a6ffb053071d",
+      "email": "codex-Bob-cf96243@example.com"
+    },
+    "Outsider": {
+      "id": "9eba19f1-e2f5-4691-9d7c-d6ced824775e",
+      "email": "codex-Outsider-7c91496@example.com"
+    }
+  },
+  "legacy_graph": {
+    "match": "30232e02-f149-4d55-a1fe-79e831e55bb5",
+    "message": "2235f97b-b902-4521-a69d-206fd887674b",
+    "booking": "3323e329-0e6c-4c98-91b2-1171784a9457"
+  },
+  "run_join_plans": "PASS",
+  "run_leave_rejoin": {
+    "status": "FAIL",
+    "error": "(sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 1, 17, 27... (can't subtract offset-naive and offset-aware datetimes)\n[SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]\n[parameters: ('joined', datetime.datetime(2026, 10, 3, 1, 17, 27, 86392, tzinfo=datetime.timezone.utc), None, UUID('e549d75b-e06e-4e36-9ffc-924783ef212e'))]\n(Background on this error at: https://sqlalche.me/e/20/dbapi)"
+  },
+  "outsider_message_booking_host_attendance": "PASS",
+  "golf_leave_rejoin": {
+    "status": "FAIL",
+    "error": "(sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $2: datetime.datetime(2026, 10, 3, 1, 17, 27... (can't subtract offset-naive and offset-aware datetimes)\n[SQL: UPDATE event_participants SET status=$1::VARCHAR, joined_at=$2::TIMESTAMP WITHOUT TIME ZONE, left_at=$3::TIMESTAMP WITH TIME ZONE WHERE event_participants.id = $4::UUID]\n[parameters: ('joined', datetime.datetime(2026, 10, 3, 1, 17, 27, 136139, tzinfo=datetime.timezone.utc), None, UUID('be872e28-8a9a-4340-b7fa-5173c8d9e34e'))]\n(Background on this error at: https://sqlalche.me/e/20/dbapi)"
+  },
+  "golf_full_duplicate_leave": "PASS",
+  "golf_consent_counterexample": {
+    "expected": "excluded until explicit welcome_beginners or any_level",
+    "actual": {
+      "tier": "compatible",
+      "reasons": [
+        {
+          "code": "similar_handicap",
+          "text": "Similar level: handicaps 24.0 and 30.0 are within 10.0"
+        },
+        {
+          "code": "more_experienced",
+          "text": "More experienced than you (handicap 24.0 vs 30.0)"
+        },
+        {
+          "code": "time_overlap",
+          "text": "Both prefer mornings"
+        }
+      ],
+      "caveats": [
+        {
+          "code": "handicap_self_reported",
+          "text": "Handicaps are self-reported, not verified"
+        },
+        {
+          "code": "handicap_estimate",
+          "text": "Their handicap is an estimate"
+        }
+      ]
+    },
+    "mentor_id": "9eba19f1-e2f5-4691-9d7c-d6ced824775e"
+  },
+  "plans_truncation": {
+    "total": 52,
+    "first_page_length": 50,
+    "future_run_on_first_page": false,
+    "future_run_on_second_page": true,
+    "event_id": "bd47784d-ee63-44c3-b222-ee273dda2a3b"
+  },
+  "old_client_preserves_v2_and_invalid_partial_pace_rejected": "PASS",
+  "ui_accounts_password": "local throwaway password is in probe script; tokens are never saved",
+  "ui_run_event": "bd47784d-ee63-44c3-b222-ee273dda2a3b",
+  "ui_golf_event": "1fdbec48-eb2d-417c-9c72-6cc0c78d55ef"
+}

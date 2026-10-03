@@ -1,0 +1,20 @@
+[
+  {
+    "name": "API",
+    "session_id": 29479,
+    "chunk_id": "5b4d87",
+    "wall_time_seconds": 0.284751666,
+    "exit_code": 0,
+    "original_token_count": 38,
+    "output": "INFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [56793]\n"
+  },
+  {
+    "name": "Metro",
+    "session_id": 97445,
+    "chunk_id": "bb9245",
+    "wall_time_seconds": 0.038241875,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  }
+]

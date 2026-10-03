@@ -1,0 +1,4 @@
+
+> @protin/shared-types@0.1.0 typecheck
+> tsc --noEmit --tsBuildInfoFile /private/tmp/codex-sg-review-20261003/shared.tsbuildinfo
+

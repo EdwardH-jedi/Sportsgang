@@ -1,0 +1,15 @@
+{
+  "name": "integration-tests",
+  "command": [
+    "uv",
+    "run",
+    "--offline",
+    "pytest",
+    "tests_integration",
+    "-q"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 13.81,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

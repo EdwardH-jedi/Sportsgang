@@ -1,0 +1,13 @@
+name: codex-sg-review-20261003
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: review
+      POSTGRES_PASSWORD: local-review-only
+      POSTGRES_DB: codex_review
+    ports: ["127.0.0.1:55443:5432"]
+    tmpfs: ["/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:56443:6379"]

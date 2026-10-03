@@ -1,0 +1,17 @@
+{
+  "name": "mobile-tests-no-watchman",
+  "command": [
+    "npm",
+    "run",
+    "test:ci",
+    "--workspace",
+    "@protin/mobile",
+    "--",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2",
+  "exit_code": 0,
+  "elapsed_seconds": 16.03,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

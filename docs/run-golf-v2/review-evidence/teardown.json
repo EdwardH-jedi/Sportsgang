@@ -1,0 +1,9 @@
+{
+  "project": "codex-sg-review-20261003",
+  "command": ["docker", "compose", "-p", "codex-sg-review-20261003", "-f", "/private/tmp/codex-sg-review-20261003/compose.yml", "down"],
+  "exit_code": 0,
+  "removed": ["codex-sg-review-20261003-postgres-1", "codex-sg-review-20261003-redis-1", "codex-sg-review-20261003_default"],
+  "down_v_used": false,
+  "postgres_storage": "review-owned tmpfs",
+  "user_volumes_modified": false
+}

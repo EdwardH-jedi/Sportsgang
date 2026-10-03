@@ -1,0 +1,12 @@
+{
+  "name": "alembic-legacy-schema",
+  "command": [
+    "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/api/.venv/bin/alembic",
+    "upgrade",
+    "head"
+  ],
+  "cwd": "/private/tmp/codex-sg-review-20261003/baseline/apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 0.64,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

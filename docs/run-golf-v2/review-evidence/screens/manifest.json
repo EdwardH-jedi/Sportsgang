@@ -1,0 +1,263 @@
+{
+  "source_worktree": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2",
+  "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+  "api": "http://127.0.0.1:8023",
+  "metro": "exp://127.0.0.1:8087",
+  "screens": [
+    {
+      "file": "01-native-running-explore.png",
+      "scene": "running Explore before plans",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:19:55.310089+00:00",
+      "text_size": "large",
+      "sha256": "439b588b59cc0ef1668a00cf25447770066c4592e1a33a86bc51c8914266dc47"
+    },
+    {
+      "file": "02-after-plans-tap.png",
+      "scene": "Alice My Plans omits future run after 51 history rows",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:20:17.049839+00:00",
+      "text_size": "large",
+      "sha256": "e037d1a4f866d65f3d7cf1ddbcfea1992cc3ff5d4a7a0aa737dee80707a00f3a"
+    },
+    {
+      "file": "03-native-created-run.png",
+      "scene": "Alice native-created CodexNativeRun detail",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:24:00.110642+00:00",
+      "text_size": "large",
+      "sha256": "295d80c3d471c50d3dbaa9b04b7fb6ebafbc32bdfd58fb758bbb1848b18390b5"
+    },
+    {
+      "file": "04-native-bob-joined.png",
+      "scene": "Bob joined native run, count includes host",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:27:43.574479+00:00",
+      "text_size": "large",
+      "sha256": "dcbd7ab2a20fc0479474fda2ee4475859cfb0aa2528994958e2e49a0796710d5"
+    },
+    {
+      "file": "05-native-bob-plans.png",
+      "scene": "Bob My Plans includes joined native run",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:28:00.179700+00:00",
+      "text_size": "large",
+      "sha256": "c21c1e8f00e8dc15183661d7a9d88173f6c26428ec0fbc9877b0d75d61412cc8"
+    },
+    {
+      "file": "06-native-rejoin-error.png",
+      "scene": "Bob leave then rejoin native run: HTTP500",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:28:30.315037+00:00",
+      "text_size": "large",
+      "sha256": "0e9e8c41e1ae8b7b97ac6e1307d17afced9dd7a4f0a8f511508ce4be1e3ecb51"
+    },
+    {
+      "file": "07-native-golf-detail.png",
+      "scene": "API-created golf round detail: host declaration/cost/9 holes",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:28:54.336718+00:00",
+      "text_size": "large",
+      "sha256": "fd27ab11590ab4c60986b793a03d38048f273d7504603a9000d0209ebea3985c"
+    },
+    {
+      "file": "08-native-profile.png",
+      "scene": "profile fallback, legacy sports, no-handicap labels",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:29:31.193367+00:00",
+      "text_size": "large",
+      "sha256": "1562983f1941f406e6425cf4b07e6faeaa9ce42c106297fe55ea280f25c573cc"
+    },
+    {
+      "file": "09-native-large-running-editor.png",
+      "scene": "accessibility-large running editor after scroll",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:33:57.658421+00:00",
+      "text_size": "accessibility-large",
+      "sha256": "65ed64e9e644fa5764410e41476fc83a217e63e85636853c9268783bca571ad5"
+    },
+    {
+      "file": "10-native-large-focused-input.png",
+      "scene": "accessibility-large focused pace input; software keyboard hidden",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:34:33.590817+00:00",
+      "text_size": "accessibility-large",
+      "sha256": "29a1eced9d106ee0dcfd360bf6723a75f55de9033d75f9a12f6a26194e3f8496"
+    },
+    {
+      "file": "11-native-large-software-keyboard.png",
+      "scene": "accessibility-large pace input and visible software keyboard",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:36:18.764511+00:00",
+      "text_size": "accessibility-large",
+      "sha256": "8215a67f5c7f92e910849f9c441c75cfb8a9fe77b8f939fa8b59dcc3f5c20f35"
+    },
+    {
+      "file": "12-native-large-save-with-keyboard.png",
+      "scene": "save button reached above software keyboard",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:37:52.631593+00:00",
+      "text_size": "accessibility-large",
+      "sha256": "edd8ad4420bf099d30ba1f7433a537d79bbc2aded591d0d8c143f74d639cb68b"
+    },
+    {
+      "file": "13-native-plus-handicap-profile.png",
+      "scene": "saved plus2.1 self-reported, pace5:30-6:15",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:39:26.614003+00:00",
+      "text_size": "large",
+      "sha256": "4faf3ebeaa42f1d5343512a9ffc74a1e8e2393aeddfab8884b837ff38c100f5f"
+    },
+    {
+      "file": "14-native-created-golf.png",
+      "scene": "Bob native-created capacity2/9holes/35AUD golf round",
+      "device": "iPhone 16e",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1170,
+        2532
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:42:23.543132+00:00",
+      "text_size": "large",
+      "sha256": "f28fc815e86733e60fad673a503bc5989da49c198185859375d77a32b1917654"
+    },
+    {
+      "file": "15-native-alice-golf-full.png",
+      "scene": "Alice joins last golf spot: Full/2of2",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:43:45.989307+00:00",
+      "text_size": "large",
+      "sha256": "1c8bef0a4e3751cef3a042b0b54d9e87ea939d8c4d319898c8846476f649181a"
+    },
+    {
+      "file": "16-native-stale-golf-list.png",
+      "scene": "back after join: stale1spot-left on same golf list card",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:45:06.258089+00:00",
+      "text_size": "large",
+      "sha256": "8cb31899694f02aab3369c1ffb4a7a0537323fc229b1f58c256d280f10f22150"
+    },
+    {
+      "file": "17-native-onboarding-birth-picker.png",
+      "scene": "new empty-profile login, Step1 Birthyear picker not completed",
+      "device": "iPhone 17 Pro",
+      "runtime": "iOS26.3 / ExpoGo",
+      "pixel_dimensions": [
+        1206,
+        2622
+      ],
+      "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+      "source_status": "clean;tracked_sha256_unchanged",
+      "captured_at_utc": "2026-10-03T01:50:36.749660+00:00",
+      "text_size": "large",
+      "sha256": "6d9b8e18991ac2511b61782630b3702ea174a7ec69ae594d0896ed83cd47a93c"
+    }
+  ]
+}

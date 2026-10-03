@@ -1,0 +1,543 @@
+{
+  "source_worktree": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2",
+  "source_head": "8b8afb0524d5da133730562fb04acd1078be5e8d",
+  "report_sha256": "f79015600aa6ea25830632740763ea14c12f60c693813b3656f1c6f5f797dae0",
+  "publication_note": "Only review artifacts were added. Application source matches reviewed source_head. Original logs/results/screens are unchanged. review-time-manifest.json describes the original review snapshot.",
+  "files": [
+    {
+      "path": "docs/run-golf-v2/CODEX_REVIEW.md",
+      "bytes": 38151,
+      "sha256": "f79015600aa6ea25830632740763ea14c12f60c693813b3656f1c6f5f797dae0"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-fresh.json",
+      "bytes": 333,
+      "sha256": "da793cce0cf45f11221beeb3461afb48bed009f735394ee2284f13c0cf25d1d9"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-fresh.log",
+      "bytes": 2024,
+      "sha256": "b86fda2fd8a9670eb926b0157724ee4b7fa86600086a40c353c69aab63be57c1"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-legacy-schema-complete.json",
+      "bytes": 378,
+      "sha256": "bc2415dabef985393c995e06012d66f5966ce93d7f378e6d7e656f077bba0844"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-legacy-schema-complete.log",
+      "bytes": 1731,
+      "sha256": "54cc2acd9bd470b42ec5a144252a495fc4f14d3e9a48abbed93d5531bb261b59"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-legacy-schema.json",
+      "bytes": 369,
+      "sha256": "67f56f39e6b59dff4647ebf41125c3efd26496c980672c951fa431bd01bb31ce"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-legacy-schema.log",
+      "bytes": 1731,
+      "sha256": "54cc2acd9bd470b42ec5a144252a495fc4f14d3e9a48abbed93d5531bb261b59"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/alembic-populated.log",
+      "bytes": 257,
+      "sha256": "526945d58303c7cf0eaa9b8b34f61684badfe74b4d984bb9f84ad1c2bcf72c34"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/api-tests.json",
+      "bytes": 313,
+      "sha256": "faab46749cb47ccb44a189e54629de9d339575fa23cb5f9f108f32c39094972d"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/api-tests.log",
+      "bytes": 20609,
+      "sha256": "14be6dc2406a6db156b5ad581c0636d649452cd1732a0fb8e9036b54bda90a46"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-Australia-Sydney.json",
+      "bytes": 510,
+      "sha256": "013654fcb08e17fbd8d75b1802e59f32a79821f8ce2ceb5c0aa43d323bb4c1a9"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-Australia-Sydney.log",
+      "bytes": 230,
+      "sha256": "bc718f37c9ab5acf5239336767046febc727e3e05aca9c8e26ecedcd39dcbe42"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-UTC.json",
+      "bytes": 497,
+      "sha256": "9792d00622bd3d73a7af9815843fcde2c7f6fd1ceb302752e5c7ca703657b00f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-UTC.log",
+      "bytes": 217,
+      "sha256": "c180ac2d49ea4db4203faa29114d41712993da6f5d3b0bd0146ff7a25e604dcc"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-results-Australia-Sydney.json",
+      "bytes": 229,
+      "sha256": "626346947b92f3edacf24c50d0e357ca2dc452eb39d578b57c2778ca6f60e8c9"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-results-UTC.json",
+      "bytes": 216,
+      "sha256": "17286247bf611605dd341fe1912d501cf73b0aff15641915d4a9205b14bd24af"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload-results.json",
+      "bytes": 1341,
+      "sha256": "e2aa2c89dff4fefc0a443d7338a0fb0eeb3c8e52c7749363ad72120c6785b5f5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload.json",
+      "bytes": 493,
+      "sha256": "0216555ec38d18f8de2ef812261cc607428aa0507756e261dbc006251360dde5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/booking-payload.log",
+      "bytes": 1342,
+      "sha256": "e2d07d8094841b97517579f528c51845f2aab65641ff7e6b391307e71f37cf7b"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/cache-acceptance.json",
+      "bytes": 550,
+      "sha256": "c09bd6204b2827fe32089d6fc9fedc3f681d470b44789a23354047faed2f125b"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/cache-acceptance.log",
+      "bytes": 2332,
+      "sha256": "864d57a2cfbcea930839ed47e64a11e9e8a982770d7f94de875753a70e1d4c2b"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/cache.acceptance.test.js",
+      "bytes": 2496,
+      "sha256": "b568a320484a42ff930cd8f26ec6e28d022c933d7957b2961c8bf390d5ba5c81"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/compose.yml",
+      "bytes": 350,
+      "sha256": "a96df2b48a02d308d048831ff66d64803a3aa7a93bb8c32e33559ce767c2f380"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/current-journeys.json",
+      "bytes": 3444,
+      "sha256": "c1b8a8002aabd30784934841a750b57e5aba5cbcbf772e6ded18c70ee3d7b8a5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/diff-check.log",
+      "bytes": 36,
+      "sha256": "8647a154da68032cc1d99f4c1fa0b5a6b6270b9377f763df780755b8a8ebb0e6"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/final-source-preservation.json",
+      "bytes": 7370,
+      "sha256": "eb3575286ad8e6742b2ede1e510b8a06ac3f74af308b4a08bfd9697dac9507f9"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/independent-journeys.json",
+      "bytes": 506,
+      "sha256": "8f19a976946d49e53848d603afc550386ba65d012f1cd8d90c0b44d4d54aa08f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/independent-journeys.log",
+      "bytes": 3445,
+      "sha256": "c36702c869a0a9155f3ba538f19b44f110a4f86ecbede993ef2d608b46d9e51d"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/initial-launch.json",
+      "bytes": 53919,
+      "sha256": "40ae7e9554f6fade26dbbbacdad0ed2099bfdffe18916e5c868ef084ba51937c"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/initial-target.json",
+      "bytes": 67443,
+      "sha256": "6ff7fd6bb2c30ef1c4be4124896e0fd242c42b6c9a38b43d4905870ce80186d5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/integration-tests.json",
+      "bytes": 345,
+      "sha256": "39828a4da383b39b6ce691ccef5b1440887133428c1abd296f971744f15867ad"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/integration-tests.log",
+      "bytes": 1139,
+      "sha256": "53fe83bd928656de25c7f27f03ce6176c543e2c72245745e14ac80bc3cb297c8"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ios-export.json",
+      "bytes": 415,
+      "sha256": "75d7b8ec1720bd3895316aae4e645fbdd6999af24133559c168dd4e58173caa0"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ios-export.log",
+      "bytes": 694,
+      "sha256": "d621758a28a594eb9ea9a86181f5a723b0629570cea0ab945e3522ec2250c179"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/jest.review.config.js",
+      "bytes": 804,
+      "sha256": "8f54b27a71353c15f534ffb17ce37f3fbefe712a45f8a5ccdcc686d665806660"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/legacy-journeys.json",
+      "bytes": 713,
+      "sha256": "7c656f6b17c18ccad319433a9153984afd2b3651fb0b4df4bb7a6836811ce14f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/legacy-seed-complete.json",
+      "bytes": 467,
+      "sha256": "932b3d34f1f2c8ef59b95fd6b8345f8d521a0fc4c117e235f016c9231c16a6fe"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/legacy-seed-complete.log",
+      "bytes": 714,
+      "sha256": "f150553de462379b69048fce97ed4565336ed1b2c2dfe540ad36ff9232036afe"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/legacy-seed.json",
+      "bytes": 458,
+      "sha256": "c830796efadbac67f52b824f3eb62d45a294148bd28e31a3d6616b5bb6b19b2f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/legacy-seed.log",
+      "bytes": 1407,
+      "sha256": "5b28da7c8df0f43641b8351605362613e53ef3c86236d5525e653805b1f7cc5a"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-lint.json",
+      "bytes": 317,
+      "sha256": "711d31369d9d8b00e14b139f633772d8e50a1e38f7f8056e9628a00ed457fc61"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-lint.log",
+      "bytes": 75,
+      "sha256": "82185739745a9c9be23cc5f2d819b32f6585cce861a817334295ff3e2da914d4"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-tests-no-watchman.json",
+      "bytes": 387,
+      "sha256": "beeaa9a4cb61884ef06d63fb91776f16cbefd2458c2017d798c1d137a5653453"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-tests-no-watchman.log",
+      "bytes": 24515,
+      "sha256": "62323855639383488669cf6a68a58ce7aea9004faddb11a58b0b33179c6ab9c4"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-tests.json",
+      "bytes": 350,
+      "sha256": "aa633cacf113ac931abc670dd31592d55106d114e8a15847dcd77dcca14773e3"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-tests.log",
+      "bytes": 2006,
+      "sha256": "d6ce2dc203353a3561280ac03e51297ff9b46b7a2b8838183992d426cbb97feb"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-typecheck.json",
+      "bytes": 327,
+      "sha256": "58090e4a94e72bb9738b753852dd851810db8dbc6d5d300e76fb3fe37f54d0e2"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/mobile-typecheck.log",
+      "bytes": 50,
+      "sha256": "e96b4b6696feafb0ef61a1beea466f79a3da3d302b0dfd95f2958ae9884108d0"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-api.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-onboarding-account.json",
+      "bytes": 101,
+      "sha256": "75540b6b7916d53d6a69386cd945b523d240e99730dc2f20c316b9cc25ca6970"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-preference-api-results.json",
+      "bytes": 189,
+      "sha256": "59b0edaffd7164910b3817c30a82a5df82b0e64c793b2d2560272841d8adc05a"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-runtime.json",
+      "bytes": 193,
+      "sha256": "e5f9f1f866ed00b4335637220a72559c26d018c57b515829046ec04be7b4c6fe"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-session-api-results.json",
+      "bytes": 833,
+      "sha256": "7c4e14edc885e6bb87e814f36d85a8363afc77fd1bf57755e700680fc92df9ab"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/native-ui-snapshots.json",
+      "bytes": 11907,
+      "sha256": "35c473c8658dadc798e4bed2bf515033c40d17e5100a5231582ded199700d30d"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/npm-ci.json",
+      "bytes": 275,
+      "sha256": "622a806419701de4f8f2e6f6ae60879590ed303135bbb87c02708c3f3627734c"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/npm-ci.log",
+      "bytes": 3965,
+      "sha256": "b6df4d4c1b809ea401819097ddcb782ffc37f13694b6e894c4a9022e9736b8c4"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/onboarding-blocked-ui.json",
+      "bytes": 3898,
+      "sha256": "6a94ced4c253b5b4bdd35562654e700dbda61c212c20ce24e8869f345d47ecc9"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/populated-upgrade-complete.json",
+      "bytes": 497,
+      "sha256": "90db43a508e377897592caec0c38750658fd479909b7badabd0c194419a25ffc"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/populated-upgrade-complete.log",
+      "bytes": 309,
+      "sha256": "0d5ed9ad321bff7267095a4be270fd2506f320a48ffbbd6bef89e1a0f98a4b48"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/populated-upgrade.json",
+      "bytes": 488,
+      "sha256": "6064e2b16e95d061fba91e5a63cc6bb6d7a43949946e52020a86cb45078fc892"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/populated-upgrade.log",
+      "bytes": 310,
+      "sha256": "657e8c8d668fc6ffff60e06097cdeb6693c08e0f931d94b5766b3d402d4b5493"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/probe_booking_payload.py",
+      "bytes": 1920,
+      "sha256": "e342b7a0f1f6c2cc2ff5a578516574129a3c56162f98ccd3c0ae30574c3ff307"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/probe_journeys.py",
+      "bytes": 9092,
+      "sha256": "91e589a7ed7df2786e85c375f006db2f70734d39b039f77e79a0f5396f2b9c88"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/probe_native_results.py",
+      "bytes": 2397,
+      "sha256": "6540d8baf08b2f826041504bf31977d29127bcb598a977b53fda28d10cdc659b"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/probe_upgraded_login.py",
+      "bytes": 3236,
+      "sha256": "31f51899803c6327008239040890d041ee50aa60602a1e7235bc8d5538487e18"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/publication-acceptance.json",
+      "bytes": 670,
+      "sha256": "4292f291635915b892575f84e5859326706d2377c4dbe3abb760f649b14b52c6"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/publication-acceptance.log",
+      "bytes": 2297,
+      "sha256": "a5fc8fa5fd7d3f594423d920576e0ab7a308df487bca451ae534660ddd64c00d"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/rejoin-initial-failure.log",
+      "bytes": 19056,
+      "sha256": "9ef48b99738361e7b106416781c363220c6418686653b09b5130b95382950072"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/release-config-diff.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/review-time-manifest.json",
+      "bytes": 20325,
+      "sha256": "72cee1113f079b14d2583279f8e45f7c8e907765d87b528fc3a04f2c0f890075"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/reviewed-diff-paths.txt",
+      "bytes": 6911,
+      "sha256": "333dc2eff424cf27803f1e72ca0ec8d2b6d026e9decb6d6f7a0ef5f92238cbdf"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ruff-check.json",
+      "bytes": 322,
+      "sha256": "2d3c650754571a0b96779a7cc67308c63cfeb8f20bcee2aacc1afc296644ec43"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ruff-check.log",
+      "bytes": 183,
+      "sha256": "bdb798e6739851a954fc8d18fc7ad0d557f181720d42386161de1159cfe53dad"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ruff-format.json",
+      "bytes": 339,
+      "sha256": "3175775f9632f9b35fa607ff883b7d907135671ee779a1d8897968f33b080bb3"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/ruff-format.log",
+      "bytes": 192,
+      "sha256": "3d180d19d6b49eba5e7ade447a3e4579bc46e0c7f9fb196e8d63215f9b5a43a5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/run_checks.py",
+      "bytes": 3143,
+      "sha256": "f35e9a2b6504301fa44a912611ecf9728275a892e028d8d48d28241bd6ed1034"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/runtime-stop.json",
+      "bytes": 531,
+      "sha256": "7ad4a72f98b96c1da6c2676fd6c0098708be8b8e4af06f1d0f0a0209b82bd667"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/01-native-running-explore.png",
+      "bytes": 281287,
+      "sha256": "439b588b59cc0ef1668a00cf25447770066c4592e1a33a86bc51c8914266dc47"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/02-after-plans-tap.png",
+      "bytes": 176820,
+      "sha256": "e037d1a4f866d65f3d7cf1ddbcfea1992cc3ff5d4a7a0aa737dee80707a00f3a"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/03-native-created-run.png",
+      "bytes": 203113,
+      "sha256": "295d80c3d471c50d3dbaa9b04b7fb6ebafbc32bdfd58fb758bbb1848b18390b5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/04-native-bob-joined.png",
+      "bytes": 212550,
+      "sha256": "dcbd7ab2a20fc0479474fda2ee4475859cfb0aa2528994958e2e49a0796710d5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/05-native-bob-plans.png",
+      "bytes": 249528,
+      "sha256": "c21c1e8f00e8dc15183661d7a9d88173f6c26428ec0fbc9877b0d75d61412cc8"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/06-native-rejoin-error.png",
+      "bytes": 205128,
+      "sha256": "0e9e8c41e1ae8b7b97ac6e1307d17afced9dd7a4f0a8f511508ce4be1e3ecb51"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/07-native-golf-detail.png",
+      "bytes": 238898,
+      "sha256": "fd27ab11590ab4c60986b793a03d38048f273d7504603a9000d0209ebea3985c"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/08-native-profile.png",
+      "bytes": 257373,
+      "sha256": "1562983f1941f406e6425cf4b07e6faeaa9ce42c106297fe55ea280f25c573cc"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/09-native-large-running-editor.png",
+      "bytes": 257822,
+      "sha256": "65ed64e9e644fa5764410e41476fc83a217e63e85636853c9268783bca571ad5"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/10-native-large-focused-input.png",
+      "bytes": 261303,
+      "sha256": "29a1eced9d106ee0dcfd360bf6723a75f55de9033d75f9a12f6a26194e3f8496"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/11-native-large-software-keyboard.png",
+      "bytes": 292070,
+      "sha256": "8215a67f5c7f92e910849f9c441c75cfb8a9fe77b8f939fa8b59dcc3f5c20f35"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/12-native-large-save-with-keyboard.png",
+      "bytes": 285723,
+      "sha256": "edd8ad4420bf099d30ba1f7433a537d79bbc2aded591d0d8c143f74d639cb68b"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/13-native-plus-handicap-profile.png",
+      "bytes": 252416,
+      "sha256": "4faf3ebeaa42f1d5343512a9ffc74a1e8e2393aeddfab8884b837ff38c100f5f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/14-native-created-golf.png",
+      "bytes": 228951,
+      "sha256": "f28fc815e86733e60fad673a503bc5989da49c198185859375d77a32b1917654"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/15-native-alice-golf-full.png",
+      "bytes": 250050,
+      "sha256": "1c8bef0a4e3751cef3a042b0b54d9e87ea939d8c4d319898c8846476f649181a"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/16-native-stale-golf-list.png",
+      "bytes": 286159,
+      "sha256": "8cb31899694f02aab3369c1ffb4a7a0537323fc229b1f58c256d280f10f22150"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/17-native-onboarding-birth-picker.png",
+      "bytes": 142143,
+      "sha256": "6d9b8e18991ac2511b61782630b3702ea174a7ec69ae594d0896ed83cd47a93c"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/screens/manifest.json",
+      "bytes": 9719,
+      "sha256": "14953a6b3a921d8da78c8dd3e09d222a1f4f862aafa15a27d08031ef1f9b9649"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/shared-typecheck.json",
+      "bytes": 432,
+      "sha256": "a0fcb1a8d86ab511f7d99c1e2cd5634bbfc68c1754e50d469d3679d1dc21876f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/shared-typecheck.log",
+      "bytes": 131,
+      "sha256": "a3fe84dc8bb6fad7ac06d81ec147e6892349bf61fef4abf14dc897f4327066cc"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/teardown.json",
+      "bytes": 427,
+      "sha256": "eae134dc1653096fc01937fc10cd152da6611cefff816c76d6363be869c16dfd"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/upgrade-retained-hashes.json",
+      "bytes": 8616,
+      "sha256": "7985f0c49aff8ecc57c1c4819351c27c59f317b083ca012f4c9686b9a2c17827"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/upgraded-login-harness-initial.log",
+      "bytes": 1092,
+      "sha256": "c1615ba59464f0ae64b29421cba26357d06ff8d3e37a3f5adc663f5632148cd2"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/upgraded-login-results.json",
+      "bytes": 267,
+      "sha256": "ffe09fbfa6f5a257e9e761016093ecd080740c922d5b9d449741d10739a6bd4f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/upgraded-login.json",
+      "bytes": 491,
+      "sha256": "10222da3dd7dd7f83db4412704cd0e7d1d47506fd460090580348c0d0470d69f"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/upgraded-login.log",
+      "bytes": 252,
+      "sha256": "0be9c02b01c124b9e387ad1565ca9fb8121f88d5fa285024e0ef862cf4628bf1"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/uv-sync.json",
+      "bytes": 315,
+      "sha256": "2d4a271e988d5fa7271a17df7c8d8dac8f40ab71146f9c728061bdeee7f17c2a"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/uv-sync.log",
+      "bytes": 192,
+      "sha256": "6b6ad2ace36e26d8ca051a724fc147fce4277fecdcf878bb54a7ed68d9f75774"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/verify_upgrade.py",
+      "bytes": 2109,
+      "sha256": "3c63f06a57ba11095505d0848c3630b02873442668ffbdba4642f0711ec26669"
+    },
+    {
+      "path": "docs/run-golf-v2/review-evidence/worktrees-final.txt",
+      "bytes": 323,
+      "sha256": "e208b7bc29af0d7f8c1f5f69479aa9d765c5129d950d4ebaf67def2cb880c6ce"
+    }
+  ]
+}

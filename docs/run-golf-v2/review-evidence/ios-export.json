@@ -1,0 +1,17 @@
+{
+  "name": "ios-export",
+  "command": [
+    "npx",
+    "--no-install",
+    "expo",
+    "export",
+    "--platform",
+    "ios",
+    "--output-dir",
+    "/private/tmp/codex-sg-review-20261003/ios-export"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/mobile",
+  "exit_code": 0,
+  "elapsed_seconds": 7.93,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

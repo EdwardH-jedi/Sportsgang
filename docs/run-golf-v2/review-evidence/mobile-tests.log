@@ -1,0 +1,33 @@
+
+> @protin/mobile@0.1.0 test:ci
+> jest --passWithNoTests --ci --runInBand
+
+2026-10-03T11:11:14,772: [] fchmod(/Users/edwardhwang/.local/state/watchman/edwardhwang-state, 2700): Operation not permitted
+
+Watchman:  watchman --no-pretty get-sockname returned with exit code=1, signal=null, stderr= 2026-10-03T11:11:14,772: [] fchmod(/Users/edwardhwang/.local/state/watchman/edwardhwang-state, 2700): Operation not permitted
+
+node:events:505
+    throw er; // Unhandled 'error' event
+    ^
+
+Error: watchman --no-pretty get-sockname returned with exit code=1, signal=null, stderr= 2026-10-03T11:11:14,772: [] fchmod(/Users/edwardhwang/.local/state/watchman/edwardhwang-state, 2700): Operation not permitted
+
+    at ChildProcess.<anonymous> (/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/node_modules/fb-watchman/index.js:203:18)
+    at ChildProcess.emit (node:events:514:20)
+    at maybeClose (node:internal/child_process:1125:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
+Emitted 'error' event on Client instance at:
+    at spawnError (/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/node_modules/fb-watchman/index.js:174:10)
+    at ChildProcess.<anonymous> (/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/node_modules/fb-watchman/index.js:203:7)
+    at ChildProcess.emit (node:events:514:20)
+    at maybeClose (node:internal/child_process:1125:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
+
+Node.js v26.7.0
+npm error Lifecycle script `test:ci` failed with error:
+npm error code 1
+npm error path /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/mobile
+npm error workspace @protin/mobile@0.1.0
+npm error location /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/mobile
+npm error command failed
+npm error command sh -c jest --passWithNoTests --ci --runInBand

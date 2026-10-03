@@ -1,0 +1,236 @@
+[
+  {
+    "name": "rejoin-ui",
+    "result": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "15368g8",
+      "seq": 31,
+      "count": 74,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e62|tap|button|Join this run||session-join"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GROUP RUN||",
+        "e24|text|text|GROUP RUN||",
+        "e28|text|text|HTTP 500||",
+        "e29|text|text|HTTP 500||",
+        "e31|text|text|Sun 4 Oct · 6:30 am||",
+        "e32|text|text|Sun 4 Oct · 6:30 am||",
+        "e33|text|text|Sydney time||",
+        "e34|text|text|Sydney time||",
+        "e35|text|text|Local park||",
+        "e36|text|text|Local park||",
+        "e38|text|text|5 km||",
+        "e39|text|text|5 km||",
+        "e41|text|text|Social pace||",
+        "e42|text|text|Social pace||",
+        "e44|text|text|Stay together||",
+        "e45|text|text|Stay together||",
+        "e46|text|text|8 runners · 7 spots left||session-capacity",
+        "e47|text|text|8 runners · 7 spots left||",
+        "e48|text|text|Hosted by Codex Alice||",
+        "e49|text|text|Hosted by Codex Alice||",
+        "e50|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e51|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e54|text|text|1 of 8, including the host||",
+        "e55|text|text|1 of 8, including the host||",
+        "e57|text|text|Codex Alice||",
+        "e58|text|text|Codex Alice||",
+        "e60|text|text|Host||",
+        "e61|text|text|Host||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    }
+  },
+  {
+    "name": "golf-ui",
+    "result": {
+      "type": "runtime-snapshot",
+      "rs": "1",
+      "screenHash": "1q6yz2t",
+      "seq": 35,
+      "count": 76,
+      "targets": [
+        "e22|tap|button|Back||",
+        "e64|tap|button|Cancel round||session-cancel"
+      ],
+      "scroll": [
+        "e19|swipe|scroll-view|||"
+      ],
+      "text": [
+        "e23|text|text|GOLF ROUND||",
+        "e24|text|text|GOLF ROUND||",
+        "e28|text|text|Sat 10 Oct · 12:17 pm||",
+        "e29|text|text|Sat 10 Oct · 12:17 pm||",
+        "e30|text|text|Sydney time||",
+        "e31|text|text|Sydney time||",
+        "e32|text|text|Codex review local meeting point||",
+        "e33|text|text|Codex review local meeting point||",
+        "e35|text|text|9 holes||",
+        "e36|text|text|9 holes||",
+        "e38|text|text|Tee time secured (host says)||",
+        "e39|text|text|Tee time secured (host says)||",
+        "e41|text|text|~$35||",
+        "e42|text|text|~$35||",
+        "e44|text|text|Beginners welcome||",
+        "e45|text|text|Beginners welcome||",
+        "e46|text|text|2 golfers · 1 spot left||session-capacity",
+        "e47|text|text|2 golfers · 1 spot left||",
+        "e48|text|text|Hosted by you||",
+        "e49|text|text|Hosted by you||",
+        "e50|text|text|The host says the tee time is secured. Joining here doesn't book the course or take payment — sort green fees with the host.||",
+        "e51|text|text|The host says the tee time is secured. Joining here doesn't book the course or take payment — sort green fees with the host.||",
+        "e52|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e53|text|text|Pace, level and beginner notes are the host's guide. Anyone can join while spots remain.||",
+        "e56|text|text|1 of 2, including the host||",
+        "e57|text|text|1 of 2, including the host||",
+        "e59|text|text|You||",
+        "e60|text|text|You||",
+        "e62|text|text|Host||",
+        "e63|text|text|Host||"
+      ],
+      "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+    }
+  },
+  {
+    "name": "profile-large-ui",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "\n📷 Snapshot UI\n\nTargets (8) — ref|action|role|label|value|id\n  e56|tap|button|Edit running preferences||\n  e30|tap|button|Edit profile||edit-profile\n  e74|tap|button|Edit golf preferences||\n  e80|tap|button|Photos & bio||\n  e99|tap|button|Explore||\n  e101|tap|button|My Plans||\n  e102|tap|button|Chats||\n  e103|tap|button|Profile||\n\nScroll (1) — ref|action|role|label|value|id\n  e25|swipe|scroll-view|||\n\nTips\n  - Use target refs with tap, type_text, long_press, and touch.\n  - Use scroll refs with swipe.\n  - Refs are snapshot-specific; after snapshot_ui or wait_for_ui, use refs from the latest output.\n  - Use wait_for_ui for text/assertions or changing UI.\n\n✅ Runtime UI snapshot captured with 111 elements, 8 likely targets, and 1 scroll area.\n\nNext steps:\n1. Refresh after layout changes: snapshot_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\" })\n2. Wait for UI to settle: wait_for_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", predicate: \"settled\" })\n3. Batch same-screen taps: batch({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", steps: [{\"action\":\"tap\",\"elementRef\":\"e30\"},{\"action\":\"tap\",\"elementRef\":\"e74\"}] })\n4. Tap an elementRef: tap({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", elementRef: \"e56\" })\n5. Scroll visible content: swipe({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", withinElementRef: \"e25\", direction: \"up\", distance: 0.5 })\n"
+        }
+      ],
+      "structuredContent": {
+        "schema": "xcodebuildmcp.output.capture-result",
+        "schemaVersion": "2",
+        "didError": false,
+        "error": null,
+        "data": {
+          "summary": {
+            "status": "SUCCEEDED"
+          },
+          "artifacts": {
+            "simulatorId": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+          },
+          "capture": {
+            "type": "runtime-snapshot",
+            "rs": "1",
+            "screenHash": "1mdbkow",
+            "seq": 41,
+            "count": 111,
+            "targets": [
+              "e56|tap|button|Edit running preferences||",
+              "e30|tap|button|Edit profile||edit-profile",
+              "e74|tap|button|Edit golf preferences||",
+              "e80|tap|button|Photos & bio||",
+              "e99|tap|button|Explore||",
+              "e101|tap|button|My Plans||",
+              "e102|tap|button|Chats||",
+              "e103|tap|button|Profile||"
+            ],
+            "scroll": [
+              "e25|swipe|scroll-view|||"
+            ],
+            "text": [
+              "e28|text|text|ACCOUNT||",
+              "e29|text|text|ACCOUNT||",
+              "e34|text|text|Codex Bob||",
+              "e35|text|text|Codex Bob||",
+              "e36|text|text|Newtown||",
+              "e37|text|text|Newtown||",
+              "e40|text|text|These decide who you see — and who sees you.||",
+              "e41|text|text|These decide who you see — and who sees you.||",
+              "e43|text|text|Running||",
+              "e44|text|text|Running||",
+              "e46|text|text|Intermediate||",
+              "e47|text|text|Intermediate||",
+              "e49|text|text|Social runner||",
+              "e50|text|text|Social runner||",
+              "e52|text|text|Pace not shared||",
+              "e53|text|text|Pace not shared||",
+              "e54|text|text|Mornings||",
+              "e55|text|text|Mornings||",
+              "e58|text|text|Golf||",
+              "e59|text|text|Golf||",
+              "e61|text|text|Intermediate||",
+              "e62|text|text|Intermediate||",
+              "e64|text|text|No handicap||",
+              "e65|text|text|No handicap||",
+              "e67|text|text|Driving range||",
+              "e68|text|text|Driving range||",
+              "e70|text|text|Any level||",
+              "e71|text|text|Any level||",
+              "e72|text|text|Mornings||",
+              "e73|text|text|Mornings||",
+              "e75|text|text|Also saved from earlier versions: Gym (Intermediate), Tennis (Intermediate). They stay on your account but are not part of running and golf matching.||",
+              "e76|text|text|Also saved from earlier versions: Gym (Intermediate), Tennis (Intermediate). They stay on your account but are not part of running and golf matching.||"
+            ],
+            "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+          }
+        },
+        "nextSteps": [
+          "Refresh after layout changes: snapshot_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\" })",
+          "Wait for UI to settle: wait_for_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", predicate: \"settled\" })",
+          "Batch same-screen taps: batch({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", steps: [{\"action\":\"tap\",\"elementRef\":\"e30\"},{\"action\":\"tap\",\"elementRef\":\"e74\"}] })",
+          "Tap an elementRef: tap({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", elementRef: \"e56\" })",
+          "Scroll visible content: swipe({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", withinElementRef: \"e25\", direction: \"up\", distance: 0.5 })"
+        ]
+      }
+    }
+  },
+  {
+    "name": "running-editor-ui",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "\n📷 Snapshot UI\n\nTargets (1) — ref|action|role|label|value|id\n  e22|tap|button|Back||\n\nScroll (1) — ref|action|role|label|value|id\n  e19|swipe|scroll-view|||\n\nTips\n  - Use target refs with tap, type_text, long_press, and touch.\n  - Use scroll refs with swipe.\n  - Refs are snapshot-specific; after snapshot_ui or wait_for_ui, use refs from the latest output.\n  - Use wait_for_ui for text/assertions or changing UI.\n\n✅ Runtime UI snapshot captured with 87 elements, 1 likely target, and 1 scroll area.\n\nNext steps:\n1. Refresh after layout changes: snapshot_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\" })\n2. Wait for UI to settle: wait_for_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", predicate: \"settled\" })\n3. Scroll visible content: swipe({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", withinElementRef: \"e19\", direction: \"up\", distance: 0.5 })\n4. Tap an elementRef: tap({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", elementRef: \"e22\" })\n"
+        }
+      ],
+      "structuredContent": {
+        "schema": "xcodebuildmcp.output.capture-result",
+        "schemaVersion": "2",
+        "didError": false,
+        "error": null,
+        "data": {
+          "summary": {
+            "status": "SUCCEEDED"
+          },
+          "artifacts": {
+            "simulatorId": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+          },
+          "capture": {
+            "type": "runtime-snapshot",
+            "rs": "1",
+            "screenHash": "14pyly1",
+            "seq": 43,
+            "count": 87,
+            "targets": [
+              "e22|tap|button|Back||"
+            ],
+            "scroll": [
+              "e19|swipe|scroll-view|||"
+            ],
+            "text": [
+              "e27|text|text|How you would describe yourself — shown on your profile.||",
+              "e28|text|text|How you would describe yourself — shown on your profile.||"
+            ],
+            "udid": "3D2AF32A-3288-465B-8B27-92D087A382B2"
+          }
+        },
+        "nextSteps": [
+          "Refresh after layout changes: snapshot_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\" })",
+          "Wait for UI to settle: wait_for_ui({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", predicate: \"settled\" })",
+          "Scroll visible content: swipe({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", withinElementRef: \"e19\", direction: \"up\", distance: 0.5 })",
+          "Tap an elementRef: tap({ simulatorId: \"3D2AF32A-3288-465B-8B27-92D087A382B2\", elementRef: \"e22\" })"
+        ]
+      }
+    }
+  }
+]

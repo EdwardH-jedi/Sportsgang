@@ -1,0 +1,17 @@
+{
+  "name": "shared-typecheck",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "--workspace",
+    "@protin/shared-types",
+    "--",
+    "--tsBuildInfoFile",
+    "/private/tmp/codex-sg-review-20261003/shared.tsbuildinfo"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2",
+  "exit_code": 0,
+  "elapsed_seconds": 2.02,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}
