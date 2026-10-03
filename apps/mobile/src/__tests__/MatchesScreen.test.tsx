@@ -26,6 +26,8 @@ jest.mock('../lib/api', () => ({
 // ─── Mock navigation ──────────────────────────────────────────────────────────
 
 const mockNavigate = jest.fn();
+// Latest focus callback, so a test can simulate returning to the tab.
+const mockFocus: { current: null | (() => void | (() => void)) } = { current: null };
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({ navigate: mockNavigate }),
@@ -33,6 +35,7 @@ jest.mock('@react-navigation/native', () => ({
   // is to fire the effect once on mount and treat it as a no-op cleanup.
   useFocusEffect: (cb: () => void | (() => void)) => {
     const React = require('react');
+    mockFocus.current = cb;
     React.useEffect(() => {
       const cleanup = cb();
       return typeof cleanup === 'function' ? cleanup : undefined;
@@ -377,5 +380,33 @@ describe('MatchesScreen', () => {
       expect(node.props.numberOfLines).toBe(1);
       expect(node.props.ellipsizeMode).toBe('tail');
     });
+  });
+});
+
+// ─── Returning to the tab refreshes the list (review R1) ────────────────────
+
+describe('MatchesScreen focus refresh', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('a chat blocked meanwhile leaves the list when the tab is focused again', async () => {
+    mockApiGet.mockResolvedValueOnce({ items: twoMatches, total: 2, limit: 50, offset: 0 });
+    const { findByText, queryByText } = render(<MatchesScreen />);
+    expect(await findByText('Alex Kim')).toBeTruthy();
+    expect(mockApiGet).toHaveBeenCalledTimes(1); // the first focus does not double the initial fetch
+
+    // Blocked from the chat; the server no longer lists that match.
+    mockApiGet.mockResolvedValueOnce({ items: [twoMatches[0]], total: 1, limit: 50, offset: 0 });
+    await act(async () => {
+      mockFocus.current?.();
+    });
+    await waitFor(() => expect(queryByText('Alex Kim')).toBeNull());
+    expect(queryByText('Jordan Lee')).toBeTruthy();
+
+    // A failed focus refresh keeps what is shown.
+    mockApiGet.mockRejectedValueOnce(new Error('offline'));
+    await act(async () => {
+      mockFocus.current?.();
+    });
+    expect(queryByText('Jordan Lee')).toBeTruthy();
   });
 });

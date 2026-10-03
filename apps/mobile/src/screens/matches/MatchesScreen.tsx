@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -162,18 +162,26 @@ export function MatchesScreen() {
   }, [fetchMatches]);
 
   // Refresh on tab focus so the preview line stays in sync after the user
-  // returns from a chat. Cheaper than wiring a per-match WebSocket
-  // subscription into the list, and matches the existing pull-to-refresh
-  // contract — the preview is at most one round-trip stale.
+  // returns from a chat — and a chat that was just blocked leaves the list
+  // (the server no longer lists it, CONTRACTS.md §8). Cheaper than wiring a
+  // per-match WebSocket subscription into the list, and matches the existing
+  // pull-to-refresh contract — the preview is at most one round-trip stale.
+  // Quiet: no full-screen spinner, and a failed focus refresh keeps the list
+  // (pull-to-refresh reports errors). The first focus is skipped because the
+  // effect above already fetches; a ref, not `isLoading`, which this callback
+  // used to capture once and so never refreshed.
+  const focusedOnce = useRef(false);
   useFocusEffect(
     useCallback(() => {
-      // Skip the focus refetch on the very first mount — the useEffect
-      // above already fires the initial fetch.
-      if (!isLoading) {
-        void fetchMatches();
+      if (!focusedOnce.current) {
+        focusedOnce.current = true;
+        return;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchMatches])
+      api
+        .get<MatchListResponse>('/matches?limit=50')
+        .then((data) => setMatches(data.items))
+        .catch(() => {});
+    }, [])
   );
 
   return (
