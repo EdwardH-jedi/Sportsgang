@@ -442,6 +442,10 @@ def open_simulators(cfg: dict[str, str]) -> list[str]:
     for devices in json.loads(r.stdout).get("devices", {}).values():
         for d in devices:
             if d.get("state") == "Booted" and "iPhone" in d.get("name", ""):
+                # Expo Go keeps the previous JS bundle when it is already open,
+                # so quit it first; sign-in survives (it is stored on device).
+                subprocess.run(["xcrun", "simctl", "terminate", d["udid"], "host.exp.Exponent"],
+                               capture_output=True)
                 subprocess.run(["xcrun", "simctl", "openurl", d["udid"], runtime_url(cfg, "simulator")],
                                capture_output=True)
                 opened.append(f"{d['name']} ({d['udid']})")

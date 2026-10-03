@@ -8,7 +8,8 @@
  */
 
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { RefreshControl } from 'react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { EventSummary } from '@protin/shared-types';
 
 import { api } from '../lib/api';
@@ -214,6 +215,40 @@ describe('MyPlansScreen', () => {
     fireEvent.press(screen.getByLabelText('Retry'));
     expect(await screen.findByText('Golf with Alex')).toBeTruthy();
     expect(screen.queryByText(/Couldn't load your 1:1 sessions/)).toBeNull();
+  });
+
+  it('says the list is from earlier, once, when a refresh fails for both sources', async () => {
+    routeApi(ok([booking()]), ok([event()]));
+    renderScreen();
+    expect(await screen.findByText('Golf with Alex')).toBeTruthy();
+
+    routeApi(fail('Network request failed'), fail('Network request failed'));
+    await act(async () => {
+      await screen.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(screen.getByText("Couldn't refresh your plans. Showing what was loaded earlier.")).toBeTruthy();
+    // No contradictory per-source notices claiming the other source is fine.
+    expect(screen.queryByText(/still shown/)).toBeNull();
+    expect(screen.getAllByLabelText('Retry')).toHaveLength(1);
+    expect(screen.getByText('Golf with Alex')).toBeTruthy();
+    expect(screen.getByText('Sunrise 5k')).toBeTruthy();
+
+    routeApi(ok([booking()]), ok([event()]));
+    fireEvent.press(screen.getByLabelText('Retry'));
+    await waitFor(() => expect(screen.queryByText(/Couldn't refresh/)).toBeNull());
+  });
+
+  it('names the one source whose refresh failed without calling it missing', async () => {
+    routeApi(ok([booking()]), ok([event()]));
+    renderScreen();
+    expect(await screen.findByText('Golf with Alex')).toBeTruthy();
+
+    routeApi(fail('HTTP 500'), ok([event()]));
+    await act(async () => {
+      await screen.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(screen.getByText("Couldn't refresh your 1:1 sessions. Showing what was loaded earlier.")).toBeTruthy();
+    expect(screen.getByText('Golf with Alex')).toBeTruthy();
   });
 
   it('shows a retryable error, not an empty state, when both sources fail', async () => {

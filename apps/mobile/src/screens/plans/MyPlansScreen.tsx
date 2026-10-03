@@ -93,6 +93,20 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
 
   const nothingLoaded = !hasBookings && !hasEvents;
   const items = segments[segment];
+  // A failed refresh keeps the rows loaded earlier, so the notice says that
+  // instead of claiming a source is missing or that the other one is fresh.
+  let failureNotice: string | null = null;
+  if (bookingsError && eventsError) {
+    failureNotice = "Couldn't refresh your plans. Showing what was loaded earlier.";
+  } else if (bookingsError) {
+    failureNotice = hasBookings
+      ? "Couldn't refresh your 1:1 sessions. Showing what was loaded earlier."
+      : "Couldn't load your 1:1 sessions. Group sessions are still shown.";
+  } else if (eventsError) {
+    failureNotice = hasEvents
+      ? "Couldn't refresh your group sessions. Showing what was loaded earlier."
+      : "Couldn't load your group sessions. 1:1 sessions are still shown.";
+  }
 
   let body: ReactNode;
   if (isLoading) {
@@ -116,19 +130,8 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.accent} />}
         ListHeaderComponent={
           <View>
-            {bookingsError ? (
-              <InlineNotice
-                text="Couldn't load your 1:1 sessions. Group sessions are still shown."
-                actionLabel="Retry"
-                onAction={() => void retryFailed()}
-              />
-            ) : null}
-            {eventsError ? (
-              <InlineNotice
-                text="Couldn't load your group sessions. 1:1 sessions are still shown."
-                actionLabel="Retry"
-                onAction={() => void retryFailed()}
-              />
+            {failureNotice ? (
+              <InlineNotice text={failureNotice} actionLabel="Retry" onAction={() => void retryFailed()} />
             ) : null}
           </View>
         }
