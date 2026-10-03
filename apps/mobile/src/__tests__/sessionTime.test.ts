@@ -13,10 +13,12 @@ import {
   daysInMonth,
   defaultDate,
   defaultStartTime,
+  defaultSydneyDate,
   firstWeekdayOfMonth,
   isPastDate,
   joinTime,
   mapBackendError,
+  sydneyProposalTimes,
   monthLabel,
   plusOneHour,
   shiftMonth,
@@ -381,5 +383,60 @@ describe('buildMonthGrid (Sunday-first column placement)', () => {
     expect(dayCells.map((c) => c.day)).toEqual(
       Array.from({ length: 31 }, (_, i) => i + 1)
     );
+  });
+});
+
+describe('Sydney proposal times (review F5)', () => {
+  // A frozen "now" well before every date used below.
+  const NOW = Date.parse('2026-09-01T00:00:00Z');
+  const times = (date: string, startTime: string, endTime: string, now = NOW) =>
+    sydneyProposalTimes({ date, startTime, endTime, now });
+
+  it('converts AEST and AEDT wall times to UTC instants', () => {
+    expect(times('2026-09-15', '09:00', '10:00')).toEqual({
+      ok: true,
+      startsAt: '2026-09-14T23:00:00.000Z',
+      endsAt: '2026-09-15T00:00:00.000Z',
+    });
+    expect(times('2026-11-15', '18:30', '20:00')).toEqual({
+      ok: true,
+      startsAt: '2026-11-15T07:30:00.000Z',
+      endsAt: '2026-11-15T09:00:00.000Z',
+    });
+  });
+
+  it('defaults to tomorrow on the Sydney calendar, not the UTC one', () => {
+    // 10:30 pm UTC on 14 Nov is already 15 Nov (9:30 am AEDT) in Sydney.
+    expect(defaultSydneyDate(Date.parse('2026-11-14T22:30:00Z'))).toBe('2026-11-16');
+  });
+
+  it('rejects a start that does not exist and keeps the overlap policy', () => {
+    const gap = times('2026-10-04', '02:30', '03:30');
+    expect(gap.ok).toBe(false);
+    expect(gap).toMatchObject({ error: expect.stringContaining("doesn't exist in Sydney") });
+    expect(times('2027-04-04', '02:30', '03:15')).toEqual({
+      ok: true,
+      startsAt: '2027-04-03T15:30:00.000Z',
+      endsAt: '2027-04-03T17:15:00.000Z',
+    });
+  });
+
+  it('checks order, length and the past on instants', () => {
+    expect(times('2026-09-15', '10:00', '09:00')).toEqual({ ok: false, error: 'End time must be later than start time.' });
+    expect(times('2026-09-15', '10:00', '10:15')).toEqual({
+      ok: false,
+      error: 'Sessions must be at least 30 minutes long.',
+    });
+    expect(times('2026-09-15', '08:00', '12:30')).toEqual({ ok: false, error: 'Sessions can be up to 4 hours long.' });
+    // 01:30 → 03:30 on the DST start night is one real hour, so it is valid;
+    // 01:30 → 01:45 that night is still too short.
+    expect(times('2026-10-04', '01:30', '03:30').ok).toBe(true);
+    expect(times('2026-10-04', '01:30', '01:45').ok).toBe(false);
+    // Sydney 9:00 am on 15 Sep is 23:00 UTC on 14 Sep; a "now" just after it is past.
+    expect(times('2026-09-15', '09:00', '10:00', Date.parse('2026-09-14T23:01:00Z'))).toEqual({
+      ok: false,
+      error: 'Choose a future start time.',
+    });
+    expect(times('2026-09-15', '09:00', '10:00', Date.parse('2026-09-14T22:59:00Z')).ok).toBe(true);
   });
 });

@@ -14,12 +14,13 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
 import {
-  defaultDate,
   defaultStartTime,
+  defaultSydneyDate,
   formatDateLabel,
   formatTimeLabel,
   plusOneHour,
 } from '../lib/sessionTime';
+import { sydneyWallTimeToUtc } from '../lib/sydneyTime';
 
 // ─── Mock api ─────────────────────────────────────────────────────────────────
 
@@ -205,14 +206,21 @@ function renderComposer(opts: { route?: any; navigation?: any } = {}) {
   return { ...utils, navigation, route };
 }
 
+/** UTC instant of a Sydney wall time — what the composer sends. */
+function sydneyUtc(date: string, time: string): string {
+  const result = sydneyWallTimeToUtc(date, time);
+  if (!result.ok) throw new Error(result.error);
+  return result.iso;
+}
+
 /** Default startsAt the screen sends when the user submits without touching the pickers. */
 function expectedStartsAt(): string {
-  return `${defaultDate()}T${defaultStartTime()}:00`;
+  return sydneyUtc(defaultSydneyDate(), defaultStartTime());
 }
 
 /** Default endsAt — start + 1 hour. */
 function expectedEndsAt(): string {
-  return `${defaultDate()}T${plusOneHour(defaultStartTime())}:00`;
+  return sydneyUtc(defaultSydneyDate(), plusOneHour(defaultStartTime()));
 }
 
 function pad2(n: number): string {
@@ -263,8 +271,8 @@ describe('BookingComposerScreen', () => {
     expect(getByLabelText('Choose date')).toBeTruthy();
     expect(getByLabelText('Choose start time')).toBeTruthy();
     expect(getByLabelText('Choose end time')).toBeTruthy();
-    // Friendly default labels: tomorrow + 09:00 → 10:00 in the local locale.
-    expect(getByText(formatDateLabel(defaultDate()))).toBeTruthy();
+    // Friendly default labels: tomorrow (Sydney) + 09:00 → 10:00.
+    expect(getByText(formatDateLabel(defaultSydneyDate()))).toBeTruthy();
     expect(getByText(formatTimeLabel(defaultStartTime()))).toBeTruthy();
     expect(getByText(formatTimeLabel(plusOneHour(defaultStartTime())))).toBeTruthy();
   });
@@ -362,8 +370,8 @@ describe('BookingComposerScreen', () => {
     expect(mockApiPost).toHaveBeenCalledWith(
       '/bookings',
       expect.objectContaining({
-        startsAt: `${defaultDate()}T23:00:00`,
-        endsAt: `${defaultDate()}T23:45:00`,
+        startsAt: sydneyUtc(defaultSydneyDate(), '23:00'),
+        endsAt: sydneyUtc(defaultSydneyDate(), '23:45'),
       })
     );
   });
@@ -651,5 +659,94 @@ describe('BookingComposerScreen', () => {
       fireEvent.press(getByLabelText('Send proposal'));
     });
     expect(mockApiPost).toHaveBeenCalledWith('/bookings', expect.objectContaining({ sport: 'golf' }));
+  });
+
+  // ── Sydney wall time → UTC instant (review F5) ─────────────────────────────
+
+  describe('Sydney time', () => {
+    let nowSpy: jest.SpyInstance<number, []>;
+    const freeze = (iso: string) => {
+      nowSpy = jest.spyOn(Date, 'now').mockReturnValue(Date.parse(iso));
+    };
+    afterEach(() => nowSpy?.mockRestore());
+
+    it('names Sydney as the input timezone', () => {
+      const { getByText, queryByText } = renderComposer();
+      expect(getByText('Times are Sydney time (AEST/AEDT).')).toBeTruthy();
+      expect(queryByText('Times are in your local timezone.')).toBeNull();
+    });
+
+    it('sends aware UTC instants for the Sydney wall time, whatever the device timezone', async () => {
+      // Frozen at 11:00 am AEDT, Tue 10 Nov 2026 → default is Wed 11 Nov 09:00 AEDT.
+      // The same literal is expected under every process TZ this suite is run with.
+      freeze('2026-11-10T00:00:00Z');
+      mockApiPost.mockResolvedValue({ id: 'b-tz' });
+      const { getByLabelText } = renderComposer();
+      await act(async () => {
+        fireEvent.press(getByLabelText('Send proposal'));
+      });
+      expect(mockApiPost).toHaveBeenCalledWith(
+        '/bookings',
+        expect.objectContaining({ startsAt: '2026-11-10T22:00:00.000Z', endsAt: '2026-11-10T23:00:00.000Z' })
+      );
+    });
+
+    it('blocks a start time that does not exist on the DST change night', () => {
+      // Sat 3 Oct 2026, noon AEST → default date is Sun 4 Oct, when 02:00–03:00 is skipped.
+      freeze('2026-10-03T02:00:00Z');
+      const { getByLabelText, getByText } = renderComposer();
+      pickTime(getByLabelText, 'start', 2, 30);
+      expect(
+        getByText("That time doesn't exist in Sydney — clocks go forward an hour that night. Pick another time.")
+      ).toBeTruthy();
+      expect(getByLabelText('Send proposal').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('measures a session across the DST jump in real minutes', async () => {
+      freeze('2026-10-03T02:00:00Z');
+      mockApiPost.mockResolvedValue({ id: 'b-dst' });
+      const { getByLabelText, queryByText } = renderComposer();
+      pickTime(getByLabelText, 'start', 1, 30);
+      pickTime(getByLabelText, 'end', 3, 30); // 01:30 AEST → 03:30 AEDT is one hour
+      expect(queryByText(/Sessions/)).toBeNull();
+      await act(async () => {
+        fireEvent.press(getByLabelText('Send proposal'));
+      });
+      expect(mockApiPost).toHaveBeenCalledWith(
+        '/bookings',
+        expect.objectContaining({ startsAt: '2026-10-03T15:30:00.000Z', endsAt: '2026-10-03T16:30:00.000Z' })
+      );
+    });
+
+    it('resolves a repeated time on the DST end night to the earlier (AEDT) instant', async () => {
+      // Sat 3 Apr 2027, 1:00 pm AEDT → default date is Sun 4 Apr, when 02:00–03:00 happens twice.
+      freeze('2027-04-03T02:00:00Z');
+      mockApiPost.mockResolvedValue({ id: 'b-overlap' });
+      const { getByLabelText } = renderComposer();
+      pickTime(getByLabelText, 'start', 2, 30);
+      pickTime(getByLabelText, 'end', 3, 15);
+      await act(async () => {
+        fireEvent.press(getByLabelText('Send proposal'));
+      });
+      expect(mockApiPost).toHaveBeenCalledWith(
+        '/bookings',
+        expect.objectContaining({ startsAt: '2027-04-03T15:30:00.000Z', endsAt: '2027-04-03T17:15:00.000Z' })
+      );
+    });
+
+    it('a late-evening Sydney start lands on the same UTC day as its morning', async () => {
+      freeze('2026-11-10T00:00:00Z');
+      mockApiPost.mockResolvedValue({ id: 'b-late' });
+      const { getByLabelText } = renderComposer();
+      pickTime(getByLabelText, 'start', 23, 0);
+      await act(async () => {
+        fireEvent.press(getByLabelText('Send proposal'));
+      });
+      // Wed 11 Nov 23:00 → 23:45 AEDT is 12:00 → 12:45 UTC on Wed 11 Nov.
+      expect(mockApiPost).toHaveBeenCalledWith(
+        '/bookings',
+        expect.objectContaining({ startsAt: '2026-11-11T12:00:00.000Z', endsAt: '2026-11-11T12:45:00.000Z' })
+      );
+    });
   });
 });

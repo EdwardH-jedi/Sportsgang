@@ -18,17 +18,17 @@ import { TimeWheelPicker } from '../../components/TimeWheelPicker';
 import { useVenueLocation } from '../../hooks/useVenueLocation';
 import { api } from '../../lib/api';
 import {
-  combineToLocalDate,
-  computeValidationError,
-  defaultDate,
   defaultStartTime,
+  defaultSydneyDate,
   formatDateLabel,
   formatTimeLabel,
   mapBackendError,
   plusOneHour,
+  sydneyProposalTimes,
   type DateString,
   type TimeString,
 } from '../../lib/sessionTime';
+import { sydneyDateString } from '../../lib/sydneyTime';
 import { formatVenueLocation } from '../../lib/venueLocation';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { BookingComposerScreenProps } from '../../navigation/types';
@@ -40,9 +40,10 @@ import { NearbyCourtsModal } from './NearbyCourtsModal';
 export function BookingComposerScreen({ route, navigation }: BookingComposerScreenProps) {
   const { matchId, sport } = route.params;
 
-  // Date-stable defaults: tomorrow 09:00 → 10:00. Ensures the screen opens
-  // in a valid, submittable state regardless of the device clock.
-  const [date, setDate] = useState<DateString>(() => defaultDate());
+  // Date-stable defaults: tomorrow 09:00 → 10:00, Sydney time. Ensures the
+  // screen opens in a valid, submittable state regardless of the device
+  // clock or timezone.
+  const [date, setDate] = useState<DateString>(() => defaultSydneyDate());
   const [startTime, setStartTime] = useState<TimeString>(() => defaultStartTime());
   const [endTime, setEndTime] = useState<TimeString>(() => plusOneHour(defaultStartTime()));
   const [location, setLocation] = useState('');
@@ -61,13 +62,14 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
   // once the user actually opens the picker — never on composer mount.
   const venueLocation = useVenueLocation({ enabled: isVenuePickerOpen });
 
-  // Validation is derived from the picker state on every render so the
-  // submit button + inline error always reflect the current selection
-  // without an imperative validate-on-submit step.
-  const validationError = useMemo(
-    () => computeValidationError({ date, startTime, endTime }),
+  // The pickers hold Sydney wall time (CONTRACTS.md §7). Validation and the
+  // payload come from the same conversion to UTC instants, re-derived on
+  // every selection so the submit button and inline error always agree.
+  const times = useMemo(
+    () => sydneyProposalTimes({ date, startTime, endTime }),
     [date, startTime, endTime]
   );
+  const validationError = times.ok ? null : times.error;
 
   const canSubmit = !validationError && !isSubmitting;
 
@@ -79,20 +81,19 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
    */
   const handlePickStartTime = (next: TimeString) => {
     setStartTime(next);
-    const candidateEnd = combineToLocalDate(date, endTime);
-    const candidateStart = combineToLocalDate(date, next);
-    if (candidateEnd <= candidateStart) {
+    // Same-day "HH:MM" strings order like the times they name.
+    if (endTime <= next) {
       setEndTime(plusOneHour(next));
     }
   };
 
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || !times.ok) return;
     setSubmitError(null);
     setIsSubmitting(true);
     try {
-      const startsAt = `${date}T${startTime}:00`;
-      const endsAt = `${date}T${endTime}:00`;
+      // Aware UTC instants of the chosen Sydney wall times.
+      const { startsAt, endsAt } = times;
 
       // Fallback chain for the persisted location string:
       //   1. typed text (manually entered always wins)
@@ -176,6 +177,8 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
             />
           </Field>
 
+          <Text style={styles.timezoneHint}>Times are Sydney time (AEST/AEDT).</Text>
+
           {inlineError ? (
             <Text style={styles.errorText} accessibilityLiveRegion="polite">
               {inlineError}
@@ -235,8 +238,6 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
               maxLength={500}
             />
           </Field>
-
-          <Text style={styles.timezoneHint}>Times are in your local timezone.</Text>
 
           <Pressable
             style={({ pressed }) => [
@@ -398,6 +399,7 @@ function DatePickerModal({
     <PickerModal isOpen={isOpen} title="Date" onClose={onClose}>
       <CalendarPicker
         selected={selected}
+        today={sydneyDateString()}
         onSelect={(d) => {
           onSelect(d);
           onClose();
@@ -575,7 +577,8 @@ const styles = StyleSheet.create({
   },
   timezoneHint: {
     ...typography.bodySmall,
-    color: colors.textTertiary,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
   },
   submitButton: {
     backgroundColor: colors.brand,

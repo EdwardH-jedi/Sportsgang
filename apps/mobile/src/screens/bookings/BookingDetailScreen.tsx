@@ -12,7 +12,9 @@ import {
 
 import { Screen } from '../../components/Screen';
 import { api } from '../../lib/api';
+import { formatSydneyDateTime } from '../../lib/sydneyTime';
 import { useAuthStore } from '../../stores/auth';
+import { sportLabel } from '../../stores/profile';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { BookingDetailScreenProps } from '../../navigation/types';
 
@@ -49,17 +51,6 @@ interface BookingDetail {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleString('en-AU', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 function statusLabel(status: string): string {
   const map: Record<string, string> = {
@@ -193,12 +184,10 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
         {/* Details */}
         <View style={styles.section}>
           <DetailRow label="With" value={booking.partner.displayName} />
-          <DetailRow
-            label="Sport"
-            value={booking.sport === 'gym' ? 'Gym' : 'Golf'}
-          />
-          <DetailRow label="Starts" value={formatDateTime(booking.startsAt)} />
-          <DetailRow label="Ends" value={formatDateTime(booking.endsAt)} />
+          <DetailRow label="Sport" value={sportLabel(booking.sport)} />
+          <DetailRow label="Starts" value={formatSydneyDateTime(booking.startsAt)} />
+          <DetailRow label="Ends" value={formatSydneyDateTime(booking.endsAt)} />
+          <Text style={styles.timezoneNote}>Times are Sydney time</Text>
           {booking.venue ? (
             <>
               <DetailRow label="Court" value={booking.venue.name} />
@@ -387,6 +376,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
     gap: spacing.sm,
+  },
+  timezoneNote: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
   },
   detailRow: {
     flexDirection: 'row',

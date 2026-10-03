@@ -262,6 +262,22 @@ Responses (`EventSummary` / `EventDetail`) add `run_details` and
   booking or platform verification.
 - `GET /events` adds `upcoming=true` (starts_at ≥ now) for Explore.
 
+### Participant lifecycle (review F1)
+
+- Leaving is a soft leave (`status = left`, `left_at` set). Rejoining
+  reactivates **the same** `event_participants` row (same `id`): `status`
+  back to `joined`, `left_at = NULL`, `joined_at` = the rejoin instant. A user
+  never has two rows for one event, and a rejoin is subject to the same
+  capacity/status checks and row lock as a first join; a rejected rejoin
+  writes nothing.
+- `joined_at`, `left_at` and the attendance timestamps are all
+  `TIMESTAMP WITH TIME ZONE` (migrations 0010/0011) and absolute UTC instants
+  on the wire. The ORM previously declared `joined_at` as a naive `DateTime`,
+  so SQLAlchemy bound the rejoin value as `TIMESTAMP WITHOUT TIME ZONE` and
+  asyncpg rejected the aware UTC value (HTTP 500 on PostgreSQL only). The
+  model now matches the migrated column; no migration or data rewrite was
+  needed and existing values keep their meaning.
+
 ## 6. My Plans (client aggregation)
 
 Sources, fetched independently:
@@ -280,3 +296,31 @@ API timestamps are UTC ISO-8601. Mobile v2 screens render and collect
 session times in `Australia/Sydney` regardless of device timezone
 (`apps/mobile/src/lib/sydneyTime.ts`, rule-based AEST/AEDT conversion,
 tested across DST boundaries, e.g. 2026-10-04 02:00 → 03:00).
+
+### 1:1 booking instants — `POST /bookings` (review F5)
+
+- `starts_at` and `ends_at` are each normalized to one absolute UTC instant
+  **before** the order check, the past-time check and storage
+  (`CreateBookingRequest`). The stored value never depends on the API
+  process time zone (previously an offset-free value was stored relative to
+  the process TZ: 09:00 under `TZ=UTC`, 22:00Z the previous day under
+  `TZ=Australia/Sydney`).
+- A value **with** an offset (`Z`, `+11:00`, `-05:00`, …) keeps its instant;
+  equivalent offsets store identical values.
+- **Legacy compatibility:** a value **without** an offset is accepted and
+  interpreted as **UTC**. That is the convention the API's past-time check
+  always applied to such values, and it matches what an API running in UTC
+  stored. No device timezone is inferred. Older app builds that sent device
+  wall time without an offset therefore keep the API-in-UTC interpretation;
+  historical bookings are not rewritten (there is no record of the intended
+  zone).
+- The corrected composer (`BookingComposerScreen`) collects **Sydney wall
+  time**, says so on screen ("Times are Sydney time (AEST/AEDT)"), converts
+  both ends with `sydneyWallTimeToUtc` and sends aware UTC ISO strings
+  (`2026-11-10T22:00:00.000Z`). Validation (order, 30 min–4 h length, not in
+  the past) runs on those instants. A wall time inside the DST spring-forward
+  gap is a validation error; a wall time in the autumn overlap resolves to the
+  earlier (AEDT) instant, as documented on the helper.
+- Booking detail, the in-chat proposal card and My Plans render booking
+  times with the Sydney helpers (`formatSydneyDateTime` /
+  `formatSydneyRange`) and label them as Sydney time.

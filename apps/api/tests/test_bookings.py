@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator
 from unittest.mock import AsyncMock
 
@@ -597,3 +598,119 @@ async def test_list_bookings_match_filter_combines_with_status(
     body = r.json()
     assert body["total"] == 1
     assert body["items"][0]["id"] == proposed_id
+
+
+# ---------------------------------------------------------------------------
+# Time normalization (review F5). Every request bound is one absolute UTC
+# instant before comparison, validation and storage. Offset-free values are
+# legacy-client payloads and are read as UTC. Dates are relative to now so
+# these never expire.
+# ---------------------------------------------------------------------------
+
+
+def _instant(value: str) -> datetime:
+    """Parse a response timestamp. SQLite drops tzinfo on storage; the API
+    stores UTC, so a naive value read back from SQLite is a UTC wall clock."""
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _future_day(days: int = 30) -> str:
+    return (datetime.now(timezone.utc) + timedelta(days=days)).date().isoformat()
+
+
+async def _booking_match(client: AsyncClient, tag: str) -> tuple[str, str]:
+    token_a, uid_a = await _register(client, f"book_tz_{tag}_a@example.com")
+    token_b, uid_b = await _register(client, f"book_tz_{tag}_b@example.com")
+    return token_a, await _mutual_like_and_get_match_id(client, token_a, uid_a, token_b, uid_b)
+
+
+async def _propose(client: AsyncClient, token: str, match_id: str, starts_at: str, ends_at: str):
+    return await client.post(
+        "/bookings",
+        json={"match_id": match_id, "sport": "running", "starts_at": starts_at, "ends_at": ends_at},
+        headers=_auth(token),
+    )
+
+
+async def test_equivalent_offsets_store_the_same_instant(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "equiv")
+    day = _future_day()
+    utc = await _propose(client, token, match_id, f"{day}T09:00:00Z", f"{day}T10:00:00Z")
+    sydney = await _propose(client, token, match_id, f"{day}T20:00:00+11:00", f"{day}T21:00:00+11:00")
+    western = await _propose(client, token, match_id, f"{day}T04:00:00-05:00", f"{day}T05:00:00-05:00")
+    assert {r.status_code for r in (utc, sydney, western)} == {201}
+    expected = datetime.fromisoformat(f"{day}T09:00:00+00:00")
+    for r in (utc, sydney, western):
+        assert _instant(r.json()["starts_at"]) == expected
+        assert _instant(r.json()["ends_at"]) == expected + timedelta(hours=1)
+        # Read back through GET as well, not just the create response.
+        stored = await client.get(f"/bookings/{r.json()['id']}", headers=_auth(token))
+        assert _instant(stored.json()["starts_at"]) == expected
+
+
+async def test_offset_free_legacy_payload_is_read_as_utc(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "legacy")
+    day = _future_day()
+    r = await _propose(client, token, match_id, f"{day}T09:00:00", f"{day}T10:00:00")
+    assert r.status_code == 201, r.text
+    assert _instant(r.json()["starts_at"]) == datetime.fromisoformat(f"{day}T09:00:00+00:00")
+    assert _instant(r.json()["ends_at"]) == datetime.fromisoformat(f"{day}T10:00:00+00:00")
+
+
+async def test_mixed_naive_and_aware_bounds_compare_as_instants(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "mixed")
+    day = _future_day()
+    # naive start (UTC) + aware end: valid one-hour session, not a 500.
+    ok = await _propose(client, token, match_id, f"{day}T09:00:00", f"{day}T21:00:00+11:00")
+    assert ok.status_code == 201, ok.text
+    assert _instant(ok.json()["ends_at"]) - _instant(ok.json()["starts_at"]) == timedelta(hours=1)
+    # aware start + naive end that is earlier as an instant.
+    bad = await _propose(client, token, match_id, f"{day}T10:00:00Z", f"{day}T09:30:00")
+    assert bad.status_code == 422
+    assert bad.json()["detail"] == "ends_at must be after starts_at"
+
+
+async def test_range_is_validated_on_instants_not_wall_clocks(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "range")
+    day = _future_day()
+    # Wall clocks look backwards (20:00 → 09:30) but the instants are 09:00Z → 09:30Z.
+    forward = await _propose(client, token, match_id, f"{day}T20:00:00+11:00", f"{day}T09:30:00Z")
+    assert forward.status_code == 201, forward.text
+    # Wall clocks look forwards (09:00 → 19:30) but 19:30+11:00 is 08:30Z, before 09:00Z.
+    backward = await _propose(client, token, match_id, f"{day}T09:00:00Z", f"{day}T19:30:00+11:00")
+    assert backward.status_code == 422
+    equal = await _propose(client, token, match_id, f"{day}T09:00:00Z", f"{day}T20:00:00+11:00")
+    assert equal.status_code == 422
+
+
+async def test_sydney_midnight_crosses_the_utc_date(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "midnight")
+    day = datetime.fromisoformat(_future_day(40))
+    next_day = (day + timedelta(days=1)).date().isoformat()
+    # 00:30 Sydney (AEDT or AEST) on `next_day` is the previous UTC calendar day.
+    r = await _propose(client, token, match_id, f"{next_day}T00:30:00+11:00", f"{next_day}T01:30:00+11:00")
+    assert r.status_code == 201, r.text
+    starts = _instant(r.json()["starts_at"])
+    assert starts == datetime.fromisoformat(f"{next_day}T00:30:00+11:00")
+    assert starts.date().isoformat() == day.date().isoformat()
+
+
+async def test_past_check_uses_the_instant_for_every_form(client: AsyncClient) -> None:
+    token, match_id = await _booking_match(client, "past")
+    now = datetime.now(timezone.utc)
+
+    def iso(instant: datetime, offset_hours: int) -> str:
+        return instant.astimezone(timezone(timedelta(hours=offset_hours))).isoformat()
+
+    two_hours_ago = now - timedelta(hours=2)
+    # +14:00 makes the wall clock look 12 hours in the future; the instant is past.
+    for start in (iso(two_hours_ago, 0), iso(two_hours_ago, 14), two_hours_ago.replace(tzinfo=None).isoformat()):
+        r = await _propose(client, token, match_id, start, iso(now + timedelta(hours=1), 0))
+        assert r.status_code == 422, (start, r.text)
+        assert r.json()["detail"] == "starts_at cannot be more than 1 hour in the past"
+    # Within the documented one-hour tolerance, expressed with a negative offset.
+    recent = await _propose(
+        client, token, match_id, iso(now - timedelta(minutes=30), -10), iso(now + timedelta(hours=1), 0)
+    )
+    assert recent.status_code == 201, recent.text

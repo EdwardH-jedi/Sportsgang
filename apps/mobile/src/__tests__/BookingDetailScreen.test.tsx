@@ -363,4 +363,44 @@ describe('BookingDetailScreen', () => {
     expect(queryByText('Decline')).toBeNull();
     expect(queryByText('Mark completed')).toBeNull();
   });
+
+  // ── Sport label (review F7) ────────────────────────────────────────────────
+
+  it.each([
+    ['running', 'Running'],
+    ['tennis', 'Tennis'],
+    ['golf', 'Golf'],
+    ['gym', 'Gym'],
+  ])('labels a %s booking as %s', async (sport, label) => {
+    mockApiGet.mockResolvedValue(makeBooking({ sport }));
+    const { findByText, queryByText } = render(
+      <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+    );
+    expect(await findByText(label)).toBeTruthy();
+    for (const other of ['Running', 'Tennis', 'Golf', 'Gym'].filter((l) => l !== label)) {
+      expect(queryByText(other)).toBeNull();
+    }
+  });
+
+  it('shows an unexpected legacy sport honestly instead of guessing Golf', async () => {
+    mockApiGet.mockResolvedValue(makeBooking({ sport: 'pickleball' }));
+    const { findByText, queryByText } = render(
+      <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+    );
+    expect(await findByText('Pickleball')).toBeTruthy();
+    expect(queryByText('Golf')).toBeNull();
+  });
+
+  // ── Time display (review F5) ──────────────────────────────────────────────
+
+  it('shows the stored instant in Sydney time with the timezone named', async () => {
+    // 2026-04-10 09:00Z is 7:00 pm AEST (DST ended 5 Apr 2026).
+    mockApiGet.mockResolvedValue(makeBooking({ sport: 'running' }));
+    const { findByText, getByText } = render(
+      <BookingDetailScreen route={makeRoute() as any} navigation={makeNavigation() as any} />
+    );
+    expect(await findByText('Fri 10 Apr · 7:00 pm')).toBeTruthy();
+    expect(getByText('Fri 10 Apr · 8:00 pm')).toBeTruthy();
+    expect(getByText('Times are Sydney time')).toBeTruthy();
+  });
 });

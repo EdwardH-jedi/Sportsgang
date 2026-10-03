@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { formatSydneyRange } from '../lib/sydneyTime';
 import { sportLabel } from '../stores/profile';
 import { colors, radii, spacing, typography } from '../theme';
 
@@ -50,20 +51,6 @@ export interface SessionProposalCardProps {
   onView: () => void;
   /** True while the parent has an /accept or /decline request in flight. */
   isActing?: boolean;
-}
-
-function formatTimeRange(startsAt: string, endsAt: string): string {
-  const start = new Date(startsAt);
-  const end = new Date(endsAt);
-  // Day + start; pair with the end-time on the right of the dash. Keeps the
-  // line readable on narrow phones.
-  const dayPart = start.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const timeOpts: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
-  return `${dayPart} · ${start.toLocaleTimeString(undefined, timeOpts)} – ${end.toLocaleTimeString(undefined, timeOpts)}`;
 }
 
 function venueLine(p: SessionProposalCardData): string | null {
@@ -145,7 +132,7 @@ export function SessionProposalCard({
 
       <View style={styles.detailBlock}>
         <Text style={styles.detail}>{sportText}</Text>
-        <Text style={styles.detail}>{formatTimeRange(proposal.startsAt, proposal.endsAt)}</Text>
+        <Text style={styles.detail}>{formatSydneyRange(proposal.startsAt, proposal.endsAt)}</Text>
         {venue ? (
           <Text style={styles.detail} numberOfLines={2}>
             {venue}

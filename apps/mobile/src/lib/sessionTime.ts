@@ -1,9 +1,11 @@
 /**
  * Pure helpers for the BookingComposer "Propose a session" picker.
  *
- * Kept dependency-free and side-effect-free so they can be unit-tested
- * directly without rendering the screen.
+ * Kept side-effect-free so they can be unit-tested directly without
+ * rendering the screen.
  */
+
+import { addDaysToDateString, sydneyDateString, sydneyWallTimeToUtc } from './sydneyTime';
 
 export const MIN_SESSION_MINUTES = 30;
 export const MAX_SESSION_MINUTES = 4 * 60;
@@ -287,6 +289,51 @@ export function computeValidationError({
   }
 
   return null;
+}
+
+// ─── Sydney wall time (docs/run-golf-v2/CONTRACTS.md §7) ────────────────────
+
+/** Tomorrow on the Sydney calendar — the composer's default date on any device. */
+export function defaultSydneyDate(now: number = Date.now()): DateString {
+  return addDaysToDateString(sydneyDateString(now), 1);
+}
+
+export type ProposalTimes = { ok: true; startsAt: string; endsAt: string } | { ok: false; error: string };
+
+/**
+ * The composer's date and times are Sydney wall time. Both ends are converted
+ * with `sydneyWallTimeToUtc` (a DST-gap time is an error; a DST-overlap time
+ * resolves to the earlier, AEDT instant) and every rule is checked on the
+ * resulting instants, so neither the payload nor the validation depends on
+ * the device timezone. On success the payload values are UTC ISO strings.
+ */
+export function sydneyProposalTimes({
+  date,
+  startTime,
+  endTime,
+  now = Date.now(),
+}: {
+  date: DateString;
+  startTime: TimeString;
+  endTime: TimeString;
+  now?: number;
+}): ProposalTimes {
+  const start = sydneyWallTimeToUtc(date, startTime);
+  if (!start.ok) return start;
+  const end = sydneyWallTimeToUtc(date, endTime);
+  if (!end.ok) return end;
+  const startMs = Date.parse(start.iso);
+  const endMs = Date.parse(end.iso);
+  if (endMs <= startMs) return { ok: false, error: 'End time must be later than start time.' };
+  const minutes = (endMs - startMs) / 60000;
+  if (minutes < MIN_SESSION_MINUTES) {
+    return { ok: false, error: `Sessions must be at least ${MIN_SESSION_MINUTES} minutes long.` };
+  }
+  if (minutes > MAX_SESSION_MINUTES) {
+    return { ok: false, error: `Sessions can be up to ${MAX_SESSION_MINUTES / 60} hours long.` };
+  }
+  if (startMs < now) return { ok: false, error: 'Choose a future start time.' };
+  return { ok: true, startsAt: start.iso, endsAt: end.iso };
 }
 
 // ─── Backend error mapping ───────────────────────────────────────────────────

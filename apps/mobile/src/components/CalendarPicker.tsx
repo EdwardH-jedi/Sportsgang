@@ -35,6 +35,12 @@ export interface CalendarPickerProps {
   onSelect: (date: DateString) => void;
   /** Override the "today" reference — accepted for testability. */
   now?: Date;
+  /**
+   * Calendar date that counts as today ("YYYY-MM-DD"). The booking composer
+   * passes Sydney's date so past-day rules follow Sydney, not the device.
+   * Defaults to the device-local date of `now`.
+   */
+  today?: DateString;
 }
 
 /**
@@ -49,12 +55,12 @@ export interface CalendarPickerProps {
  * - Today and the currently-selected day each get a distinct visual
  *   treatment.
  */
-export function CalendarPicker({ selected, onSelect, now = new Date() }: CalendarPickerProps) {
+export function CalendarPicker({ selected, onSelect, now = new Date(), today }: CalendarPickerProps) {
   const initial = useMemo(() => combineToLocalDate(selected, '00:00'), [selected]);
   const [visibleYear, setVisibleYear] = useState(initial.getFullYear());
   const [visibleMonth, setVisibleMonth] = useState(initial.getMonth());
 
-  const todayStr = useMemo(() => toDateString(now), [now]);
+  const todayStr = useMemo(() => today ?? toDateString(now), [today, now]);
   const selectedStr = selected;
 
   // Build the grid cells via the pure helper so the offset (May 1 2026 ->
@@ -132,7 +138,7 @@ export function CalendarPicker({ selected, onSelect, now = new Date() }: Calenda
           }
           const isToday = cell.date === todayStr;
           const isSelected = cell.date === selectedStr;
-          const isPast = isPastDate(cell.date, now);
+          const isPast = today ? cell.date < today : isPastDate(cell.date, now);
           return (
             <Pressable
               key={cell.key}

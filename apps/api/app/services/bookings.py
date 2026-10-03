@@ -122,12 +122,11 @@ async def create_booking(
             detail="ends_at must be after starts_at",
         )
 
+    # starts_at / ends_at arrive as aware UTC instants (CreateBookingRequest
+    # normalizes them), so these comparisons and the stored values never
+    # depend on the API process time zone.
     now = datetime.now(tz=timezone.utc)
-    if req.starts_at.tzinfo is None:
-        req_starts = req.starts_at.replace(tzinfo=timezone.utc)
-    else:
-        req_starts = req.starts_at
-    if req_starts < now - timedelta(hours=1):
+    if req.starts_at < now - timedelta(hours=1):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="starts_at cannot be more than 1 hour in the past",
