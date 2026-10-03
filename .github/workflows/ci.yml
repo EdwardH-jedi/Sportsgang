@@ -147,6 +147,17 @@ jobs:
       - name: Run tests
         run: cd apps/api && uv run pytest
 
+  qa-launcher:
+    # scripts/qa ownership checks with sacrificial processes only; the
+    # Compose lifecycle half needs QA_TEST_DOCKER=1 and runs locally.
+    name: QA launcher process ownership
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Process identity and project ownership
+        run: python3 -m unittest scripts/qa/test_qa.py -v
+
   docker-build:
     runs-on: ubuntu-latest
     needs: [test, typecheck, test-mobile, integration]

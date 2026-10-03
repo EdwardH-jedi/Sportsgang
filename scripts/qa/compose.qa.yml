@@ -1,11 +1,13 @@
 # Local QA stack for hands-on testing (driven by scripts/qa/qa.py).
 #
 # Separate from the root docker-compose.yml (project `protin`) and from the
-# disposable verification stacks: own project name, own database, own named
-# volume, loopback-only ports. `qa.py down` stops the containers and keeps
-# the volume, so demo data survives. Values come from .qa/config.env
-# (generated locally, git-ignored).
-name: sportsgang-qa
+# disposable verification stacks: own database, own named volume,
+# loopback-only ports. The project name is not set here: qa.py always passes
+# `-p <QA_PROJECT>` (default `sportsgang-qa`) after checking that this
+# worktree owns that project, so a bare `docker compose -f` never targets the
+# shared stack. `qa.py down` stops the containers and keeps the volume, so
+# demo data survives. Values come from .qa/config.env (generated locally,
+# git-ignored).
 
 services:
   postgres:

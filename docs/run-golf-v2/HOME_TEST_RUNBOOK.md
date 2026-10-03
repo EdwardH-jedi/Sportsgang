@@ -241,5 +241,36 @@ stated otherwise, start on iPhone 16e. Profile › Log out has no confirm dialog
 | Done for the day | `npm run qa:down` (stops API, Metro and the QA containers; data kept in volume `sportsgang-qa_pgdata`) |
 
 - `qa:up`, `qa:open` and `qa:restart` quit and relaunch Expo Go. This is expected, not a crash.
+
+## Stack ownership (launcher from review R2 on)
+
+- One worktree owns a Compose project. The owner is recorded in
+  `~/.sportsgang-qa/<project>.json` (worktree path + a fingerprint of that
+  worktree's `.qa/config.env`; no secrets). `qa:up`, `qa:seed`, `qa:stop-api`,
+  `qa:restart`, `qa:down` and `qa:reset` run only from the owner and refuse
+  from any other worktree or a regenerated config. `qa:status` and `qa:open`
+  are read-only.
+- Before signalling the API or Metro, the launcher checks the recorded pid is
+  still the same process (process group, start time, command line, cwd). If
+  not — a reused pid or another program — it signals nothing; `down`,
+  `restart`, `stop-api` and `reset` refuse and change nothing.
+- **Adopting the stack that is already running** (started by the previous
+  launcher, no owner record yet): after this launcher is in the home-test
+  worktree, run `npm run qa:status` (read-only; ownership shows *adoptable*
+  only if the containers were created from this worktree's compose file with
+  this config's DB password), then `npm run qa:up -- --no-open --no-seed`.
+  That records ownership and upgrades the running API/Metro records after
+  verifying them; it does not restart containers or touch the volume.
+  `npm run qa:restart` then loads new API code (`qa:status` says when
+  `apps/api` changed since the API started).
+- **A second, separate stack** (another worktree): put
+  `QA_PROJECT=sportsgang-qa-<name>` and unused ports (`QA_API_PORT`,
+  `QA_METRO_PORT`, `QA_PG_PORT`, `QA_REDIS_PORT`) in that worktree's
+  `.qa/config.env` before its first `qa:up`. It gets its own containers and
+  volume `<project>_pgdata`.
+- A volume with no containers and no owner record is never adopted
+  (ownership cannot be proven). If an owner worktree was deleted, remove its
+  `~/.sportsgang-qa/<project>.json` by hand once you are sure nobody uses that
+  stack.
 - Never use the root `infra:reset`; it is not part of this stack.
 - "Too many requests" on login or register is the real rate limit (5 logins or 3 registrations per minute). Wait one minute.
