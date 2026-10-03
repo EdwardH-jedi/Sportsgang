@@ -167,14 +167,16 @@ interface BlockRowProps {
 
 function BlockRow({ block, isUnblocking, error, onUnblock }: BlockRowProps) {
   const dateLabel = formatBlockedDate(block.createdAt);
+  // Never show the raw user id; it means nothing to the person reading it.
+  const name = block.blockedDisplayName || 'Unnamed member';
   return (
     <View
       style={styles.row}
-      accessibilityLabel={`Blocked user ${block.blockedId}`}
+      accessibilityLabel={`Blocked user ${name}`}
     >
       <View style={styles.rowText}>
         <Text style={styles.rowTitle} numberOfLines={1}>
-          {block.blockedId}
+          {name}
         </Text>
         {dateLabel ? <Text style={styles.rowMeta}>{dateLabel}</Text> : null}
         {error ? <Text style={styles.rowErrorText}>{error}</Text> : null}
@@ -183,7 +185,7 @@ function BlockRow({ block, isUnblocking, error, onUnblock }: BlockRowProps) {
         onPress={onUnblock}
         disabled={isUnblocking}
         accessibilityRole="button"
-        accessibilityLabel={`Unblock ${block.blockedId}`}
+        accessibilityLabel={`Unblock ${name}`}
         accessibilityState={{ disabled: isUnblocking }}
         style={({ pressed }) => [
           styles.unblockButton,

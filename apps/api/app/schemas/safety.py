@@ -58,6 +58,9 @@ class BlockResponse(BaseModel):
     blocker_id: UUID
     blocked_id: UUID
     created_at: datetime
+    # Filled by GET /blocks so the list can show a name instead of an id;
+    # null when the blocked user never created a profile.
+    blocked_display_name: str | None = None
 
     model_config = {"from_attributes": True}
 

@@ -50,6 +50,7 @@ function makeBlock(overrides: Record<string, unknown> = {}) {
     id: 'block-1',
     blockerId: 'me-1',
     blockedId: 'user-a',
+    blockedDisplayName: 'Alex',
     createdAt: '2026-05-11T00:00:00Z',
     ...overrides,
   };
@@ -99,12 +100,30 @@ describe('BlockedUsersScreen', () => {
 
   it('renders blocked users returned by the API', async () => {
     mockListBlockedUsers.mockResolvedValueOnce({
-      items: [makeBlock({ blockedId: 'user-a' }), makeBlock({ id: 'block-2', blockedId: 'user-b' })],
+      items: [makeBlock({ blockedId: 'user-a' }), makeBlock({ id: 'block-2', blockedId: 'user-b', blockedDisplayName: 'Blair' })],
       total: 2,
     });
     const { findByLabelText, getByLabelText } = renderScreen();
-    await findByLabelText('Blocked user user-a');
-    getByLabelText('Blocked user user-b');
+    await findByLabelText('Blocked user Alex');
+    getByLabelText('Blocked user Blair');
+  });
+
+  it('shows the blocked person by name, never by raw id', async () => {
+    mockListBlockedUsers.mockResolvedValueOnce({
+      items: [
+        makeBlock({ blockedId: '21c94630-e538-4cd5-a68f-947732e054a5', blockedDisplayName: 'QA Mod Target' }),
+        makeBlock({ id: 'block-2', blockedId: 'b0b0b0b0-0000-0000-0000-000000000002', blockedDisplayName: null }),
+      ],
+      total: 2,
+    });
+    const { findByText, getByText, getByLabelText, queryByText } = renderScreen();
+    await findByText('QA Mod Target');
+    getByLabelText('Unblock QA Mod Target');
+    // No profile → an honest placeholder, still unblockable.
+    getByText('Unnamed member');
+    getByLabelText('Unblock Unnamed member');
+    expect(queryByText(/21c94630/)).toBeNull();
+    expect(queryByText(/b0b0b0b0/)).toBeNull();
   });
 
   it('renders an error + retry when the list fetch fails', async () => {
@@ -126,14 +145,14 @@ describe('BlockedUsersScreen', () => {
     mockUnblockUser.mockResolvedValueOnce(undefined);
     const alertSpy = stubConfirmingAlert('Unblock');
     const { findByLabelText, queryByLabelText } = renderScreen();
-    await findByLabelText('Blocked user user-a');
+    await findByLabelText('Blocked user Alex');
     await act(async () => {
-      fireEvent.press(await findByLabelText('Unblock user-a'));
+      fireEvent.press(await findByLabelText('Unblock Alex'));
     });
     expect(mockUnblockUser).toHaveBeenCalledWith('user-a');
     // Optimistic removal — the row should be gone after success.
     await waitFor(() => {
-      expect(queryByLabelText('Blocked user user-a')).toBeNull();
+      expect(queryByLabelText('Blocked user Alex')).toBeNull();
     });
     // Confirmation title pinned.
     expect(
@@ -149,8 +168,8 @@ describe('BlockedUsersScreen', () => {
     });
     const alertSpy = stubConfirmingAlert('Cancel');
     const { findByLabelText } = renderScreen();
-    await findByLabelText('Blocked user user-a');
-    const button = await findByLabelText('Unblock user-a');
+    await findByLabelText('Blocked user Alex');
+    const button = await findByLabelText('Unblock Alex');
     await act(async () => {
       fireEvent.press(button);
     });
@@ -166,8 +185,8 @@ describe('BlockedUsersScreen', () => {
     mockUnblockUser.mockResolvedValueOnce(undefined);
     const alertSpy = stubConfirmingAlert('Unblock');
     const { findByLabelText } = renderScreen();
-    await findByLabelText('Blocked user user-a');
-    const button = await findByLabelText('Unblock user-a');
+    await findByLabelText('Blocked user Alex');
+    const button = await findByLabelText('Unblock Alex');
     await act(async () => {
       fireEvent.press(button);
     });
@@ -183,15 +202,15 @@ describe('BlockedUsersScreen', () => {
     mockUnblockUser.mockRejectedValueOnce(new Error('Could not unblock.'));
     const alertSpy = stubConfirmingAlert('Unblock');
     const { findByLabelText, findByText } = renderScreen();
-    await findByLabelText('Blocked user user-a');
-    const button = await findByLabelText('Unblock user-a');
+    await findByLabelText('Blocked user Alex');
+    const button = await findByLabelText('Unblock Alex');
     await act(async () => {
       fireEvent.press(button);
     });
     // Row error renders.
     await findByText('Could not unblock.');
     // Row is still present.
-    await findByLabelText('Blocked user user-a');
+    await findByLabelText('Blocked user Alex');
     alertSpy.mockRestore();
   });
 

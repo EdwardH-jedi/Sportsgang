@@ -7,6 +7,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.event import Event, EventParticipant
+from app.models.profile import UserProfile
 from app.models.safety import REPORT_TARGET_TYPES, Block, Report
 from app.models.user import User
 from app.schemas.safety import (
@@ -176,9 +177,14 @@ async def list_blocks(
     db: AsyncSession,
     blocker_id: UUID,
 ) -> BlockListResponse:
-    stmt = select(Block).where(Block.blocker_id == blocker_id).order_by(Block.created_at.desc())
-    blocks = list((await db.execute(stmt)).scalars().all())
-    return BlockListResponse(
-        items=[BlockResponse.model_validate(b) for b in blocks],
-        total=len(blocks),
+    stmt = (
+        select(Block, UserProfile.display_name)
+        .outerjoin(UserProfile, UserProfile.user_id == Block.blocked_id)
+        .where(Block.blocker_id == blocker_id)
+        .order_by(Block.created_at.desc())
     )
+    rows = (await db.execute(stmt)).all()
+    items = [
+        BlockResponse.model_validate(block).model_copy(update={"blocked_display_name": name}) for block, name in rows
+    ]
+    return BlockListResponse(items=items, total=len(items))

@@ -170,6 +170,27 @@ async def test_list_blocks(client: AsyncClient) -> None:
     assert body["total"] == 2
 
 
+async def test_list_blocks_names_the_blocked_user(client: AsyncClient) -> None:
+    """The blocked-users screen shows a name, never a raw id; a user without a
+    profile still appears, with a null name."""
+    token_a, _ = await _register(client, "blk_name_a@example.com")
+    token_b, uid_b = await _register(client, "blk_name_b@example.com")
+    _, uid_c = await _register(client, "blk_name_c@example.com")
+    await client.put(
+        "/users/me/profile",
+        json={"display_name": "Named Runner"},
+        headers=_auth(token_b),
+    )
+
+    await client.post(f"/blocks/{uid_b}", headers=_auth(token_a))
+    await client.post(f"/blocks/{uid_c}", headers=_auth(token_a))
+
+    r = await client.get("/blocks", headers=_auth(token_a))
+    assert r.status_code == 200
+    names = {item["blocked_id"]: item["blocked_display_name"] for item in r.json()["items"]}
+    assert names == {uid_b: "Named Runner", uid_c: None}
+
+
 async def test_unblock_user(client: AsyncClient) -> None:
     token_a, _ = await _register(client, "blk_unblk_a@example.com")
     _, uid_b = await _register(client, "blk_unblk_b@example.com")

@@ -62,6 +62,8 @@ export interface BlockResponse {
   blockerId: UUID;
   blockedId: UUID;
   createdAt: ISODateString;
+  /** Set by `GET /blocks`; null when the blocked user has no profile. */
+  blockedDisplayName?: string | null;
 }
 
 export interface BlockListResponse {
