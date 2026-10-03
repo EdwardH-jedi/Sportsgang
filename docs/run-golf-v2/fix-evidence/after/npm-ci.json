@@ -1,0 +1,15 @@
+{
+  "name": "after/npm-ci",
+  "command": [
+    "npm",
+    "ci"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "elapsed_seconds": 10.41,
+  "finished_at_utc": "2026-10-03T04:59:25+00:00",
+  "head": "4361c9578b2dd809b54fe5f44db53509246171e2",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

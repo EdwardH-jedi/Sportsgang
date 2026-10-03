@@ -1,0 +1,21 @@
+{
+  "name": "after/shared-typecheck",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "--workspace",
+    "@protin/shared-types",
+    "--",
+    "--tsBuildInfoFile",
+    "/private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/shared.tsbuildinfo"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "elapsed_seconds": 1.66,
+  "finished_at_utc": "2026-10-03T04:59:31+00:00",
+  "head": "4361c9578b2dd809b54fe5f44db53509246171e2",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

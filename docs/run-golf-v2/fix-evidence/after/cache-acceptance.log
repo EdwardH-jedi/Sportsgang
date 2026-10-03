@@ -1,0 +1,10 @@
+PASS ../../docs/run-golf-v2/review-evidence/cache.acceptance.test.js
+  ✓ preference save must invalidate a ready compatibility feed before returning to Explore (7 ms)
+  ✓ a manual forced refresh retrieves changed compatibility (control)
+  ✓ pace removal must release an active strict filter so general browsing remains usable (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        0.191 s, estimated 1 s
+Ran all test suites.

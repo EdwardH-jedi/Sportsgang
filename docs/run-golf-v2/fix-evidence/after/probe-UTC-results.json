@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "process_tz": "UTC",
+    "time_tzname": [
+      "UTC",
+      "UTC"
+    ],
+    "run_at_utc": "2026-10-03T04:56:56.800715+00:00"
+  },
+  "F1_running_leave_rejoin": {
+    "status": "PASS",
+    "steps": {
+      "event_id": "52603586-2e55-497a-bbe5-09fca00b87c2",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 200,
+      "rejoin_detail": null
+    },
+    "participant_rows": [
+      [
+        "f35c67bc-65f3-48ef-9a35-bf82f1295189",
+        "joined"
+      ]
+    ]
+  },
+  "F1_golf_leave_rejoin": {
+    "status": "PASS",
+    "steps": {
+      "event_id": "f4557869-7b57-42c7-b3d7-845b68144592",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 200,
+      "rejoin_detail": null
+    },
+    "participant_rows": [
+      [
+        "ae9cb192-a836-405c-b568-21e41044cf40",
+        "joined"
+      ]
+    ]
+  },
+  "F3_consent_counterexample_excluded": {
+    "status": "PASS",
+    "learner_sees_mentor": null,
+    "mentor_sees_learner": null
+  },
+  "F3_welcome_beginners_control_eligible": {
+    "status": "PASS",
+    "reason_codes": [
+      "more_experienced",
+      "time_overlap",
+      "welcomes_beginners"
+    ]
+  },
+  "F2_legacy_first_50": {
+    "events_total": 56,
+    "future_event_in_first_50": false,
+    "bookings_total": 57,
+    "confirmed_in_first_50": false,
+    "proposed_in_first_50": false
+  },
+  "F2_segments_complete": {
+    "status": "PASS",
+    "events_upcoming": [
+      "980751e3-ebce-484c-b447-64e220c86e62"
+    ],
+    "events_upcoming_total": 1,
+    "bookings_upcoming": [
+      "cb0967d0-1942-4379-a763-5aae969df5cc"
+    ],
+    "bookings_pending": [
+      "60465f87-d787-4d0e-a1d4-d302d06164b5"
+    ],
+    "past_events_seen": 55,
+    "past_events_unique": 55,
+    "past_bookings_seen": 55,
+    "past_bookings_unique": 55,
+    "expected": {
+      "future_event": "980751e3-ebce-484c-b447-64e220c86e62",
+      "confirmed": "cb0967d0-1942-4379-a763-5aae969df5cc",
+      "proposed": "60465f87-d787-4d0e-a1d4-d302d06164b5"
+    }
+  },
+  "F5_naive_payload_is_utc": {
+    "status": "PASS",
+    "http": 201,
+    "sent": "2026-10-13T09:00:00",
+    "stored": "2026-10-13T09:00:00Z",
+    "expected": "2026-10-13T09:00:00+00:00"
+  },
+  "F5_offset_payload_normalised": {
+    "status": "PASS",
+    "http": 201,
+    "stored": "2026-10-13T09:00:00Z"
+  },
+  "_summary": {
+    "failed": [],
+    "passed": [
+      "F1_golf_leave_rejoin",
+      "F1_running_leave_rejoin",
+      "F2_segments_complete",
+      "F3_consent_counterexample_excluded",
+      "F3_welcome_beginners_control_eligible",
+      "F5_naive_payload_is_utc",
+      "F5_offset_payload_normalised"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+
+> @protin/shared-types@0.1.0 typecheck
+> tsc --noEmit --tsBuildInfoFile /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/***/scratchpad/shared.tsbuildinfo
+

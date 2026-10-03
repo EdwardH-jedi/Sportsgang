@@ -1,0 +1,27 @@
+{
+  "name": "after/mobile-time-suites-America-Los_Angeles",
+  "command": [
+    "npx",
+    "--no-install",
+    "jest",
+    "--ci",
+    "--runInBand",
+    "--watchman=false",
+    "src/__tests__/BookingComposerScreen.test.tsx",
+    "src/__tests__/BookingDetailScreen.test.tsx",
+    "src/__tests__/sessionTime.test.ts",
+    "src/__tests__/sydneyTime.test.ts",
+    "src/__tests__/MyPlansScreen.test.tsx",
+    "src/__tests__/myPlansPaging.test.tsx",
+    "src/__tests__/sessions.test.tsx",
+    "src/__tests__/ChatScreen.test.tsx"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 0,
+  "elapsed_seconds": 6.73,
+  "finished_at_utc": "2026-10-03T05:00:16+00:00",
+  "head": "4361c9578b2dd809b54fe5f44db53509246171e2",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

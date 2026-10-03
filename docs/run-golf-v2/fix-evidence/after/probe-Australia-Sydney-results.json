@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "process_tz": "Australia/Sydney",
+    "time_tzname": [
+      "AEST",
+      "AEDT"
+    ],
+    "run_at_utc": "2026-10-03T04:56:59.774925+00:00"
+  },
+  "F1_running_leave_rejoin": {
+    "status": "PASS",
+    "steps": {
+      "event_id": "ef82829f-b05f-40a0-affb-bc7720328c6e",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 200,
+      "rejoin_detail": null
+    },
+    "participant_rows": [
+      [
+        "1771fdd6-66bd-4f8c-a3b8-e4bb9116b68d",
+        "joined"
+      ]
+    ]
+  },
+  "F1_golf_leave_rejoin": {
+    "status": "PASS",
+    "steps": {
+      "event_id": "a1923883-3a21-405f-98d8-3d886cb16358",
+      "join": 200,
+      "leave": 200,
+      "rejoin": 200,
+      "rejoin_detail": null
+    },
+    "participant_rows": [
+      [
+        "cc8cbcad-c7ba-45b6-a616-a8e80ff3de19",
+        "joined"
+      ]
+    ]
+  },
+  "F3_consent_counterexample_excluded": {
+    "status": "PASS",
+    "learner_sees_mentor": null,
+    "mentor_sees_learner": null
+  },
+  "F3_welcome_beginners_control_eligible": {
+    "status": "PASS",
+    "reason_codes": [
+      "more_experienced",
+      "time_overlap",
+      "welcomes_beginners"
+    ]
+  },
+  "F2_legacy_first_50": {
+    "events_total": 56,
+    "future_event_in_first_50": false,
+    "bookings_total": 57,
+    "confirmed_in_first_50": false,
+    "proposed_in_first_50": false
+  },
+  "F2_segments_complete": {
+    "status": "PASS",
+    "events_upcoming": [
+      "09b08092-e071-4886-9247-d88e6123c3c0"
+    ],
+    "events_upcoming_total": 1,
+    "bookings_upcoming": [
+      "c5ffba43-e08a-4e3a-bd09-67e78a441a34"
+    ],
+    "bookings_pending": [
+      "ac451471-cfd1-4030-ad13-4860f48bf200"
+    ],
+    "past_events_seen": 55,
+    "past_events_unique": 55,
+    "past_bookings_seen": 55,
+    "past_bookings_unique": 55,
+    "expected": {
+      "future_event": "09b08092-e071-4886-9247-d88e6123c3c0",
+      "confirmed": "c5ffba43-e08a-4e3a-bd09-67e78a441a34",
+      "proposed": "ac451471-cfd1-4030-ad13-4860f48bf200"
+    }
+  },
+  "F5_naive_payload_is_utc": {
+    "status": "PASS",
+    "http": 201,
+    "sent": "2026-10-13T09:00:00",
+    "stored": "2026-10-13T09:00:00Z",
+    "expected": "2026-10-13T09:00:00+00:00"
+  },
+  "F5_offset_payload_normalised": {
+    "status": "PASS",
+    "http": 201,
+    "stored": "2026-10-13T09:00:00Z"
+  },
+  "_summary": {
+    "failed": [],
+    "passed": [
+      "F1_golf_leave_rejoin",
+      "F1_running_leave_rejoin",
+      "F2_segments_complete",
+      "F3_consent_counterexample_excluded",
+      "F3_welcome_beginners_control_eligible",
+      "F5_naive_payload_is_utc",
+      "F5_offset_payload_normalised"
+    ]
+  }
+}

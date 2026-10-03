@@ -1,0 +1,21 @@
+{
+  "name": "after/api-pytest",
+  "command": [
+    "env",
+    "SECRET_KEY=ci-test-secret-key-minimum-32-characters",
+    "uv",
+    "run",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 120.64,
+  "finished_at_utc": "2026-10-03T04:59:07+00:00",
+  "head": "4361c9578b2dd809b54fe5f44db53509246171e2",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}
