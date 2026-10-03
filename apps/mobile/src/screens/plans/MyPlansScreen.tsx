@@ -60,6 +60,7 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
     hasEvents,
     bookingsError,
     eventsError,
+    isRetrying,
     isLoading,
     isRefreshing,
     load,
@@ -116,7 +117,10 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
       <ErrorState
         title="Could not load your plans"
         body={bookingsError ?? eventsError ?? undefined}
-        onAction={refresh}
+        actionLabel={isRefreshing ? 'Trying again…' : undefined}
+        onAction={() => {
+          if (!isRefreshing) void refresh();
+        }}
         testID="plans-error"
       />
     );
@@ -131,7 +135,14 @@ export function MyPlansScreen({ navigation }: PlansScreenProps) {
         ListHeaderComponent={
           <View>
             {failureNotice ? (
-              <InlineNotice text={failureNotice} actionLabel="Retry" onAction={() => void retryFailed()} />
+              // The notice stays while a retry is pending: until it succeeds
+              // the rows shown are still the earlier ones (review R7).
+              <InlineNotice
+                text={failureNotice}
+                actionLabel={isRetrying ? 'Retrying…' : 'Retry'}
+                busy={isRetrying}
+                onAction={() => void retryFailed()}
+              />
             ) : null}
           </View>
         }

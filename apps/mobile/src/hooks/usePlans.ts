@@ -18,6 +18,10 @@
  * - A proposed booking is always "pending" — nothing is labelled confirmed
  *   unless the API says so. One source failing never hides the other, and
  *   a failed "show more" keeps what is loaded.
+ * - A source's failure stays reported while its retry is pending (review
+ *   R7): the rows shown are still the earlier ones. Only a successful reload
+ *   of that source — an empty one included — clears it. One retry runs at a
+ *   time per source; a refresh supersedes it.
  * - Successful session mutations (stores/sessionSync.ts) reload the plans.
  */
 
@@ -202,6 +206,8 @@ interface SourcePage {
   /** Loading a further page failed (shown at the end of the list). */
   moreError: string | null;
   loadingMore: boolean;
+  /** A retry of the failed load is in flight; `error` stays set meanwhile. */
+  retrying: boolean;
   /** Arrival order; the newest version of a row wins when merging. */
   seq: number;
 }
@@ -219,6 +225,7 @@ const EMPTY_PAGE: SourcePage = {
   error: null,
   moreError: null,
   loadingMore: false,
+  retrying: false,
   seq: 0,
 };
 
@@ -359,6 +366,7 @@ export function usePlans(currentUserId: string | null) {
           pages[key] = {
             ...previous[key],
             loadingMore: false,
+            retrying: false,
             moreError: null,
             error: messageOf(result.reason, SOURCE_FALLBACK[splitKey(key)[1]]),
           };
@@ -383,7 +391,9 @@ export function usePlans(currentUserId: string | null) {
         if (!now) return;
         commit({ ...now, pages: { ...now.pages, [key]: { ...now.pages[key], ...change } } });
       };
-      for (const key of keys) patch(key, { loadingMore: true, moreError: null, ...(kind === 'retry' ? { error: null } : {}) });
+      // A retry keeps the source's error until it succeeds: until then the
+      // rows on screen are still the ones the failure notice describes.
+      for (const key of keys) patch(key, kind === 'retry' ? { retrying: true } : { loadingMore: true, moreError: null });
       await Promise.all(
         keys.map(async (key) => {
           const [segment, source] = splitKey(key);
@@ -403,12 +413,13 @@ export function usePlans(currentUserId: string | null) {
               error: null,
               moreError: null,
               loadingMore: false,
+              retrying: false,
               seq: ++arrivals.current,
             });
           } catch (err) {
             if (!mounted.current || gen !== generation.current) return;
             const message = messageOf(err, SOURCE_FALLBACK[source]);
-            patch(key, kind === 'more' ? { loadingMore: false, moreError: message } : { loadingMore: false, error: message });
+            patch(key, kind === 'more' ? { loadingMore: false, moreError: message } : { retrying: false, error: message });
           }
         })
       );
@@ -422,18 +433,20 @@ export function usePlans(currentUserId: string | null) {
       if (!current) return Promise.resolve();
       const keys = SEGMENT_SOURCES[segment]
         .map((source) => `${segment}:${source}` as PageKey)
-        .filter((key) => hasMoreRows(current.pages[key]) && !current.pages[key].loadingMore);
+        .filter((key) => hasMoreRows(current.pages[key]) && !current.pages[key].loadingMore && !current.pages[key].retrying);
       return fetchInto(keys, 'more');
     },
     [fetchInto]
   );
 
-  /** Re-request every page whose load failed, in every segment. */
+  /** Re-request every page whose load failed, in every segment (not one already being retried). */
   const retryFailed = useCallback(() => {
     const current = dataRef.current;
     if (!current) return Promise.resolve();
     return fetchInto(
-      PAGE_KEYS.filter((key) => current.pages[key].error !== null && !current.pages[key].loadingMore),
+      PAGE_KEYS.filter(
+        (key) => current.pages[key].error !== null && !current.pages[key].retrying && !current.pages[key].loadingMore
+      ),
       'retry'
     );
   }, [fetchInto]);
@@ -479,6 +492,8 @@ export function usePlans(currentUserId: string | null) {
     hasEvents: PAGE_KEYS.some((key) => splitKey(key)[1] === 'event' && pages[key].loaded),
     bookingsError: sourceError('booking'),
     eventsError: sourceError('event'),
+    /** A retry of a failed source is in flight (its failure is still reported). */
+    isRetrying: PAGE_KEYS.some((key) => pages[key].retrying),
     isLoading,
     isRefreshing,
     load,

@@ -288,3 +288,141 @@ describe('MyPlansScreen', () => {
     expect(screen.getAllByText('Golf with Alex')).toHaveLength(1);
   });
 });
+
+// ─── Retry keeps stale data labelled stale (review R7) ──────────────────────
+
+describe('MyPlansScreen retry freshness (review R7)', () => {
+  const BOOKINGS_STALE = "Couldn't refresh your 1:1 sessions. Showing what was loaded earlier.";
+  const BOTH_STALE = "Couldn't refresh your plans. Showing what was loaded earlier.";
+  const EVENTS_STALE = "Couldn't refresh your group sessions. Showing what was loaded earlier.";
+
+  function deferred<T>() {
+    let resolve!: (v: T) => void;
+    let reject!: (e: Error) => void;
+    const promise = new Promise<T>((a, b) => {
+      resolve = a;
+      reject = b;
+    });
+    return { promise, resolve, reject };
+  }
+  const bookingCalls = () => mockGet.mock.calls.filter(([url]) => String(url).startsWith('/bookings')).length;
+  const pullToRefresh = () =>
+    act(async () => {
+      await screen.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+
+  async function loadedThenBookingsRefreshFails() {
+    routeApi(ok([booking()]), ok([event()]));
+    renderScreen();
+    expect(await screen.findByText('Golf with Alex')).toBeTruthy();
+    routeApi(fail('offline'), ok([event()]));
+    await pullToRefresh();
+    expect(screen.getByText(BOOKINGS_STALE)).toBeTruthy();
+  }
+
+  it('keeps the notice while a retry is pending, and sends it once however often it is tapped', async () => {
+    await loadedThenBookingsRefreshFails();
+    const held = deferred<unknown>();
+    routeApi(() => held.promise, ok([event()]));
+    mockGet.mockClear();
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
+    expect(screen.getByText(BOOKINGS_STALE)).toBeTruthy();
+    expect(screen.getByText('Golf with Alex')).toBeTruthy();
+    const retrying = screen.getByLabelText('Retrying…');
+    expect(retrying.props.accessibilityState).toEqual({ disabled: true, busy: true });
+    const sent = bookingCalls();
+    expect(sent).toBeGreaterThan(0);
+    await act(async () => {
+      fireEvent.press(retrying);
+      fireEvent.press(retrying);
+    });
+    expect(bookingCalls()).toBe(sent);
+
+    await act(async () => held.reject(new Error('still offline')));
+    expect(screen.getByText(BOOKINGS_STALE)).toBeTruthy();
+    expect(screen.getByLabelText('Retry')).toBeTruthy();
+
+    routeApi(ok([booking()]), ok([event()]));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
+    await waitFor(() => expect(screen.queryByText(BOOKINGS_STALE)).toBeNull());
+    expect(screen.getByText('Golf with Alex')).toBeTruthy();
+  });
+
+  it('clears only the source that recovered', async () => {
+    routeApi(ok([booking()]), ok([event()]));
+    renderScreen();
+    expect(await screen.findByText('Golf with Alex')).toBeTruthy();
+    routeApi(fail('offline'), fail('offline'));
+    await pullToRefresh();
+    expect(screen.getByText(BOTH_STALE)).toBeTruthy();
+
+    routeApi(ok([booking()]), fail('still offline'));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
+    await waitFor(() => expect(screen.getByText(EVENTS_STALE)).toBeTruthy());
+    expect(screen.queryByText(BOTH_STALE)).toBeNull();
+    expect(screen.getByText('Sunrise 5k')).toBeTruthy();
+  });
+
+  it('a successful empty reload counts as recovery', async () => {
+    routeApi(ok([]), ok([]));
+    renderScreen();
+    expect(await screen.findByTestId('plans-empty-upcoming')).toBeTruthy();
+    routeApi(fail('offline'), fail('offline'));
+    await pullToRefresh();
+    expect(screen.getByText(BOTH_STALE)).toBeTruthy();
+    expect(screen.queryByTestId('plans-error')).toBeNull();
+
+    routeApi(ok([]), ok([]));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
+    await waitFor(() => expect(screen.queryByText(BOTH_STALE)).toBeNull());
+    expect(screen.getByTestId('plans-empty-upcoming')).toBeTruthy();
+  });
+
+  it('a refresh supersedes a pending retry, whose late failure is ignored', async () => {
+    await loadedThenBookingsRefreshFails();
+    const held = deferred<unknown>();
+    routeApi(() => held.promise, ok([event()]));
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Retry'));
+    });
+    routeApi(ok([booking()]), ok([event()]));
+    await pullToRefresh();
+    expect(screen.queryByText(BOOKINGS_STALE)).toBeNull();
+    await act(async () => held.reject(new Error('late failure')));
+    expect(screen.queryByText(BOOKINGS_STALE)).toBeNull();
+    expect(screen.queryByLabelText('Retrying…')).toBeNull();
+  });
+
+  it('the first-load error keeps its message and ignores taps while trying again', async () => {
+    routeApi(fail('HTTP 503'), fail('HTTP 503'));
+    renderScreen();
+    expect(await screen.findByText('Could not load your plans')).toBeTruthy();
+    const heldBookings = deferred<unknown>();
+    const heldEvents = deferred<unknown>();
+    routeApi(() => heldBookings.promise, () => heldEvents.promise);
+    mockGet.mockClear();
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Try again'));
+    });
+    expect(screen.getByText('Could not load your plans')).toBeTruthy();
+    const calls = mockGet.mock.calls.length;
+    await act(async () => {
+      fireEvent.press(screen.getByLabelText('Trying again…'));
+    });
+    expect(mockGet.mock.calls.length).toBe(calls);
+    await act(async () => {
+      heldBookings.resolve({ items: [booking()], total: 1, limit: 50, offset: 0 });
+      heldEvents.resolve({ items: [event()], total: 1, limit: 50, offset: 0 });
+    });
+    expect(await screen.findByText('Sunrise 5k')).toBeTruthy();
+    expect(screen.getByText('Golf with Alex')).toBeTruthy();
+  });
+});

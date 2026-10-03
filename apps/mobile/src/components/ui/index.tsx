@@ -365,11 +365,14 @@ export function InlineNotice({
   actionLabel,
   onAction,
   tone = 'warning',
+  busy = false,
 }: {
   text: string;
   actionLabel?: string;
   onAction?: () => void;
   tone?: 'warning' | 'info';
+  /** The action is already running: keep the notice, disable the action. */
+  busy?: boolean;
 }) {
   return (
     <View style={[styles.notice, tone === 'info' && styles.noticeInfo]} accessibilityRole={tone === 'warning' ? 'alert' : undefined}>
@@ -377,9 +380,11 @@ export function InlineNotice({
       {actionLabel && onAction ? (
         <Pressable
           onPress={onAction}
+          disabled={busy}
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
-          style={({ pressed }) => [styles.noticeAction, pressed && styles.pressed]}
+          accessibilityState={{ disabled: busy, busy }}
+          style={({ pressed }) => [styles.noticeAction, pressed && !busy && styles.pressed]}
         >
           <Text style={styles.noticeActionText}>{actionLabel}</Text>
         </Pressable>
