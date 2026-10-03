@@ -43,3 +43,6 @@ runs/*
 apps/api/.venv_win/
 apps/api/media/
 references/
+
+# Local QA stack state (scripts/qa/qa.py): generated config, credentials, tokens, logs
+.qa/

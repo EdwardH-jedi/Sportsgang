@@ -1,0 +1,13 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+{
+  "failed": [],
+  "passed": [
+    "F1_golf_leave_rejoin",
+    "F1_running_leave_rejoin",
+    "F2_segments_complete",
+    "F3_consent_counterexample_excluded",
+    "F3_welcome_beginners_control_eligible",
+    "F5_naive_payload_is_utc",
+    "F5_offset_payload_normalised"
+  ]
+}

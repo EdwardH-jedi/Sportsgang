@@ -1,0 +1,20 @@
+{
+  "name": "../pretest-evidence/mobile-tests",
+  "command": [
+    "npm",
+    "run",
+    "test:ci",
+    "--workspace",
+    "@protin/mobile",
+    "--",
+    "--runInBand"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "elapsed_seconds": 26.86,
+  "finished_at_utc": "2026-10-03T08:02:21+00:00",
+  "head": "07893825ffa4250a400608f81605d474ad62558b",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

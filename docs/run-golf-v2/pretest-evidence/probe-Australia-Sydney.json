@@ -1,0 +1,18 @@
+{
+  "name": "../pretest-evidence/probe-Australia-Sydney",
+  "command": [
+    "uv",
+    "run",
+    "python",
+    "../../docs/run-golf-v2/fix-evidence/probe_findings.py",
+    "../../docs/run-golf-v2/pretest-evidence/probe-Australia-Sydney-results.json"
+  ],
+  "cwd": "apps/api",
+  "exit_code": 0,
+  "elapsed_seconds": 2.13,
+  "finished_at_utc": "2026-10-03T08:00:02+00:00",
+  "head": "07893825ffa4250a400608f81605d474ad62558b",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

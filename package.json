@@ -14,7 +14,13 @@
     "mobile:start": "npm run start --workspace @protin/mobile",
     "mobile:android": "npm run android --workspace @protin/mobile",
     "mobile:ios": "npm run ios --workspace @protin/mobile",
-    "mobile:web": "npm run web --workspace @protin/mobile"
+    "mobile:web": "npm run web --workspace @protin/mobile",
+    "qa:up": "python3 scripts/qa/qa.py up",
+    "qa:status": "python3 scripts/qa/qa.py status",
+    "qa:seed": "python3 scripts/qa/qa.py seed",
+    "qa:open": "python3 scripts/qa/qa.py open",
+    "qa:down": "python3 scripts/qa/qa.py down",
+    "qa:reset": "python3 scripts/qa/qa.py reset"
   },
   "devDependencies": {
     "@expo/config-plugins": "~54.0.4"
