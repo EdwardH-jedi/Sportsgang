@@ -163,6 +163,142 @@ def test_legacy_profiles_need_setup_and_get_no_invented_match() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Learning needs the other golfer's explicit consent (review F3)
+# ---------------------------------------------------------------------------
+
+# The review's counterexample: an estimated 30.0 range golfer who wants to
+# learn, and a regular 24.0 golfer who only wants similar-level partners but
+# allows a 10.0 gap. The gap fits the mentor's tolerance and the mentor is
+# more experienced, yet the mentor never offered to play with learners.
+LEARNER_30 = dict(
+    golf_handicap_tenths=300,
+    golf_handicap_source="estimate",
+    golf_experience="range",
+    golf_partner_intents=["learn_from_experienced"],
+)
+SIMILAR_24_BROAD = dict(
+    golf_handicap_tenths=240,
+    golf_handicap_source="estimate",
+    golf_experience="regular",
+    golf_partner_intents=["similar_level"],
+    golf_similarity_tolerance_tenths=100,
+)
+
+
+def test_broad_similarity_tolerance_is_not_consent_to_mentor() -> None:
+    assert compat.assess("golf", golf(**LEARNER_30), golf(**SIMILAR_24_BROAD)).excluded
+    # Whoever is the viewer.
+    assert compat.assess("golf", golf(**SIMILAR_24_BROAD), golf(**LEARNER_30)).excluded
+
+
+@pytest.mark.parametrize(
+    ("consent", "consent_code"),
+    [(["welcome_beginners"], "welcomes_beginners"), (["any_level"], "any_level")],
+)
+def test_explicit_consent_admits_the_learner_with_truthful_reasons(consent, consent_code) -> None:
+    mentor = golf(**{**SIMILAR_24_BROAD, "golf_partner_intents": ["similar_level", *consent]})
+    learner_view = compat.assess("golf", golf(**LEARNER_30), mentor)
+    assert learner_view.tier == compat.TIER_COMPATIBLE
+    # The learner wanted to learn, not a similar-level partner: no similar claim.
+    assert codes(learner_view.reasons) == {"more_experienced", consent_code, "time_overlap"}
+    assert "24.0 vs 30.0" in next(n.text for n in learner_view.reasons if n.code == "more_experienced")
+    mentor_view = compat.assess("golf", mentor, golf(**LEARNER_30))
+    assert mentor_view.tier == compat.TIER_COMPATIBLE
+    assert codes(mentor_view.reasons) == {"learner_fit", "time_overlap"}
+
+
+def test_consent_without_more_experience_does_not_admit_a_learner() -> None:
+    # 28.0 is not at least 5.0 better than 30.0, so there is nothing to learn from.
+    near_peer = golf(
+        golf_handicap_tenths=280,
+        golf_handicap_source="estimate",
+        golf_experience="regular",
+        golf_partner_intents=["welcome_beginners", "any_level"],
+    )
+    assert compat.assess("golf", golf(**LEARNER_30), near_peer).excluded
+    assert compat.assess("golf", near_peer, golf(**LEARNER_30)).excluded
+
+
+def test_learning_and_similar_level_are_alternatives_judged_separately() -> None:
+    # The learner also accepts similar-level partners within 10.0.
+    learner = golf(**{**LEARNER_30, "golf_partner_intents": ["learn_from_experienced", "similar_level"]})
+    learner_broad = golf(
+        **{
+            **LEARNER_30,
+            "golf_partner_intents": ["learn_from_experienced", "similar_level"],
+            "golf_similarity_tolerance_tenths": 100,
+        }
+    )
+    # Asymmetric limits: the learner's default 5.0 does not cover the 6.0 gap.
+    assert compat.assess("golf", learner, golf(**SIMILAR_24_BROAD)).excluded
+    # Both limits cover it: admitted as similar level only, with no
+    # learning/mentoring reason because the mentor gave no consent.
+    similar_only = compat.assess("golf", learner_broad, golf(**SIMILAR_24_BROAD))
+    assert similar_only.tier == compat.TIER_COMPATIBLE
+    assert "similar_handicap" in codes(similar_only.reasons)
+    assert not codes(similar_only.reasons) & {"more_experienced", "learner_fit", "welcomes_beginners", "any_level"}
+    reverse = compat.assess("golf", golf(**SIMILAR_24_BROAD), learner_broad)
+    assert not codes(reverse.reasons) & {"more_experienced", "learner_fit"}
+    # Mentor adds consent: both routes hold and both are explained.
+    mentor = golf(**{**SIMILAR_24_BROAD, "golf_partner_intents": ["similar_level", "welcome_beginners"]})
+    both = compat.assess("golf", learner_broad, mentor)
+    assert {"similar_handicap", "more_experienced", "welcomes_beginners"} <= codes(both.reasons)
+
+
+def test_one_sided_any_level_never_overrides_the_other_persons_rule() -> None:
+    open_mentor = golf(**{**SIMILAR_24_BROAD, "golf_partner_intents": ["any_level"]})
+    # A learner is admitted through the learning route (consent + evidence)...
+    assert compat.assess("golf", golf(**LEARNER_30), open_mentor).tier == compat.TIER_COMPATIBLE
+    # ...but a similar-only golfer whose own limit is exceeded stays excluded.
+    strict = golf(
+        golf_handicap_tenths=300,
+        golf_handicap_source="official_index",
+        golf_experience="range",
+        golf_partner_intents=["similar_level"],
+        golf_similarity_tolerance_tenths=30,
+    )
+    assert compat.assess("golf", strict, open_mentor).excluded
+    assert compat.assess("golf", open_mentor, strict).excluded
+
+
+def test_learning_evidence_from_bands_and_plus_handicaps_stays_honest() -> None:
+    no_handicap_learner = golf(golf_experience="new", golf_partner_intents=["learn_from_experienced"])
+    plus_mentor = golf(
+        golf_handicap_tenths=-21,
+        golf_handicap_source="official_index",
+        golf_experience="regular",
+        golf_partner_intents=["welcome_beginners"],
+    )
+    # One numeric handicap only: experience bands decide, never a handicap claim.
+    banded = compat.assess("golf", no_handicap_learner, plus_mentor)
+    assert banded.tier == compat.TIER_COMPATIBLE
+    assert "plays regularly vs new to golf" in next(n.text for n in banded.reasons if n.code == "more_experienced")
+    assert "similar_handicap" not in codes(banded.reasons)
+    assert "handicap_self_reported" in codes(banded.caveats)
+    # Two numeric handicaps: +2.1 vs 30.0 (estimated) is the evidence.
+    estimated_learner = golf(**LEARNER_30)
+    numeric = compat.assess("golf", estimated_learner, plus_mentor)
+    assert "+2.1 vs 30.0" in next(n.text for n in numeric.reasons if n.code == "more_experienced")
+    assert "handicap_estimate" not in codes(numeric.caveats)  # the candidate's index is official
+    assert "handicap_estimate" in codes(compat.assess("golf", plus_mentor, estimated_learner).caveats)
+    # A mentor with no stated handicap and the same band as the learner is no evidence.
+    same_band = golf(golf_experience="range", golf_partner_intents=["any_level"])
+    assert compat.assess("golf", golf(**LEARNER_30), same_band).excluded
+
+
+def test_a_learner_and_a_legacy_profile_get_setup_not_a_learning_claim() -> None:
+    legacy_expert = golf(
+        preferences_version=None,
+        golf_partner_intents=None,
+        golf_experience=None,
+        golf_handicap_source=None,
+    )
+    result = compat.assess("golf", golf(**LEARNER_30), legacy_expert)
+    assert result.tier == compat.TIER_NEEDS_SETUP
+    assert result.reasons == []
+
+
+# ---------------------------------------------------------------------------
 # Running
 # ---------------------------------------------------------------------------
 

@@ -156,7 +156,12 @@ def _more_experienced(x: Any, y: Any) -> Optional[str]:
 
 
 def _golf_owner_admits(owner: Any, other: Any) -> Optional[tuple[str, str]]:
-    """Does ``owner``'s own intent accept ``other``? Returns (code, evidence)."""
+    """Does ``owner``'s own partner intent accept ``other``? Returns (code, evidence).
+
+    ``learn_from_experienced`` is deliberately not handled here: a wish to
+    learn admits a partner only through ``_learning_route``, which also needs
+    that partner's explicit consent.
+    """
     intents = list(owner.golf_partner_intents or [])
     if "any_level" in intents:
         return "any_level", "open to any level"
@@ -173,10 +178,6 @@ def _golf_owner_admits(owner: Any, other: Any) -> Optional[tuple[str, str]]:
             return "similar_experience", (
                 f"both {_GOLF_EXPERIENCE_LABEL[owner.golf_experience]} (no two handicaps to compare)"
             )
-    if "learn_from_experienced" in intents:
-        evidence = _more_experienced(other, owner)
-        if evidence:
-            return "learn_fit", evidence
     if "welcome_beginners" in intents:
         if other.golf_experience in _BEGINNER_EXPERIENCE:
             return "welcomes_beginner", _GOLF_EXPERIENCE_LABEL[other.golf_experience]
@@ -186,36 +187,83 @@ def _golf_owner_admits(owner: Any, other: Any) -> Optional[tuple[str, str]]:
     return None
 
 
+def _learning_route(learner: Any, mentor: Any) -> Optional[tuple[str, str]]:
+    """``learner`` learning from ``mentor``. Returns (evidence, consent code).
+
+    Needs all three: the learner's ``learn_from_experienced`` intent, evidence
+    that the mentor is more experienced, and the mentor's explicit
+    ``welcome_beginners`` or ``any_level``. A broad ``similar_level``
+    tolerance is not consent to mentor a learner (review F3).
+    """
+    if "learn_from_experienced" not in (learner.golf_partner_intents or []):
+        return None
+    evidence = _more_experienced(mentor, learner)
+    if not evidence:
+        return None
+    mentor_intents = mentor.golf_partner_intents or []
+    if "welcome_beginners" in mentor_intents:
+        return evidence, "welcomes_beginners"
+    if "any_level" in mentor_intents:
+        return evidence, "any_level"
+    return None
+
+
+_WELCOMES_BEGINNERS = Note("welcomes_beginners", "Welcomes beginners")
+_ANY_LEVEL = Note("any_level", "Open to golfers of any level")
+
+
 def assess_golf(viewer: Any, candidate: Any) -> Assessment:
+    """A pair is admitted by any route that holds on its own:
+
+    - mutual: each person's own non-learning intent (any / similar /
+      welcome beginners) admits the other;
+    - viewer learns: the viewer wants to learn, the candidate is more
+      experienced and explicitly welcomes beginners or any level;
+    - candidate learns: the same with the roles swapped.
+
+    Reasons are only taken from routes that actually admit the pair, so a
+    similar-level match never carries a learning/mentoring reason.
+    """
     pending = _not_configured(viewer, candidate, "golf")
     if pending:
         return pending
 
     viewer_side = _golf_owner_admits(viewer, candidate)
     candidate_side = _golf_owner_admits(candidate, viewer)
-    if viewer_side is None or candidate_side is None:
+    mutual = viewer_side is not None and candidate_side is not None
+    viewer_learns = _learning_route(viewer, candidate)
+    candidate_learns = _learning_route(candidate, viewer)
+    if not (mutual or viewer_learns or candidate_learns):
         return Assessment(tier=None)
 
     reasons: list[Note] = []
     caveats: list[Note] = []
-    code_v, evidence_v = viewer_side
-    code_c, evidence_c = candidate_side
 
-    if code_v == "similar_handicap" or code_c == "similar_handicap":
-        text = evidence_v if code_v == "similar_handicap" else evidence_c
-        reasons.append(Note("similar_handicap", f"Similar level: {text}"))
-    elif code_v == "similar_experience" or code_c == "similar_experience":
-        text = evidence_v if code_v == "similar_experience" else evidence_c
-        reasons.append(Note("similar_experience", f"Similar experience: {text}"))
-    # Each side's reason comes only from that person's own matched intent.
-    if code_v == "learn_fit":
-        reasons.append(Note("more_experienced", f"More experienced than you ({evidence_v})"))
-    if code_c == "learn_fit":
-        reasons.append(Note("learner_fit", f"Wants to learn from experienced golfers ({evidence_c})"))
-    if code_c == "welcomes_beginner":
-        reasons.append(Note("welcomes_beginners", "Welcomes beginners"))
-    if code_c == "any_level":
-        reasons.append(Note("any_level", "Open to golfers of any level"))
+    def add(note: Note) -> None:
+        if all(r.code != note.code for r in reasons):
+            reasons.append(note)
+
+    if mutual:
+        code_v, evidence_v = viewer_side
+        code_c, evidence_c = candidate_side
+        if code_v == "similar_handicap" or code_c == "similar_handicap":
+            text = evidence_v if code_v == "similar_handicap" else evidence_c
+            add(Note("similar_handicap", f"Similar level: {text}"))
+        elif code_v == "similar_experience" or code_c == "similar_experience":
+            text = evidence_v if code_v == "similar_experience" else evidence_c
+            add(Note("similar_experience", f"Similar experience: {text}"))
+        # The candidate's side of the mutual route, from their own intent.
+        if code_c == "welcomes_beginner":
+            add(_WELCOMES_BEGINNERS)
+        if code_c == "any_level":
+            add(_ANY_LEVEL)
+    if viewer_learns:
+        evidence, consent = viewer_learns
+        add(Note("more_experienced", f"More experienced than you ({evidence})"))
+        add(_WELCOMES_BEGINNERS if consent == "welcomes_beginners" else _ANY_LEVEL)
+    if candidate_learns:
+        evidence, _ = candidate_learns
+        add(Note("learner_fit", f"Wants to learn from experienced golfers ({evidence})"))
 
     points, time_note = _time_fit(viewer, candidate)
     if time_note:

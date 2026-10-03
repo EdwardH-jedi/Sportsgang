@@ -11,12 +11,24 @@ pagination check compares against a snapshot of the full ordering.
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
+import pytest
 from httpx import ASGITransport, AsyncClient
 
+from app.db.session import engine
 from app.main import app
+
+
+@pytest.fixture(autouse=True)
+async def _fresh_pool() -> AsyncGenerator[None, None]:
+    # As in test_event_capacity.py: each test gets its own event loop, so
+    # drop pooled connections opened on a previous test's loop (without
+    # closing them on the wrong loop) and one failure cannot cascade.
+    await engine.dispose(close=False)
+    yield
 
 
 def _peer() -> tuple[str, int]:
@@ -207,6 +219,63 @@ async def test_golf_bilateral_intents_on_postgres() -> None:
             r = await client.post(f"/blocks/{bea_id}", headers=mentor)
             assert r.status_code == 201, r.text
             assert mentor_id not in _ids(await _feed(client, bea, "sport=golf&limit=50"))
+
+
+async def test_learning_match_needs_the_mentors_explicit_consent_on_postgres() -> None:
+    """Review F3 counterexample, persisted and served through /discovery."""
+    async with app.router.lifespan_context(app):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            learner, learner_id = await _register(client, "Learner")
+            mentor, mentor_id = await _register(client, "BroadMentor")
+            await _sport(
+                client,
+                learner,
+                _golf(
+                    level="beginner",
+                    golf_handicap_tenths=300,
+                    golf_handicap_source="estimate",
+                    golf_experience="range",
+                    golf_partner_intents=["learn_from_experienced"],
+                ),
+            )
+            mentor_golf = _golf(
+                level="intermediate",
+                golf_handicap_tenths=240,
+                golf_handicap_source="estimate",
+                golf_experience="regular",
+                golf_partner_intents=["similar_level"],
+                golf_similarity_tolerance_tenths=100,
+            )
+            await _sport(client, mentor, mentor_golf)
+
+            # Excluded in both directions until the mentor says yes.
+            assert mentor_id not in _ids(await _feed(client, learner, "sport=golf&limit=50"))
+            assert learner_id not in _ids(await _feed(client, mentor, "sport=golf&limit=50"))
+
+            for consent, consent_code in (("welcome_beginners", "welcomes_beginners"), ("any_level", "any_level")):
+                stored = await _sport(
+                    client, mentor, {**mentor_golf, "golf_partner_intents": ["similar_level", consent]}
+                )
+                assert stored["golf_partner_intents"] == ["similar_level", consent]
+                learner_view = {i["user_id"]: i for i in (await _feed(client, learner, "sport=golf&limit=50"))["items"]}
+                compat = learner_view[mentor_id]["compatibility"]
+                assert compat["tier"] == "compatible"
+                assert {r["code"] for r in compat["reasons"]} == {"more_experienced", consent_code, "time_overlap"}
+                mentor_view = {i["user_id"]: i for i in (await _feed(client, mentor, "sport=golf&limit=50"))["items"]}
+                assert {r["code"] for r in mentor_view[learner_id]["compatibility"]["reasons"]} == {
+                    "learner_fit",
+                    "time_overlap",
+                }
+
+            # Withdrawing consent excludes the pair again; blocking still wins.
+            await _sport(client, mentor, mentor_golf)
+            assert mentor_id not in _ids(await _feed(client, learner, "sport=golf&limit=50"))
+            await _sport(client, mentor, {**mentor_golf, "golf_partner_intents": ["welcome_beginners"]})
+            assert mentor_id in _ids(await _feed(client, learner, "sport=golf&limit=50"))
+            r = await client.post(f"/blocks/{mentor_id}", headers=learner)
+            assert r.status_code == 201, r.text
+            assert mentor_id not in _ids(await _feed(client, learner, "sport=golf&limit=50"))
+            assert learner_id not in _ids(await _feed(client, mentor, "sport=golf&limit=50"))
 
 
 async def test_cursor_paging_survives_an_action_between_pages() -> None:

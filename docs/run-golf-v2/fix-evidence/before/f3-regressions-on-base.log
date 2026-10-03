@@ -1,0 +1,106 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+............FF..F...................F.                                   [100%]
+=================================== FAILURES ===================================
+___________ test_broad_similarity_tolerance_is_not_consent_to_mentor ___________
+
+    def test_broad_similarity_tolerance_is_not_consent_to_mentor() -> None:
+>       assert compat.assess("golf", golf(**LEARNER_30), golf(**SIMILAR_24_BROAD)).excluded
+E       AssertionError: assert False
+E        +  where False = Assessment(tier='compatible', reasons=[Note(code='similar_handicap', text='Similar level: handicaps 24.0 and 30.0 are ...aps are self-reported, not verified'), Note(code='handicap_estimate', text='Their handicap is an estimate')], points=2).excluded
+E        +    where Assessment(tier='compatible', reasons=[Note(code='similar_handicap', text='Similar level: handicaps 24.0 and 30.0 are ...aps are self-reported, not verified'), Note(code='handicap_estimate', text='Their handicap is an estimate')], points=2) = <function assess at 0x10d4a5260>('golf', namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=300, golf_handicap_source='estimate...ge', golf_partner_intents=['learn_from_experienced'], golf_similarity_tolerance_tenths=None, golf_preferred_holes=None), namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=240, golf_handicap_source='estimate...nce='regular', golf_partner_intents=['similar_level'], golf_similarity_tolerance_tenths=100, golf_preferred_holes=None))
+E        +      where <function assess at 0x10d4a5260> = compat.assess
+E        +      and   namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=300, golf_handicap_source='estimate...ge', golf_partner_intents=['learn_from_experienced'], golf_similarity_tolerance_tenths=None, golf_preferred_holes=None) = golf(**{'golf_experience': 'range', 'golf_handicap_source': 'estimate', 'golf_handicap_tenths': 300, 'golf_partner_intents': ['learn_from_experienced']})
+E        +      and   namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=240, golf_handicap_source='estimate...nce='regular', golf_partner_intents=['similar_level'], golf_similarity_tolerance_tenths=100, golf_preferred_holes=None) = golf(**{'golf_experience': 'regular', 'golf_handicap_source': 'estimate', 'golf_handicap_tenths': 240, 'golf_partner_intents': ['similar_level'], ...})
+
+tests/test_compatibility.py:189: AssertionError
+_ test_explicit_consent_admits_the_learner_with_truthful_reasons[consent0-welcomes_beginners] _
+
+consent = ['welcome_beginners'], consent_code = 'welcomes_beginners'
+
+    @pytest.mark.parametrize(
+        ("consent", "consent_code"),
+        [(["welcome_beginners"], "welcomes_beginners"), (["any_level"], "any_level")],
+    )
+    def test_explicit_consent_admits_the_learner_with_truthful_reasons(consent, consent_code) -> None:
+        mentor = golf(**{**SIMILAR_24_BROAD, "golf_partner_intents": ["similar_level", *consent]})
+        learner_view = compat.assess("golf", golf(**LEARNER_30), mentor)
+        assert learner_view.tier == compat.TIER_COMPATIBLE
+        # The learner wanted to learn, not a similar-level partner: no similar claim.
+>       assert codes(learner_view.reasons) == {"more_experienced", consent_code, "time_overlap"}
+E       AssertionError: assert {'more_experi...time_overlap'} == {'more_experi...es_beginners'}
+E         
+E         Extra items in the left set:
+E         'similar_handicap'
+E         Extra items in the right set:
+E         'welcomes_beginners'
+E         Use -v to get more diff
+
+tests/test_compatibility.py:203: AssertionError
+______ test_learning_and_similar_level_are_alternatives_judged_separately ______
+
+    def test_learning_and_similar_level_are_alternatives_judged_separately() -> None:
+        # The learner also accepts similar-level partners within 10.0.
+        learner = golf(**{**LEARNER_30, "golf_partner_intents": ["learn_from_experienced", "similar_level"]})
+        learner_broad = golf(
+            **{
+                **LEARNER_30,
+                "golf_partner_intents": ["learn_from_experienced", "similar_level"],
+                "golf_similarity_tolerance_tenths": 100,
+            }
+        )
+        # Asymmetric limits: the learner's default 5.0 does not cover the 6.0 gap.
+>       assert compat.assess("golf", learner, golf(**SIMILAR_24_BROAD)).excluded
+E       AssertionError: assert False
+E        +  where False = Assessment(tier='compatible', reasons=[Note(code='similar_handicap', text='Similar level: handicaps 24.0 and 30.0 are ...aps are self-reported, not verified'), Note(code='handicap_estimate', text='Their handicap is an estimate')], points=2).excluded
+E        +    where Assessment(tier='compatible', reasons=[Note(code='similar_handicap', text='Similar level: handicaps 24.0 and 30.0 are ...aps are self-reported, not verified'), Note(code='handicap_estimate', text='Their handicap is an estimate')], points=2) = <function assess at 0x10d4a5260>('golf', namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=300, golf_handicap_source='estimate..._intents=['learn_from_experienced', 'similar_level'], golf_similarity_tolerance_tenths=None, golf_preferred_holes=None), namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=240, golf_handicap_source='estimate...nce='regular', golf_partner_intents=['similar_level'], golf_similarity_tolerance_tenths=100, golf_preferred_holes=None))
+E        +      where <function assess at 0x10d4a5260> = compat.assess
+E        +      and   namespace(preferences_version=2, preferred_times=['morning'], golf_handicap_tenths=240, golf_handicap_source='estimate...nce='regular', golf_partner_intents=['similar_level'], golf_similarity_tolerance_tenths=100, golf_preferred_holes=None) = golf(**{'golf_experience': 'regular', 'golf_handicap_source': 'estimate', 'golf_handicap_tenths': 240, 'golf_partner_intents': ['similar_level'], ...})
+
+tests/test_compatibility.py:233: AssertionError
+______ test_learning_match_needs_the_mentors_explicit_consent_on_postgres ______
+
+    async def test_learning_match_needs_the_mentors_explicit_consent_on_postgres() -> None:
+        """Review F3 counterexample, persisted and served through /discovery."""
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                learner, learner_id = await _register(client, "Learner")
+                mentor, mentor_id = await _register(client, "BroadMentor")
+                await _sport(
+                    client,
+                    learner,
+                    _golf(
+                        level="beginner",
+                        golf_handicap_tenths=300,
+                        golf_handicap_source="estimate",
+                        golf_experience="range",
+                        golf_partner_intents=["learn_from_experienced"],
+                    ),
+                )
+                mentor_golf = _golf(
+                    level="intermediate",
+                    golf_handicap_tenths=240,
+                    golf_handicap_source="estimate",
+                    golf_experience="regular",
+                    golf_partner_intents=["similar_level"],
+                    golf_similarity_tolerance_tenths=100,
+                )
+                await _sport(client, mentor, mentor_golf)
+    
+                # Excluded in both directions until the mentor says yes.
+>               assert mentor_id not in _ids(await _feed(client, learner, "sport=golf&limit=50"))
+E               AssertionError: assert '4fa1a222-1b9f-4a45-87bc-e22601b816fe' not in ['0a36cf5a-7275-4a6b-ba5a-f02cdc8b4283', '1470a2cf-4338-493d-ac05-736fef09eaa4', '486cf25b-9634-47ea-9409-13cdeed6b429...a222-1b9f-4a45-87bc-e22601b816fe', '646a258d-304d-4a2d-8fe5-e40f3a8d49ce', '6e9fe604-ec3e-4807-861c-c78e304b26c5', ...]
+E                +  where ['0a36cf5a-7275-4a6b-ba5a-f02cdc8b4283', '1470a2cf-4338-493d-ac05-736fef09eaa4', '486cf25b-9634-47ea-9409-13cdeed6b429...a222-1b9f-4a45-87bc-e22601b816fe', '646a258d-304d-4a2d-8fe5-e40f3a8d49ce', '6e9fe604-ec3e-4807-861c-c78e304b26c5', ...] = _ids({'items': [{'age': 36, 'avatar_url': None, 'bio': None, 'bio_excerpt': None, ...}, {'age': 36, 'avatar_url': None, 'bi..., 'avatar_url': None, 'bio': None, 'bio_excerpt': None, ...}, ...], 'limit': 50, 'next_cursor': None, 'offset': 0, ...})
+
+tests_integration/test_run_golf_v2_journey.py:252: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/base541/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_compatibility.py::test_broad_similarity_tolerance_is_not_consent_to_mentor
+FAILED tests/test_compatibility.py::test_explicit_consent_admits_the_learner_with_truthful_reasons[consent0-welcomes_beginners]
+FAILED tests/test_compatibility.py::test_learning_and_similar_level_are_alternatives_judged_separately
+FAILED tests_integration/test_run_golf_v2_journey.py::test_learning_match_needs_the_mentors_explicit_consent_on_postgres
+4 failed, 34 passed, 1 warning in 3.03s

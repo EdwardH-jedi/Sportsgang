@@ -182,19 +182,35 @@ Response additions (all additive):
 
 ### Bilateral rules (`app/services/compatibility.py`)
 
-Each person's own intents must admit the other; a pair is excluded when
-either side does not.
+Golf pairs are admitted by **routes**; a pair is excluded unless at least
+one route holds, and reasons are only taken from the routes that hold.
 
-- Golf `any_level`: admits anyone (does not override the other person).
-- Golf `similar_level`: two numeric handicaps → gap ≤ *that person's*
-  tolerance (default 5.0). Fewer than two handicaps → labelled fallback
-  "similar experience" only when both experience bands are equal; never
-  reported as a handicap match.
-- Golf `learn_from_experienced`: needs evidence the other is more
-  experienced — handicap at least 5.0 lower when both are numeric,
-  otherwise a higher stated experience band.
-- Golf `welcome_beginners`: admits someone `new`/`range`, or someone the
-  owner is demonstrably more experienced than (same evidence rule).
+1. **Mutual** — each person's own non-learning intent admits the other:
+   - `any_level`: admits anyone (never overrides the other person's rule).
+   - `similar_level`: two numeric handicaps → gap ≤ *that person's*
+     tolerance (default 5.0). Fewer than two handicaps → labelled fallback
+     "similar experience" only when both experience bands are equal; never
+     reported as a handicap match.
+   - `welcome_beginners`: admits someone `new`/`range`, or someone the owner
+     is demonstrably more experienced than (evidence rule below).
+2. **Learning** (either direction) — the learner has
+   `learn_from_experienced` **and** there is evidence the other person is
+   more experienced (handicap at least 5.0 lower when both are numeric,
+   otherwise a higher stated experience band) **and** that person explicitly
+   selected `welcome_beginners` or `any_level` (review F3, todo.md "Golf
+   rules"). A wide `similar_level` tolerance is not consent to play with a
+   learner. `learn_from_experienced` admits nobody through the mutual route.
+
+Explanation codes per route: mutual → `similar_handicap` /
+`similar_experience`, plus the candidate's `welcomes_beginners` / `any_level`
+when that is how the candidate admits the viewer; viewer learning →
+`more_experienced` + the candidate's consent code (`welcomes_beginners` or
+`any_level`); candidate learning → `learner_fit`. A pair admitted only by
+`similar_level` therefore never carries a learning/mentoring reason, even
+when one of them wants to learn.
+
+Running and ordering (each person's own rule must admit the other):
+
 - Running `match_pace`: the other person's *declared* range must overlap.
   Declared and non-overlapping → excluded; undeclared → `unverified` with a
   caveat and no "pace overlaps" reason. `social` imposes no pace rule.
