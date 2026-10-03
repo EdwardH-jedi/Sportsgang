@@ -8,11 +8,11 @@ verdict; the after-fix verdict belongs to the next Codex review.
 
 | Item | Value |
 | --- | --- |
-| Current wave | Wave 1 — F1/F5/F7 implemented, committing |
-| Completed findings | Wave 0 reproduction done for F1–F8 |
-| Files being edited | API events/bookings, mobile booking screens |
+| Current wave | Wave 5 — final verification (fresh runs, populated upgrade, native) |
+| Completed findings | F1–F8 implemented with regressions; commits `af17c83` (F1), `4f28a6c` (F5/F7), `05a2e0f` (F3), `9586c67` (F4/F6/F8), `2869f22` (F2); pushed |
+| Files being edited | `fix-evidence/after/`, this report |
 | Blockers | none so far |
-| Next executable action | commit Wave 1, then Wave 2 (F3) |
+| Next executable action | fresh after-runs of every suite + probe; populated 0015→0016 upgrade check; native two-account journeys on the simulators |
 
 ## 1. Initial state (Wave 0)
 
