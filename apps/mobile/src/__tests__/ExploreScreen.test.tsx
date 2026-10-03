@@ -30,6 +30,15 @@ jest.mock('../components/Screen', () => {
   return { Screen: ({ children }: { children: React.ReactNode }) => <View>{children}</View> };
 });
 
+// SessionsView refreshes on focus; outside a navigator, focus == mount.
+jest.mock('@react-navigation/native', () => {
+  const ReactActual = jest.requireActual('react');
+  return {
+    ...jest.requireActual('@react-navigation/native'),
+    useFocusEffect: (effect: () => void) => ReactActual.useEffect(effect, [effect]),
+  };
+});
+
 const mockUseEvents = jest.fn();
 jest.mock('../hooks/useEvents', () => ({
   useEvents: (args: unknown) => mockUseEvents(args),

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { FocusSport } from '@protin/shared-types';
 
 import { Screen } from '../../components/Screen';
@@ -96,7 +97,7 @@ export function ExploreScreen({ navigation }: ExploreScreenProps) {
         <PartnersView
           sport={focusSport}
           ownConfigured={sportProfiles === null ? null : isConfigured(ownProfile)}
-          ownHasPaceRange={ownProfile?.runPaceMinSecPerKm != null}
+          ownHasPaceRange={ownProfile?.runPaceMinSecPerKm != null && ownProfile?.runPaceMaxSecPerKm != null}
           onSetup={() => navigation.navigate('EditSportPreferences', { sport: focusSport })}
           onOpen={(card) => navigation.navigate('PartnerDetail', { userId: card.userId, sport: card.feedSport })}
           onOpenChat={(card, matchId) =>
@@ -126,8 +127,27 @@ function SessionsView({
   onOpen: (id: string) => void;
   onHost: () => void;
 }) {
-  const { items, isLoading, error, refresh } = useEvents({ sport, upcoming: true });
+  const { items, isLoading, error, refresh, loadMore, hasMore, loadingMore, loadMoreError } = useEvents({
+    sport,
+    upcoming: true,
+  });
   const noun = SESSION_NOUN[sport];
+
+  // Re-read on every return to this screen (other accounts may have joined,
+  // left or cancelled meanwhile). The first focus is the mount, which
+  // useEvents already loads; the callback is stable so it only runs on focus.
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+  const focusedBefore = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!focusedBefore.current) {
+        focusedBefore.current = true;
+        return;
+      }
+      void refreshRef.current();
+    }, [])
+  );
 
   return (
     <ScrollView
@@ -145,11 +165,20 @@ function SessionsView({
           body={`Be the first — host a ${sport === 'golf' ? 'round' : 'run'} and others can join.`}
         />
       ) : (
-        items.map((event) => (
-          <View key={event.id} style={styles.cardGap}>
-            <SessionCard event={event} currentUserId={currentUserId} onPress={() => onOpen(event.id)} />
-          </View>
-        ))
+        <>
+          {items.map((event) => (
+            <View key={event.id} style={styles.cardGap}>
+              <SessionCard event={event} currentUserId={currentUserId} onPress={() => onOpen(event.id)} />
+            </View>
+          ))}
+          {loadingMore ? (
+            <ActivityIndicator style={styles.footer} color={colors.accent} accessibilityLabel="Loading more sessions" />
+          ) : loadMoreError ? (
+            <InlineNotice text={loadMoreError} actionLabel="Retry" onAction={() => void loadMore()} />
+          ) : hasMore ? (
+            <Button label="Show more sessions" variant="secondary" onPress={() => void loadMore()} />
+          ) : null}
+        </>
       )}
     </ScrollView>
   );
@@ -218,7 +247,8 @@ function PartnersView({ sport, ownConfigured, ownHasPaceRange, onSetup, onOpen, 
               kind="checkbox"
               label="Matching pace only"
               selected={strictPace}
-              disabled={!ownHasPaceRange}
+              // A selected filter stays dismissible even if its capability is gone.
+              disabled={!ownHasPaceRange && !strictPace}
               onPress={() => setStrictPace(!strictPace)}
               description={ownHasPaceRange ? undefined : 'Add your pace range to use this filter'}
             />

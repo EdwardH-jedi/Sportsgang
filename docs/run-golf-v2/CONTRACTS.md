@@ -222,6 +222,17 @@ Running and ordering (each person's own rule must admit the other):
 
 - `POST /discovery/actions` sends the sport the card was loaded for (kept
   with each loaded page), never the sport currently selected in the switch.
+- Preference changes (review F4/F6): the profile store keeps a per-sport
+  `preferenceRevision`, bumped only after the server accepted a save, clear
+  or delete (or a re-fetch returned a different row). A loaded feed is only
+  reused for the same sport, filter **and** revision; a change for the
+  feed's sport drops it immediately and invalidates in-flight responses, so
+  Explore re-asks the server and shows its new reasons. Ordinary
+  detail → back navigation keeps the sport, filter and loaded feed.
+- `strict_pace` is only sent while the viewer has their own declared range.
+  When it disappears (range cleared, social without a range, running
+  removed, legacy row) the filter is switched off and general browsing
+  continues; a selected filter chip stays dismissible.
 - Cards keep "Show interest" (`like`) semantics: mutual interest creates the
   existing match + chat; there is no invitation inbox.
 
@@ -277,6 +288,19 @@ Responses (`EventSummary` / `EventDetail`) add `run_details` and
 - `tee_time_status = secured` is the host's declaration, not a course
   booking or platform verification.
 - `GET /events` adds `upcoming=true` (starts_at ≥ now) for Explore.
+
+### Client session lists (review F8)
+
+- Every successful create / join / leave / cancel / complete marks session
+  lists stale (`stores/sessionSync.ts`); mounted lists re-read the server, so
+  counts, open/full status and Hosting/Joined come from persisted state. A
+  failed mutation marks nothing and nothing is shown optimistically.
+- Explore re-reads its list whenever it is focused again (another account
+  may have joined or cancelled) and on pull-to-refresh.
+- The Explore list pages with the existing `limit`/`offset` (20 per page,
+  "Show more sessions"); rows are de-duplicated by id. Known limit of offset
+  paging: a session that becomes visible earlier in the order between two
+  page loads shows up on the next refresh rather than mid-list.
 
 ### Participant lifecycle (review F1)
 

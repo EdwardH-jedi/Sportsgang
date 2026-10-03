@@ -6,6 +6,7 @@
  * so the type contract stays in one place.
  */
 
+import { markSessionsChanged } from '../stores/sessionSync';
 import { api } from './api';
 import { formatDistance, formatHandicap, formatPaceRange } from './sportPreferences';
 import type {
@@ -77,16 +78,25 @@ export async function getEvent(eventId: string): Promise<EventDetail> {
   return api.get<EventDetail>(`/events/${eventId}`);
 }
 
+// Mutations below mark session lists stale only after the server accepted
+// them (stores/sessionSync.ts); a rejected request changes nothing.
+
+async function mutate(path: string, body?: unknown): Promise<EventDetail> {
+  const detail = body === undefined ? await api.post<EventDetail>(path) : await api.post<EventDetail>(path, body);
+  markSessionsChanged();
+  return detail;
+}
+
 export async function createEvent(body: CreateEventRequest): Promise<EventDetail> {
-  return api.post<EventDetail>('/events', body);
+  return mutate('/events', body);
 }
 
 export async function joinEvent(eventId: string): Promise<EventDetail> {
-  return api.post<EventDetail>(`/events/${eventId}/join`);
+  return mutate(`/events/${eventId}/join`);
 }
 
 export async function leaveEvent(eventId: string): Promise<EventDetail> {
-  return api.post<EventDetail>(`/events/${eventId}/leave`);
+  return mutate(`/events/${eventId}/leave`);
 }
 
 /**
@@ -95,7 +105,7 @@ export async function leaveEvent(eventId: string): Promise<EventDetail> {
  * event returns the current detail without erroring.
  */
 export async function cancelEvent(eventId: string): Promise<EventDetail> {
-  return api.post<EventDetail>(`/events/${eventId}/cancel`);
+  return mutate(`/events/${eventId}/cancel`);
 }
 
 /**
@@ -104,7 +114,7 @@ export async function cancelEvent(eventId: string): Promise<EventDetail> {
  * completed.
  */
 export async function completeEvent(eventId: string): Promise<EventDetail> {
-  return api.post<EventDetail>(`/events/${eventId}/complete`);
+  return mutate(`/events/${eventId}/complete`);
 }
 
 /**

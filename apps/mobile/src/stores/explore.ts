@@ -15,6 +15,13 @@
  * - Request failure is an `error` status, never translated into "no people".
  * - The focus sport is persisted per account and the whole store is reset
  *   on logout (auth.logout → reset()).
+ * - Preference changes (review F4/F6): a feed remembers the profile store's
+ *   per-sport `preferenceRevision` it was assessed under and is never reused
+ *   for another revision. A successful preference change for the feed's
+ *   sport also drops it at once and bumps the generation, so an older
+ *   in-flight success/error can no longer land. When the viewer no longer
+ *   has a pace range, the strict pace filter is switched off rather than
+ *   left on (the server would reject it).
  */
 
 import { create } from 'zustand';
@@ -29,6 +36,7 @@ import type {
 
 import { api, BASE_URL } from '../lib/api';
 import { isFocusSport } from '../lib/sportPreferences';
+import { useProfileStore } from './profile';
 
 export const FEED_PAGE_SIZE = 20;
 
@@ -44,6 +52,8 @@ export interface FeedState {
   /** `${sport}|${strictPace}` the items belong to; null before first load. */
   key: string | null;
   sport: FocusSport | null;
+  /** Viewer preference revision for `sport` that this feed was assessed under. */
+  revision: number;
   status: FeedStatus;
   items: FeedCard[];
   error: string | null;
@@ -78,6 +88,7 @@ interface ExploreState {
 const EMPTY_FEED: FeedState = {
   key: null,
   sport: null,
+  revision: 0,
   status: 'idle',
   items: [],
   error: null,
@@ -136,6 +147,46 @@ function message(err: unknown, fallback: string): string {
   return err instanceof Error && err.message ? err.message : fallback;
 }
 
+function preferenceRevision(sport: FocusSport): number {
+  return useProfileStore.getState().preferenceRevision?.[sport] ?? 0;
+}
+
+/**
+ * Whether the viewer has their own declared running pace range: `false` only
+ * when the loaded profile says so (no running row, social without a range,
+ * cleared range, legacy row); `null` while the profile is not loaded.
+ */
+function viewerHasPaceRange(): boolean | null {
+  const rows = useProfileStore.getState().sportProfiles;
+  if (!rows) return null;
+  const running = rows.find((sp) => sp.sport === 'running');
+  return running?.runPaceMinSecPerKm != null && running?.runPaceMaxSecPerKm != null;
+}
+
+// Registered on the store's first own action rather than at import, so
+// modules that import this store without the real profile store (tests that
+// mock it) are unaffected. loadFeed re-checks revision and pace capability
+// itself, so correctness never depends on when this was registered.
+let watchingPreferences = false;
+
+function watchPreferences(): void {
+  if (watchingPreferences) return;
+  watchingPreferences = true;
+  useProfileStore.subscribe((state, prev) => {
+    if (state.sportProfiles === prev.sportProfiles && state.preferenceRevision === prev.preferenceRevision) return;
+    const explore = useExploreStore.getState();
+    const patch: Partial<ExploreState> = {};
+    if (explore.strictPace && viewerHasPaceRange() === false) patch.strictPace = false;
+    const sport = explore.feed.sport;
+    if (sport && (state.preferenceRevision?.[sport] ?? 0) !== explore.feed.revision) {
+      feedGeneration += 1;
+      patch.feed = EMPTY_FEED;
+      patch.actingOn = null;
+    }
+    if (Object.keys(patch).length > 0) useExploreStore.setState(patch);
+  });
+}
+
 export const useExploreStore = create<ExploreState>((set, get) => ({
   ownerId: null,
   focusSport: DEFAULT_SPORT,
@@ -146,6 +197,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   actingOn: null,
 
   hydrateFocus: async (userId, fallback) => {
+    watchPreferences();
     const { ownerId, focusHydrated } = get();
     if (ownerId === userId && focusHydrated) return;
     if (ownerId !== userId) {
@@ -179,15 +231,30 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
 
   setView: (view) => set({ view }),
 
-  setStrictPace: (value) => set({ strictPace: value }),
+  setStrictPace: (value) => {
+    watchPreferences();
+    // Turning it off is always allowed; turning it on needs the viewer's own range.
+    set({ strictPace: value && viewerHasPaceRange() !== false });
+  },
 
   loadFeed: async ({ force = false } = {}) => {
+    watchPreferences();
+    if (get().strictPace && viewerHasPaceRange() === false) set({ strictPace: false });
     const { focusSport: sport, strictPace, feed } = get();
     const key = feedKey(sport, strictPace);
-    if (!force && feed.key === key && feed.status !== 'error' && feed.status !== 'idle') return;
+    const revision = preferenceRevision(sport);
+    if (
+      !force &&
+      feed.key === key &&
+      feed.revision === revision &&
+      feed.status !== 'error' &&
+      feed.status !== 'idle'
+    ) {
+      return;
+    }
 
     const generation = ++feedGeneration;
-    set({ feed: { ...EMPTY_FEED, key, sport, status: 'loading' }, actingOn: null });
+    set({ feed: { ...EMPTY_FEED, key, sport, revision, status: 'loading' }, actingOn: null });
     try {
       const data = await api.get<DiscoveryFeedResponse>(feedUrl(sport, strictPace));
       assertFeedShape(data);
@@ -197,6 +264,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
           ...EMPTY_FEED,
           key,
           sport,
+          revision,
           status: 'ready',
           items: data.items.map((item) => toFeedCard(item, sport)),
           nextCursor: data.nextCursor ?? null,
@@ -207,7 +275,9 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       });
     } catch (err) {
       if (generation !== feedGeneration) return;
-      set({ feed: { ...EMPTY_FEED, key, sport, status: 'error', error: message(err, 'Could not load partners.') } });
+      set({
+        feed: { ...EMPTY_FEED, key, sport, revision, status: 'error', error: message(err, 'Could not load partners.') },
+      });
     }
   },
 

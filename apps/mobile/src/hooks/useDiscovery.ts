@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useExploreStore } from '../stores/explore';
+import { useProfileStore } from '../stores/profile';
 
 export type { FeedCard, FeedState } from '../stores/explore';
 
@@ -9,10 +10,11 @@ export type { FeedCard, FeedState } from '../stores/explore';
  * Partner feed for the current Explore focus sport.
  *
  * Thin wrapper over the explore store: it (re)loads page one whenever the
- * focus sport or the strict-pace filter changes, and otherwise reuses the
- * already-loaded feed (so returning from PartnerDetail keeps the list and
- * scroll position). Pagination, stale-response guarding and sport-scoped
- * actions live in the store — see stores/explore.ts.
+ * focus sport, the strict-pace filter or the viewer's preferences for that
+ * sport change, and otherwise reuses the already-loaded feed (so returning
+ * from PartnerDetail keeps the list and scroll position). Pagination,
+ * stale-response guarding and sport-scoped actions live in the store — see
+ * stores/explore.ts.
  */
 export function useDiscovery({ enabled = true }: { enabled?: boolean } = {}) {
   const state = useExploreStore(
@@ -28,11 +30,14 @@ export function useDiscovery({ enabled = true }: { enabled?: boolean } = {}) {
     }))
   );
   const { sport, strictPace, loadFeed } = state;
+  // Saving, clearing or removing this sport's preferences bumps it; loadFeed
+  // then asks the server for a fresh assessment instead of reusing the feed.
+  const preferenceRevision = useProfileStore((s) => s.preferenceRevision?.[sport] ?? 0);
 
   useEffect(() => {
     if (!enabled) return;
     void loadFeed();
-  }, [enabled, sport, strictPace, loadFeed]);
+  }, [enabled, sport, strictPace, preferenceRevision, loadFeed]);
 
   return {
     sport,

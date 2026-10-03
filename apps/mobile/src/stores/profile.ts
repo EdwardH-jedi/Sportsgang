@@ -61,6 +61,13 @@ interface ProfileState {
   profile: UserProfile | null;
   identityPreferences: IdentityPreferences | null;
   sportProfiles: SportProfile[] | null;
+  /**
+   * Per-sport counter bumped after every successful preference change for
+   * that sport (save, clear, delete, or a re-fetch that returns a different
+   * row). Explore compares it with the revision a feed was loaded under and
+   * asks the server again when they differ. Monotonic across logouts.
+   */
+  preferenceRevision: Partial<Record<Sport, number>>;
   // URLs returned by the backend after a successful PUT /users/me/photos.
   // Locally selected file URIs are held in screen-local state and are not
   // promoted into the store until the backend has persisted them.
@@ -111,10 +118,28 @@ function inferNameFromUri(uri: string, index: number): string {
   return `photo_${index}.${ext}`;
 }
 
+/** Sports whose own row differs between two loaded sport-profile lists. */
+function changedSports(before: SportProfile[], after: SportProfile[]): Sport[] {
+  const sports = new Set<Sport>([...before, ...after].map((sp) => sp.sport));
+  const row = (list: SportProfile[], sport: Sport) => JSON.stringify(list.find((sp) => sp.sport === sport) ?? null);
+  return [...sports].filter((sport) => row(before, sport) !== row(after, sport));
+}
+
+function bumpRevision(
+  revision: Partial<Record<Sport, number>>,
+  sports: Sport[]
+): Partial<Record<Sport, number>> {
+  if (sports.length === 0) return revision;
+  const next = { ...revision };
+  for (const sport of sports) next[sport] = (next[sport] ?? 0) + 1;
+  return next;
+}
+
 export const useProfileStore = create<ProfileState>((set, get) => ({
   profile: null,
   identityPreferences: null,
   sportProfiles: null,
+  preferenceRevision: {},
   photoUris: [],
 
   fetchProfile: async () => {
@@ -131,7 +156,17 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       ...profileFields,
       avatarUrl: absolutizeMediaUrl(profileFields.avatarUrl) ?? undefined,
     };
-    set({ profile, identityPreferences, sportProfiles, photoUris });
+    // A first load (from null) is not a change; a re-fetch that differs is
+    // (e.g. preferences edited on another device).
+    const previous = get().sportProfiles;
+    const changed = previous === null ? [] : changedSports(previous, sportProfiles);
+    set({
+      profile,
+      identityPreferences,
+      sportProfiles,
+      photoUris,
+      preferenceRevision: bumpRevision(get().preferenceRevision, changed),
+    });
   },
 
   upsertProfile: async (data) => {
@@ -177,12 +212,16 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     const current = get().sportProfiles ?? [];
     const idx = current.findIndex((sp) => sp.sport === data.sport);
     const next = idx >= 0 ? current.map((sp, i) => (i === idx ? updated : sp)) : [...current, updated];
-    set({ sportProfiles: next });
+    // Only after the server accepted the write: a failed save changes nothing.
+    set({ sportProfiles: next, preferenceRevision: bumpRevision(get().preferenceRevision, [data.sport]) });
   },
 
   deleteSportProfile: async (sport) => {
     await api.delete<void>(`/users/me/sport-profiles/${sport}`);
-    set({ sportProfiles: (get().sportProfiles ?? []).filter((sp) => sp.sport !== sport) });
+    set({
+      sportProfiles: (get().sportProfiles ?? []).filter((sp) => sp.sport !== sport),
+      preferenceRevision: bumpRevision(get().preferenceRevision, [sport]),
+    });
   },
 
   reset: () => {
