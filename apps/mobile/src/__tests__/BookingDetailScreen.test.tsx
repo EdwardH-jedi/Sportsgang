@@ -40,10 +40,10 @@ jest.mock('../lib/calendar', () => ({
 // ─── Mock auth store ──────────────────────────────────────────────────────────
 
 // Default: current user is the proposer
-let mockUserId = 'proposer-111';
+let mockUserId: string | null = 'proposer-111';
 
 jest.mock('../stores/auth', () => ({
-  useAuthStore: () => ({ user: { id: mockUserId, email: 'me@example.com' } }),
+  useAuthStore: () => ({ user: mockUserId ? { id: mockUserId, email: 'me@example.com' } : null }),
 }));
 
 // ─── Mock Screen component ────────────────────────────────────────────────────
@@ -422,5 +422,211 @@ describe('BookingDetailScreen', () => {
     expect(await findByText('Fri 10 Apr · 7:00 pm')).toBeTruthy();
     expect(getByText('Fri 10 Apr · 8:00 pm')).toBeTruthy();
     expect(getByText('Times are Sydney time')).toBeTruthy();
+  });
+});
+
+// ─── Route and account binding (review R3) ─────────────────────────────────
+
+function deferred<T>() {
+  let resolve!: (v: T) => void;
+  let reject!: (e: Error) => void;
+  const promise = new Promise<T>((a, b) => {
+    resolve = a;
+    reject = b;
+  });
+  return { promise, resolve, reject };
+}
+
+function bookingFor(id: string, name: string, overrides: Record<string, unknown> = {}) {
+  return makeBooking({ id, partner: { userId: `u-${id}`, displayName: name }, ...overrides });
+}
+
+describe('BookingDetailScreen binding (review R3)', () => {
+  let alertSpy: jest.SpyInstance;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUserId = 'proposer-111';
+    alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  });
+  afterEach(() => alertSpy.mockRestore());
+
+  function screenFor(id: string, navigation = makeNavigation()) {
+    return <BookingDetailScreen route={makeRoute(id) as any} navigation={navigation as any} />;
+  }
+
+  async function pressCancelAndExpect(u: ReturnType<typeof render>, id: string) {
+    mockApiPost.mockResolvedValueOnce(bookingFor(id, `Partner ${id}`, { status: 'cancelled' }));
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    expect(mockApiPost).toHaveBeenLastCalledWith(`/bookings/${id}/cancel`, {});
+  }
+
+  it('a late response for the previous route never replaces the current booking', async () => {
+    const a = deferred<any>();
+    const b = deferred<any>();
+    mockApiGet.mockReturnValueOnce(a.promise).mockReturnValueOnce(b.promise);
+    const u = render(screenFor('A'));
+    u.rerender(screenFor('B'));
+    await act(async () => b.resolve(bookingFor('B', 'Partner B')));
+    await act(async () => a.resolve(bookingFor('A', 'Partner A')));
+    expect(u.getByText('Partner B')).toBeTruthy();
+    expect(u.queryByText('Partner A')).toBeNull();
+    await pressCancelAndExpect(u, 'B');
+  });
+
+  it('the previous route resolving first shows nothing until the current one arrives', async () => {
+    const a = deferred<any>();
+    const b = deferred<any>();
+    mockApiGet.mockReturnValueOnce(a.promise).mockReturnValueOnce(b.promise);
+    const u = render(screenFor('A'));
+    u.rerender(screenFor('B'));
+    await act(async () => a.resolve(bookingFor('A', 'Partner A')));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(u.queryByText('Cancel')).toBeNull();
+    await act(async () => b.resolve(bookingFor('B', 'Partner B')));
+    expect(u.getByText('Partner B')).toBeTruthy();
+    await pressCancelAndExpect(u, 'B');
+  });
+
+  it('clears the previous booking as soon as the route changes', async () => {
+    mockApiGet.mockResolvedValueOnce(bookingFor('A', 'Partner A')).mockReturnValueOnce(new Promise(() => {}));
+    const u = render(screenFor('A'));
+    await u.findByText('Partner A');
+    u.rerender(screenFor('B'));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(u.queryByText('Cancel')).toBeNull();
+  });
+
+  it('a late rejection for the previous route does not replace the current booking', async () => {
+    const a = deferred<any>();
+    mockApiGet.mockReturnValueOnce(a.promise).mockResolvedValueOnce(bookingFor('B', 'Partner B'));
+    const u = render(screenFor('A'));
+    u.rerender(screenFor('B'));
+    await u.findByText('Partner B');
+    await act(async () => a.reject(new Error('A failed late')));
+    expect(u.queryByText('A failed late')).toBeNull();
+    expect(u.getByText('Partner B')).toBeTruthy();
+  });
+
+  it('repeated retries show only the current route, and a stale retry is dropped', async () => {
+    mockApiGet.mockRejectedValueOnce(new Error('Offline')).mockRejectedValueOnce(new Error('Still offline'));
+    const u = render(screenFor('A'));
+    await u.findByText('Offline');
+    await act(async () => {
+      fireEvent.press(u.getByText('Try again'));
+    });
+    await u.findByText('Still offline');
+    const retryA = deferred<any>();
+    mockApiGet.mockReturnValueOnce(retryA.promise).mockResolvedValueOnce(bookingFor('B', 'Partner B'));
+    await act(async () => {
+      fireEvent.press(u.getByText('Try again'));
+    });
+    u.rerender(screenFor('B'));
+    await u.findByText('Partner B');
+    await act(async () => retryA.resolve(bookingFor('A', 'Partner A')));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(mockApiGet.mock.calls.map((c) => c[0])).toEqual([
+      '/bookings/A',
+      '/bookings/A',
+      '/bookings/A',
+      '/bookings/B',
+    ]);
+    await pressCancelAndExpect(u, 'B');
+  });
+
+  it('a transition that finishes after the route changed is not applied or alerted', async () => {
+    mockApiGet.mockResolvedValueOnce(bookingFor('A', 'Partner A')).mockResolvedValueOnce(bookingFor('B', 'Partner B'));
+    const cancelA = deferred<any>();
+    mockApiPost.mockReturnValueOnce(cancelA.promise);
+    const u = render(screenFor('A'));
+    await u.findByText('Partner A');
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    expect(mockApiPost).toHaveBeenLastCalledWith('/bookings/A/cancel', {});
+    u.rerender(screenFor('B'));
+    await u.findByText('Partner B');
+    await act(async () => cancelA.resolve(bookingFor('A', 'Partner A', { status: 'cancelled' })));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(u.getByText('Awaiting confirmation')).toBeTruthy();
+    // B is actionable straight away; A's pending request does not block it.
+    await pressCancelAndExpect(u, 'B');
+
+    const failA = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(bookingFor('A', 'Partner A'));
+    mockApiPost.mockReturnValueOnce(failA.promise);
+    u.rerender(screenFor('A'));
+    await u.findByText('Partner A');
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    u.unmount();
+    await act(async () => failA.reject(new Error('late failure')));
+    expect(alertSpy).not.toHaveBeenCalled();
+  });
+
+  it('a double tap sends one transition', async () => {
+    mockApiGet.mockResolvedValueOnce(bookingFor('B', 'Partner B'));
+    mockApiPost.mockReturnValueOnce(new Promise(() => {}));
+    const u = render(screenFor('B'));
+    await u.findByText('Partner B');
+    const cancel = u.getByText('Cancel');
+    await act(async () => {
+      fireEvent.press(cancel);
+      fireEvent.press(cancel);
+    });
+    expect(mockApiPost).toHaveBeenCalledTimes(1);
+  });
+
+  it('another account never sees the previous account’s booking', async () => {
+    const forUser2 = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(bookingFor('A', 'Partner A')).mockReturnValueOnce(forUser2.promise);
+    const u = render(screenFor('A'));
+    await u.findByText('Partner A');
+    mockUserId = 'someone-else';
+    u.rerender(screenFor('A'));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
+    await act(async () => forUser2.reject(new Error('Booking not found')));
+    expect(u.getByText('Booking not found')).toBeTruthy();
+    expect(u.queryByText('Cancel')).toBeNull();
+  });
+
+  it('logging out hides the booking and fetches nothing', async () => {
+    mockApiGet.mockResolvedValueOnce(bookingFor('A', 'Partner A'));
+    const u = render(screenFor('A'));
+    await u.findByText('Partner A');
+    mockUserId = null;
+    u.rerender(screenFor('A'));
+    expect(u.queryByText('Partner A')).toBeNull();
+    expect(mockApiGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('a late response after unmount changes nothing', async () => {
+    const a = deferred<any>();
+    mockApiGet.mockReturnValueOnce(a.promise);
+    const u = render(screenFor('A'));
+    u.unmount();
+    await act(async () => a.resolve(bookingFor('A', 'Partner A')));
+    expect(alertSpy).not.toHaveBeenCalled();
+  });
+
+  it('a 404 or 403 shows the error with no actions', async () => {
+    for (const message of ['Booking not found', 'Not a participant']) {
+      mockApiGet.mockRejectedValueOnce(new Error(message));
+      const u = render(screenFor('A'));
+      expect(await u.findByText(message)).toBeTruthy();
+      expect(u.queryByText('Cancel')).toBeNull();
+      expect(u.getByLabelText('Back')).toBeTruthy();
+      u.unmount();
+    }
+  });
+
+  it('a payload for a different booking is treated as not found', async () => {
+    mockApiGet.mockResolvedValueOnce(bookingFor('Z', 'Partner Z'));
+    const u = render(screenFor('A'));
+    expect(await u.findByText('Booking not found.')).toBeTruthy();
+    expect(u.queryByText('Partner Z')).toBeNull();
   });
 });

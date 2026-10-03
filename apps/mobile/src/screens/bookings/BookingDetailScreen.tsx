@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -77,41 +77,79 @@ function statusColor(status: string): string {
 export function BookingDetailScreen({ route, navigation }: BookingDetailScreenProps) {
   const { bookingId } = route.params;
   const { user } = useAuthStore();
-  const [booking, setBooking] = useState<BookingDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isActing, setIsActing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchBooking = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.get<BookingDetail>(`/bookings/${bookingId}`);
-      setBooking(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load booking.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [bookingId]);
+  // Everything shown or acted on belongs to one binding: this account and
+  // this route's booking (review R3). Results are tagged with the binding
+  // they were requested for and only render while it is still current, so a
+  // late response for another booking or account can never show — or be
+  // acted on — after the route or account changed.
+  const binding = user?.id ? `${user.id}|${bookingId}` : null;
+  const bindingRef = useRef(binding);
+  bindingRef.current = binding;
+  const generation = useRef(0);
+  const actingOn = useRef<string | null>(null);
+  const mounted = useRef(true);
+  const [loaded, setLoaded] = useState<{ binding: string; booking: BookingDetail } | null>(null);
+  const [failure, setFailure] = useState<{ binding: string; message: string } | null>(null);
+  const [actingBinding, setActingBinding] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBooking();
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const booking = loaded && loaded.binding === binding ? loaded.booking : null;
+  const error = failure && failure.binding === binding ? failure.message : null;
+  const isLoading = !booking && !error;
+  const isActing = actingBinding !== null && actingBinding === binding;
+
+  const fetchBooking = useCallback(async () => {
+    if (!binding) return;
+    const gen = ++generation.current;
+    const current = () => mounted.current && gen === generation.current && bindingRef.current === binding;
+    setFailure(null);
+    try {
+      const data = await api.get<BookingDetail>(`/bookings/${bookingId}`);
+      if (!current()) return;
+      if (data?.id !== bookingId) {
+        setFailure({ binding, message: 'Booking not found.' });
+        return;
+      }
+      setLoaded({ binding, booking: data });
+    } catch (err) {
+      if (!current()) return;
+      setFailure({ binding, message: err instanceof Error ? err.message : 'Failed to load booking.' });
+    }
+  }, [binding, bookingId]);
+
+  useEffect(() => {
+    void fetchBooking();
   }, [fetchBooking]);
 
   const performTransition = useCallback(
     async (action: string) => {
-      setIsActing(true);
+      // The booking being shown is the one acted on, for this binding only
+      // (a confirmation dialog opened for an earlier binding is dropped).
+      if (!booking || !binding || bindingRef.current !== binding || actingOn.current === binding) return;
+      const target = booking.id;
+      actingOn.current = binding;
+      setActingBinding(binding);
+      const current = () => mounted.current && bindingRef.current === binding;
       try {
-        const updated = await api.post<BookingDetail>(`/bookings/${bookingId}/${action}`, {});
-        setBooking(updated);
+        const updated = await api.post<BookingDetail>(`/bookings/${target}/${action}`, {});
+        if (!current() || updated?.id !== target) return;
+        generation.current += 1; // an older in-flight fetch must not undo this
+        setLoaded({ binding, booking: updated });
       } catch (err) {
+        if (!current()) return;
         Alert.alert('Error', err instanceof Error ? err.message : 'Action failed.');
       } finally {
-        setIsActing(false);
+        if (actingOn.current === binding) actingOn.current = null;
+        if (mounted.current) setActingBinding((b) => (b === binding ? null : b));
       }
     },
-    [bookingId]
+    [booking, binding]
   );
 
   // No-show is the only transition the FSM lets either party trigger, so we
