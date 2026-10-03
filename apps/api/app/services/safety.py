@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import and_, select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.event import Event, EventParticipant
@@ -17,6 +17,62 @@ from app.schemas.safety import (
     ReportListResponse,
     ReportResponse,
 )
+
+# ---------------------------------------------------------------------------
+# Contact restriction (docs/run-golf-v2/CONTRACTS.md §8)
+#
+# Two people may contact each other only while both accounts are active and
+# neither has blocked the other. Every endpoint that creates contact — a
+# message, a discovery action, a booking proposal or confirmation, a
+# challenge — and every realtime admission/delivery asks this module.
+#
+# Writes serialize with block/unblock on the pair's `users` rows: contact
+# writes take FOR SHARE, block/unblock take FOR NO KEY UPDATE, always in id
+# order, and the block lookup runs after the lock. A send that commits before
+# a block is ordinary pre-block history; one that waits on the block's lock
+# re-reads after it commits and is refused, so nothing is written. (FOR
+# UPDATE would also collide with the FOR KEY SHARE every FK insert takes.)
+# SQLite ignores the locking clause, so the unit suite runs unchanged.
+# ---------------------------------------------------------------------------
+
+# One message for every reason (either block direction, inactive account):
+# it is shown verbatim by the app and must not reveal who blocked whom.
+CONTACT_UNAVAILABLE = "You can't contact this person."
+
+
+async def _lock_pair(db: AsyncSession, a: UUID, b: UUID, *, exclusive: bool) -> list[User]:
+    stmt = select(User).where(User.id.in_([a, b])).order_by(User.id)
+    stmt = stmt.with_for_update(key_share=True) if exclusive else stmt.with_for_update(read=True)
+    return list((await db.execute(stmt)).scalars().all())
+
+
+def _block_between(a: UUID, b: UUID):
+    return or_(
+        and_(Block.blocker_id == a, Block.blocked_id == b),
+        and_(Block.blocker_id == b, Block.blocked_id == a),
+    )
+
+
+async def is_contact_restricted(db: AsyncSession, a: UUID, b: UUID) -> bool:
+    """True when a and b may not contact each other (no locking; for reads and delivery)."""
+    users = (await db.execute(select(User.is_active).where(User.id.in_([a, b])))).scalars().all()
+    if len(users) != 2 or not all(users):
+        return True
+    return (await db.execute(select(Block.id).where(_block_between(a, b)).limit(1))).first() is not None
+
+
+async def ensure_contact_allowed(db: AsyncSession, actor_id: UUID, other_id: UUID) -> None:
+    """Lock the pair for this transaction and raise 403 if they may not contact each other.
+
+    Call before any contact write; the caller's commit releases the lock.
+    """
+    users = await _lock_pair(db, actor_id, other_id, exclusive=False)
+    restricted = len(users) != 2 or not all(u.is_active for u in users)
+    if not restricted:
+        restricted = (await db.execute(select(Block.id).where(_block_between(actor_id, other_id)).limit(1))).first()
+    if restricted:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=CONTACT_UNAVAILABLE)
+
 
 # ---------------------------------------------------------------------------
 # Reports
@@ -144,6 +200,9 @@ async def block_user(
             detail="Cannot block yourself.",
         )
 
+    # Wait for in-flight contact writes between the pair; later ones see the block.
+    await _lock_pair(db, blocker_id, blocked_id, exclusive=True)
+
     # Idempotent: return existing block if present
     stmt = select(Block).where(and_(Block.blocker_id == blocker_id, Block.blocked_id == blocked_id))
     existing = (await db.execute(stmt)).scalar_one_or_none()
@@ -162,6 +221,7 @@ async def unblock_user(
     blocker_id: UUID,
     blocked_id: UUID,
 ) -> None:
+    await _lock_pair(db, blocker_id, blocked_id, exclusive=True)
     stmt = select(Block).where(and_(Block.blocker_id == blocker_id, Block.blocked_id == blocked_id))
     block = (await db.execute(stmt)).scalar_one_or_none()
     if block is None:

@@ -230,14 +230,14 @@ async def test_both_participants_see_same_messages(client: AsyncClient) -> None:
 
 
 # ---------------------------------------------------------------------------
-# _ConnectionManager unit tests  (no HTTP / no DB)
+# ConnectionManager unit tests  (no HTTP / no DB)
 # ---------------------------------------------------------------------------
 
 
 async def test_connection_manager_broadcast_reaches_all_connections() -> None:
     from unittest.mock import AsyncMock
 
-    from app.routers.chat import _ConnectionManager
+    from app.services.chat import ConnectionManager as _ConnectionManager
 
     manager = _ConnectionManager()
     ws1, ws2 = AsyncMock(), AsyncMock()
@@ -254,7 +254,7 @@ async def test_connection_manager_broadcast_reaches_all_connections() -> None:
 async def test_connection_manager_broadcast_skips_other_rooms() -> None:
     from unittest.mock import AsyncMock
 
-    from app.routers.chat import _ConnectionManager
+    from app.services.chat import ConnectionManager as _ConnectionManager
 
     manager = _ConnectionManager()
     ws_a, ws_b = AsyncMock(), AsyncMock()
@@ -271,7 +271,7 @@ async def test_connection_manager_broadcast_skips_other_rooms() -> None:
 async def test_connection_manager_disconnect_stops_future_broadcasts() -> None:
     from unittest.mock import AsyncMock
 
-    from app.routers.chat import _ConnectionManager
+    from app.services.chat import ConnectionManager as _ConnectionManager
 
     manager = _ConnectionManager()
     ws = AsyncMock()
@@ -288,7 +288,7 @@ async def test_connection_manager_tolerates_send_failure() -> None:
     """A stale socket that raises on send_json must not crash the broadcast."""
     from unittest.mock import AsyncMock
 
-    from app.routers.chat import _ConnectionManager
+    from app.services.chat import ConnectionManager as _ConnectionManager
 
     manager = _ConnectionManager()
     bad_ws, good_ws = AsyncMock(), AsyncMock()
@@ -318,9 +318,9 @@ async def test_send_message_triggers_ws_broadcast(client: AsyncClient, monkeypat
     async def _capture_broadcast(room: str, data: dict) -> None:
         broadcast_calls.append((room, data))
 
-    import app.routers.chat as chat_router
+    import app.services.chat as chat_service
 
-    monkeypatch.setattr(chat_router._manager, "broadcast", _capture_broadcast)
+    monkeypatch.setattr(chat_service.connections, "broadcast", _capture_broadcast)
 
     r = await client.post(
         f"/matches/{match_id}/messages",

@@ -38,6 +38,7 @@ from app.models.challenge import (
 )
 from app.models.user import User
 from app.schemas.challenges import ChallengeListResponse, ChallengeRead
+from app.services import safety
 from app.services.honor_system import record_match_result_for_honor
 
 # ---------------------------------------------------------------------------
@@ -93,6 +94,7 @@ async def create_challenge(
             detail="You cannot challenge yourself",
         )
     await _user_or_404(db, opponent_user_id)
+    await safety.ensure_contact_allowed(db, current_user_id, opponent_user_id)
 
     challenge = SportsChallenge(
         challenger_user_id=current_user_id,
@@ -155,6 +157,7 @@ async def accept_challenge(db: AsyncSession, *, current_user_id: UUID, challenge
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Cannot accept a {challenge.status} challenge",
         )
+    await safety.ensure_contact_allowed(db, current_user_id, challenge.challenger_user_id)
     challenge.status = "accepted"
     challenge.accepted_at = datetime.now(tz=timezone.utc)
     await db.flush()

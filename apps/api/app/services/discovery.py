@@ -20,7 +20,7 @@ from app.schemas.discovery import (
     RecordActionResponse,
     SportProfileSummary,
 )
-from app.services import compatibility, sport_preferences
+from app.services import compatibility, safety, sport_preferences
 
 _CURRENT_YEAR = datetime.now().year
 
@@ -279,6 +279,13 @@ async def record_action(
     action: str,
     sport: str,
 ) -> RecordActionResponse:
+    target = (await db.execute(select(User.id).where(User.id == target_user_id))).first()
+    if target is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # No interest, pass or match toward someone the actor may not contact;
+    # holds the pair lock so a concurrent block cannot slip in before commit.
+    await safety.ensure_contact_allowed(db, actor_id, target_user_id)
+
     # Upsert: update existing action or insert new one
     existing_stmt = select(DiscoveryAction).where(
         and_(

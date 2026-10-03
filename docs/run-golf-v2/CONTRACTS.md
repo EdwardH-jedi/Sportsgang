@@ -393,3 +393,76 @@ tested across DST boundaries, e.g. 2026-10-04 02:00 → 03:00).
 - Booking detail, the in-chat proposal card and My Plans render booking
   times with the Sydney helpers (`formatSydneyDateTime` /
   `formatSydneyRange`) and label them as Sydney time.
+
+## 8. Blocking and contact restriction (review R1)
+
+Source of truth: `app/services/safety.py` (`ensure_contact_allowed`,
+`is_contact_restricted`). A pair is **contact-restricted** while a block row
+exists in either direction, or while either account is inactive or missing.
+The block row stays directional (who blocked whom) but its effect is
+bilateral.
+
+### Denied while restricted
+
+Every denial is `403` with the single detail **"You can't contact this
+person."** — the same text for either block direction and for an inactive
+account, so the blocked person cannot tell who blocked whom. Nothing is
+written: no message, discovery action, match, booking, notification, rank or
+honor row.
+
+| Endpoint | Behaviour |
+|---|---|
+| `POST /matches/{id}/messages` | 403 |
+| `GET /matches/{id}/messages` | 403 — history is hidden from **both** people (see below) |
+| `GET /matches` | the match is omitted and `total` excludes it |
+| `POST /discovery/actions` (like, pass, save) | 403; an unknown target is 404 |
+| `POST /bookings` (new proposal) | 403 |
+| `POST /bookings/{id}/confirm` | 403 (accepting is new contact) |
+| `POST /challenges`, `POST /challenges/{id}/accept` | 403 |
+| WebSocket `/matches/{id}/ws` | closes with **4003** at admission |
+
+WebSocket admission now matches HTTP auth: an invalid token or a missing or
+inactive account closes with **1008** (HTTP 401); a non-participant or a
+restricted pair closes with **4003** (HTTP 403). A successful
+`POST /blocks/{id}` closes every open chat socket between the pair (4003),
+and every push re-checks the restriction, so a message that committed just
+before a block is stored but not pushed after it. Socket bookkeeping is
+in-process (one API process); the per-push check is what holds if that
+changes.
+
+A `proposal_received` push queued before a block is not delivered after it
+(`failed_reason = "contact_restricted"`, row kept).
+
+### Kept while restricted (history and commitments)
+
+- **Messages are retained unchanged** in the database and are not readable
+  through the API by either person while the restriction lasts. Unblocking
+  makes the same history readable again and allows new messages, proposals
+  and socket connections. Blocking never deletes messages, bookings, matches,
+  reports or rank/honor history.
+- **Existing bookings stay readable** to both people (`GET /bookings`,
+  `GET /bookings/{id}`, My Plans), including the partner's name, so a
+  commitment can still be identified and managed.
+- Withdrawals and outcomes on existing bookings remain allowed: `decline`,
+  `cancel` (and their notifications, so nobody travels to a cancelled
+  session), `complete`, `no-show`. Already-scheduled reminders for a booking
+  that stays confirmed are still sent.
+- Reporting a blocked person still works.
+- Account deletion is unchanged (hard delete; the pair's match, messages and
+  bookings cascade away).
+
+### Serialization
+
+Contact writes lock the pair's two `users` rows `FOR SHARE` (in id order)
+before reading `blocks`; block and unblock lock them `FOR NO KEY UPDATE`. A
+write that commits before a block is ordinary pre-block history; a write
+that waits on a block re-reads after it commits and is refused. Verified on
+PostgreSQL in `tests_integration/test_contact_restriction.py`; SQLite (unit
+suite) ignores the locking clause.
+
+### Client
+
+The app shows the API's detail text verbatim (e.g. a refused send keeps the
+draft and alerts "Could not send — You can't contact this person."). Explore
+blocking is a store-owned mutation (`stores/explore.ts`, review R4); the
+server remains the authority.

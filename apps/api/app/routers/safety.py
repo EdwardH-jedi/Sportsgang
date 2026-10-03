@@ -12,6 +12,7 @@ from app.schemas.safety import (
     ReportListResponse,
     ReportResponse,
 )
+from app.services import chat as chat_service
 from app.services import safety as safety_service
 
 router = APIRouter(tags=["safety"])
@@ -55,7 +56,10 @@ async def block_user(
     current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> BlockResponse:
-    return await safety_service.block_user(db, current_user.id, blocked_user_id)
+    block = await safety_service.block_user(db, current_user.id, blocked_user_id)
+    # Already-open chat sockets between the pair must not outlive the block.
+    await chat_service.close_pair_rooms(db, current_user.id, blocked_user_id)
+    return block
 
 
 @router.delete("/blocks/{blocked_user_id}", status_code=204)

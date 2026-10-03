@@ -1,12 +1,13 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import and_, or_, select
+from sqlalchemy import and_, case, exists, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.chat import Message
 from app.models.match import Match
 from app.models.profile import SportProfile, UserProfile
+from app.models.safety import Block
 from app.models.user import User
 from app.schemas.discovery import PartnerCardResponse, SportProfileSummary
 from app.schemas.matches import MatchListResponse, MatchResponse
@@ -40,12 +41,23 @@ async def list_matches(
     limit: int = 20,
     offset: int = 0,
 ) -> MatchListResponse:
+    # Active contacts only: a match whose pair is blocked (either direction)
+    # or whose partner account is inactive is not listed. The match and its
+    # messages are kept and reappear after an unblock.
+    partner_id = case((Match.user1_id == current_user_id, Match.user2_id), else_=Match.user1_id)
     participant_filter = and_(
         or_(
             Match.user1_id == current_user_id,
             Match.user2_id == current_user_id,
         ),
         Match.status == "active",
+        ~exists().where(
+            or_(
+                and_(Block.blocker_id == Match.user1_id, Block.blocked_id == Match.user2_id),
+                and_(Block.blocker_id == Match.user2_id, Block.blocked_id == Match.user1_id),
+            )
+        ),
+        exists().where(User.id == partner_id, User.is_active.is_(True)),
     )
 
     stmt = select(Match).where(participant_filter).order_by(Match.created_at.desc()).offset(offset).limit(limit)

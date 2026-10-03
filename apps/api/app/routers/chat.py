@@ -8,40 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.match import Match
+from app.models.user import User
 from app.routers.auth import get_current_user
 from app.schemas.chat import MessageListResponse, MessageResponse, SendMessageRequest
 from app.services import chat as chat_service
+from app.services import safety
 
 router = APIRouter(tags=["chat"])
-
-
-# ─── WebSocket connection manager ────────────────────────────────────────────
-
-
-class _ConnectionManager:
-    """Manages active WebSocket connections grouped by match room."""
-
-    def __init__(self) -> None:
-        self._rooms: dict[str, list[WebSocket]] = {}
-
-    async def connect(self, room: str, ws: WebSocket) -> None:
-        await ws.accept()
-        self._rooms.setdefault(room, []).append(ws)
-
-    def disconnect(self, room: str, ws: WebSocket) -> None:
-        conns = self._rooms.get(room, [])
-        if ws in conns:
-            conns.remove(ws)
-
-    async def broadcast(self, room: str, data: dict) -> None:
-        for ws in list(self._rooms.get(room, [])):
-            try:
-                await ws.send_json(data)
-            except Exception:
-                pass
-
-
-_manager = _ConnectionManager()
 
 
 # ─── HTTP endpoints ───────────────────────────────────────────────────────────
@@ -66,16 +39,7 @@ async def send_message(
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     msg = await chat_service.send_message(db, match_id, current_user.id, body.body)
-    await _manager.broadcast(
-        str(match_id),
-        {
-            "id": str(msg.id),
-            "matchId": str(msg.match_id),
-            "senderId": str(msg.sender_id),
-            "body": msg.body,
-            "createdAt": msg.created_at.isoformat(),
-        },
-    )
+    await chat_service.deliver_message(db, msg)
     return msg
 
 
@@ -91,11 +55,14 @@ async def ws_chat(
 ) -> None:
     """Real-time message stream for a match room.
 
-    Auth: pass ``?token=<jwt>`` as a query parameter.
-    The endpoint validates the token and confirms the caller is a match participant
-    before accepting the connection.  Once connected, the server pushes new
-    messages as JSON objects whenever the partner sends via the HTTP POST endpoint.
-    Clients may send any text frame to keep the connection alive; those frames are
+    Auth: pass ``?token=<jwt>`` as a query parameter. Admission matches the
+    HTTP endpoints: an invalid token or a missing/inactive account closes
+    with 1008 (HTTP 401); a non-participant, or a pair whose contact is
+    restricted (block in either direction), closes with 4003 (HTTP 403).
+    Blocking closes the pair's open sockets, and every push re-checks the
+    restriction. Once connected, the server pushes new messages as JSON
+    objects whenever the partner sends via the HTTP POST endpoint. Clients
+    may send any text frame to keep the connection alive; those frames are
     discarded.
     """
     try:
@@ -105,18 +72,30 @@ async def ws_chat(
         await websocket.close(code=1008)
         return
 
-    m = (await db.execute(select(Match).where(Match.id == match_id))).scalar_one_or_none()
-    if m is None or (m.user1_id != user_id and m.user2_id != user_id):
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if user is None or not user.is_active:
         await websocket.accept()
-        await websocket.close(code=4003)
+        await websocket.close(code=1008)
         return
 
+    m = (await db.execute(select(Match).where(Match.id == match_id))).scalar_one_or_none()
+    if (
+        m is None
+        or (m.user1_id != user_id and m.user2_id != user_id)
+        or await safety.is_contact_restricted(db, user_id, chat_service.partner_of(m, user_id))
+    ):
+        await websocket.accept()
+        await websocket.close(code=chat_service.WS_CLOSE_FORBIDDEN)
+        return
+    # Don't hold this session's transaction open for the socket's lifetime.
+    await db.rollback()
+
     room = str(match_id)
-    await _manager.connect(room, websocket)
+    await chat_service.connections.connect(room, websocket)
     try:
         while True:
             await websocket.receive_text()  # discard keep-alive pings from client
     except WebSocketDisconnect:
         pass
     finally:
-        _manager.disconnect(room, websocket)
+        chat_service.connections.disconnect(room, websocket)

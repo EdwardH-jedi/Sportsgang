@@ -13,6 +13,7 @@ from app.models.venue import Venue
 from app.schemas.bookings import BookingListResponse, BookingResponse, CreateBookingRequest
 from app.services import notifications as notif_service
 from app.services import rank as rank_service
+from app.services import safety
 from app.services.matches import _build_partner_card
 from app.services.venues import _to_response as _venue_to_response
 
@@ -115,6 +116,8 @@ async def create_booking(
         )
 
     partner_id = m.user2_id if m.user1_id == current_user_id else m.user1_id
+    # A new proposal is new contact: refused while the pair is restricted.
+    await safety.ensure_contact_allowed(db, current_user_id, partner_id)
 
     if req.starts_at >= req.ends_at:
         raise HTTPException(
@@ -249,6 +252,12 @@ async def transition_booking(
     b = await _get_booking_or_404(db, booking_id)
     await _assert_booking_participant(b, current_user_id)
     _check_transition(b, new_status, current_user_id)
+    # Existing bookings stay readable and can still be declined, cancelled,
+    # completed or marked no-show after a block; accepting a proposal is new
+    # contact and is refused. Checked before any status, rank or notification write.
+    if new_status == "confirmed":
+        other_id = b.partner_id if b.proposer_id == current_user_id else b.proposer_id
+        await safety.ensure_contact_allowed(db, current_user_id, other_id)
     previous_status = b.status
     b.status = new_status
 

@@ -28,6 +28,7 @@ from app.schemas.notifications import (
     PushTokenResponse,
     RegisterPushTokenRequest,
 )
+from app.services import safety
 
 # Map booking status transition → (title, body template)
 _NOTIFICATION_COPY: dict[str, tuple[str, str]] = {
@@ -184,6 +185,16 @@ async def process_pending_notifications(
     failed = 0
 
     for event in events:
+        # A proposal notice queued before a block is not pushed after it (the
+        # proposal itself stays readable in My Plans). Status notices about an
+        # existing booking — confirmed, declined, cancelled, reminder — still go.
+        if event.notification_type == "proposal_received" and event.booking_id is not None:
+            booking = (await db.execute(select(Booking).where(Booking.id == event.booking_id))).scalar_one_or_none()
+            if booking is not None and await safety.is_contact_restricted(db, booking.proposer_id, booking.partner_id):
+                event.failed_reason = "contact_restricted"
+                failed += 1
+                continue
+
         # Re-resolve push token in case user re-registered since scheduling
         fresh_token = await _get_latest_push_token(db, event.user_id)
         token = fresh_token or event.push_token
