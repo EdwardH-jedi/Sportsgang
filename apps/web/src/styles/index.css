@@ -1,43 +1,51 @@
-/* Tailwind v4. `source(none)` disables auto-discovery so the draft folder
+/* Tailwind v4. `source(none)` disables auto-discovery so the reference export
    (`apps/web/Protin Landing Page Design/`) is never scanned for class names.
    We add only this app's source tree. */
 @import 'tailwindcss' source(none);
 @source '../**/*.{ts,tsx,html}';
 
-/* ---- Design tokens ---------------------------------------------------- */
+/* ---- Design tokens ----------------------------------------------------
+   The SportsGang mobile app's outdoor palette (apps/mobile/src/theme).
+   Lime is a fill for primary actions only, always with dark-green text:
+   lime text on off-white fails contrast. */
 
-:root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --muted: #475569;
-  --muted-2: #64748b;
-  --brand: #2563eb;
-  --brand-2: #6366f1;
-  --brand-3: #8b5cf6;
-  --hero-base: #050a1c;
-  --hero-mid: #0b1733;
-  --hero-edge: #1e1b4b;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-brand: var(--brand);
-  --color-brand-2: var(--brand-2);
-  --color-brand-3: var(--brand-3);
+@theme {
+  --color-canvas: #f5f4ee;
+  --color-panel: #ecebe3;
+  --color-line: #d9dacf;
+  --color-ink: #13291c;
+  --color-ink-2: #4b5b50;
+  --color-forest: #1e5b3b;
+  --color-forest-dark: #164530;
+  --color-forest-darkest: #0d2a1b;
+  --color-moss: #2b7a4b;
+  --color-lime: #c5ee5b;
+  --color-lime-pressed: #b2dd45;
+  --color-warn: #8a5300;
 }
 
 /* ---- Base ------------------------------------------------------------- */
 
 @layer base {
+  html {
+    /* Anchor jumps land just below the sticky 4rem header; each section's
+       own top padding gives the breathing room. */
+    scroll-padding-top: 4rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   html,
   body {
-    background: var(--background);
-    color: var(--foreground);
+    background: var(--color-canvas);
+    color: var(--color-ink);
     font-family:
-      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial,
-      'Noto Sans', sans-serif;
+      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans',
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -45,56 +53,76 @@
   * {
     box-sizing: border-box;
   }
+
+  :focus-visible {
+    outline: 3px solid var(--color-forest);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-lime);
+  }
 }
 
-/* ---- Reveal-target initial state ------------------------------------- */
+/* ---- Reveal-target initial state --------------------------------------
+   Only hidden once our inline script has marked the document (`.js`), so a
+   page without JavaScript shows everything. The reveal hook also removes the
+   attribute after its animation, and again on a timeout if an animation never
+   completes; reduced motion never hides anything. */
 
-/* Elements marked with data-reveal start hidden so anime.js can fade them
-   in from below. When the user has prefers-reduced-motion, the hook skips
-   the animation and removes this attribute synchronously, so the rule
-   below stops applying and content is fully visible. */
-[data-reveal] {
+.js [data-reveal] {
   opacity: 0;
-  transform: translateY(24px);
-  will-change: opacity, transform;
+  transform: translateY(20px);
 }
 
-/* If JS never runs (no-JS, broken bundle), force content visible after a
-   short delay so the page is never permanently invisible. */
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
+  .js [data-reveal] {
     opacity: 1;
     transform: none;
   }
 }
 
-/* ---- Decorative background utilities --------------------------------- */
+@media print {
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
 
-.bg-hero {
+/* ---- Decorative backgrounds (original CSS, no image assets) ------------ */
+
+/* Running: track lanes. */
+.bg-lanes {
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 46px,
+    rgba(255, 255, 255, 0.09) 46px 48px
+  );
+}
+
+/* Golf: soft contour rings, like a green on a course map. */
+.bg-contours {
+  background-image:
+    repeating-radial-gradient(
+      circle at 82% 18%,
+      transparent 0 26px,
+      rgba(30, 91, 59, 0.09) 26px 27px
+    ),
+    repeating-radial-gradient(
+      circle at 8% 92%,
+      transparent 0 34px,
+      rgba(30, 91, 59, 0.07) 34px 35px
+    );
+}
+
+.hero-glow {
   background:
-    radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.18), transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(99, 102, 241, 0.18), transparent 50%),
-    linear-gradient(135deg, var(--hero-base) 0%, var(--hero-mid) 50%, var(--hero-edge) 100%);
+    radial-gradient(60% 70% at 85% 10%, rgba(197, 238, 91, 0.16), transparent 70%),
+    radial-gradient(50% 60% at 0% 100%, rgba(43, 122, 75, 0.45), transparent 70%),
+    linear-gradient(160deg, #0d2a1b 0%, #164530 55%, #1e5b3b 100%);
 }
 
-.bg-final-cta {
-  background:
-    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.18), transparent 50%),
-    radial-gradient(circle at 80% 30%, rgba(147, 51, 234, 0.18), transparent 50%),
-    linear-gradient(135deg, #050a1c 0%, #1e1b4b 55%, #4c1d95 100%);
-}
-
-.text-gradient-brand {
-  background: linear-gradient(90deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.btn-gradient {
-  background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
-}
-
-.btn-gradient:hover {
-  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

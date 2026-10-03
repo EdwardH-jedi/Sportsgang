@@ -1,84 +1,49 @@
-import { useState } from 'react';
-import { Modal } from '@/components/Modal';
-import {
-  ContactContent,
-  PrivacyContent,
-  TermsContent,
-} from '@/content/legal';
+import { APP_STORE_URL, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '@/lib/links';
+import { Wordmark } from './SiteHeader';
+import { ExternalLink } from './ui';
 
-type LegalKey = 'privacy' | 'terms' | 'contact';
-
-const LEGAL_TITLES: Record<LegalKey, string> = {
-  privacy: 'Privacy Policy (draft)',
-  terms: 'Terms of Service (draft)',
-  contact: 'Contact Protin',
-};
+const LINKS = [
+  { href: PRIVACY_URL, label: 'Privacy' },
+  { href: TERMS_URL, label: 'Terms' },
+  { href: SUPPORT_URL, label: 'Support' },
+  { href: APP_STORE_URL, label: 'App Store' },
+];
 
 /**
- * Site footer. The Privacy / Terms / Contact links open accessible
- * dialogs instead of the previous dead `#` anchors. This avoids adding
- * a router (heavy for three small pages) but keeps the surfaces real.
+ * Privacy, Terms and Support go to the URLs recorded for the app
+ * (docs/release/APP_STORE_METADATA.md §8); this site does not carry its own
+ * policy text or contact addresses.
  */
 export function SiteFooter() {
-  const [open, setOpen] = useState<LegalKey | null>(null);
-
-  const renderModalContent = () => {
-    switch (open) {
-      case 'privacy':
-        return <PrivacyContent />;
-      case 'terms':
-        return <TermsContent />;
-      case 'contact':
-        return <ContactContent />;
-      default:
-        return null;
-    }
-  };
-
   return (
-    <footer className="relative z-10 mt-24 border-t border-white/10 py-8">
-      <div className="container mx-auto px-4 text-center text-sm text-slate-400 sm:px-6 lg:px-8">
-        <p>
-          © {new Date().getFullYear()} Protin. Building the future of fitness
-          connections.
-        </p>
-        <nav
-          aria-label="Legal and contact"
-          className="mt-2 flex items-center justify-center gap-2 text-xs"
-        >
-          <button
-            type="button"
-            onClick={() => setOpen('privacy')}
-            className="rounded px-1.5 py-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            Privacy
-          </button>
-          <span aria-hidden="true">·</span>
-          <button
-            type="button"
-            onClick={() => setOpen('terms')}
-            className="rounded px-1.5 py-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            Terms
-          </button>
-          <span aria-hidden="true">·</span>
-          <button
-            type="button"
-            onClick={() => setOpen('contact')}
-            className="rounded px-1.5 py-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            Contact
-          </button>
+    <footer className="on-dark bg-forest-darkest text-white">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <Wordmark className="text-3xl" />
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/75">
+            Running and golf partners in Sydney. Show interest, chat, and plan the session.
+          </p>
+        </div>
+        <nav aria-label="Footer">
+          <ul className="flex flex-wrap gap-x-2 gap-y-1">
+            {LINKS.map((link) => (
+              <li key={link.label}>
+                <ExternalLink
+                  href={link.href}
+                  className="min-h-11 rounded-md px-2 text-sm font-medium text-white/85 transition hover:text-white"
+                >
+                  {link.label}
+                </ExternalLink>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
-
-      <Modal
-        open={open !== null}
-        title={open ? LEGAL_TITLES[open] : ''}
-        onClose={() => setOpen(null)}
-      >
-        {renderModalContent()}
-      </Modal>
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-white/65 sm:px-6">
+          © {new Date().getFullYear()} SportsGang.
+        </p>
+      </div>
     </footer>
   );
 }

@@ -1,46 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-AU">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#0d2a1b" />
+    <!-- Resized from apps/mobile/assets/icon.png, which matches the App Store listing icon. -->
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="color-scheme" content="light" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="robots" content="index, follow" />
 
-    <title>Protin — Find your next workout partner</title>
+    <title>SportsGang — Running and golf partners in Sydney</title>
     <meta
       name="description"
-      content="Protin helps you find workout partners, sports partners, group events, and real-life fitness communities — gym, golf, running, badminton, tennis, and more."
+      content="SportsGang helps Sydney runners and golfers find people who suit their pace or their game, agree a time in chat, and keep every plan in one place. For iPhone."
     />
 
-    <!-- Open Graph -->
+    <!-- Open Graph. og:url, og:image and a canonical link are intentionally
+         absent: the production domain and a share image are not decided
+         (docs/run-golf-v2/web-refresh/RELEASE_HANDOFF.md). -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Protin" />
-    <meta property="og:title" content="Protin — Find your next workout partner" />
+    <meta property="og:site_name" content="SportsGang" />
+    <meta property="og:locale" content="en_AU" />
+    <meta property="og:title" content="SportsGang — Running and golf partners in Sydney" />
     <meta
       property="og:description"
-      content="Protin connects people through fitness, sports, and real-life activity — gym sessions, golf rounds, running crews, and group events."
+      content="Find runners at your pace and golfers who suit your game in Sydney. Show interest, chat, propose a session, and see it in My Plans."
     />
-    <!-- TODO(launch): set og:url + og:image once the production domain and
-         hero share image are finalised. og:image must be at least 1200x630
-         and use absolute https URLs. -->
 
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Protin — Find your next workout partner" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SportsGang — Running and golf partners in Sydney" />
     <meta
       name="twitter:description"
-      content="Workout partner matching, sports rooms, group events, and a real-life fitness community."
+      content="Find runners at your pace and golfers who suit your game in Sydney."
     />
-    <!-- TODO(launch): set twitter:image once the share image is finalised. -->
+
+    <!-- Marks that scripts run, so reveal animations may start content
+         hidden; without JavaScript every section stays visible. -->
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
 
     <style>
       html,
       body {
-        height: 100%;
         margin: 0;
-        background: #ffffff;
+        background: #f5f4ee;
       }
       #root {
         min-height: 100%;
@@ -50,10 +56,16 @@
   <body>
     <div id="root"></div>
     <noscript>
-      <p style="padding:24px;font-family:system-ui,sans-serif;text-align:center">
-        Protin's marketing site needs JavaScript enabled. Please enable
-        JavaScript or contact <a href="mailto:hello@protin.app">hello@protin.app</a>.
-      </p>
+      <div style="padding:24px;font-family:system-ui,sans-serif;max-width:40rem;margin:0 auto;color:#13291c">
+        <h1 style="font-size:28px">SportsGang — running and golf partners in Sydney</h1>
+        <p>This page needs JavaScript to show its full content.</p>
+        <p>
+          <a href="https://apps.apple.com/au/app/sportsgang/id6767027447">SportsGang on the App Store</a>
+          · <a href="https://sportgang.netlify.app/privacy/">Privacy</a>
+          · <a href="https://sportgang.netlify.app/terms/">Terms</a>
+          · <a href="https://sportgang.netlify.app/support/">Support</a>
+        </p>
+      </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
