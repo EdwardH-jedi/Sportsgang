@@ -249,14 +249,15 @@ stated otherwise, start on iPhone 16e. Profile › Log out has no confirm dialog
   worktree's `.qa/config.env`; no secrets). `qa:up`, `qa:seed`, `qa:stop-api`,
   `qa:restart`, `qa:down` and `qa:reset` run only from the owner and refuse
   from any other worktree or a regenerated config. `qa:status` and `qa:open`
-  are read-only.
+  change nothing in the stack (the first run with an older `.qa/config.env`
+  only adds the missing `QA_PROJECT=sportsgang-qa` line to it).
 - Before signalling the API or Metro, the launcher checks the recorded pid is
   still the same process (process group, start time, command line, cwd). If
   not — a reused pid or another program — it signals nothing; `down`,
   `restart`, `stop-api` and `reset` refuse and change nothing.
 - **Adopting the stack that is already running** (started by the previous
   launcher, no owner record yet): after this launcher is in the home-test
-  worktree, run `npm run qa:status` (read-only; ownership shows *adoptable*
+  worktree, run `npm run qa:status` (no stack change; ownership shows *adoptable*
   only if the containers were created from this worktree's compose file with
   this config's DB password), then `npm run qa:up -- --no-open --no-seed`.
   That records ownership and upgrades the running API/Metro records after

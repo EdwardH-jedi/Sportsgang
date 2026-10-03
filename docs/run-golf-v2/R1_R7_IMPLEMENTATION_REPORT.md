@@ -181,6 +181,13 @@ unchanged.
 - Decision rules: all UTC → keep default; one other zone throughout → set
   `DB_NAIVE_TIMEZONE`; mixed/unknown → keep UTC for new writes and only then
   consider the documented reversible `timestamptz` migration, tested on a copy.
+- **Consequence if the assumption is wrong**: under the default every legacy
+  audit value is sent as UTC. If production history was written under
+  Sydney, those values show 10–11 h off on every device (Sydney phones, which
+  previously read offset-free values as device-local and happened to be
+  right, get worse) until `DB_NAIVE_TIMEZONE=Australia/Sydney` is set.
+  **Deployment rule: run the read-only verification before deploying R6 and
+  set `DB_NAIVE_TIMEZONE` to match before the API restarts on it.**
 - Tools that bypass the API (psql, `apps/api/scripts/*` seeders) do not get the
   pin.
 

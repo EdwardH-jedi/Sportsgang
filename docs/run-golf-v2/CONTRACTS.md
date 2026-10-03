@@ -531,6 +531,16 @@ its historical `TimeZone` is **not verifiable from the repository** and was
 not inspected (no remote access was used). Until it is verified, the UTC
 reading of production history is an assumption.
 
+**If the UTC assumption is wrong.** With the default, every existing naive
+audit value is now sent as a UTC instant. If production's history was in fact
+written under `Australia/Sydney`, those values will be shown 10–11 hours off
+on **every** device — Sydney phones, which previously read offset-free values
+as device-local time and so happened to be right, get worse — until
+`DB_NAIVE_TIMEZONE=Australia/Sydney` is set. **Deployment rule: run the
+read-only verification below before deploying this change, and set
+`DB_NAIVE_TIMEZONE` to match before the API restarts on it.** New writes then
+follow the same zone, so history and new rows stay consistent.
+
 Read-only verification on the production database (no writes):
 
 ```sql
