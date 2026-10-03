@@ -7,7 +7,7 @@ export function AppStoreButton({ className = '', compact = false }: { className?
     <a
       href={APP_STORE_URL}
       className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-lime px-6 py-2 text-center font-semibold leading-tight text-ink shadow-[0_8px_24px_-12px_rgba(13,42,27,0.6)] transition hover:bg-lime-pressed ${
-        compact ? 'min-h-10 px-4 text-sm' : 'text-base'
+        compact ? 'min-h-10 px-4 text-sm' : 'text-[15px] sm:text-base'
       } ${className}`}
     >
       <Phone className={compact ? 'h-4 w-4' : 'h-5 w-5'} />
