@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+from app.core.time import AuditInstant
 
 # Reason vocab keeps legacy V1 values and adds V1.1 entries so existing
 # callers (Chat → user report) and new event-side flows both work.
@@ -48,7 +49,7 @@ class ReportResponse(BaseModel):
     reason: str
     context: str | None = None
     status: str = "submitted"
-    created_at: datetime
+    created_at: AuditInstant
 
     model_config = {"from_attributes": True}
 
@@ -57,7 +58,7 @@ class BlockResponse(BaseModel):
     id: UUID
     blocker_id: UUID
     blocked_id: UUID
-    created_at: datetime
+    created_at: AuditInstant
     # Filled by GET /blocks so the list can show a name instead of an id;
     # null when the blocked user never created a profile.
     blocked_display_name: str | None = None

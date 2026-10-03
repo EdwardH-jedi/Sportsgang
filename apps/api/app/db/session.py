@@ -11,6 +11,9 @@ engine = create_async_engine(
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,
+    # Pinned session TimeZone: naive audit `now()` defaults are wall time in
+    # DB_NAIVE_TIMEZONE whatever the server's default (CONTRACTS.md §9).
+    connect_args=_settings.db_connect_args,
 )
 
 AsyncSessionLocal = async_sessionmaker(

@@ -17,7 +17,10 @@ export type UUID = string;
  * ISO 8601 datetime string, always in UTC.
  * Example: "2025-06-15T09:00:00Z"
  *
- * All timestamps crossing the API boundary use this format.
+ * All timestamps crossing the API boundary use this format, including the
+ * audit timestamps that the database stores without a zone
+ * (docs/run-golf-v2/CONTRACTS.md §9). Parse with the mobile
+ * `parseInstant` helper, never as device-local time.
  * Localisation for display is the mobile app's responsibility.
  */
 export type ISODateString = string;

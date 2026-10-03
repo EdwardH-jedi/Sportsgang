@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+from app.core.time import AuditInstant
 
 
 class RegisterPushTokenRequest(BaseModel):
@@ -17,7 +18,7 @@ class PushTokenResponse(BaseModel):
     user_id: UUID
     token: str
     platform: str
-    created_at: datetime
+    created_at: AuditInstant
 
     model_config = {"from_attributes": True}
 

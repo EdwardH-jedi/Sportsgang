@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+from app.core.time import AuditInstant
 
 
 class SendMessageRequest(BaseModel):
@@ -15,7 +16,7 @@ class MessageResponse(BaseModel):
     match_id: UUID
     sender_id: UUID
     body: str
-    created_at: datetime
+    created_at: AuditInstant
 
     model_config = {"from_attributes": True}
 

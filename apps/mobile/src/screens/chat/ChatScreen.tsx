@@ -23,7 +23,7 @@ import {
   type SessionProposalCardData,
 } from '../../components/SessionProposalCard';
 import { api, BASE_URL } from '../../lib/api';
-import { dedupeMessagesById } from '../../lib/messages';
+import { compareTimeline, dedupeMessagesById } from '../../lib/messages';
 import { useAuthStore } from '../../stores/auth';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { ChatScreenProps } from '../../navigation/types';
@@ -326,9 +326,10 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
 
   // Merged chronological timeline. Proposal cards land between the text
   // bubbles surrounding their createdAt, so the chat reads as a single
-  // story. Stable: messages and proposals are dropped in by createdAt
-  // (ascending) with messages winning ties so a text echo never jumps
-  // ahead of the booking event it followed.
+  // story. Stable: messages and proposals are ordered by their createdAt
+  // instant (not the string), messages winning ties so a text echo never
+  // jumps ahead of the booking event it followed, then by id
+  // (lib/messages.ts compareTimeline, CONTRACTS.md §9).
   const timeline = useMemo<TimelineEntry[]>(() => {
     const entries: TimelineEntry[] = [
       ...messages.map<TimelineEntry>((m) => ({
@@ -342,12 +343,12 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         proposal: p,
       })),
     ];
-    entries.sort((a, b) => {
-      if (a.createdAt === b.createdAt) {
-        return a.kind === 'message' ? -1 : 1;
-      }
-      return a.createdAt < b.createdAt ? -1 : 1;
+    const key = (e: TimelineEntry) => ({
+      kind: e.kind,
+      createdAt: e.createdAt,
+      id: e.kind === 'message' ? e.message.id : e.proposal.id,
     });
+    entries.sort((a, b) => compareTimeline(key(a), key(b)));
     return entries;
   }, [messages, proposals]);
 

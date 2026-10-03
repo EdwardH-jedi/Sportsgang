@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.core.time import AuditInstant
+
 
 class GoogleCalendarConnectRequest(BaseModel):
     """Exchange code returned by Google OAuth for stored tokens."""
@@ -16,7 +18,7 @@ class GoogleCalendarConnectRequest(BaseModel):
 class GoogleCalendarStatus(BaseModel):
     connected: bool
     calendar_id: str | None = None
-    connected_at: datetime | None = None
+    connected_at: AuditInstant | None = None
     # ``configured`` reports whether the server has Google OAuth credentials
     # set in the environment. Mobile uses it to hide the Connect button when
     # the integration is unavailable in a given build, so tapping does not

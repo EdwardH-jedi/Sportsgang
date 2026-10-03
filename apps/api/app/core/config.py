@@ -1,5 +1,7 @@
 from functools import lru_cache
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -99,6 +101,29 @@ class Settings(BaseSettings):
     #   so production never gets accidental local-only behaviour.
     tournaments_enabled: bool = False
 
+    # Zone of the naive audit timestamps (docs/run-golf-v2/CONTRACTS.md §9).
+    # Nine audit columns (messages.created_at, bookings.created_at/updated_at,
+    # blocks.created_at, …) are `timestamp without time zone` filled by
+    # PostgreSQL `now()`, i.e. wall time in the writing session's TimeZone.
+    # Every API and Alembic session is pinned to this zone, and the API reads
+    # naive values back in it. Default UTC (the server default of the
+    # postgres images used locally, in CI and in staging). Change it only
+    # after verifying the deployed database's historical TimeZone; it must
+    # stay the zone every existing row was written in.
+    db_naive_timezone: str = "UTC"
+
+    @field_validator("db_naive_timezone")
+    @classmethod
+    def _known_zone(cls, value: str) -> str:
+        # UTC needs no zone database; any other zone must resolve on this host
+        # (system zoneinfo), or the API refuses to start.
+        if value != "UTC":
+            try:
+                ZoneInfo(value)
+            except (ZoneInfoNotFoundError, ValueError) as exc:
+                raise ValueError(f"DB_NAIVE_TIMEZONE={value!r} is not a time zone known to this host") from exc
+        return value
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -131,6 +156,11 @@ class Settings(BaseSettings):
         if not url.startswith("postgresql+asyncpg://"):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
         return url
+
+    @property
+    def db_connect_args(self) -> dict:
+        """asyncpg arguments every engine uses: the pinned session TimeZone."""
+        return {"server_settings": {"timezone": self.db_naive_timezone}}
 
 
 @lru_cache

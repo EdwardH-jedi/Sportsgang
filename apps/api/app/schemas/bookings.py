@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.time import AuditInstant
 from app.schemas.discovery import PartnerCardResponse
 from app.schemas.venues import VenueResponse
 
@@ -49,8 +50,9 @@ class BookingResponse(BaseModel):
     location: str | None
     notes: str | None
     status: str
-    created_at: datetime
-    updated_at: datetime
+    # Audit instants (CONTRACTS.md §9); starts_at/ends_at follow §7.
+    created_at: AuditInstant
+    updated_at: AuditInstant
     partner: PartnerCardResponse
     venue: VenueResponse | None = None
 

@@ -466,3 +466,99 @@ The app shows the API's detail text verbatim (e.g. a refused send keeps the
 draft and alerts "Could not send — You can't contact this person."). Explore
 blocking is a store-owned mutation (`stores/explore.ts`, review R4); the
 server remains the authority.
+
+## 9. Audit timestamps (review R6)
+
+Appointment bounds (`starts_at`/`ends_at`) are aware columns governed by §7
+and are unchanged here. This section covers **audit** timestamps — when
+something was created or changed.
+
+### Storage (unchanged columns)
+
+Nine audit columns are `timestamp without time zone` with a `now()` default:
+`messages.created_at`, `bookings.created_at`, `bookings.updated_at`,
+`blocks.created_at`, `reports.created_at`, `notification_events.created_at`,
+`push_tokens.created_at`, `calendar_booking_syncs.created_at`,
+`google_calendar_tokens.connected_at` (checked in `information_schema` on a
+fresh 0016 database; every other timestamp column is `timestamptz`). `now()`
+stores wall time in the **writing session's** `TimeZone`, so the same
+instant is stored ten hours apart under UTC and Sydney sessions. No column
+type or row is changed by this repair.
+
+### Future writes
+
+Every API and Alembic connection pins the session `TimeZone` to
+`DB_NAIVE_TIMEZONE` (`Settings.db_connect_args`, asyncpg `server_settings`),
+default **UTC**. New naive values are therefore wall time in that zone
+whatever the server's or database's default zone — verified on PostgreSQL
+with a database whose default is `Australia/Sydney`. Tools that bypass the
+API (psql, the local seed scripts under `apps/api/scripts`) do not get the
+pin; they must run with that zone or not write these columns.
+
+### On the wire
+
+Every audit field is an aware UTC instant with an explicit offset —
+`"2026-10-02T15:30:00Z"` — as `ISODateString` in shared-types already
+promised: `MessageResponse.created_at` (HTTP and the WebSocket frame's
+`createdAt`), `MatchResponse.created_at` / `last_message_at`,
+`BookingResponse.created_at` / `updated_at`, `BlockResponse.created_at`,
+`ReportResponse.created_at`, `PushTokenResponse.created_at`,
+`GoogleCalendarStatus.connected_at` (`app/core/time.py`, `AuditInstant`).
+Naive values are read in `DB_NAIVE_TIMEZONE`; aware values keep their
+instant; null stays null. For a non-UTC zone a repeated wall time is the
+earlier occurrence and a skipped one uses the offset before the transition.
+
+### Client
+
+`apps/mobile/src/lib/instant.ts` (`parseInstant`) reads timestamps as
+instants. An offset-free value can only come from an API older than this
+contract and is read as UTC (that API's default), never in the device's zone.
+Chat previews and blocked dates show the instant in the device's zone; the
+chat timeline orders messages and proposals by instant, then messages before
+proposals, then id (`compareTimeline`), so equal instants and different
+offset spellings sort the same every time.
+
+### Legacy interpretation and provenance
+
+Existing naive rows are read as wall time in `DB_NAIVE_TIMEZONE` (UTC
+unless configured). Evidence for UTC in the repository: local, CI and the
+staging compose stack use `postgres:16-alpine` without a `TZ`/`timezone`
+override (its server default is `UTC`, confirmed on the disposable
+verification database: `TimeZone = UTC`, source `configuration file`); no
+code, migration or deployment file sets a session or database zone.
+Production is Fly managed Postgres (`fly postgres create`, region `syd`);
+its historical `TimeZone` is **not verifiable from the repository** and was
+not inspected (no remote access was used). Until it is verified, the UTC
+reading of production history is an assumption.
+
+Read-only verification on the production database (no writes):
+
+```sql
+SHOW timezone;
+SELECT setting, source, sourcefile FROM pg_settings WHERE name = 'TimeZone';
+SELECT coalesce(d.datname, '*') AS db, coalesce(r.rolname, '*') AS role, s.setconfig
+  FROM pg_db_role_setting s
+  LEFT JOIN pg_database d ON d.oid = s.setdatabase
+  LEFT JOIN pg_roles r ON r.oid = s.setrole;
+-- Per-period evidence: a proposal's naive bookings.created_at and its
+-- proposal_received notification's aware scheduled_at (timestamptz, set from
+-- UTC in Python) are written by the same request, so their difference is
+-- the session zone's offset at the time of that write (0 h = UTC).
+SELECT date_trunc('month', n.scheduled_at) AS month,
+       round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'UTC')) / 3600) AS offset_hours,
+       count(*)
+  FROM bookings b
+  JOIN notification_events n ON n.booking_id = b.id AND n.notification_type = 'proposal_received'
+ GROUP BY 1, 2 ORDER BY 1, 2;
+```
+
+- All UTC (and no per-role/database override ever applied) → keep the
+  default; the contract above is exact for history and future writes.
+- One other zone `Z` throughout → deploy with `DB_NAIVE_TIMEZONE=Z`; history
+  and new writes then share that zone and are read back correctly.
+- Mixed or unknown → keep UTC for new writes and treat earlier rows as
+  approximate; an explicit, reversible column migration
+  (`ALTER COLUMN … TYPE timestamptz USING col AT TIME ZONE '<zone>'`, with
+  the inverse `… TYPE timestamp USING col AT TIME ZONE '<zone>'`) is only
+  justified once the zone of each period is known, and must be tested on a
+  copy first.

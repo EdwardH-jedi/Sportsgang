@@ -43,7 +43,8 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_migrations_online() -> None:
-    connectable = create_async_engine(settings.async_postgres_url)
+    # Same pinned session TimeZone as the API (CONTRACTS.md §9).
+    connectable = create_async_engine(settings.async_postgres_url, connect_args=settings.db_connect_args)
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await connectable.dispose()

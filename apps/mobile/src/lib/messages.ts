@@ -9,6 +9,8 @@
  * saw before this fix.
  */
 
+import { parseInstant } from './instant';
+
 interface IdLike {
   id: string;
 }
@@ -57,14 +59,16 @@ export function previewText(raw: string | null | undefined): string {
  * - Same calendar day as `now` → time only (locale-formatted, e.g. `9:30 AM`).
  * - Older → short month + day (e.g. `May 6`).
  * - null / undefined / unparseable → '' so callers can skip rendering.
+ * - The value is read as an instant (lib/instant.ts), then shown in the
+ *   device's zone.
  */
 export function formatPreviewTimestamp(
   iso: string | null | undefined,
   now: Date = new Date()
 ): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
+  const ms = parseInstant(iso);
+  if (Number.isNaN(ms)) return '';
+  const d = new Date(ms);
 
   const sameDay =
     d.getFullYear() === now.getFullYear() &&
@@ -78,4 +82,25 @@ export function formatPreviewTimestamp(
     });
   }
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+// ─── Chat timeline order ─────────────────────────────────────────────────────
+
+export interface TimelineKey {
+  kind: 'message' | 'proposal';
+  createdAt: string;
+  id: string;
+}
+
+/**
+ * Chronological order for the merged chat timeline (messages + session
+ * proposals): by instant, not by string — "…Z" and "+11:00" spellings of one
+ * instant are equal — then messages before proposals, then id, so equal
+ * instants always land in the same order.
+ */
+export function compareTimeline(a: TimelineKey, b: TimelineKey): number {
+  const byTime = (parseInstant(a.createdAt) || 0) - (parseInstant(b.createdAt) || 0);
+  if (byTime !== 0) return byTime;
+  if (a.kind !== b.kind) return a.kind === 'message' ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }

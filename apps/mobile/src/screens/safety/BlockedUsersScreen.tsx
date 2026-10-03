@@ -15,6 +15,7 @@ import {
   listBlockedUsers,
   unblockUser,
 } from '../../lib/safety';
+import { parseInstant } from '../../lib/instant';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { BlockedUsersScreenProps } from '../../navigation/types';
 
@@ -205,9 +206,9 @@ function BlockRow({ block, isUnblocking, error, onUnblock }: BlockRowProps) {
 function formatBlockedDate(iso?: string): string | null {
   if (!iso) return null;
   try {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return null;
-    return `Blocked ${d.toLocaleDateString(undefined, {
+    const ms = parseInstant(iso);
+    if (Number.isNaN(ms)) return null;
+    return `Blocked ${new Date(ms).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
