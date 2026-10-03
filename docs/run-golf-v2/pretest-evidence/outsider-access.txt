@@ -1,0 +1,8 @@
+401  deleted account token -> GET /auth/me
+200  participant Alice reads Alice-Bob chat
+403  outsider Cara reads Alice-Bob chat
+200  participant Alice reads pending booking
+404  outsider Cara reads pending booking
+404  outsider Cara confirms pending booking
+404  outsider Dan cancels confirmed booking
+403  outsider Cara posts in Alice-Bob chat (valid body)

@@ -9,10 +9,10 @@ does not exist yet and is not written by this task.
 | Item | Value |
 | --- | --- |
 | Status | in progress |
-| Phase | C — native checks in progress (picker a11y fixed + verified natively) |
+| Phase | C — native checks: picker, moderation, network done; iPhone 17 Pro layout next |
 | Branch / worktree | `chore/run-golf-v2-home-test-ready` in `.claude/worktrees/run-golf-v2-home-test` |
 | Base | `origin/fix/run-golf-v2-review-fixes` = `07893825ffa4250a400608f81605d474ad62558b` (last app-source commit `a599c4f`) |
-| Next action | native moderation (report/block/unblock/delete), offline/retry, iPhone 17 Pro layout; then runbook, PRETEST_VERIFICATION.md, final checks, push |
+| Next action | iPhone 17 Pro layout pass; then runbook, PRETEST_VERIFICATION.md, final checks, push |
 
 ## 1. Phase A — starting state (2026-10-03 17:56 AEST)
 
@@ -62,4 +62,21 @@ unverified.
   Found: the partner-detail button read "Report or block" but only opened the report form (no block
   path from Explore). Fixed: separate "Report" and confirmed "Block" (`lib/safety.blockUser`), card dropped
   from the feed on success, error kept on failure; regressions in `PartnerDetailScreen.test.tsx`.
-  Next: native block → unblock → account deletion as QA Mod Target.
+- Native block → unblock (iPhone 16e, QA Alice → QA Mod Target): confirm alert, `POST /blocks` 201, card gone;
+  Profile › Blocked users → Unblock → `DELETE /blocks` 204; Mod back after pull-to-refresh.
+  Found: the Blocked users list showed the raw user id ("Unblock 21c94630-…"; pre-existing since `aa043f4`).
+  Fixed (`3aaab6d`): `GET /blocks` adds `blocked_display_name` (outer join, null without a profile; shared-types
+  synced), screen shows the name or "Unnamed member"; regressions in `test_safety.py` and
+  `BlockedUsersScreen.test.tsx` (6/10 fail on the old screen). Re-verified natively: "Unblock QA Mod Target".
+- Account deletion (QA Mod Target): Profile › Delete my account → confirm → `DELETE /auth/me` 204 → welcome screen;
+  login again → "Invalid credentials" (`POST /auth/login` 401). `npm run qa:seed` recreated the account.
+- Outsider/deleted access via API (`pretest-evidence/outsider-access.txt`): deleted token 401; Cara reading/posting in
+  the Alice–Bob chat 403; Cara/Dan reading/confirming/cancelling others' bookings 404.
+- Launcher: `qa:restart` left Expo Go on the old JS bundle (it only re-opened the URL). Fixed: the open step quits
+  Expo Go first (sign-in persists).
+- Network (QA API stopped = server unreachable): My Plans keeps earlier rows. Found: with both sources failing it
+  showed two notices each claiming the other source was "still shown". Fixed (`c97ef9a`): one notice
+  "Couldn't refresh your plans. Showing what was loaded earlier."; per-source refresh copy; regressions in
+  `MyPlansScreen.test.tsx` (2 fail on the old screen). Found: booking detail offline was a dead end (red text, no Back,
+  no retry). Fixed (`a2f2186`): header kept + shared error state with Try again; regression in
+  `BookingDetailScreen.test.tsx`. Re-verified natively: error with Back/Try again → API restarted → Try again loads.
