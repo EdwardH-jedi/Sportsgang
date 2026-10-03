@@ -1,0 +1,17 @@
+# device (LAN) mode check 2026-10-03 18:48 AEST — Mac firewall state: disabled (read-only check, unchanged)
+[qa] worktree /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test
+[qa] source 5302f4427ab1 (stack last started from 5302f4427ab1)
+   OK  containers   sportsgang-qa postgres + redis
+   OK  api          pid 252 http://192.168.1.105:8130 health=200
+   OK  auth read    QA Alice signed in; 55 past sessions in her My Plans
+   OK  metro        pid 277 port 8190 (device mode)
+   OK  app API URL  served http://192.168.1.105:8130 (expected http://192.168.1.105:8130)
+   fixtures     {'qa_users': 8, 'qa_sessions': 81, 'qa_bookings': 57, 'qa_history_sessions': 55, 'migration': '0016'}
+   app URL      exp://192.168.1.105:8190
+   credentials  /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/credentials.json
+   manifest     /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/manifest.json
+   logs         /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test/.qa/logs
+# iPhone 16e simulator opened exp://192.168.1.105:8190 (stands in for a phone on the same Wi-Fi): Explore loaded; API log shows requests from 192.168.1.105:
+INFO:     192.168.1.105:65070 - "GET /health HTTP/1.1" 200 OK
+INFO:     192.168.1.105:65071 - "GET /auth/me HTTP/1.1" 200 OK
+INFO:     192.168.1.105:65072 - "GET /events?mine=true&segment=past&as_of=2026-10-03T08:48:49Z&limit=1 HTTP/1.1" 200 OK

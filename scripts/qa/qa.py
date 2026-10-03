@@ -569,6 +569,16 @@ def cmd_down(args) -> None:
     save_state(state)
 
 
+def cmd_stop_api(args) -> None:
+    """Stop only the QA API so the app can be tested against an unreachable server."""
+    cfg = ensure_config()
+    state = load_state()
+    stop_proc(state.get("api"), api_marker(cfg), "api")
+    state.pop("api", None)
+    save_state(state)
+    say("API stopped; Metro, containers and data untouched. Bring it back with: npm run qa:up -- --no-open --no-seed")
+
+
 def cmd_restart(args) -> None:
     """Restart the API and Metro (e.g. after pulling new code); data is untouched."""
     cfg = ensure_config()
@@ -613,6 +623,7 @@ def main() -> None:
     sub.add_parser("seed", help="create any missing demo fixtures").set_defaults(func=cmd_seed)
     sub.add_parser("open", help="open the app in booted iPhone simulators").set_defaults(func=cmd_open)
     sub.add_parser("down", help="stop API, Metro and containers; keep demo data").set_defaults(func=cmd_down)
+    sub.add_parser("stop-api", help="stop only the API (offline/retry testing)").set_defaults(func=cmd_stop_api)
     rt = sub.add_parser("restart", help="restart API and Metro on the current code; keep data")
     rt.add_argument("--mode", choices=["simulator", "device"])
     rt.add_argument("--no-open", action="store_true")

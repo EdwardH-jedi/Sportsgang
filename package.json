@@ -21,7 +21,8 @@
     "qa:open": "python3 scripts/qa/qa.py open",
     "qa:down": "python3 scripts/qa/qa.py down",
     "qa:reset": "python3 scripts/qa/qa.py reset",
-    "qa:restart": "python3 scripts/qa/qa.py restart"
+    "qa:restart": "python3 scripts/qa/qa.py restart",
+    "qa:stop-api": "python3 scripts/qa/qa.py stop-api"
   },
   "devDependencies": {
     "@expo/config-plugins": "~54.0.4"
