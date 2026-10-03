@@ -60,10 +60,14 @@ export function Select({
     return options.filter((o) => o.label.toLowerCase().includes(q));
   }, [options, query, searchable]);
 
-  function handleSelect(v: string) {
-    onChange(v);
+  function close() {
     setOpen(false);
     setQuery('');
+  }
+
+  function handleSelect(v: string) {
+    onChange(v);
+    close();
   }
 
   return (
@@ -79,6 +83,10 @@ export function Select({
         onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel ?? label ?? 'Open picker'}
+        // Screen readers hear the current choice, not only the field name.
+        accessibilityValue={{ text: selectedLabel ?? 'Not selected' }}
+        accessibilityHint="Opens a list of options"
+        accessibilityState={{ expanded: open }}
         style={({ pressed }) => [styles.trigger, pressed && styles.triggerPressed]}
       >
         <Text
@@ -96,12 +104,38 @@ export function Select({
         visible={open}
         animationType="slide"
         transparent
-        onRequestClose={() => setOpen(false)}
+        onRequestClose={close}
       >
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => undefined}>
+        <View style={styles.backdrop}>
+          {/* Tap outside to close. The sheet is a sibling, not a child: a
+              pressable wrapper made iOS expose the whole list as a single
+              accessibility element instead of one per option. */}
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={close}
+            accessible={false}
+            importantForAccessibility="no"
+          />
+          <View style={styles.sheet} accessibilityViewIsModal>
             <View style={styles.sheetHandle} />
-            {modalTitle ? <Text style={styles.sheetTitle}>{modalTitle}</Text> : null}
+            <View style={styles.sheetHeader}>
+              {modalTitle ? (
+                <Text style={styles.sheetTitle} accessibilityRole="header">
+                  {modalTitle}
+                </Text>
+              ) : (
+                <View />
+              )}
+              <Pressable
+                onPress={close}
+                accessibilityRole="button"
+                accessibilityLabel={`Close ${modalTitle ?? label ?? 'list'}`}
+                hitSlop={8}
+                style={({ pressed }) => [styles.done, pressed && styles.triggerPressed]}
+              >
+                <Text style={styles.doneText}>Done</Text>
+              </Pressable>
+            </View>
 
             {searchable ? (
               <TextInput
@@ -131,6 +165,7 @@ export function Select({
                       onPress={() => handleSelect(item.value)}
                       accessibilityRole="button"
                       accessibilityLabel={item.label}
+                      accessibilityState={{ selected: isSelected }}
                       style={({ pressed }) => [
                         styles.option,
                         isSelected && styles.optionSelected,
@@ -150,8 +185,8 @@ export function Select({
                 })
               )}
             </ScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </View>
   );
@@ -212,9 +247,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
     marginBottom: spacing.md,
   },
+  sheetHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
   sheetTitle: {
     ...typography.h3,
-    marginBottom: spacing.sm,
+    flexShrink: 1,
+  },
+  done: {
+    minHeight: 44,
+    paddingHorizontal: spacing.sm,
+    justifyContent: 'center',
+  },
+  doneText: {
+    ...typography.button,
+    color: colors.brand,
   },
   searchInput: {
     borderWidth: 1,

@@ -5,6 +5,7 @@
     npm run qa:status
     npm run qa:seed
     npm run qa:open
+    npm run qa:restart               # restart API + Metro on the current code
     npm run qa:down
     npm run qa:reset -- --yes        # QA database only: drop, migrate, reseed
 
@@ -564,6 +565,15 @@ def cmd_down(args) -> None:
     save_state(state)
 
 
+def cmd_restart(args) -> None:
+    """Restart the API and Metro (e.g. after pulling new code); data is untouched."""
+    cfg = ensure_config()
+    state = load_state()
+    stop_proc(state.get("metro"), metro_marker(cfg), "metro")
+    stop_proc(state.get("api"), api_marker(cfg), "api")
+    cmd_up(argparse.Namespace(mode=args.mode or state.get("mode"), no_open=args.no_open, no_seed=True))
+
+
 def cmd_reset(args) -> None:
     if not args.yes:
         fail("reset drops and recreates ONLY the sportsgang_qa database; re-run with `-- --yes`")
@@ -599,6 +609,10 @@ def main() -> None:
     sub.add_parser("seed", help="create any missing demo fixtures").set_defaults(func=cmd_seed)
     sub.add_parser("open", help="open the app in booted iPhone simulators").set_defaults(func=cmd_open)
     sub.add_parser("down", help="stop API, Metro and containers; keep demo data").set_defaults(func=cmd_down)
+    rt = sub.add_parser("restart", help="restart API and Metro on the current code; keep data")
+    rt.add_argument("--mode", choices=["simulator", "device"])
+    rt.add_argument("--no-open", action="store_true")
+    rt.set_defaults(func=cmd_restart)
     rs = sub.add_parser("reset", help="drop + recreate the QA database only, then reseed")
     rs.add_argument("--yes", action="store_true")
     rs.set_defaults(func=cmd_reset)

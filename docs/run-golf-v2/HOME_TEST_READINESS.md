@@ -9,10 +9,10 @@ does not exist yet and is not written by this task.
 | Item | Value |
 | --- | --- |
 | Status | in progress |
-| Phase | D — QA launcher working; next: picker a11y fix, native checks, runbook |
+| Phase | C — native checks in progress (picker a11y fixed + verified natively) |
 | Branch / worktree | `chore/run-golf-v2-home-test-ready` in `.claude/worktrees/run-golf-v2-home-test` |
 | Base | `origin/fix/run-golf-v2-review-fixes` = `07893825ffa4250a400608f81605d474ad62558b` (last app-source commit `a599c4f`) |
-| Next action | Select picker accessibility fix + regression; native checks on both simulators against the QA stack |
+| Next action | native moderation (report/block/unblock/delete), offline/retry, iPhone 17 Pro layout; then runbook, PRETEST_VERIFICATION.md, final checks, push |
 
 ## 1. Phase A — starting state (2026-10-03 17:56 AEST)
 
@@ -46,3 +46,15 @@ Known gaps carried in: native report/block/delete and offline/one-source
 failure not exercised; only iPhone 16e re-run; picker accessibility
 observation; Apple sign-in, real push, physical device, dev-client
 unverified.
+
+## Progress log (checkpoint)
+
+- QA stack: `npm run qa:up` / `qa:status` / `qa:seed` / `qa:restart` / `qa:down` / `qa:reset -- --yes`
+  implemented in `scripts/qa/`; lifecycle verified (`pretest-evidence/qa-lifecycle.log`).
+- Base re-verification on `0789382`: API 751, integration 22 (fresh PG), mobile 867, probe 7/7 ×2 TZ
+  (`pretest-evidence/`).
+- Picker accessibility: reproduced aggregated AX element natively (`native/a11y-before-birth-year.json`),
+  fixed in `Select.tsx`, regression `Select.test.tsx` (4/5 fail on the old component), verified
+  natively (`native/a11y-after-birth-year.json`: each option a Button, trigger value exposed, Close button).
+- Partial onboarding resume: after Step 1 + relaunch the user lands in Explore with the
+  "Set up your running preferences" prompt (documented contract).
