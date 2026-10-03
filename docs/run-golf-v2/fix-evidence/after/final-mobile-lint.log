@@ -1,0 +1,4 @@
+
+> @protin/mobile@0.1.0 lint
+> eslint src --ext .ts,.tsx --max-warnings 0
+

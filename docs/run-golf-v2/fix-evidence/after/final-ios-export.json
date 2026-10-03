@@ -1,0 +1,21 @@
+{
+  "name": "after/final-ios-export",
+  "command": [
+    "npx",
+    "--no-install",
+    "expo",
+    "export",
+    "--platform",
+    "ios",
+    "--output-dir",
+    "/private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/dist-fix-review/ios-final"
+  ],
+  "cwd": "apps/mobile",
+  "exit_code": 0,
+  "elapsed_seconds": 8.39,
+  "finished_at_utc": "2026-10-03T05:22:07+00:00",
+  "head": "a599c4f6d0ff82ef1b0d3a53db9a97a83334d023",
+  "source_dirty": false,
+  "source_status_sha256": null,
+  "dirty_paths": []
+}

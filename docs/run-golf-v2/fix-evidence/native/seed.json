@@ -1,0 +1,21 @@
+{
+  "seeded_at_utc": "2026-10-03T05:04:00+00:00",
+  "accounts": {
+    "Alice": {
+      "id": "61c5c052-f801-43ef-8529-ff19d4e40acb",
+      "email": "native-alice-cf2531@example.com"
+    },
+    "Bob": {
+      "id": "31a11ace-c923-4845-af10-4179d1673b4f",
+      "email": "native-bob-cf2531@example.com"
+    },
+    "Cara": {
+      "id": "31afe6d2-f093-4309-85bb-28c718ef7779",
+      "email": "native-cara-cf2531@example.com"
+    }
+  },
+  "match_id": "6fd93eaa-98fd-4f34-a33d-433b390d1254",
+  "bob_run_id": "0f524cdb-5632-4ffc-9c3e-bfe69cdb469c",
+  "bob_golf_round_id": "658bc9e9-f61b-4f9c-8598-6c7fcfca2018",
+  "alice_history": "55 completed past sessions and 55 completed past bookings"
+}

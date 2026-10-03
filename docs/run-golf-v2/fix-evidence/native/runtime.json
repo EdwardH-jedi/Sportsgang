@@ -1,0 +1,12 @@
+{
+  "runtime": "Expo Go (host.exp.Exponent) \u2014 not a SportsGang release/dev-client build",
+  "expo_go_version": "54.0.7",
+  "device": "iPhone 16e simulator, iOS 26.3, 390x844 pt, UDID 3D2AF32A-3288-465B-8B27-92D087A382B2",
+  "xcode": "26.6",
+  "metro": "npx expo start --port 8091 --offline (CI=1), EXPO_PUBLIC_API_URL=http://127.0.0.1:8031; restarted with --clear after a599c4f",
+  "api": "uvicorn app.main:app on 127.0.0.1:8031, disposable PostgreSQL fix_native (127.0.0.1:55453), Redis 127.0.0.1:56453",
+  "source_head_during_native": "screens 01-03: 06838fd (source = 2869f22, before the refresh-inset fix; 03 shows the stuck inset); screens 04-30: a599c4f (fix applied, Metro restarted with --clear)",
+  "fixtures": "native/seed.json (Alice/Bob/Cara, Bob's run 0f524cdb\u2026 and golf round 658bc9e9\u2026, 55+55 past rows for Alice); onboarding account native-dana-*@example.com created in the app",
+  "content_size_restored": "large",
+  "input_notes": "Simulator hardware-keyboard input source was Korean: a free-text location typed during the booking step became Hangul jamo (cosmetic, typed text only); switched to English with Ctrl+Space for onboarding. Input source toggled back with Ctrl+Space at the end."
+}

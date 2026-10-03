@@ -1,0 +1,16 @@
+[33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+Starting Metro Bundler
+iOS apps/mobile/index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1417/1417)
+iOS Bundled 3808ms apps/mobile/index.js (1417 modules)
+
+› Assets (6):
+../../node_modules/@react-navigation/elements/src/assets/back-icon-mask.png (913 B)
+../../node_modules/@react-navigation/elements/src/assets/back-icon.png (5 variations | 528 B)
+
+› ios bundles (1):
+_expo/static/js/ios/index-156864e3ec8a0ce5fed6e8ff8ad212b7.hbc (4.4 MB)
+
+› Files (1):
+metadata.json (519 B)
+
+Exported: /private/tmp/claude-501/-Users-edwardhwang-Desktop-github-repo-only-Sportsgang/2de13da1-9837-5ac1-8c63-456759766627/scratchpad/dist-fix-review/ios-final
