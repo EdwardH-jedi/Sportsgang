@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { PartnerSportSummary } from '@protin/shared-types';
 
 import { Screen } from '../../components/Screen';
@@ -15,6 +15,7 @@ import {
   paceText,
   TIME_OPTIONS,
 } from '../../lib/sportPreferences';
+import { blockUser } from '../../lib/safety';
 import { findFeedCard, useExploreStore } from '../../stores/explore';
 import { colors, spacing, typography } from '../../theme';
 import type { PartnerDetailScreenProps } from '../../navigation/types';
@@ -61,6 +62,7 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
   const recordAction = useExploreStore((s) => s.recordAction);
   const actingOn = useExploreStore((s) => s.actingOn);
   const [error, setError] = useState<string | null>(null);
+  const [blocking, setBlocking] = useState(false);
 
   if (!card) {
     return (
@@ -98,6 +100,31 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
     } catch (err) {
       setError(err instanceof Error ? err.message : 'That did not go through. Try again.');
     }
+  }
+
+  async function block() {
+    if (!card || blocking) return;
+    setBlocking(true);
+    setError(null);
+    try {
+      await blockUser(card.userId);
+      // Blocked people are excluded server-side; drop the loaded card too.
+      useExploreStore.setState((s) => ({
+        feed: { ...s.feed, items: s.feed.items.filter((c) => c.userId !== card.userId) },
+      }));
+      navigation.goBack();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not block this person. Try again.');
+      setBlocking(false);
+    }
+  }
+
+  function confirmBlock() {
+    if (!card) return;
+    Alert.alert(`Block ${card.displayName}?`, "You won't see each other in Explore and they can't message you.", [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Block', style: 'destructive', onPress: () => void block() },
+    ]);
   }
 
   return (
@@ -181,12 +208,14 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
         <Text style={styles.footnote}>
           Interest is private. If you both show interest, a chat opens where you can plan a session.
         </Text>
-        <Button
-          label="Report or block"
-          variant="ghost"
-          onPress={() => navigation.navigate('Report', { reportedUserId: card.userId, reportedName: card.displayName })}
-          style={styles.report}
-        />
+        <View style={styles.safety}>
+          <Button
+            label="Report"
+            variant="ghost"
+            onPress={() => navigation.navigate('Report', { reportedUserId: card.userId, reportedName: card.displayName })}
+          />
+          <Button label="Block" variant="ghost" onPress={confirmBlock} loading={blocking} testID="partner-block" />
+        </View>
       </ScrollView>
     </Screen>
   );
@@ -211,5 +240,5 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
   action: { flex: 1 },
   footnote: { ...typography.bodySmall, textAlign: 'center', marginTop: spacing.sm },
-  report: { alignSelf: 'center', marginTop: spacing.md },
+  safety: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm, alignSelf: 'center', marginTop: spacing.md },
 });

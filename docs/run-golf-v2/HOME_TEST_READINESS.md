@@ -58,3 +58,8 @@ unverified.
   natively (`native/a11y-after-birth-year.json`: each option a Button, trigger value exposed, Close button).
 - Partial onboarding resume: after Step 1 + relaunch the user lands in Explore with the
   "Set up your running preferences" prompt (documented contract).
+- Moderation: report from partner detail works natively (honest "Report submitted"; `POST /reports` 201).
+  Found: the partner-detail button read "Report or block" but only opened the report form (no block
+  path from Explore). Fixed: separate "Report" and confirmed "Block" (`lib/safety.blockUser`), card dropped
+  from the feed on success, error kept on failure; regressions in `PartnerDetailScreen.test.tsx`.
+  Next: native block → unblock → account deletion as QA Mod Target.

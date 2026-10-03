@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { Alert } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { api } from '../lib/api';
@@ -138,10 +139,45 @@ it('keeps the user on the screen with a message when the action fails', async ()
   expect(navigation.goBack).not.toHaveBeenCalled();
 });
 
-it('report / block stays reachable', () => {
+it('report stays reachable', () => {
   const utils = renderDetail();
-  fireEvent.press(utils.getByLabelText('Report or block'));
+  fireEvent.press(utils.getByLabelText('Report'));
   expect(navigation.navigate).toHaveBeenCalledWith('Report', { reportedUserId: 'g1', reportedName: 'Morgan' });
+});
+
+// The button used to read "Report or block" but only opened the report form.
+describe('block', () => {
+  const confirmBlock = () =>
+    jest.spyOn(Alert, 'alert').mockImplementation((_title, _body, buttons) => {
+      buttons?.find((button) => button.style === 'destructive')?.onPress?.();
+    });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('blocks after confirmation, drops the card from the feed and goes back', async () => {
+    confirmBlock();
+    mockPost.mockResolvedValueOnce({ id: 'b1', blockedUserId: 'g1' });
+    const utils = renderDetail();
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    expect(Alert.alert).toHaveBeenCalledWith('Block Morgan?', expect.any(String), expect.any(Array));
+    expect(mockPost).toHaveBeenCalledWith('/blocks/g1');
+    expect(useExploreStore.getState().feed.items.map((c) => c.userId)).not.toContain('g1');
+    expect(navigation.goBack).toHaveBeenCalled();
+  });
+
+  it('keeps the card and explains when blocking fails', async () => {
+    confirmBlock();
+    mockPost.mockRejectedValueOnce(new Error('Network request failed'));
+    const utils = renderDetail();
+    await act(async () => {
+      fireEvent.press(utils.getByTestId('partner-block'));
+    });
+    await waitFor(() => utils.getByText('Network request failed'));
+    expect(useExploreStore.getState().feed.items.map((c) => c.userId)).toContain('g1');
+    expect(navigation.goBack).not.toHaveBeenCalled();
+  });
 });
 
 it('a card that is not in the current sport feed shows an honest fallback', () => {
