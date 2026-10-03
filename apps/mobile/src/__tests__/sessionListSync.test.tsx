@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Alert } from 'react-native';
+import { Alert, RefreshControl } from 'react-native';
 import { act, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 
 import { ExploreScreen } from '../screens/explore/ExploreScreen';
@@ -413,6 +413,34 @@ describe('refresh and request hygiene', () => {
     await refocus();
     await settled(explore, 'g1', '2 golfers · Full');
     expect(card(explore, 'g1').queryByText('Joined')).toBeNull();
+  });
+
+  it('re-reads in the background without showing the pull-to-refresh spinner', async () => {
+    addEvent({ id: 'g1', hostUserId: 'bob', capacity: 2 });
+    const explore = renderExplore();
+    await settled(explore, 'g1', '2 golfers · 1 spot left');
+    const spinner = () => explore.UNSAFE_getByType(RefreshControl).props.refreshing;
+
+    // Focus re-read in flight: no spinner (it left iOS's refresh inset stuck).
+    let releaseFocus!: () => void;
+    holds.push({ match: /sport=golf/, release: new Promise<void>((r) => (releaseFocus = r)) });
+    await refocus();
+    expect(spinner()).toBe(false);
+    await act(async () => {
+      releaseFocus();
+    });
+
+    // The user's own pull does show it, until the answer arrives.
+    let releasePull!: () => void;
+    holds.push({ match: /sport=golf/, release: new Promise<void>((r) => (releasePull = r)) });
+    act(() => {
+      void explore.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(spinner()).toBe(true);
+    await act(async () => {
+      releasePull();
+    });
+    await waitFor(() => expect(spinner()).toBe(false));
   });
 
   it('does not refetch in a loop while the list is idle', async () => {

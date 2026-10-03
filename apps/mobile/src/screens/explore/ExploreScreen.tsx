@@ -139,6 +139,19 @@ function SessionsView({
   const refreshRef = useRef(refresh);
   refreshRef.current = refresh;
   const focusedBefore = useRef(false);
+  // The pull-to-refresh spinner is only for the user's own pull. Background
+  // re-reads (focus, session changes made on another screen) stay silent:
+  // driving `refreshing` from them while this screen is covered left iOS's
+  // refresh inset stuck open.
+  const [pulling, setPulling] = useState(false);
+  const onPull = useCallback(async () => {
+    setPulling(true);
+    try {
+      await refresh();
+    } finally {
+      setPulling(false);
+    }
+  }, [refresh]);
   useFocusEffect(
     useCallback(() => {
       if (!focusedBefore.current) {
@@ -152,7 +165,7 @@ function SessionsView({
   return (
     <ScrollView
       contentContainerStyle={styles.listContent}
-      refreshControl={<RefreshControl refreshing={isLoading && items.length > 0} onRefresh={refresh} tintColor={colors.accent} />}
+      refreshControl={<RefreshControl refreshing={pulling} onRefresh={onPull} tintColor={colors.accent} />}
     >
       <Button label={noun.host} onPress={onHost} style={styles.hostButton} />
       {isLoading && items.length === 0 ? (
