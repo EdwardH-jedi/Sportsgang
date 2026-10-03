@@ -1,0 +1,1 @@
+{"build":["http://127.0.0.1:5187/assets/index-BhGo18TO.js"],"method":"window.requestAnimationFrame replaced by a no-op before load, so anime.js never advances; content must still appear via the hook safety timeout.","rafDisabled":true,"revealTargetsAtLoad":37,"revealTargetsRightAfterScrolling":11,"revealTargetsAfter3_5s":0,"transparentTextAfter3_5s":0,"textElementsChecked":128}

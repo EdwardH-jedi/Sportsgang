@@ -1,0 +1,19 @@
+Console and network — final build (commit 016ba0b; assets index-BhGo18TO.js, index-C-cld3IO.css)
+Chrome DevTools MCP, isolated browser context, 1440x900. Fresh navigation to http://127.0.0.1:5187/,
+then a scripted scroll through the whole page with every FAQ item opened, then a 2.5 s wait.
+
+Network requests since navigation (DevTools list_network_requests):
+  GET http://127.0.0.1:5187/                          [304]
+  GET http://127.0.0.1:5187/assets/index-BhGo18TO.js  [304]
+  GET http://127.0.0.1:5187/assets/index-C-cld3IO.css [304]
+  GET http://127.0.0.1:5187/favicon.png               [304]
+  (304 = revalidated against the local preview server; there were no other requests.)
+
+Requests to any other host: none. No product API (8130/8131/8144/Fly), no email collection,
+no analytics, no QA services, no Apple or Netlify prefetch. External links are only followed
+when clicked.
+
+performance resource entries: index-BhGo18TO.js, index-C-cld3IO.css, favicon.png
+localStorage keys: []   sessionStorage keys: []   cookies: ""   service worker: none
+
+Console messages (all levels): none.

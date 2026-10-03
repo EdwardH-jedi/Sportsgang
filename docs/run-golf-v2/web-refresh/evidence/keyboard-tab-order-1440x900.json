@@ -1,0 +1,18 @@
+{
+  "build": "http://127.0.0.1:5187/assets/index-BhGo18TO.js (commit 016ba0b)",
+  "method": "Chrome DevTools, 1440x900. Fresh load, then 11 real Tab key presses; a focusin listener (installed after the first press) recorded each newly focused element and whether it matched :focus-visible. The illustrations are not focusable, so after the hero the next stop is the first FAQ item.",
+  "order": [
+    "a \"Skip to content\" (first press; screenshot 1440x900-focus-1-skip-link.jpeg)",
+    "a \"sportsgang\" (logo, back to top) focus-visible=true",
+    "a \"Running\" focus-visible=true (screenshot 1440x900-focus-3-nav-running.jpeg)",
+    "a \"Golf\" focus-visible=true",
+    "a \"How it works\" focus-visible=true",
+    "a \"My Plans\" focus-visible=true",
+    "a \"FAQ\" focus-visible=true",
+    "a \"App Store (opens the App Store listing)\" (header) focus-visible=true",
+    "a \"Get SportsGang on the App Store (opens the App Store listing)\" (hero) focus-visible=true (screenshot 1440x900-focus-9-hero-app-store.jpeg)",
+    "a \"See how it works\" focus-visible=true",
+    "summary \"Where can I get SportsGang?\" focus-visible=true"
+  ],
+  "not_run": "Tab stops after the first FAQ item (remaining FAQ items, FAQ answer links, final App Store button, footer links) were not pressed through; they follow DOM order and no element on the page sets a positive tabindex."
+}
