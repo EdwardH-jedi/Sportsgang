@@ -1,0 +1,45 @@
+CREATE TABLE t (zone text, created_at timestamp without time zone NOT NULL DEFAULT now(), via_assignment timestamp, via_at_time_zone timestamp);
+CREATE TABLE
+SET TIME ZONE 'Australia/Sydney';
+SET
+BEGIN;
+BEGIN
+INSERT INTO t (zone, via_assignment, via_at_time_zone) VALUES (current_setting('TimeZone'), now(), now() AT TIME ZONE current_setting('TimeZone'));
+INSERT 0 1
+COMMIT;
+COMMIT
+SET TIME ZONE 'UTC';
+SET
+BEGIN;
+BEGIN
+INSERT INTO t (zone, via_assignment, via_at_time_zone) VALUES (current_setting('TimeZone'), now(), now() AT TIME ZONE current_setting('TimeZone'));
+INSERT 0 1
+COMMIT;
+COMMIT
+SELECT zone, created_at = via_assignment AS default_now_equals_assignment, created_at = via_at_time_zone AS default_now_equals_at_time_zone FROM t ORDER BY zone;
+       zone       | default_now_equals_assignment | default_now_equals_at_time_zone 
+------------------+-------------------------------+---------------------------------
+ Australia/Sydney | t                             | t
+ UTC              | t                             | t
+(2 rows)
+
+-- The repeated hour: two instants, one stored wall time under a Sydney session.
+SET TIME ZONE 'Australia/Sydney';
+SET
+CREATE TABLE r (instant text, created_at timestamp without time zone);
+CREATE TABLE
+INSERT INTO r VALUES ('2026-04-04T15:30Z', TIMESTAMPTZ '2026-04-04 15:30:00+00'), ('2026-04-04T16:30Z', TIMESTAMPTZ '2026-04-04 16:30:00+00');
+INSERT 0 2
+SELECT instant, created_at AS stored_naive FROM r ORDER BY instant;
+      instant      |    stored_naive     
+-------------------+---------------------
+ 2026-04-04T15:30Z | 2026-04-05 02:30:00
+ 2026-04-04T16:30Z | 2026-04-05 02:30:00
+(2 rows)
+
+SELECT (TIMESTAMP '2026-04-05 02:30' AT TIME ZONE 'Australia/Sydney') AT TIME ZONE 'UTC' AS postgres_reads_ambiguous_value_as_utc;
+ postgres_reads_ambiguous_value_as_utc 
+---------------------------------------
+ 2026-04-04 16:30:00
+(1 row)
+

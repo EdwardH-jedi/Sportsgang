@@ -1,0 +1,21 @@
+SHOW timezone;
+ TimeZone 
+----------
+ UTC
+(1 row)
+
+SELECT setting, source, sourcefile FROM pg_settings WHERE name = 'TimeZone';
+ setting | source | sourcefile 
+---------+--------+------------
+ UTC     | client | 
+(1 row)
+
+SELECT coalesce(d.datname, '*') AS db, coalesce(r.rolname, '*') AS role, s.setconfig
+  FROM pg_db_role_setting s
+  LEFT JOIN pg_database d ON d.oid = s.setdatabase
+  LEFT JOIN pg_roles r ON r.oid = s.setrole;
+  db   | role |          setconfig          
+-------+------+-----------------------------
+ r6_e1 | *    | {TimeZone=Australia/Sydney}
+(1 row)
+

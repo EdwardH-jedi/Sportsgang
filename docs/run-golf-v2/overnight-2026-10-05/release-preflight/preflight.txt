@@ -1,0 +1,130 @@
+SportsGang release preflight (local, read-only)
+result: CONSISTENT_WITH_MISSING_INPUTS
+
+== 1. Public URL configuration (mobile build) ==
+EXPO_PUBLIC_PRIVACY_URL
+  read at: apps/mobile/src/lib/legal.ts:21
+  in app.config.js: no
+  in eas.json build profiles: development=no, preview=no, production=no
+  documented: https://sportgang.netlify.app/privacy/  (.env.example:76)
+  documented: https://sportgang.netlify.app/privacy/  (apps/mobile/.env.example:67)
+  documented: https://sportgang.netlify.app/privacy/  (apps/mobile/.env.staging.example:23)
+  documented: https://sportgang.netlify.app/privacy/  (docs/release/APP_STORE_METADATA.md:216)
+  documented: https://sportgang.netlify.app/privacy/  (apps/web/src/lib/links.ts:17)
+  documented values agree: yes
+  this process: unset
+EXPO_PUBLIC_TERMS_URL
+  read at: apps/mobile/src/lib/legal.ts:24
+  in app.config.js: no
+  in eas.json build profiles: development=no, preview=no, production=no
+  documented: https://sportgang.netlify.app/terms/  (.env.example:77)
+  documented: https://sportgang.netlify.app/terms/  (apps/mobile/.env.example:68)
+  documented: https://sportgang.netlify.app/terms/  (apps/mobile/.env.staging.example:24)
+  documented: https://sportgang.netlify.app/terms/  (docs/release/APP_STORE_METADATA.md:217)
+  documented: https://sportgang.netlify.app/terms/  (apps/web/src/lib/links.ts:18)
+  documented values agree: yes
+  this process: unset
+EXPO_PUBLIC_SUPPORT_URL
+  read at: apps/mobile/src/lib/legal.ts:27
+  in app.config.js: no
+  in eas.json build profiles: development=no, preview=no, production=no
+  documented: https://sportgang.netlify.app/support/  (.env.example:78)
+  documented: https://sportgang.netlify.app/support/  (apps/mobile/.env.example:69)
+  documented: https://sportgang.netlify.app/support/  (apps/mobile/.env.staging.example:25)
+  documented: https://sportgang.netlify.app/support/  (docs/release/APP_STORE_METADATA.md:218)
+  documented: https://sportgang.netlify.app/support/  (apps/web/src/lib/links.ts:19)
+  documented values agree: yes
+  this process: unset
+EXPO_PUBLIC_API_URL
+  read at: apps/mobile/app.config.js:19, apps/mobile/src/lib/api.ts:8
+  in app.config.js: yes
+  in eas.json build profiles: development=yes, preview=yes, production=yes
+  store profiles https: {'preview': True, 'production': True}  (value not printed)
+  this process: unset  (value not printed)
+other EXPO_PUBLIC_* names read by the app (names only): EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_API_KEY, EXPO_PUBLIC_GOOGLE_MAPS_API_KEY, EXPO_PUBLIC_GOOGLE_MAPS_IOS_API_KEY, EXPO_PUBLIC_GOOGLE_REDIRECT_URI, EXPO_PUBLIC_SENTRY_DSN
+local .env files Expo would auto-load: none (contents never read)
+unset behaviour (apps/mobile/src/lib/legal.ts): unset or non-http URL -> openLegal() shows the Alert below instead of opening a link; no hard-coded fallback URL. LEGAL_LINKS_CONFIGURED is true only when privacy and terms are both set.
+  apps/mobile/src/lib/legal.ts:46: `${label} not available`,
+  apps/mobile/src/lib/legal.ts:47: 'This link is not available yet. Please contact support.'
+  apps/mobile/src/lib/legal.ts:53: `${label} not available`,
+  apps/mobile/src/lib/legal.ts:54: 'This link is not available yet. Please contact support.'
+
+== 2. App identity (as committed) ==
+  name: SportsGang
+  slug: protin
+  version: 1.0.0
+  ios_bundle_identifier: com.edh1223.protin
+  ios_build_number: 1
+  android_package: com.edh1223.protin
+  runtime_version: None
+  owner: None
+  eas_project_id: b36f95b3-3757-4f7e-ab29-08da31cbb00f
+  has_updates_block: False
+  eas.cli_version: >= 12.0.0
+  eas.app_version_source: remote
+  eas.production_auto_increment: True
+  eas.submit_production_ios_asc_app_id: 6767027447
+  eas.submit_production_ios_apple_team_id: 37C8A2733Y
+  eas.build_profiles: ['development', 'preview', 'production']
+  app.json static keys: []
+  documented bundle_identifier: com.edh1223.protin  (docs/release/APP_STORE_METADATA.md)
+  documented app_store_url_id: 6767027447  (apps/web/src/lib/links.ts)
+  note: eas.json cli.appVersionSource is 'remote' (production autoIncrement=True): the store build number is kept by EAS, so ios.buildNumber='1' in app.config.js is not what a store build carries — not verifiable locally
+  note: no runtimeVersion / updates block committed (no OTA channel configured)
+  note: app.config.js has no 'owner'; the EAS project is identified only by extra.eas.projectId
+  note: the @sentry/react-native/expo plugin has no organization/project committed (Expo warns and falls back to build-environment variables); not documented as a required release input
+
+== 3. Locked dependencies and build commands ==
+  npm ci   (repository root; workspaces apps/* and packages/*)
+    package-lock.json sha256 ce1eef03271dfd0ff02ef6ce9f666d328744065f4c0ebee83ef46f6da8ec7a23 (lockfileVersion 3)
+    expo 54.0.34 (SDK 54; declared ^54.0.34), react-native 0.81.5, react 19.1.0
+    node: react-native engines >= 20.19.4; CI node-version ['20']; on PATH v26.7.0 (informational: the declared engine/CI version is what counts, not the PATH default)
+  uv sync --frozen   (apps/api; CI adds --dev, the Dockerfile uses --no-dev --no-install-project)
+    uv.lock sha256 5527d8521f09c8ffc2bdd734a3da8be0c989f2c6371d2600f121a9387feb71c4
+    requires-python >=3.12 (lock >=3.12); .python-version 3.12
+  iOS JS export: cd apps/mobile && CI=1 EXPO_OFFLINE=1 EXPO_NO_TELEMETRY=1 npx --no-install expo export --platform ios --output-dir <dir>
+
+== 4. Source identity ==
+  HEAD 68d8bcc10663b126affc461b1084a353d52b36ce (fix/run-golf-v2-overnight-2026-10-05)
+  worktree clean: NO (23 paths)
+     M .github/workflows/ci.yml  sha256 9a117766e3c2152ad3819b8c446efb2c3d28177d15f660362b6a2a5a9ec7c3ec
+     M apps/mobile/src/screens/chat/ChatScreen.tsx  sha256 ad1fb909aa7453a5a3ceed0b08747c613e2f9585699da5ae33cb58f67ab1f74e
+     M apps/web/README.md  sha256 41acfdbb9f9df6b086632949e01106d90ea2d0729c0a5444f15b74ea9a90c464
+     M apps/web/package.json  sha256 00b48233445fee7d16bad083e18d909748f720a0e948531cbfb859888c6840af
+     M apps/web/src/components/SiteFooter.tsx  sha256 dbbd132b6293e7f8a20ebcc91f570de4086dc8725ea94bcf8f0e49856cd6b6a4
+     M apps/web/src/components/SiteHeader.tsx  sha256 c2df127d9002af8ab129d74006b8df261cdb7a6e441028ef8f176dccad59a246
+     M apps/web/src/components/home/Faq.tsx  sha256 d3e004fb29f59daa5eee3835acadf29c415fb4946550597c09c484e774b1ee10
+     M apps/web/src/components/home/FinalCTA.tsx  sha256 f5503523b9d9845a0cda607db2bc439990cfe88b2b1cf5d070112f16df4fe82d
+     M apps/web/src/components/home/GolfSection.tsx  sha256 cc7b88a23322ee2d913efd1c59f1d7882e3c328de18254899ea3c962b8c39a5d
+     M apps/web/src/components/home/Hero.tsx  sha256 f8f009a68890c30e9631e00f05df9b3f4424d602502bde68f634929717294afe
+     M apps/web/src/components/home/HowItWorks.tsx  sha256 87662d9bfa01e8a209a55cc3490858f88e7f95bc49126ac0a17df85f6b70fd18
+     M apps/web/src/components/home/PlansPreview.tsx  sha256 9458c5852e30b9b0c4754a91ac515efbfe916408486d134eab2e156ec8603965
+     M apps/web/src/components/home/RunningSection.tsx  sha256 1944b7230e5172e5055a3d8cd7387d45b42c9a379251db1ec6715bd76f31ac50
+     M apps/web/src/components/home/SafetySection.tsx  sha256 e6da39952cc0fa2d2fa930d9b0b3cd260c1273effa871d9f633e97c713ada5d3
+     M apps/web/src/components/ui.tsx  sha256 339ad42fa127416290f92b71116b9b59acce09f0c49ea6f2e1b9b5e50508f92b
+     M apps/web/src/styles/index.css  sha256 e139ac96e0bba2864f2be0f1f66f5bc7e74d3e00f01c6ffd662e94187d077de9
+     M apps/web/vite.config.ts  sha256 50e3a0bb133d39a98e854bbe0cd355b8d0602f459bf09cb51a18a683d6003279
+    ?? apps/mobile/src/__tests__/ChatScreen.ownership.test.tsx  sha256 cf6bcb334a5e6cba6ed9fe87791e83880f2fc5de37ec80c6aa364835e31412cb
+    ?? apps/web/hosting/
+    ?? apps/web/scripts/
+    ?? docs/run-golf-v2/overnight-2026-10-05/evidence/
+    ?? docs/run-golf-v2/overnight-2026-10-05/release-preflight/
+    ?? scripts/release/
+  last source commit: a515b0073cb0f32dad97f88430a203e3427444fe (last commit touching apps/, scripts/, packages/ or .github/)
+
+== 5. Missing release inputs ==
+  - EXPO_PUBLIC_PRIVACY_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine — not verifiable locally
+  - EXPO_PUBLIC_TERMS_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine — not verifiable locally
+  - EXPO_PUBLIC_SUPPORT_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine — not verifiable locally
+  - iOS signing certificate / provisioning profile and APNs key: EAS-managed (no credentials.json committed) — not verifiable locally
+  - store build number: kept remotely by EAS (appVersionSource=remote) — not verifiable locally
+
+== Gates that cannot be satisfied locally ==
+  - Physical iPhone (and Android) test of the release build, incl. VoiceOver: NOT_RUN (needs a device; simulators and Expo Go are not the release binary)
+  - Signed store build (EAS) and TestFlight / App Store submission: NOT_RUN (signing credentials are EAS-managed; a store build runs on EAS, not locally)
+  - Real Expo push service / APNs delivery to a device: NOT_RUN (needs the real provider, APNs capability and a device push token)
+  - Production audit-timestamp provenance (R6): OPEN / NOT_RUN (production database, authorised operator only: docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md §3)
+  - Deployed API is exactly one process/machine serving WebSockets: PENDING / NOT_RUN (live Fly topology, authorised operator only: docs/run-golf-v2/overnight-2026-10-05/release-preflight/TOPOLOGY_OPERATOR_CHECK.md)
+
+== Inconsistencies (exit 1 if any) ==
+  - none

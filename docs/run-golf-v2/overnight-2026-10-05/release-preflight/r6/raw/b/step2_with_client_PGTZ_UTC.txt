@@ -1,0 +1,21 @@
+SELECT date_trunc('month', n.scheduled_at) AS month,
+       round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'UTC')) / 3600) AS offset_hours,
+       count(*)
+  FROM bookings b
+  JOIN notification_events n ON n.booking_id = b.id AND n.notification_type = 'proposal_received'
+ GROUP BY 1, 2 ORDER BY 1, 2;
+         month          | offset_hours | count 
+------------------------+--------------+-------
+ 2026-02-01 00:00:00+00 |           11 |     2
+ 2026-03-01 00:00:00+00 |           11 |     2
+ 2026-04-01 00:00:00+00 |           10 |     1
+ 2026-04-01 00:00:00+00 |           11 |     1
+ 2026-05-01 00:00:00+00 |           10 |     3
+ 2026-06-01 00:00:00+00 |           10 |     2
+ 2026-07-01 00:00:00+00 |           10 |     2
+ 2026-08-01 00:00:00+00 |           10 |     2
+ 2026-09-01 00:00:00+00 |           10 |     2
+ 2026-10-01 00:00:00+00 |           10 |     1
+ 2026-10-01 00:00:00+00 |           11 |     1
+(11 rows)
+

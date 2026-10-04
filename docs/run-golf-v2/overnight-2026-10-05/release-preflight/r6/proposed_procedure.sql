@@ -1,0 +1,87 @@
+-- PROPOSED additions to the read-only R6 provenance procedure
+-- (docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md §3 is NOT edited).
+-- Read-only: SELECT only. Every expression is independent of the reading
+-- session's TimeZone (each conversion names its zone explicitly), so the
+-- operator's client settings (PGTZ etc.) cannot change the result.
+-- Validated on the disposable fixtures in this directory; see R6_PROCEDURE_VALIDATION.md.
+
+-- 2b. Per-row agreement with named candidate zones, bucketed by UTC month.
+--     A sample "agrees" with zone Z when the naive bookings.created_at equals
+--     the wall time of the proposal's instant in Z (same ±30 min tolerance as
+--     step 2's rounding to whole hours). Australia/Brisbane (fixed +10, no DST)
+--     is a contrast candidate: it agrees with Sydney in every AEST month, so a
+--     non-UTC zone is identified only by samples from both DST regimes.
+SELECT date_trunc('month', n.scheduled_at AT TIME ZONE 'UTC') AS month_utc,
+       count(*) AS samples,
+       count(*) FILTER (WHERE round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'UTC')) / 3600) = 0) AS agrees_utc,
+       count(*) FILTER (WHERE round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'Australia/Sydney')) / 3600) = 0) AS agrees_sydney,
+       count(*) FILTER (WHERE round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'Australia/Brisbane')) / 3600) = 0) AS agrees_brisbane,
+       min(n.scheduled_at AT TIME ZONE 'UTC') AS first_sample_utc,
+       max(n.scheduled_at AT TIME ZONE 'UTC') AS last_sample_utc
+  FROM bookings b
+  JOIN notification_events n ON n.booking_id = b.id AND n.notification_type = 'proposal_received'
+ GROUP BY 1 ORDER BY 1;
+
+-- 2c. Coverage: audit rows per naive month and column, next to the number of
+--     step-2 samples in that month. Rows in a month with fewer than two
+--     samples have no evidence of their writing zone (naive months are
+--     approximate by up to 11 h at month boundaries).
+WITH audit(col, v) AS (
+          SELECT 'messages.created_at', created_at FROM messages
+UNION ALL SELECT 'bookings.created_at', created_at FROM bookings
+UNION ALL SELECT 'bookings.updated_at', updated_at FROM bookings
+UNION ALL SELECT 'blocks.created_at', created_at FROM blocks
+UNION ALL SELECT 'reports.created_at', created_at FROM reports
+UNION ALL SELECT 'notification_events.created_at', created_at FROM notification_events
+UNION ALL SELECT 'push_tokens.created_at', created_at FROM push_tokens
+UNION ALL SELECT 'calendar_booking_syncs.created_at', created_at FROM calendar_booking_syncs
+UNION ALL SELECT 'google_calendar_tokens.connected_at', connected_at FROM google_calendar_tokens
+), evidence AS (
+SELECT date_trunc('month', n.scheduled_at AT TIME ZONE 'UTC') AS month, count(*) AS samples
+  FROM bookings b
+  JOIN notification_events n ON n.booking_id = b.id AND n.notification_type = 'proposal_received'
+ GROUP BY 1
+)
+SELECT date_trunc('month', a.v) AS naive_month, a.col, count(*) AS audit_rows,
+       coalesce(max(e.samples), 0) AS samples_in_month
+  FROM audit a
+  LEFT JOIN evidence e ON e.month = date_trunc('month', a.v)
+ GROUP BY 1, 2 ORDER BY 1, 2;
+
+-- 2d. Where the writing zone changes between UTC and non-UTC: the first sample
+--     and every pair of consecutive samples (by instant) whose class differs
+--     (Sydney's own 10 <-> 11 h DST changes are not switches). Audit rows whose
+--     naive value lies from prev_sample_utc up to 11 h after sample_utc cannot be
+--     attributed to either side by their stored value.
+SELECT prev_sample_utc, prev_offset_hours, sample_utc, offset_hours
+  FROM (SELECT n.scheduled_at AT TIME ZONE 'UTC' AS sample_utc,
+               round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'UTC')) / 3600) AS offset_hours,
+               lag(n.scheduled_at AT TIME ZONE 'UTC') OVER w AS prev_sample_utc,
+               lag(round(extract(epoch FROM b.created_at - (n.scheduled_at AT TIME ZONE 'UTC')) / 3600)) OVER w AS prev_offset_hours
+          FROM bookings b
+          JOIN notification_events n ON n.booking_id = b.id AND n.notification_type = 'proposal_received'
+        WINDOW w AS (ORDER BY n.scheduled_at)) s
+ WHERE prev_sample_utc IS NULL OR (prev_offset_hours = 0) <> (offset_hours = 0)
+ ORDER BY sample_utc;
+
+-- 4'. Every audit column: rows whose naive value is a repeated (fall-back)
+--     Australia/Sydney wall time, found by predicate instead of a hand-kept
+--     list of windows. A wall time is repeated exactly when reading it at
+--     +11 h and at +10 h both map back to it. Relevant only for periods whose
+--     evidence (2b) is Sydney.
+WITH audit(col, v) AS (
+          SELECT 'messages.created_at', created_at FROM messages
+UNION ALL SELECT 'bookings.created_at', created_at FROM bookings
+UNION ALL SELECT 'bookings.updated_at', updated_at FROM bookings
+UNION ALL SELECT 'blocks.created_at', created_at FROM blocks
+UNION ALL SELECT 'reports.created_at', created_at FROM reports
+UNION ALL SELECT 'notification_events.created_at', created_at FROM notification_events
+UNION ALL SELECT 'push_tokens.created_at', created_at FROM push_tokens
+UNION ALL SELECT 'calendar_booking_syncs.created_at', created_at FROM calendar_booking_syncs
+UNION ALL SELECT 'google_calendar_tokens.connected_at', connected_at FROM google_calendar_tokens
+)
+SELECT col, count(*) AS rows_in_sydney_repeated_hour, min(v) AS first_value, max(v) AS last_value
+  FROM audit
+ WHERE ((v - interval '11 hours') AT TIME ZONE 'UTC') AT TIME ZONE 'Australia/Sydney' = v
+   AND ((v - interval '10 hours') AT TIME ZONE 'UTC') AT TIME ZONE 'Australia/Sydney' = v
+ GROUP BY col ORDER BY col;
