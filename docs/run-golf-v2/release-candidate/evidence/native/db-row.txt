@@ -1,0 +1,2 @@
+# set time zone 'UTC'; select id, status, starts_at::text, ends_at::text, pg_typeof(starts_at), created_at::text from bookings … newest by QA Alice
+2e9f30ca-408a-4806-9fd6-076f0a7f0e28|proposed|2026-10-06 00:30:00+00|2026-10-06 01:30:00+00|timestamp with time zone|2026-10-04 13:03:33.586163

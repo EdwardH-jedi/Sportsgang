@@ -31,17 +31,17 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (reason) · BLOCKED.
 
 | ID | Item | Status |
 |---|---|---|
-| A11Y-1 | Booking composer screen heading at max text size (no mid-word wrap), related clipped controls | TODO |
-| A11Y-2 | Native default + max text on a dedicated simulator; time selection → form → HTTP → DB | TODO |
+| A11Y-1 | Booking composer screen heading at max text size (no mid-word wrap), related clipped controls | DONE — `bcecdc8` title/arrow capped at 1.4× (ScreenHeader scale), `e80b369` Back box line height + Send label padding; chat-screen max-size issues recorded, not changed (outside scope) |
+| A11Y-2 | Native default + max text on a dedicated simulator; time selection → form → HTTP → DB | DONE — new iPhone 16e sim; Q09 frames identical; 11:30–12:30 AEDT = 00:30Z–01:30Z in API and PostgreSQL (`evidence/native/`); VoiceOver/physical NOT_RUN |
 
 ## Wave 3 — website
 
 | ID | Item | Status |
 |---|---|---|
-| WEB-1 | Integrate `97990d9` (inspect diff; record merge commit) | TODO |
-| WEB-2 | GitHub Actions web job (locked install, typecheck, production build) | TODO |
-| WEB-3 | Static `/privacy/`, `/terms/`, `/support/` preserved in the build from the official site branch; verified on the production preview | TODO |
-| WEB-4 | Upcoming-update wording in title/description/OG/Twitter | TODO |
+| WEB-1 | Integrate `97990d9` (inspect diff; record merge commit) | DONE — merge `410ec8d` (only `apps/web/**`, `docs/run-golf-v2/web-refresh/**`; no lockfile/design export) |
+| WEB-2 | GitHub Actions web job (locked install, typecheck, production build) | DONE — `e70a946`; job "Website typecheck and build" green in run 37202969762 |
+| WEB-3 | Static `/privacy/`, `/terms/`, `/support/` preserved in the build from the official site branch; verified on the production preview | DONE — byte copies of `ad072fc`; `/privacy/` `/terms/` `/support/` 200 with identical bytes on `vite preview`; no-slash paths fall back to home (host must redirect) |
+| WEB-4 | Upcoming-update wording in title/description/OG/Twitter | DONE — `e70a946` (and the no-script note) |
 | WEB-5 | CLAIM_MATRIX updated with the Codex verdict and candidate code | TODO |
 | WEB-6 | Browser checks: 320/390/768/1440, full keyboard, menu, FAQ, anchors, real zoom, reduced motion, no-JS, print, Safari | TODO |
 
