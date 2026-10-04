@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from uuid import UUID
 
 from fastapi import HTTPException, WebSocket, status
@@ -84,6 +85,12 @@ async def send_message(
 # ─── Realtime delivery ───────────────────────────────────────────────────────
 
 
+# Upper bound for one frame to one socket. Delivery holds the pair's contact
+# lock while it sends (CONTRACTS.md §8), so a slow client must not hold it
+# open: a socket that can't take the frame in time is dropped.
+WS_SEND_TIMEOUT_SECONDS = 5.0
+
+
 class ConnectionManager:
     """Active WebSocket connections grouped by match room (this process only)."""
 
@@ -91,7 +98,7 @@ class ConnectionManager:
         self._rooms: dict[str, list[WebSocket]] = {}
 
     async def connect(self, room: str, ws: WebSocket) -> None:
-        await ws.accept()
+        """Register an accepted socket; the caller holds the pair's contact lock."""
         self._rooms.setdefault(room, []).append(ws)
 
     def disconnect(self, room: str, ws: WebSocket) -> None:
@@ -102,9 +109,13 @@ class ConnectionManager:
     async def broadcast(self, room: str, data: dict) -> None:
         for ws in list(self._rooms.get(room, [])):
             try:
-                await ws.send_json(data)
+                await asyncio.wait_for(ws.send_json(data), timeout=WS_SEND_TIMEOUT_SECONDS)
             except Exception:
-                pass
+                self.disconnect(room, ws)
+                try:
+                    await asyncio.wait_for(ws.close(code=WS_CLOSE_UNAVAILABLE), timeout=1.0)
+                except Exception:
+                    pass
 
     async def close_room(self, room: str, code: int) -> None:
         for ws in self._rooms.pop(room, []):
@@ -119,31 +130,39 @@ connections = ConnectionManager()
 # Close code for a socket that is not (or no longer) allowed in its room:
 # not a participant, or contact between the pair is restricted.
 WS_CLOSE_FORBIDDEN = 4003
+# Close code for a socket dropped because it could not take a frame in time.
+WS_CLOSE_UNAVAILABLE = 1011
 
 
 async def deliver_message(db: AsyncSession, msg: MessageResponse) -> bool:
-    """Push a stored message to the match room, unless contact became restricted meanwhile.
+    """Push a stored message to the match room, unless contact is restricted.
 
-    A block can commit between the message's commit and this push; in that
-    case nothing is delivered and the room's sockets are closed.
+    The check and the push run under the pair's contact lock (CONTRACTS.md
+    §8): a block that commits first means nothing is pushed and the room's
+    sockets are closed; a block that arrives during the push waits for it.
     """
-    m = (await db.execute(select(Match).where(Match.id == msg.match_id))).scalar_one_or_none()
     room = str(msg.match_id)
-    if m is None or await safety.is_contact_restricted(db, m.user1_id, m.user2_id):
+    allowed = False
+    try:
+        m = (await db.execute(select(Match).where(Match.id == msg.match_id))).scalar_one_or_none()
+        allowed = m is not None and await safety.lock_contact(db, m.user1_id, m.user2_id)
+        if allowed:
+            data = msg.model_dump(mode="json")
+            await connections.broadcast(
+                room,
+                {
+                    "id": data["id"],
+                    "matchId": data["match_id"],
+                    "senderId": data["sender_id"],
+                    "body": data["body"],
+                    "createdAt": data["created_at"],
+                },
+            )
+    finally:
+        await db.rollback()  # releases the contact lock
+    if not allowed:
         await connections.close_room(room, WS_CLOSE_FORBIDDEN)
-        return False
-    data = msg.model_dump(mode="json")
-    await connections.broadcast(
-        room,
-        {
-            "id": data["id"],
-            "matchId": data["match_id"],
-            "senderId": data["sender_id"],
-            "body": data["body"],
-            "createdAt": data["created_at"],
-        },
-    )
-    return True
+    return allowed
 
 
 async def close_pair_rooms(db: AsyncSession, a: UUID, b: UUID) -> None:

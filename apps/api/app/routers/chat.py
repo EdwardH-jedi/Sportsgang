@@ -59,11 +59,13 @@ async def ws_chat(
     HTTP endpoints: an invalid token or a missing/inactive account closes
     with 1008 (HTTP 401); a non-participant, or a pair whose contact is
     restricted (block in either direction), closes with 4003 (HTTP 403).
-    Blocking closes the pair's open sockets, and every push re-checks the
-    restriction. Once connected, the server pushes new messages as JSON
-    objects whenever the partner sends via the HTTP POST endpoint. Clients
-    may send any text frame to keep the connection alive; those frames are
-    discarded.
+    The restriction check and the room registration run under the pair's
+    contact lock (CONTRACTS.md §8), so a block either commits first and this
+    socket is refused, or waits until it is registered and then closes it.
+    Every push re-checks under the same lock. Once connected, the server
+    pushes new messages as JSON objects whenever the partner sends via the
+    HTTP POST endpoint. Clients may send any text frame to keep the
+    connection alive; those frames are discarded.
     """
     try:
         user_id = decode_access_token(token)
@@ -79,19 +81,22 @@ async def ws_chat(
         return
 
     m = (await db.execute(select(Match).where(Match.id == match_id))).scalar_one_or_none()
-    if (
-        m is None
-        or (m.user1_id != user_id and m.user2_id != user_id)
-        or await safety.is_contact_restricted(db, user_id, chat_service.partner_of(m, user_id))
-    ):
-        await websocket.accept()
+    # The handshake is not contact: nothing reaches a socket until it is registered.
+    await websocket.accept()
+    room = str(match_id)
+    admitted = False
+    try:
+        if m is not None and user_id in (m.user1_id, m.user2_id):
+            admitted = await safety.lock_contact(db, user_id, chat_service.partner_of(m, user_id))
+            if admitted:
+                await chat_service.connections.connect(room, websocket)
+    finally:
+        # Releases the contact lock; no transaction is held for the socket's lifetime.
+        await db.rollback()
+    if not admitted:
         await websocket.close(code=chat_service.WS_CLOSE_FORBIDDEN)
         return
-    # Don't hold this session's transaction open for the socket's lifetime.
-    await db.rollback()
 
-    room = str(match_id)
-    await chat_service.connections.connect(room, websocket)
     try:
         while True:
             await websocket.receive_text()  # discard keep-alive pings from client

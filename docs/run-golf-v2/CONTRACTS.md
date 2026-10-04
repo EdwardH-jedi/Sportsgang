@@ -396,8 +396,8 @@ tested across DST boundaries, e.g. 2026-10-04 02:00 → 03:00).
 
 ## 8. Blocking and contact restriction (review R1)
 
-Source of truth: `app/services/safety.py` (`ensure_contact_allowed`,
-`is_contact_restricted`). A pair is **contact-restricted** while a block row
+Source of truth: `app/services/safety.py` (`lock_contact`,
+`ensure_contact_allowed`, `is_contact_restricted`). A pair is **contact-restricted** while a block row
 exists in either direction, or while either account is inactive or missing.
 The block row stays directional (who blocked whom) but its effect is
 bilateral.
@@ -424,14 +424,13 @@ honor row.
 WebSocket admission now matches HTTP auth: an invalid token or a missing or
 inactive account closes with **1008** (HTTP 401); a non-participant or a
 restricted pair closes with **4003** (HTTP 403). A successful
-`POST /blocks/{id}` closes every open chat socket between the pair (4003),
-and every push re-checks the restriction, so a message that committed just
-before a block is stored but not pushed after it. Socket bookkeeping is
-in-process (one API process); the per-push check is what holds if that
-changes.
+`POST /blocks/{id}` closes every open chat socket between the pair (4003).
+A message stored before a block but not yet pushed when the block commits
+is kept and not pushed. The ordering of admission, delivery and pushes
+against a block is defined under *Serialization and ordering* below.
 
-A `proposal_received` push queued before a block is not delivered after it
-(`failed_reason = "contact_restricted"`, row kept).
+A `proposal_received` push not yet dispatched when a block commits is never
+dispatched (`failed_reason = "contact_restricted"`, row kept).
 
 ### Kept while restricted (history and commitments)
 
@@ -451,14 +450,66 @@ A `proposal_received` push queued before a block is not delivered after it
 - Account deletion is unchanged (hard delete; the pair's match, messages and
   bookings cascade away).
 
-### Serialization
+### Serialization and ordering (reviews R1, Q01–Q03)
 
-Contact writes lock the pair's two `users` rows `FOR SHARE` (in id order)
-before reading `blocks`; block and unblock lock them `FOR NO KEY UPDATE`. A
-write that commits before a block is ordinary pre-block history; a write
-that waits on a block re-reads after it commits and is refused. Verified on
-PostgreSQL in `tests_integration/test_contact_restriction.py`; SQLite (unit
-suite) ignores the locking clause.
+**Authority boundary.** The pair's two `users` rows in PostgreSQL. Every
+contact effect takes them `FOR SHARE` (in id order) with
+`safety.lock_contact`, reads both accounts' `is_active` and the `blocks`
+table *after* the lock, and keeps the lock until its effect is complete;
+block and unblock take them `FOR NO KEY UPDATE` and commit. The active flags
+are read as fresh scalar columns, never from User entities already in the
+session (an authenticated actor deactivated while its request waited on the
+lock is refused — Q02).
+
+| Contact effect | Held under the lock (check → … → release) |
+|---|---|
+| Contact write (message, discovery action, proposal, confirmation, challenge) | check → insert → commit |
+| Realtime admission (`/matches/{id}/ws`) | check → register the already-accepted socket → rollback |
+| Realtime delivery (after `POST …/messages` commits) | check → send the frame to every registered socket → rollback |
+| Proposal push (`/internal/process-notifications` or `worker.py`) | check → token lookup → provider call → mark → commit |
+
+**Linearization rule.** Because the block's lock conflicts with every
+effect's lock, each effect happens entirely before the block commits or is
+refused after it: a block arriving during an effect waits for it to finish;
+an effect arriving after the block commits sees the block. The block's
+socket closure runs after its commit, so it finds every socket registered
+before the commit, and none can register after it. Pre-block history
+(stored messages, frames sent and pushes made before the commit) is
+retained, as before. Status notices (confirmed, declined, cancelled,
+reminder) are not contact and take no pair lock.
+
+**Bounds and failure behaviour.**
+
+- Accepting the WebSocket handshake happens before the lock; a refused
+  socket is then closed with 4003. Nothing reaches a socket before it is
+  registered.
+- One frame to one socket is bounded by `chat.WS_SEND_TIMEOUT_SECONDS`
+  (5 s); a socket that cannot take it in time is dropped (closed 1011), so a
+  slow client cannot hold the lock.
+- The dispatcher takes the pair lock with PostgreSQL `lock_timeout =
+  notifications.CONTACT_LOCK_TIMEOUT` (5 s). If it expires, that event and
+  the rest of the cycle are left pending — not sent, not marked — for the
+  next run. Each event is its own transaction, committed before the next.
+- The whole provider call is bounded by
+  `notifications.PROVIDER_TIMEOUT_SECONDS` (10 s); a timeout marks the event
+  `delivery_failed`. A block that arrives during a proposal push therefore
+  waits at most about this long.
+- Lock order is always id order and an effect holds one pair at a time, so
+  blocks and effects cannot deadlock.
+
+**Topology limit.** Socket bookkeeping is in-process. The rule above closes
+every socket of the pair when the API runs as one process (today's
+`fly.toml` `app` process, one uvicorn worker). Pushes are safe across
+processes because the boundary is in PostgreSQL. If more than one API
+process serves WebSockets (e.g. a second Fly `app` machine started by
+`auto_start_machines`), a block's closure cannot reach sockets held by the
+other process; that topology is not supported for realtime chat and is out
+of scope for this repair (no distributed realtime layer was added).
+
+Verified on PostgreSQL in `tests_integration/test_contact_restriction.py`
+and `tests_integration/test_contact_authority.py` (deterministic barriers,
+real uvicorn/WebSocket client, a separate worker process; waits observed in
+`pg_stat_activity`); SQLite (unit suite) ignores the locking clause.
 
 ### Client
 

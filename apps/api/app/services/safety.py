@@ -26,13 +26,16 @@ from app.schemas.safety import (
 # message, a discovery action, a booking proposal or confirmation, a
 # challenge — and every realtime admission/delivery asks this module.
 #
-# Writes serialize with block/unblock on the pair's `users` rows: contact
-# writes take FOR SHARE, block/unblock take FOR NO KEY UPDATE, always in id
-# order, and the block lookup runs after the lock. A send that commits before
-# a block is ordinary pre-block history; one that waits on the block's lock
-# re-reads after it commits and is refused, so nothing is written. (FOR
-# UPDATE would also collide with the FOR KEY SHARE every FK insert takes.)
-# SQLite ignores the locking clause, so the unit suite runs unchanged.
+# The pair's `users` rows are the one authority boundary for contact. Every
+# contact effect — a contact write, a realtime socket admission (check →
+# register), a realtime delivery (check → broadcast) and a proposal push
+# (check → token → provider) — runs inside a transaction holding FOR SHARE on
+# both rows; block/unblock take FOR NO KEY UPDATE, always in id order, and
+# the restriction is read after the lock. So each effect happens entirely
+# before a block commits or is refused after it; a block waits for effects
+# already in progress. (FOR UPDATE would also collide with the FOR KEY SHARE
+# every FK insert takes.) SQLite ignores the locking clause, so the unit
+# suite runs unchanged.
 # ---------------------------------------------------------------------------
 
 # One message for every reason (either block direction, inactive account):
@@ -40,10 +43,16 @@ from app.schemas.safety import (
 CONTACT_UNAVAILABLE = "You can't contact this person."
 
 
-async def _lock_pair(db: AsyncSession, a: UUID, b: UUID, *, exclusive: bool) -> list[User]:
-    stmt = select(User).where(User.id.in_([a, b])).order_by(User.id)
+async def _lock_pair(db: AsyncSession, a: UUID, b: UUID, *, exclusive: bool) -> dict[UUID, bool]:
+    """Lock the pair's users rows in id order; return each row's active flag as of the lock.
+
+    Scalar columns, never User entities: the authenticated actor is already in
+    the session's identity map, and an entity select would hand back its
+    pre-wait attributes after waiting on another transaction (review Q02).
+    """
+    stmt = select(User.id, User.is_active).where(User.id.in_([a, b])).order_by(User.id)
     stmt = stmt.with_for_update(key_share=True) if exclusive else stmt.with_for_update(read=True)
-    return list((await db.execute(stmt)).scalars().all())
+    return {row.id: row.is_active for row in (await db.execute(stmt)).all()}
 
 
 def _block_between(a: UUID, b: UUID):
@@ -54,11 +63,23 @@ def _block_between(a: UUID, b: UUID):
 
 
 async def is_contact_restricted(db: AsyncSession, a: UUID, b: UUID) -> bool:
-    """True when a and b may not contact each other (no locking; for reads and delivery)."""
+    """True when a and b may not contact each other (no locking; for reads, not contact effects)."""
     users = (await db.execute(select(User.is_active).where(User.id.in_([a, b])))).scalars().all()
     if len(users) != 2 or not all(users):
         return True
     return (await db.execute(select(Block.id).where(_block_between(a, b)).limit(1))).first() is not None
+
+
+async def lock_contact(db: AsyncSession, a: UUID, b: UUID) -> bool:
+    """Take the pair's contact lock for this transaction; True if a and b may contact each other now.
+
+    The lock (FOR SHARE) is held until the caller commits or rolls back, so
+    the caller's contact effect stays ordered before any block of the pair.
+    """
+    active = await _lock_pair(db, a, b, exclusive=False)
+    if len(active) != 2 or not all(active.values()):
+        return False
+    return (await db.execute(select(Block.id).where(_block_between(a, b)).limit(1))).first() is None
 
 
 async def ensure_contact_allowed(db: AsyncSession, actor_id: UUID, other_id: UUID) -> None:
@@ -66,11 +87,7 @@ async def ensure_contact_allowed(db: AsyncSession, actor_id: UUID, other_id: UUI
 
     Call before any contact write; the caller's commit releases the lock.
     """
-    users = await _lock_pair(db, actor_id, other_id, exclusive=False)
-    restricted = len(users) != 2 or not all(u.is_active for u in users)
-    if not restricted:
-        restricted = (await db.execute(select(Block.id).where(_block_between(actor_id, other_id)).limit(1))).first()
-    if restricted:
+    if not await lock_contact(db, actor_id, other_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=CONTACT_UNAVAILABLE)
 
 
