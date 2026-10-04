@@ -1,0 +1,643 @@
+FFFFF.FFFF.                                                              [100%]
+=================================== FAILURES ===================================
+_ test_two_workers_paused_before_the_claim_invoke_the_provider_once[proposal_received] _
+
+kind = 'proposal_received'
+
+    @pytest.mark.parametrize("kind", ["proposal_received", "booking_confirmed"])
+    async def test_two_workers_paused_before_the_claim_invoke_the_provider_once(kind: str) -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, a_id, b, b_id, _, booking_id = await _proposal_with_tokens(srv.client, f"own2-{kind[:8]}")
+            recipient = b_id
+            if kind == "booking_confirmed":  # a status notice: no pair lock, ownership alone
+                assert (await srv.client.post(f"/bookings/{booking_id}/confirm", headers=b, json={})).status_code == 200
+                recipient = a_id
+            event_id = str((await _event(booking_id, kind)).id)
+            first = second = None
+            try:
+                first = await _spawn("before-dispatch", recipient, booking_id, event_id)
+                second = await _spawn("before-dispatch", recipient, booking_id, event_id)  # both hold it as due
+                one, two = await _resume(first, second)
+            finally:
+                await _kill(first, second)
+            sent = [k for k in _tagged(one, "PROVIDER_INVOCATION") + _tagged(two, "PROVIDER_INVOCATION") if k == kind]
+>           assert sent == [kind]
+E           AssertionError: assert ['proposal_re...sal_received'] == ['proposal_received']
+E             
+E             Left contains one more item: 'proposal_received'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:132: AssertionError
+_ test_two_workers_paused_before_the_claim_invoke_the_provider_once[booking_confirmed] _
+
+kind = 'booking_confirmed'
+
+    @pytest.mark.parametrize("kind", ["proposal_received", "booking_confirmed"])
+    async def test_two_workers_paused_before_the_claim_invoke_the_provider_once(kind: str) -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, a_id, b, b_id, _, booking_id = await _proposal_with_tokens(srv.client, f"own2-{kind[:8]}")
+            recipient = b_id
+            if kind == "booking_confirmed":  # a status notice: no pair lock, ownership alone
+                assert (await srv.client.post(f"/bookings/{booking_id}/confirm", headers=b, json={})).status_code == 200
+                recipient = a_id
+            event_id = str((await _event(booking_id, kind)).id)
+            first = second = None
+            try:
+                first = await _spawn("before-dispatch", recipient, booking_id, event_id)
+                second = await _spawn("before-dispatch", recipient, booking_id, event_id)  # both hold it as due
+                one, two = await _resume(first, second)
+            finally:
+                await _kill(first, second)
+            sent = [k for k in _tagged(one, "PROVIDER_INVOCATION") + _tagged(two, "PROVIDER_INVOCATION") if k == kind]
+>           assert sent == [kind]
+E           AssertionError: assert ['booking_con...ng_confirmed'] == ['booking_confirmed']
+E             
+E             Left contains one more item: 'booking_confirmed'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:132: AssertionError
+_ test_internal_endpoint_skips_the_event_a_worker_owns_and_sends_the_rest_once _
+
+    async def test_internal_endpoint_skips_the_event_a_worker_owns_and_sends_the_rest_once() -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, _, _, held_recipient, _, held = await _proposal_with_tokens(srv.client, "own-held")
+            _, _, b2, _, _, other = await _proposal_with_tokens(srv.client, "own-batch")
+            assert (await srv.client.post(f"/bookings/{other}/confirm", headers=b2, json={})).status_code == 200
+            provider = _Provider()
+            worker = None
+            try:
+                worker = await _spawn("after-lock", held_recipient, held)  # owns `held`, paused under its pair lock
+                with patch.object(notif_service, "_send_expo_push", provider):
+                    r = await asyncio.wait_for(srv.client.post("/internal/process-notifications"), timeout=5)
+                assert r.status_code == 200, r.text
+>               assert provider.types_for(held) == []
+E               AssertionError: assert ['proposal_received'] == []
+E                 
+E                 Left contains one more item: 'proposal_received'
+E                 Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:150: AssertionError
+____________ test_worker_skips_the_event_the_internal_endpoint_owns ____________
+
+    async def test_worker_skips_the_event_the_internal_endpoint_owns() -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, _, _, b_id, _, booking_id = await _proposal_with_tokens(srv.client, "own-endpoint")
+            provider = _Provider()
+            reached, resume = asyncio.Event(), asyncio.Event()
+            original_token = notif_service._get_latest_push_token
+    
+            async def held_token(db, user_id):
+                if str(user_id) == b_id:
+                    reached.set()
+                    await resume.wait()
+                return await original_token(db, user_id)
+    
+            worker = None
+            with (
+                patch.object(notif_service, "_send_expo_push", provider),
+                patch.object(notif_service, "_get_latest_push_token", held_token),
+            ):
+                endpoint = asyncio.create_task(srv.client.post("/internal/process-notifications"))
+                try:
+                    await asyncio.wait_for(reached.wait(), timeout=5)  # the endpoint owns the event
+                    worker = await _spawn("run", b_id, booking_id, barrier=False)
+                    stdout, stderr = await asyncio.wait_for(worker.communicate(), timeout=30)
+                    assert worker.returncode == 0, stderr.decode()
+                finally:
+                    resume.set()
+                    await _kill(worker)
+                assert (await asyncio.wait_for(endpoint, timeout=10)).status_code == 200
+>           assert _tagged(stdout.decode().splitlines(), "PROVIDER_INVOCATION") == []
+E           AssertionError: assert ['proposal_received'] == []
+E             
+E             Left contains one more item: 'proposal_received'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:193: AssertionError
+__ test_processor_with_an_old_due_list_and_identity_map_skips_a_settled_event __
+
+    async def test_processor_with_an_old_due_list_and_identity_map_skips_a_settled_event() -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, _, _, _, _, booking_id = await _proposal_with_tokens(srv.client, "own-stale")
+            event_id = (await _event(booking_id, "proposal_received")).id
+            provider = _Provider()
+            original_dispatch = notif_service._dispatch
+            intercepted = False
+    
+            async def settled_meanwhile(db, event, now):
+                nonlocal intercepted
+                if not intercepted and getattr(event, "id", event) == event_id:
+                    intercepted = True
+                    stale = await db.get(NotificationEvent, event_id)  # an unsettled copy in this session
+                    assert stale.sent_at is None
+                    async with AsyncSessionLocal() as other:
+                        await notif_service.process_pending_notifications(other)  # another processor sends it
+                return await original_dispatch(db, event, now)
+    
+            with (
+                patch.object(notif_service, "_send_expo_push", provider),
+                patch.object(notif_service, "_dispatch", settled_meanwhile),
+            ):
+                async with AsyncSessionLocal() as db:
+                    await notif_service.process_pending_notifications(db)
+            assert intercepted
+>           assert provider.types_for(booking_id) == ["proposal_received"]
+E           AssertionError: assert ['proposal_re...sal_received'] == ['proposal_received']
+E             
+E             Left contains one more item: 'proposal_received'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:222: AssertionError
+_ test_exception_before_the_provider_call_hands_the_event_back_and_releases_the_pair _
+
+self = <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x10eec5960>
+operation = 'SELECT id FROM users WHERE id IN ($1, $2) ORDER BY id FOR NO KEY UPDATE NOWAIT'
+parameters = ('9d56f93f-0e17-4907-b41f-abc008dd8501', '4acb86d9-8c35-4af2-947f-6e8b4abe07d9')
+
+    async def _prepare_and_execute(self, operation, parameters):
+        adapt_connection = self._adapt_connection
+    
+        async with adapt_connection._execute_mutex:
+            if not adapt_connection._started:
+                await adapt_connection._start_transaction()
+    
+            if parameters is None:
+                parameters = ()
+    
+            try:
+                prepared_stmt, attributes = await adapt_connection._prepare(
+                    operation, self._invalidate_schema_cache_asof
+                )
+    
+                if attributes:
+                    self.description = [
+                        (
+                            attr.name,
+                            attr.type.oid,
+                            None,
+                            None,
+                            None,
+                            None,
+                            None,
+                        )
+                        for attr in attributes
+                    ]
+                else:
+                    self.description = None
+    
+                if self.server_side:
+                    self._cursor = await prepared_stmt.cursor(*parameters)
+                    self.rowcount = -1
+                else:
+>                   self._rows = deque(await prepared_stmt.fetch(*parameters))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:550: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:177: in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:268: in __bind_execute
+    data, status, _ = await self.__do_execute(
+.venv/lib/python3.12/site-packages/asyncpg/prepared_stmt.py:257: in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   asyncpg.exceptions.LockNotAvailableError: could not obtain lock on row in relation "users"
+
+asyncpg/protocol/protocol.pyx:205: LockNotAvailableError
+
+The above exception was the direct cause of the following exception:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10e32b950>
+dialect = <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x10e3313a0>
+context = <sqlalchemy.dialects.postgresql.asyncpg.PGExecutionContext_asyncpg object at 0x10e31cf80>
+statement = <sqlalchemy.dialects.postgresql.asyncpg.PGCompiler_asyncpg object at 0x10e31f800>
+parameters = [('9d56f93f-0e17-4907-b41f-abc008dd8501', '4acb86d9-8c35-4af2-947f-6e8b4abe07d9')]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10eeeeb70>>
+error = LockNotAvailableError('could not obtain lock on row in relation "users"')
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.LockNotAvailableError'>: could not obtain lock on row in relation "users"
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: Error
+
+The above exception was the direct cause of the following exception:
+
+    async def test_exception_before_the_provider_call_hands_the_event_back_and_releases_the_pair() -> None:
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, a_id, _, b_id, _, booking_id = await _proposal_with_tokens(srv.client, "own-raise")
+            provider = _Provider()
+            original_token = notif_service._get_latest_push_token
+            raised: list[str] = []
+    
+            async def broken_token(db, user_id):
+                if str(user_id) == b_id:
+                    raised.append(b_id)
+                    raise RuntimeError("injected failure under the pair lock")
+                return await original_token(db, user_id)
+    
+            with patch.object(notif_service, "_send_expo_push", provider):
+                async with AsyncSessionLocal() as db:
+                    with patch.object(notif_service, "_get_latest_push_token", broken_token):
+                        with pytest.raises(RuntimeError, match="injected"):
+                            await notif_service.process_pending_notifications(db)
+                    assert raised == [b_id]
+>                   await _pair_lock_is_free(a_id, b_id)  # released before the error left the processor
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_integration/test_notification_ownership.py:268: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests_integration/test_notification_ownership.py:108: in _pair_lock_is_free
+    async with _PairLock(a_id, b_id, "FOR NO KEY UPDATE NOWAIT") as lock:  # raises if still held
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_integration/test_contact_restriction.py:95: in __aenter__
+    await self.conn.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/engine.py:659: in execute
+    result = await greenlet_spawn(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:585: in execute
+    self._adapt_connection.await_(
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:563: in _prepare_and_execute
+    self._handle_exception(error)
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:513: in _handle_exception
+    self._adapt_connection._handle_exception(error)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <AdaptedConnection <asyncpg.connection.Connection object at 0x10eeeeb70>>
+error = LockNotAvailableError('could not obtain lock on row in relation "users"')
+
+    def _handle_exception(self, error):
+        if self._connection.is_closed():
+            self._transaction = None
+            self._started = False
+    
+        if not isinstance(error, AsyncAdapt_asyncpg_dbapi.Error):
+            exception_mapping = self.dbapi._asyncpg_error_translate
+    
+            for super_ in type(error).__mro__:
+                if super_ in exception_mapping:
+                    translated_error = exception_mapping[super_](
+                        "%s: %s" % (type(error), error)
+                    )
+                    translated_error.pgcode = translated_error.sqlstate = (
+                        getattr(error, "sqlstate", None)
+                    )
+>                   raise translated_error from error
+E                   sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.LockNotAvailableError'>: could not obtain lock on row in relation "users"
+E                   [SQL: SELECT id FROM users WHERE id IN ($1, $2) ORDER BY id FOR NO KEY UPDATE NOWAIT]
+E                   [parameters: ('9d56f93f-0e17-4907-b41f-abc008dd8501', '4acb86d9-8c35-4af2-947f-6e8b4abe07d9')]
+E                   (Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:797: DBAPIError
+__ test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent[cancel] __
+
+interruption = 'cancel'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e30e8d0>
+
+    @pytest.mark.parametrize("interruption", ["cancel", "provider-timeout"])
+    async def test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent(interruption: str, monkeypatch) -> None:
+        monkeypatch.setattr(notif_service, "PROVIDER_TIMEOUT_SECONDS", 0.5)
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, a_id, _, b_id, _, booking_id = await _proposal_with_tokens(srv.client, f"own-{interruption}")
+            calls: list[str] = []
+            entered = asyncio.Event()
+    
+            async def hanging(token, title, body, data):
+                if data["bookingId"] == booking_id:
+                    calls.append(data["type"])
+                    entered.set()
+                    await asyncio.Event().wait()
+                return True
+    
+            with patch.object(notif_service, "_send_expo_push", hanging):
+                async with AsyncSessionLocal() as db:
+                    job = asyncio.create_task(notif_service.process_pending_notifications(db))
+                    await asyncio.wait_for(entered.wait(), timeout=10)
+                    if interruption == "cancel":
+                        job.cancel()
+                        with pytest.raises(asyncio.CancelledError):
+                            await job
+                    else:
+                        await asyncio.wait_for(job, timeout=5)
+                await _pair_lock_is_free(a_id, b_id)
+                async with AsyncSessionLocal() as db:
+                    await asyncio.wait_for(notif_service.process_pending_notifications(db), timeout=10)
+>           assert calls == ["proposal_received"]  # the provider may have accepted it: not called again
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert ['proposal_re...sal_received'] == ['proposal_received']
+E             
+E             Left contains one more item: 'proposal_received'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:304: AssertionError
+_ test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent[provider-timeout] _
+
+interruption = 'provider-timeout'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e334200>
+
+    @pytest.mark.parametrize("interruption", ["cancel", "provider-timeout"])
+    async def test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent(interruption: str, monkeypatch) -> None:
+        monkeypatch.setattr(notif_service, "PROVIDER_TIMEOUT_SECONDS", 0.5)
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, a_id, _, b_id, _, booking_id = await _proposal_with_tokens(srv.client, f"own-{interruption}")
+            calls: list[str] = []
+            entered = asyncio.Event()
+    
+            async def hanging(token, title, body, data):
+                if data["bookingId"] == booking_id:
+                    calls.append(data["type"])
+                    entered.set()
+                    await asyncio.Event().wait()
+                return True
+    
+            with patch.object(notif_service, "_send_expo_push", hanging):
+                async with AsyncSessionLocal() as db:
+                    job = asyncio.create_task(notif_service.process_pending_notifications(db))
+                    await asyncio.wait_for(entered.wait(), timeout=10)
+                    if interruption == "cancel":
+                        job.cancel()
+                        with pytest.raises(asyncio.CancelledError):
+                            await job
+                    else:
+                        await asyncio.wait_for(job, timeout=5)
+                await _pair_lock_is_free(a_id, b_id)
+                async with AsyncSessionLocal() as db:
+                    await asyncio.wait_for(notif_service.process_pending_notifications(db), timeout=10)
+            assert calls == ["proposal_received"]  # the provider may have accepted it: not called again
+            event = await _event(booking_id, "proposal_received")
+>           assert event.sent_at is None and event.failed_reason == notif_service.UNCONFIRMED
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'app.services.notifications' has no attribute 'UNCONFIRMED'
+
+tests_integration/test_notification_ownership.py:306: AttributeError
+_ test_provider_success_then_failed_commit_stays_unconfirmed_and_is_not_resent _
+
+    async def test_provider_success_then_failed_commit_stays_unconfirmed_and_is_not_resent() -> None:
+        """Observation (review item 5): ambiguous, not exactly-once — the notice may have been delivered.
+    
+        The review's probe failed every commit, which now stops the cycle before
+        any dispatch; this one fails only the commit that would record the send.
+        """
+        async with app.router.lifespan_context(app), _Server() as srv:
+            _, _, _, _, _, booking_id = await _proposal_with_tokens(srv.client, "own-commit")
+            provider = _Provider()
+            with patch.object(notif_service, "_send_expo_push", provider):
+                async with AsyncSessionLocal() as db:
+                    original_commit = db.commit
+                    injected: list[bool] = []
+    
+                    async def commit() -> None:
+                        if provider.types_for(booking_id) and not injected:
+                            injected.append(True)
+                            raise RuntimeError("injected commit failure after provider success")
+                        await original_commit()
+    
+                    with patch.object(db, "commit", commit):
+                        with pytest.raises(RuntimeError, match="injected"):
+                            await notif_service.process_pending_notifications(db)
+                    await db.rollback()
+                async with AsyncSessionLocal() as db:
+                    await notif_service.process_pending_notifications(db)
+>           assert provider.types_for(booking_id) == ["proposal_received"]
+E           AssertionError: assert ['proposal_re...sal_received'] == ['proposal_received']
+E             
+E             Left contains one more item: 'proposal_received'
+E             Use -v to get more diff
+
+tests_integration/test_notification_ownership.py:335: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  <scratch>/rc/base-8b34bca/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+app/services/content_moderation.py:53
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:53: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+profanity\s+fixture",
+
+app/services/content_moderation.py:62
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:62: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+sexual\s+fixture",
+
+app/services/content_moderation.py:69
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:69: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+harassment\s+fixture",
+
+app/services/content_moderation.py:84
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:84: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+threat\s+fixture",
+
+app/services/content_moderation.py:94
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:94: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+scam\s+fixture",
+
+app/services/content_moderation.py:101
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:101: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+fraud\s+fixture",
+
+app/services/content_moderation.py:108
+  <scratch>/rc/base-8b34bca/apps/api/app/services/content_moderation.py:108: SyntaxWarning: invalid escape sequence '\s'
+    "banned\s+spam\s+fixture",
+
+tests_integration/test_notification_ownership.py::test_two_workers_paused_before_the_claim_invoke_the_provider_once[proposal_received]
+  <scratch>/rc/base-8b34bca/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests_integration/test_notification_ownership.py::test_two_workers_paused_before_the_claim_invoke_the_provider_once[proposal_received]
+  <scratch>/rc/base-8b34bca/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests_integration/test_notification_ownership.py::test_two_workers_paused_before_the_claim_invoke_the_provider_once[proposal_received]
+FAILED tests_integration/test_notification_ownership.py::test_two_workers_paused_before_the_claim_invoke_the_provider_once[booking_confirmed]
+FAILED tests_integration/test_notification_ownership.py::test_internal_endpoint_skips_the_event_a_worker_owns_and_sends_the_rest_once
+FAILED tests_integration/test_notification_ownership.py::test_worker_skips_the_event_the_internal_endpoint_owns
+FAILED tests_integration/test_notification_ownership.py::test_processor_with_an_old_due_list_and_identity_map_skips_a_settled_event
+FAILED tests_integration/test_notification_ownership.py::test_exception_before_the_provider_call_hands_the_event_back_and_releases_the_pair
+FAILED tests_integration/test_notification_ownership.py::test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent[cancel]
+FAILED tests_integration/test_notification_ownership.py::test_interrupted_provider_call_stays_unconfirmed_and_is_not_resent[provider-timeout]
+FAILED tests_integration/test_notification_ownership.py::test_provider_success_then_failed_commit_stays_unconfirmed_and_is_not_resent
+9 failed, 2 passed, 10 warnings in 14.77s

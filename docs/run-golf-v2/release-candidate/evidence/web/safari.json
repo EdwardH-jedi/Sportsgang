@@ -1,0 +1,36 @@
+{
+  "result": "NOT_RUN",
+  "reason": "Safari WebDriver session could not be created because 'Allow remote automation' is off; enabling it would change Safari settings, which is out of scope for this verification.",
+  "safaridriver": {
+    "path": "/System/Cryptexes/App/usr/bin/safaridriver",
+    "version": "Included with Safari 26.5 (21624.2.5.11.4)",
+    "command": "safaridriver -p 4447 (started for this probe, then stopped)",
+    "statusEndpoint": {
+      "request": "GET http://127.0.0.1:4447/status",
+      "response": {
+        "value": {
+          "message": "",
+          "ready": true
+        }
+      }
+    },
+    "sessionRequest": "POST http://127.0.0.1:4447/session {\"capabilities\":{\"alwaysMatch\":{\"browserName\":\"safari\"}}}",
+    "sessionResponse": {
+      "httpStatus": 500,
+      "body": {
+        "value": {
+          "error": "session not created",
+          "message": "Could not create a session: You must enable 'Allow remote automation' in the Developer section of Safari Settings to control Safari via WebDriver.",
+          "stacktrace": ""
+        }
+      }
+    }
+  },
+  "safariAppVersion": "26.5 (from /Applications/Safari.app Info.plist)",
+  "notDone": [
+    "No Safari settings were changed and sudo was not used.",
+    "The Safari GUI was not opened deliberately; see sideEffect.",
+    "No WebKit-based substitute was run; every other result in this folder comes from Google Chrome 154 (Blink) and must not be read as Safari/WebKit coverage."
+  ],
+  "sideEffect": "The POST /session attempt itself launched Safari.app (process start 00:12:16 AEDT, same second as the request) even though the session was refused. That Safari process was terminated (SIGTERM) right after; no Safari window was used and no setting was changed."
+}

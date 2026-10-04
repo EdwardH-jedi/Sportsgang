@@ -43,18 +43,18 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (reason) · BLOCKED.
 | WEB-3 | Static `/privacy/`, `/terms/`, `/support/` preserved in the build from the official site branch; verified on the production preview | DONE — byte copies of `ad072fc`; `/privacy/` `/terms/` `/support/` 200 with identical bytes on `vite preview`; no-slash paths fall back to home (host must redirect) |
 | WEB-4 | Upcoming-update wording in title/description/OG/Twitter | DONE — `e70a946` (and the no-script note) |
 | WEB-5 | CLAIM_MATRIX updated with the Codex verdict and candidate code | DONE — verdict `ce62aac` recorded (NEEDS_FIXES / Q01–Q09 PASS / NOT_READY); A5, A6 updated; E1, E2, E7 stay PENDING |
-| WEB-6 | Browser checks: 320/390/768/1440, full keyboard, menu, FAQ, anchors, real zoom, reduced motion, no-JS, print, Safari | TODO |
+| WEB-6 | Browser checks: 320/390/768/1440, full keyboard, menu, FAQ, anchors, real zoom, reduced motion, no-JS, print, Safari | DONE — Chrome 154 headless; D1–D3 fixed in `a515b00` and re-checked; real 200 % zoom via profile setting (Cmd+= tool unavailable); Safari NOT_RUN (Remote Automation off) |
 
 ## Wave 4 — verification and home testing
 
 | ID | Item | Status |
 |---|---|---|
-| V-1 | API unit, Ruff, PostgreSQL/Redis integration (UTC + Sydney default), adapted probes | TODO |
-| V-2 | Mobile Jest, lint, typecheck, review mobile probes, iOS bundle | TODO |
-| V-3 | Launcher: Docker-free/Docker, caller TZ variants | TODO |
-| V-4 | Web typecheck/build/preview checks | TODO |
-| QA-1 | Fresh candidate QA session (own project/ports/home), API/Metro + web preview healthy, identity verified | TODO |
-| QA-2 | HUMAN_QA.md checklist | TODO |
+| V-1 | API unit, Ruff, PostgreSQL/Redis integration (UTC + Sydney default), adapted probes | DONE — 773; clean; 64 + 64; R1 adapted 94 PASS; reviewer follow-ups 11 pass / 2 adapted |
+| V-2 | Mobile Jest, lint, typecheck, review mobile probes, iOS bundle | DONE — 968 (UTC and Sydney); clean; 16/16; export OK |
+| V-3 | Launcher: Docker-free/Docker, caller TZ variants | DONE — 14 + 7 skips ×2; 21/21 ×2 |
+| V-4 | Web typecheck/build/preview checks | DONE — at `a515b00`; legal routes byte-identical |
+| QA-1 | Fresh candidate QA session (own project/ports/home), API/Metro + web preview healthy, identity verified | DONE — `sg-rc-20261004-qa` API 8163 / Metro 8263 from `a515b00`, fresh fixtures; preview 5196 (detached) |
+| QA-2 | HUMAN_QA.md checklist | DONE |
 | R6 | Remains separate: existing provenance procedure and proposal; NOT_RUN | NOT_RUN |
 
 ## Delivery

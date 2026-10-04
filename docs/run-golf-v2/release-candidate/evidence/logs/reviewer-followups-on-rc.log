@@ -1,0 +1,129 @@
+..F.F........                                                            [100%]
+=================================== FAILURES ===================================
+___________ test_concurrent_processors_claim_event_once[two-workers] ___________
+
+topology = 'two-workers'
+
+    @pytest.mark.parametrize('topology', ['two-workers', 'worker-internal-endpoint'])
+    async def test_concurrent_processors_claim_event_once(topology):
+        procs = []
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            a, ai, b, bi, bid = await notice(c, topology)
+            procs.append(await worker(bi, bid))
+            api_calls = []
+            try:
+                if topology == 'two-workers':
+>                   procs.append(await worker(bi, bid))
+                                 ^^^^^^^^^^^^^^^^^^^^^
+
+<scratch>/rc/review-copy/test_independent_followups.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+bi = '66356c88-14d2-4c53-86ea-d101a341790d'
+bid = '2a11c43d-49d1-4d06-b002-6fcda76c251e'
+
+    async def worker(bi, bid):
+        p = await asyncio.create_subprocess_exec(sys.executable, 'tests_integration/notification_worker_barrier.py', 'after-lock', bi, bid, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        first = await asyncio.wait_for(p.stdout.readline(), 10)
+>       assert first.strip() == b'BARRIER', first
+E       AssertionError: b'RESULT processed=0 failed=0
+E         '
+E       assert b'RESULT processed=0 failed=0' == b'BARRIER'
+E         
+E         At index 0 diff: b'R' != b'B'
+E         Use -v to get more diff
+
+<scratch>/rc/review-copy/test_independent_followups.py:104: AssertionError
+______________ test_provider_success_commit_failure_is_ambiguous _______________
+
+    async def test_provider_success_commit_failure_is_ambiguous():
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            a, ai, b, bi, bid = await notice(c, 'commit-failure')
+            calls = []
+            async def provider(token, title, body, data):
+                calls.append(data['bookingId'])
+                return True
+            async def broken_commit():
+                raise RuntimeError('reviewer injected database commit failure after provider success')
+            with patch.object(notifications, '_send_expo_push', provider):
+                async with AsyncSessionLocal() as db:
+                    with patch.object(db, 'commit', broken_commit):
+                        with pytest.raises(RuntimeError):
+                            await notifications.process_pending_notifications(db)
+                    await db.rollback()
+                async with AsyncSessionLocal() as db:
+                    result = await notifications.process_pending_notifications(db)
+            evidence('provider-success-commit-failure', dict(calls=calls, retry_processed=result.processed, ambiguity=True))
+>           assert calls == [bid, bid]  # observation, not an exactly-once acceptance claim
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert ['f948d6e9-00...db3ba42a4e69'] == ['f948d6e9-00...db3ba42a4e69']
+E             
+E             Right contains one more item: 'f948d6e9-0026-4157-9557-db3ba42a4e69'
+E             Use -v to get more diff
+
+<scratch>/rc/review-copy/test_independent_followups.py:165: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  <rc-worktree>/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+::test_event_times_follow_one_clock[-120]
+::test_event_times_follow_one_clock[120]
+  <rc-worktree>/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+::test_broadcast_total_bound_does_not_scale_per_socket
+  <rc-worktree>/apps/api/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function BaseSubprocessTransport.__del__ at 0x108419120>
+  
+  Traceback (most recent call last):
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_subprocess.py", line 126, in __del__
+      self.close()
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_subprocess.py", line 104, in close
+      proto.pipe.close()
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/unix_events.py", line 767, in close
+      self.write_eof()
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/unix_events.py", line 753, in write_eof
+      self._loop.call_soon(self._call_connection_lost, None)
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py", line 799, in call_soon
+      self._check_closed()
+    File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py", line 545, in _check_closed
+      raise RuntimeError('Event loop is closed')
+  RuntimeError: Event loop is closed
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  <rc-worktree>/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  <rc-worktree>/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  <rc-worktree>/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================== slowest durations ===============================
+10.97s call     ::test_broadcast_total_bound_does_not_scale_per_socket
+1.16s call     ::test_concurrent_processors_claim_event_once[two-workers]
+1.11s call     ::test_concurrent_processors_claim_event_once[worker-internal-endpoint]
+0.79s call     ::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+0.72s call     ::test_event_times_follow_one_clock[-120]
+0.71s call     ::test_event_times_follow_one_clock[120]
+0.54s call     ::test_notification_lock_cleanup[provider-timeout]
+0.47s call     ::test_notification_lock_cleanup[exception]
+0.46s call     ::test_provider_success_commit_failure_is_ambiguous
+0.46s call     ::test_notification_lock_cleanup[cancel]
+0.45s call     ::test_delivery_lock_cleanup[exception]
+0.44s call     ::test_delivery_lock_cleanup[cancel]
+0.30s call     ::test_stuck_close_does_not_prevent_other_socket_closure
+0.02s teardown ::test_broadcast_total_bound_does_not_scale_per_socket
+0.01s teardown ::test_event_times_follow_one_clock[-120]
+
+(24 durations < 0.005s hidden.  Use -vv to show these durations.)
+2 failed, 11 passed, 8 warnings in 19.42s

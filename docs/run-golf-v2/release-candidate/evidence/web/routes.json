@@ -1,0 +1,410 @@
+{
+  "tool": "curl curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.1",
+  "preview": "http://127.0.0.1:5196",
+  "localRoutes": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 3563,
+      "locationHeader": null,
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "sha256": "39ccccac142e8172",
+      "matchesDistFile": "dist/index.html",
+      "byteIdenticalToDist": true
+    },
+    {
+      "path": "/privacy/",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 15047,
+      "locationHeader": null,
+      "title": "Privacy Policy — SportGang",
+      "sha256": "ac01d480d0ee06d6",
+      "matchesDistFile": "dist/privacy/index.html",
+      "byteIdenticalToDist": true
+    },
+    {
+      "path": "/terms/",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 13209,
+      "locationHeader": null,
+      "title": "Terms of Service — SportGang",
+      "sha256": "bd3cf76dab142f5a",
+      "matchesDistFile": "dist/terms/index.html",
+      "byteIdenticalToDist": true
+    },
+    {
+      "path": "/support/",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 12750,
+      "locationHeader": null,
+      "title": "Support — SportGang",
+      "sha256": "a91bb8229ac2e903",
+      "matchesDistFile": "dist/support/index.html",
+      "byteIdenticalToDist": true
+    },
+    {
+      "path": "/styles.css",
+      "status": 200,
+      "contentType": "text/css",
+      "bytes": 33071,
+      "locationHeader": null,
+      "title": null,
+      "sha256": "c0337a664b11fda3",
+      "matchesDistFile": "dist/styles.css",
+      "byteIdenticalToDist": true
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 3563,
+      "locationHeader": null,
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "sha256": "39ccccac142e8172",
+      "servedBodyIs": "SPA index.html (fallback)"
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 3563,
+      "locationHeader": null,
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "sha256": "39ccccac142e8172",
+      "servedBodyIs": "SPA index.html (fallback)"
+    },
+    {
+      "path": "/support",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 3563,
+      "locationHeader": null,
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "sha256": "39ccccac142e8172",
+      "servedBodyIs": "SPA index.html (fallback)"
+    },
+    {
+      "path": "/privacy/index.html",
+      "status": 200,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 15047,
+      "locationHeader": null,
+      "title": "Privacy Policy — SportGang",
+      "sha256": "ac01d480d0ee06d6",
+      "matchesDistFile": "dist/privacy/index.html",
+      "byteIdenticalToDist": true
+    }
+  ],
+  "externalLinks": [
+    {
+      "url": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "method": "GET (follow redirects, browser User-Agent)",
+      "status": 200,
+      "effectiveUrl": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "redirects": 0,
+      "contentType": "text/html",
+      "title": "‎SportsGang App - App Store",
+      "mentionsSportsGang": true,
+      "error": null
+    },
+    {
+      "url": "https://sportgang.netlify.app/privacy/",
+      "method": "GET (follow redirects, browser User-Agent)",
+      "status": 200,
+      "effectiveUrl": "https://sportgang.netlify.app/privacy/",
+      "redirects": 0,
+      "contentType": "text/html; charset=UTF-8",
+      "title": "Privacy Policy — SportGang",
+      "mentionsSportsGang": true,
+      "error": null,
+      "byteIdenticalToLocalCopy": false,
+      "remoteBytes": 15373,
+      "localBytes": 15047,
+      "diffVsLocalCopy": "remote = local + one 3-line HTML comment (lines 5-7, \"This site is hosted on Netlify...\") injected by the host at serve time; no other byte differs (diff of remote vs apps/web/dist copy)"
+    },
+    {
+      "url": "https://sportgang.netlify.app/terms/",
+      "method": "GET (follow redirects, browser User-Agent)",
+      "status": 200,
+      "effectiveUrl": "https://sportgang.netlify.app/terms/",
+      "redirects": 0,
+      "contentType": "text/html; charset=UTF-8",
+      "title": "Terms of Service — SportGang",
+      "mentionsSportsGang": true,
+      "error": null,
+      "byteIdenticalToLocalCopy": false,
+      "remoteBytes": 13535,
+      "localBytes": 13209,
+      "diffVsLocalCopy": "remote = local + one 3-line HTML comment (lines 5-7, \"This site is hosted on Netlify...\") injected by the host at serve time; no other byte differs (diff of remote vs apps/web/dist copy)"
+    },
+    {
+      "url": "https://sportgang.netlify.app/support/",
+      "method": "GET (follow redirects, browser User-Agent)",
+      "status": 200,
+      "effectiveUrl": "https://sportgang.netlify.app/support/",
+      "redirects": 0,
+      "contentType": "text/html; charset=UTF-8",
+      "title": "Support — SportGang",
+      "mentionsSportsGang": true,
+      "error": null,
+      "byteIdenticalToLocalCopy": false,
+      "remoteBytes": 13076,
+      "localBytes": 12750,
+      "diffVsLocalCopy": "remote = local + one 3-line HTML comment (lines 5-7, \"This site is hosted on Netlify...\") injected by the host at serve time; no other byte differs (diff of remote vs apps/web/dist copy)"
+    }
+  ],
+  "pageHrefs": {
+    "all": [
+      {
+        "href": "#main",
+        "text": "Skip to content",
+        "region": "body",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#top",
+        "text": "sportsgang",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#running",
+        "text": "Running",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#golf",
+        "text": "Golf",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#how-it-works",
+        "text": "How it works",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#my-plans",
+        "text": "My Plans",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#faq",
+        "text": "FAQ",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "App Store (opens the App Store listing)",
+        "region": "header",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "Get SportsGang on the App Store (opens the App Sto",
+        "region": "main",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "#how-it-works",
+        "text": "See how it works",
+        "region": "main",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "App Store",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/privacy/",
+        "text": "Privacy Policy",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/terms/",
+        "text": "Terms of Service",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/support/",
+        "text": "Support",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "Get SportsGang on the App Store (opens the App Sto",
+        "region": "main",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/privacy/",
+        "text": "Privacy",
+        "region": "footer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/terms/",
+        "text": "Terms",
+        "region": "footer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/support/",
+        "text": "Support",
+        "region": "footer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "App Store",
+        "region": "footer",
+        "target": null,
+        "rel": null
+      }
+    ],
+    "mobileMenu": [
+      {
+        "href": "#running",
+        "text": "Running"
+      },
+      {
+        "href": "#golf",
+        "text": "Golf"
+      },
+      {
+        "href": "#how-it-works",
+        "text": "How it works"
+      },
+      {
+        "href": "#my-plans",
+        "text": "My Plans"
+      },
+      {
+        "href": "#faq",
+        "text": "FAQ"
+      },
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "Get SportsGang on the App Store (opens the App Sto"
+      }
+    ]
+  },
+  "pageHrefChecks": {
+    "appStoreAnchors": 5,
+    "allAppStoreHrefsExact": true,
+    "footerLinks": [
+      {
+        "text": "Privacy",
+        "href": "https://sportgang.netlify.app/privacy/",
+        "expected": "https://sportgang.netlify.app/privacy/",
+        "ok": true
+      },
+      {
+        "text": "Terms",
+        "href": "https://sportgang.netlify.app/terms/",
+        "expected": "https://sportgang.netlify.app/terms/",
+        "ok": true
+      },
+      {
+        "text": "Support",
+        "href": "https://sportgang.netlify.app/support/",
+        "expected": "https://sportgang.netlify.app/support/",
+        "ok": true
+      },
+      {
+        "text": "App Store",
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "expected": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "ok": true
+      }
+    ],
+    "faqAnswerLinks": [
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "App Store",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/privacy/",
+        "text": "Privacy Policy",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/terms/",
+        "text": "Terms of Service",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      },
+      {
+        "href": "https://sportgang.netlify.app/support/",
+        "text": "Support",
+        "region": "faq-answer",
+        "target": null,
+        "rel": null
+      }
+    ],
+    "mobileMenuAppStoreHref": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+    "anyTargetBlank": false,
+    "distinctHrefs": [
+      "#main",
+      "#top",
+      "#running",
+      "#golf",
+      "#how-it-works",
+      "#my-plans",
+      "#faq",
+      "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "https://sportgang.netlify.app/privacy/",
+      "https://sportgang.netlify.app/terms/",
+      "https://sportgang.netlify.app/support/"
+    ]
+  },
+  "result": {
+    "pageHrefs": "PASS",
+    "localLegalRoutes": "PASS",
+    "externalLinksResolve": "PASS",
+    "privacyNoTrailingSlash": "200 (SPA index.html (fallback))"
+  },
+  "remoteStylesCss": {
+    "url": "https://sportgang.netlify.app/styles.css",
+    "bytes": 33071,
+    "byteIdenticalToLocal": true
+  },
+  "noTrailingSlashNote": "vite preview answers /privacy, /terms and /support (no trailing slash) with 200 and the SPA index.html (the marketing page), not the legal page and not a redirect. Only /privacy/ etc. serve the legal pages. The page itself never links to the no-slash form (all legal links are absolute netlify URLs with a trailing slash). Production behaviour depends on the host and was not tested."
+}

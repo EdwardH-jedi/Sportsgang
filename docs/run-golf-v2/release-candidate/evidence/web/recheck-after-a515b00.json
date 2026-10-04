@@ -1,0 +1,295 @@
+{
+  "engine": "Chrome/154.0.8037.97",
+  "checks": {
+    "app_store_button": {
+      "320": {
+        "overflowX": false,
+        "buttons": [
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 288,
+            "h": 53.5,
+            "textLines": 4,
+            "wrap": "balance"
+          },
+          {
+            "text": "",
+            "w": 76,
+            "h": 18,
+            "textLines": 1,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 248,
+            "h": 53.5,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "App Store",
+            "w": 100,
+            "h": 44,
+            "textLines": 2,
+            "wrap": "auto"
+          }
+        ]
+      },
+      "390": {
+        "overflowX": false,
+        "buttons": [
+          {
+            "text": "App Store\n(opens the App Store listing)",
+            "w": 139,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 358,
+            "h": 48,
+            "textLines": 2,
+            "wrap": "balance"
+          },
+          {
+            "text": "",
+            "w": 294,
+            "h": 44,
+            "textLines": 2,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 318,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "App Store",
+            "w": 100,
+            "h": 44,
+            "textLines": 2,
+            "wrap": "auto"
+          }
+        ]
+      },
+      "768": {
+        "overflowX": false,
+        "buttons": [
+          {
+            "text": "App Store\n(opens the App Store listing)",
+            "w": 139,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 329,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "",
+            "w": 76,
+            "h": 18,
+            "textLines": 1,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 329,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "App Store",
+            "w": 100,
+            "h": 44,
+            "textLines": 2,
+            "wrap": "auto"
+          }
+        ]
+      },
+      "1440": {
+        "overflowX": false,
+        "buttons": [
+          {
+            "text": "App Store\n(opens the App Store listing)",
+            "w": 139,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 329,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "",
+            "w": 76,
+            "h": 18,
+            "textLines": 1,
+            "wrap": "auto"
+          },
+          {
+            "text": "Get SportsGang on the App Store\n(opens the App Store listing)",
+            "w": 329,
+            "h": 48,
+            "textLines": 3,
+            "wrap": "balance"
+          },
+          {
+            "text": "App Store",
+            "w": 100,
+            "h": 44,
+            "textLines": 2,
+            "wrap": "auto"
+          }
+        ]
+      }
+    },
+    "menu_high_zoom": {
+      "320x256": {
+        "navClientHeight": 191,
+        "navScrollHeight": 350,
+        "overflowY": "auto",
+        "items": [
+          {
+            "text": "Running",
+            "top": 73,
+            "bottom": 121,
+            "visible": true
+          },
+          {
+            "text": "Golf",
+            "top": 125,
+            "bottom": 173,
+            "visible": true
+          },
+          {
+            "text": "How it works",
+            "top": 177,
+            "bottom": 225,
+            "visible": true
+          },
+          {
+            "text": "My Plans",
+            "top": 208,
+            "bottom": 256,
+            "visible": true
+          },
+          {
+            "text": "FAQ",
+            "top": 136,
+            "bottom": 184,
+            "visible": true
+          },
+          {
+            "text": "Get SportsGang on the App Stor",
+            "top": 196,
+            "bottom": 250,
+            "visible": true
+          }
+        ],
+        "viewport": 256
+      },
+      "480x300": {
+        "navClientHeight": 235,
+        "navScrollHeight": 344,
+        "overflowY": "auto",
+        "items": [
+          {
+            "text": "Running",
+            "top": 73,
+            "bottom": 121,
+            "visible": true
+          },
+          {
+            "text": "Golf",
+            "top": 125,
+            "bottom": 173,
+            "visible": true
+          },
+          {
+            "text": "How it works",
+            "top": 177,
+            "bottom": 225,
+            "visible": true
+          },
+          {
+            "text": "My Plans",
+            "top": 229,
+            "bottom": 277,
+            "visible": true
+          },
+          {
+            "text": "FAQ",
+            "top": 252,
+            "bottom": 300,
+            "visible": true
+          },
+          {
+            "text": "Get SportsGang on the App Stor",
+            "top": 232,
+            "bottom": 280,
+            "visible": true
+          }
+        ],
+        "viewport": 300
+      },
+      "720x450": {
+        "navClientHeight": 344,
+        "navScrollHeight": 344,
+        "overflowY": "auto",
+        "items": [
+          {
+            "text": "Running",
+            "top": 73,
+            "bottom": 121,
+            "visible": true
+          },
+          {
+            "text": "Golf",
+            "top": 125,
+            "bottom": 173,
+            "visible": true
+          },
+          {
+            "text": "How it works",
+            "top": 177,
+            "bottom": 225,
+            "visible": true
+          },
+          {
+            "text": "My Plans",
+            "top": 229,
+            "bottom": 277,
+            "visible": true
+          },
+          {
+            "text": "FAQ",
+            "top": 281,
+            "bottom": 329,
+            "visible": true
+          },
+          {
+            "text": "Get SportsGang on the App Stor",
+            "top": 341,
+            "bottom": 389,
+            "visible": true
+          }
+        ],
+        "viewport": 450
+      }
+    },
+    "noscript_note": "see below"
+  }
+}

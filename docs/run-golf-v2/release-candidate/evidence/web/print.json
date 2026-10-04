@@ -1,0 +1,96 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new), command line: --headless=new --no-pdf-header-footer [--virtual-time-budget=8000 for /] --print-to-pdf=<file> <url> (default paper: US Letter 612x792 pt, default margins)",
+  "pdfInspection": "page count and text via macOS PDFKit (JXA); page images rendered via PDFKit and, for page 1 of /, via Chrome's PDFium viewer",
+  "pages": {
+    "/": {
+      "pdfFile": "print-home.pdf",
+      "bytes": 1082927,
+      "keptInEvidence": false,
+      "pageCount": "10",
+      "pageSizePt": "612x792",
+      "charsPerPage": [
+        547,
+        1145,
+        842,
+        899,
+        877,
+        753,
+        536,
+        105,
+        422,
+        428
+      ],
+      "visibleTextNodesOnPage": 167,
+      "matchedExactly": 164,
+      "matching": "each visible text node (print media, 739 px) is searched in the whitespace-stripped PDF text; if not contiguous (PDFKit splits words/reorders lines), 6-char chunk coverage >= 0.85 counts as present",
+      "visibleTextNodesMissingFromPdf": [
+        {
+          "text": "Prefer a group?",
+          "coverage": 0.5
+        }
+      ],
+      "closedFaqAnswerTextNodes": 17,
+      "closedFaqAnswerTextNodesPresentInPdf": 2,
+      "closedFaqAnswerTextNodesMatchedByCoverage": [
+        "No. SportsGang doesn’t book courses or tee times, doesn’t track runs or record routes, and doesn’t provide coaching. It helps you find people and agree a time and place.",
+        "Report or block them from a chat or their profile. Once blocked, neither of you can message, propose a session or show interest, and you won’t see each other in Explore."
+      ],
+      "visuallyVerifiedPresent": [
+        "Prefer a group? (seen on the rendered PDF page; PDFKit text extraction splits it across lines)"
+      ],
+      "missingAfterVisualCheck": []
+    },
+    "/privacy/": {
+      "pdfFile": "print-privacy.pdf",
+      "bytes": 740665,
+      "keptInEvidence": true,
+      "pageCount": "7",
+      "pageSizePt": "612x792",
+      "charsPerPage": [
+        858,
+        1485,
+        1599,
+        1643,
+        1842,
+        425,
+        59
+      ],
+      "visibleTextNodesOnPage": 158,
+      "matchedExactly": 153,
+      "matching": "each visible text node (print media, 739 px) is searched in the whitespace-stripped PDF text; if not contiguous (PDFKit splits words/reorders lines), 6-char chunk coverage >= 0.85 counts as present",
+      "visibleTextNodesMissingFromPdf": [
+        {
+          "text": "you create against another user.",
+          "coverage": 0.75
+        }
+      ],
+      "closedFaqAnswerTextNodes": 0,
+      "closedFaqAnswerTextNodesPresentInPdf": 0,
+      "closedFaqAnswerTextNodesMatchedByCoverage": [],
+      "visuallyVerifiedPresent": [
+        "you create against another user. (seen on the rendered PDF page; PDFKit text extraction splits it across lines)"
+      ],
+      "missingAfterVisualCheck": []
+    }
+  },
+  "toolNote": "The CLI process for / did not exit after writing the PDF (\"1082927 bytes written\") and was killed; the PDF itself is complete (10 pages).",
+  "evidenceFiles": [
+    "print-privacy.pdf",
+    "print-home-pdfkit-p01-p02.jpg",
+    "print-home-pdfkit-p07-p08.jpg",
+    "print-home-pdfkit-p09-p10.jpg",
+    "print-home-pdfium-p01.jpg"
+  ],
+  "observations": [
+    "/ (10 pages): every visible text string of the print-media layout is present in the PDF text; no line is cut mid-line at a page break (pages viewed).",
+    "/ : the 10 FAQ answers are not in the PDF because the <details> elements are closed when printed; only the questions print (page 9). The 2 entries in closedFaqAnswerTextNodesMatchedByCoverage are false positives: near-identical sentences exist in the Running and Safety sections.",
+    "/ : page 7 ends with the Safety card title \"Plans you agreed\" and its body text (\"A 1:1 session only counts as confirmed...\") is pushed to page 8, which holds only that one paragraph (cards have no break-inside: avoid). The hero partner-card illustration is also split across pages 1-2.",
+    "/ : printed at the Letter content width (~739 CSS px), so the header prints in its <768 px layout (menu icon visible, which is inert on paper).",
+    "/ : in macOS PDFKit/Preview rendering, blurred box-shadows (header and hero App Store buttons, phone illustrations, golf card) show as dark/grey rectangles; Chrome's PDFium viewer renders the same PDF without them (print-home-pdfium-p01.jpg vs print-home-pdfkit-p01-p02.jpg). Viewer-dependent artefact of Chrome PDF output, not visible on screen.",
+    "/privacy/ (7 pages): full text present; dark theme backgrounds print; page 7 holds only the footer tail (last link + copyright line)."
+  ],
+  "result": {
+    "/": "PASS (visible text complete; FAQ answers not printed, card split across pages: see observations)",
+    "/privacy/": "PASS"
+  }
+}

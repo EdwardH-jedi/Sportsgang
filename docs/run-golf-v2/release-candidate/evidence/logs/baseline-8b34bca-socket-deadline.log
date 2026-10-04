@@ -1,0 +1,541 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+.FFF.FF                                                                  [100%]
+=================================== FAILURES ===================================
+_____ test_stalled_sockets_share_one_room_deadline_while_a_block_waits[3] ______
+
+fut = <_GatheringFuture finished exception=CancelledError()>, timeout = 5
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x10df3cdd0 [set]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+stalled = 3
+
+    @pytest.mark.parametrize("stalled", [1, 3, 20])
+    async def test_stalled_sockets_share_one_room_deadline_while_a_block_waits(stalled: int) -> None:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            a, a_id, b_id, match_id = await _pair(client, f"deadline-{stalled}")
+            slow = [_Socket(stall=True, fail_close=i == 0, hang_close=i == 1) for i in range(stalled)]
+            healthy = _Socket()
+            chat_service.connections._rooms[match_id] = [*slow, healthy]
+            loop = asyncio.get_running_loop()
+            async with AsyncSessionLocal() as db:
+                msg = await chat_service.send_message(db, UUID(match_id), UUID(a_id), "deadline")
+                at_release, patched = _sending_at_release(db, slow)
+                with patched:
+                    started = loop.time()
+                    delivery = asyncio.create_task(chat_service.deliver_message(db, msg))
+>                   await asyncio.wait_for(asyncio.gather(*(s.send_entered.wait() for s in slow)), timeout=5)
+
+tests_integration/test_socket_deadline.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x10df884c0>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+_____ test_stalled_sockets_share_one_room_deadline_while_a_block_waits[20] _____
+
+fut = <_GatheringFuture finished exception=CancelledError()>, timeout = 5
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x10df80e60 [set]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+stalled = 20
+
+    @pytest.mark.parametrize("stalled", [1, 3, 20])
+    async def test_stalled_sockets_share_one_room_deadline_while_a_block_waits(stalled: int) -> None:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            a, a_id, b_id, match_id = await _pair(client, f"deadline-{stalled}")
+            slow = [_Socket(stall=True, fail_close=i == 0, hang_close=i == 1) for i in range(stalled)]
+            healthy = _Socket()
+            chat_service.connections._rooms[match_id] = [*slow, healthy]
+            loop = asyncio.get_running_loop()
+            async with AsyncSessionLocal() as db:
+                msg = await chat_service.send_message(db, UUID(match_id), UUID(a_id), "deadline")
+                at_release, patched = _sending_at_release(db, slow)
+                with patched:
+                    started = loop.time()
+                    delivery = asyncio.create_task(chat_service.deliver_message(db, msg))
+>                   await asyncio.wait_for(asyncio.gather(*(s.send_entered.wait() for s in slow)), timeout=5)
+
+tests_integration/test_socket_deadline.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x10d705e00>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+_ test_cancelled_delivery_cancels_and_awaits_every_send_before_the_lock_is_released _
+
+fut = <_GatheringFuture finished exception=CancelledError()>, timeout = 5
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x10df82ba0 [set]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+    async def test_cancelled_delivery_cancels_and_awaits_every_send_before_the_lock_is_released() -> None:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            a, a_id, b_id, match_id = await _pair(client, "deadline-cancel")
+            slow = [_Socket(stall=True) for _ in range(3)]
+            chat_service.connections._rooms[match_id] = list(slow)
+            async with AsyncSessionLocal() as db:
+                msg = await chat_service.send_message(db, UUID(match_id), UUID(a_id), "cancelled")
+                at_release, patched = _sending_at_release(db, slow)
+                with patched:
+                    delivery = asyncio.create_task(chat_service.deliver_message(db, msg))
+>                   await asyncio.wait_for(asyncio.gather(*(s.send_entered.wait() for s in slow)), timeout=5)
+
+tests_integration/test_socket_deadline.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x10ea3be80>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+__ test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[awaited] __
+
+self = <test_socket_deadline._Socket object at 0x10df03ef0>, code = 4003
+
+    async def close(self, code: int) -> None:
+        self.close_entered.set()
+        if self.fail_close:
+            raise RuntimeError("injected close failure")
+        if self.hang_close:
+>           await asyncio.Event().wait()
+
+tests_integration/test_socket_deadline.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x10e0a9c10 [unset]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+cancel = False
+
+    @pytest.mark.parametrize("cancel", [False, True], ids=["awaited", "cancelled"])
+    async def test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets(cancel: bool) -> None:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            _, a_id, b_id, match_id = await _pair(client, f"close-{cancel}")
+        hung = [_Socket(hang_close=True) for _ in range(5)]
+        failing = _Socket(fail_close=True)
+        healthy = [_Socket() for _ in range(3)]
+        sockets = [hung[0], failing, *healthy, *hung[1:]]
+        chat_service.connections._rooms[match_id] = list(sockets)
+        loop = asyncio.get_running_loop()
+        async with AsyncSessionLocal() as db:
+            started = loop.time()
+            closing = asyncio.create_task(chat_service.close_pair_rooms(db, UUID(a_id), UUID(b_id)))
+            await asyncio.wait_for(hung[0].close_entered.wait(), timeout=5)
+            if cancel:
+                closing.cancel()
+                with pytest.raises(asyncio.CancelledError):
+                    await closing
+            else:
+>               await asyncio.wait_for(closing, timeout=WS_CLOSE_TIMEOUT_SECONDS + OVERHEAD)
+
+tests_integration/test_socket_deadline.py:197: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x10e9ebac0>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+_ test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[cancelled] _
+
+cancel = True
+
+    @pytest.mark.parametrize("cancel", [False, True], ids=["awaited", "cancelled"])
+    async def test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets(cancel: bool) -> None:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            _, a_id, b_id, match_id = await _pair(client, f"close-{cancel}")
+        hung = [_Socket(hang_close=True) for _ in range(5)]
+        failing = _Socket(fail_close=True)
+        healthy = [_Socket() for _ in range(3)]
+        sockets = [hung[0], failing, *healthy, *hung[1:]]
+        chat_service.connections._rooms[match_id] = list(sockets)
+        loop = asyncio.get_running_loop()
+        async with AsyncSessionLocal() as db:
+            started = loop.time()
+            closing = asyncio.create_task(chat_service.close_pair_rooms(db, UUID(a_id), UUID(b_id)))
+            await asyncio.wait_for(hung[0].close_entered.wait(), timeout=5)
+            if cancel:
+                closing.cancel()
+                with pytest.raises(asyncio.CancelledError):
+                    await closing
+            else:
+                await asyncio.wait_for(closing, timeout=WS_CLOSE_TIMEOUT_SECONDS + OVERHEAD)
+                assert loop.time() - started <= WS_CLOSE_TIMEOUT_SECONDS + OVERHEAD  # not per socket
+        assert not chat_service.connections._rooms.get(match_id)
+        await _closes_finished()
+>       assert all(s.close_entered.is_set() for s in sockets)
+E       assert False
+E        +  where False = all(<generator object test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets.<locals>.<genexpr> at 0x10ea5f5e0>)
+
+tests_integration/test_socket_deadline.py:201: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  <scratch>/rc/base-8b34bca/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================== slowest durations ===============================
+5.59s call     tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[1]
+5.44s call     tests_integration/test_socket_deadline.py::test_cancelled_delivery_cancels_and_awaits_every_send_before_the_lock_is_released
+5.44s call     tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[3]
+5.41s call     tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[20]
+2.39s call     tests_integration/test_socket_deadline.py::test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[awaited]
+0.43s call     tests_integration/test_socket_deadline.py::test_failed_broadcast_releases_the_lock
+0.40s call     tests_integration/test_socket_deadline.py::test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[cancelled]
+0.03s teardown tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[1]
+0.01s teardown tests_integration/test_socket_deadline.py::test_cancelled_delivery_cancels_and_awaits_every_send_before_the_lock_is_released
+0.01s teardown tests_integration/test_socket_deadline.py::test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[awaited]
+0.01s teardown tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[20]
+
+(10 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+FAILED tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[3]
+FAILED tests_integration/test_socket_deadline.py::test_stalled_sockets_share_one_room_deadline_while_a_block_waits[20]
+FAILED tests_integration/test_socket_deadline.py::test_cancelled_delivery_cancels_and_awaits_every_send_before_the_lock_is_released
+FAILED tests_integration/test_socket_deadline.py::test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[awaited]
+FAILED tests_integration/test_socket_deadline.py::test_hung_or_failing_closes_cannot_strand_the_rooms_other_sockets[cancelled]
+5 failed, 2 passed, 1 warning in 25.96s

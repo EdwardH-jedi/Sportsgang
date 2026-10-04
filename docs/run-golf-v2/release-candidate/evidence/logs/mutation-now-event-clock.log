@@ -1,0 +1,112 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+..FF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait[rejoin] _
+
+transition = 'rejoin'
+
+    @pytest.mark.parametrize("transition", ["rejoin", "leave"])
+    async def test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait(transition: str) -> None:
+        """A transition stamped with transaction-start time would precede the one it waited behind."""
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, f"wait-{transition}-host")
+            guest = await _register(client, f"wait-{transition}-guest")
+            guest_id = await _me(client, guest)
+            event_id = (await client.post("/events", json=_run_session(capacity=4), headers=host)).json()["id"]
+            assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+            if transition == "rejoin":
+                assert (await client.post(f"/events/{event_id}/leave", headers=guest)).status_code == 200
+            # The transition the request waits behind, committed by the lock holder.
+            column = "left_at" if transition == "rejoin" else "joined_at"
+            path = f"/events/{event_id}/join" if transition == "rejoin" else f"/events/{event_id}/leave"
+    
+            holder_engine = create_async_engine(get_settings().async_postgres_url)
+            try:
+                async with holder_engine.connect() as holder:
+                    tx = await holder.begin()
+                    await holder.execute(text("SELECT id FROM events WHERE id = :e FOR UPDATE"), {"e": event_id})
+                    waiting = asyncio.create_task(client.post(path, headers=guest))
+                    await _lock_waiter(EVENT_LOCK_WAIT)  # its transaction has started and is waiting
+                    await asyncio.sleep(0.2)
+                    await holder.execute(
+                        text(
+                            f"UPDATE event_participants SET {column} = clock_timestamp() "
+                            "WHERE event_id = :e AND user_id = :u"
+                        ),
+                        {"e": event_id, "u": guest_id},
+                    )
+                    prior = (await _row(holder, event_id, guest_id))[column]
+                    await tx.commit()
+                r = await asyncio.wait_for(waiting, timeout=10)
+            finally:
+                await holder_engine.dispose()
+            assert r.status_code == 200, r.text
+            after = await _participant(event_id, guest_id)
+            stamped = after["joined_at"] if transition == "rejoin" else after["left_at"]
+>           assert stamped >= prior, f"{transition} stamped {stamped}, before the transition it waited behind ({prior})"
+E           AssertionError: rejoin stamped 2026-10-04 12:30:47.373142+00:00, before the transition it waited behind (2026-10-04 12:30:47.601290+00:00)
+E           assert datetime.datetime(2026, 10, 4, 12, 30, 47, 373142, tzinfo=datetime.timezone.utc) >= datetime.datetime(2026, 10, 4, 12, 30, 47, 601290, tzinfo=datetime.timezone.utc)
+
+tests_integration/test_event_clock.py:143: AssertionError
+_ test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait[leave] _
+
+transition = 'leave'
+
+    @pytest.mark.parametrize("transition", ["rejoin", "leave"])
+    async def test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait(transition: str) -> None:
+        """A transition stamped with transaction-start time would precede the one it waited behind."""
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            host = await _register(client, f"wait-{transition}-host")
+            guest = await _register(client, f"wait-{transition}-guest")
+            guest_id = await _me(client, guest)
+            event_id = (await client.post("/events", json=_run_session(capacity=4), headers=host)).json()["id"]
+            assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+            if transition == "rejoin":
+                assert (await client.post(f"/events/{event_id}/leave", headers=guest)).status_code == 200
+            # The transition the request waits behind, committed by the lock holder.
+            column = "left_at" if transition == "rejoin" else "joined_at"
+            path = f"/events/{event_id}/join" if transition == "rejoin" else f"/events/{event_id}/leave"
+    
+            holder_engine = create_async_engine(get_settings().async_postgres_url)
+            try:
+                async with holder_engine.connect() as holder:
+                    tx = await holder.begin()
+                    await holder.execute(text("SELECT id FROM events WHERE id = :e FOR UPDATE"), {"e": event_id})
+                    waiting = asyncio.create_task(client.post(path, headers=guest))
+                    await _lock_waiter(EVENT_LOCK_WAIT)  # its transaction has started and is waiting
+                    await asyncio.sleep(0.2)
+                    await holder.execute(
+                        text(
+                            f"UPDATE event_participants SET {column} = clock_timestamp() "
+                            "WHERE event_id = :e AND user_id = :u"
+                        ),
+                        {"e": event_id, "u": guest_id},
+                    )
+                    prior = (await _row(holder, event_id, guest_id))[column]
+                    await tx.commit()
+                r = await asyncio.wait_for(waiting, timeout=10)
+            finally:
+                await holder_engine.dispose()
+            assert r.status_code == 200, r.text
+            after = await _participant(event_id, guest_id)
+            stamped = after["joined_at"] if transition == "rejoin" else after["left_at"]
+>           assert stamped >= prior, f"{transition} stamped {stamped}, before the transition it waited behind ({prior})"
+E           AssertionError: leave stamped 2026-10-04 12:30:48.115375+00:00, before the transition it waited behind (2026-10-04 12:30:48.343191+00:00)
+E           assert datetime.datetime(2026, 10, 4, 12, 30, 48, 115375, tzinfo=datetime.timezone.utc) >= datetime.datetime(2026, 10, 4, 12, 30, 48, 343191, tzinfo=datetime.timezone.utc)
+
+tests_integration/test_event_clock.py:143: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  <scratch>/rc/base-8b34bca/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests_integration/test_event_clock.py::test_membership_times_follow_the_database_clock_under_host_skew[host-behind]
+tests_integration/test_event_clock.py::test_membership_times_follow_the_database_clock_under_host_skew[host-ahead]
+  <scratch>/rc/base-8b34bca/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests_integration/test_event_clock.py::test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait[rejoin]
+FAILED tests_integration/test_event_clock.py::test_transition_that_waited_for_the_event_lock_is_stamped_after_the_wait[leave]
+2 failed, 2 passed, 3 warnings in 3.31s

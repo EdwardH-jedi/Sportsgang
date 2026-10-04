@@ -1,0 +1,758 @@
+{
+  "method": {
+    "cliAttempt": {
+      "command": "Google Chrome 154.0.8037.97 --headless=new --blink-settings=scriptEnabled=false --dump-dom http://127.0.0.1:5196/privacy/",
+      "stdoutBytes": 0,
+      "exitCode": 0,
+      "note": "Chrome 154 new headless printed nothing for --dump-dom (and wrote no file for --screenshot) when scripting is disabled via --blink-settings; DOM and screenshots below come from CDP instead."
+    },
+    "cdp": "Google Chrome 154.0.8037.97 headless (new), CDP Emulation.setScriptExecutionDisabled(true) before navigation"
+  },
+  "domScriptsDisabled": {
+    "/": {
+      "bytes": 3457,
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "htmlHasJsClass": false,
+      "rootChildren": "",
+      "bodyTextWords": 43,
+      "links": [
+        {
+          "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+          "text": "SportsGang on the App Store"
+        },
+        {
+          "href": "https://sportgang.netlify.app/privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "https://sportgang.netlify.app/terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "https://sportgang.netlify.app/support/",
+          "text": "Support"
+        }
+      ],
+      "stylesheets": [
+        "/assets/index-C-cld3IO.css"
+      ],
+      "noscriptText": "SportsGang — running and golf partners in Sydney For iPhone. The running and golf experience described here arrives with the next SportsGang update. This page needs JavaScript to show its full content. SportsGang on the App Store · Privacy · Terms · Support",
+      "noscriptLinks": [
+        {
+          "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+          "text": "SportsGang on the App Store"
+        },
+        {
+          "href": "https://sportgang.netlify.app/privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "https://sportgang.netlify.app/terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "https://sportgang.netlify.app/support/",
+          "text": "Support"
+        }
+      ]
+    },
+    "/privacy/": {
+      "bytes": 14971,
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "bodyTextWords": 1292,
+      "links": [
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "./",
+          "text": "Privacy"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "../support/",
+          "text": "Support"
+        },
+        {
+          "href": "#s1",
+          "text": "Introduction"
+        },
+        {
+          "href": "#s2",
+          "text": "Information we collect"
+        },
+        {
+          "href": "#s3",
+          "text": "How we use information"
+        },
+        {
+          "href": "#s4",
+          "text": "Profile and sports matching"
+        },
+        {
+          "href": "#s5",
+          "text": "Chat and messages"
+        },
+        {
+          "href": "#s6",
+          "text": "Reports, blocks, and safety"
+        },
+        {
+          "href": "#s7",
+          "text": "Location, suburb, and venue information"
+        },
+        {
+          "href": "#s8",
+          "text": "Account deletion"
+        },
+        {
+          "href": "#s9",
+          "text": "Data retention"
+        },
+        {
+          "href": "#s10",
+          "text": "Data security"
+        },
+        {
+          "href": "#s11",
+          "text": "International users"
+        },
+        {
+          "href": "#s12",
+          "text": "Contact"
+        },
+        {
+          "href": "#s13",
+          "text": "Last updated"
+        },
+        {
+          "href": "../support/",
+          "text": "Support page"
+        },
+        {
+          "href": "../support/",
+          "text": "Support page"
+        },
+        {
+          "href": "../support/",
+          "text": "Support page"
+        },
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "../support/",
+          "text": "Support"
+        },
+        {
+          "href": "../support/",
+          "text": "Send us a message"
+        }
+      ],
+      "stylesheets": [
+        "../styles.css"
+      ],
+      "sourceBodyTextWords": 1292,
+      "renderedTextEqualsSourceText": true,
+      "headings": [
+        "Privacy Policy.",
+        "On this page",
+        "01 Introduction",
+        "02 Information we collect",
+        "Account information",
+        "Profile content (you provide)",
+        "Activity content",
+        "Diagnostics (optional)",
+        "03 How we use information",
+        "04 Profile and sports matching",
+        "05 Chat and messages",
+        "06 Reports, blocks, and safety",
+        "Reports",
+        "Blocks",
+        "07 Location, suburb, and venue information",
+        "08 Account deletion",
+        "09 Data retention",
+        "10 Data security",
+        "11 International users",
+        "12 Contact",
+        "13 Last updated"
+      ]
+    },
+    "/terms/": {
+      "bytes": 13142,
+      "title": "Terms of Service — SportGang",
+      "htmlHasJsClass": false,
+      "bodyTextWords": 1096,
+      "links": [
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "./",
+          "text": "Terms"
+        },
+        {
+          "href": "../support/",
+          "text": "Support"
+        },
+        {
+          "href": "#s1",
+          "text": "Introduction"
+        },
+        {
+          "href": "#s2",
+          "text": "Eligibility"
+        },
+        {
+          "href": "#s3",
+          "text": "Account responsibilities"
+        },
+        {
+          "href": "#s4",
+          "text": "Acceptable use"
+        },
+        {
+          "href": "#s5",
+          "text": "Sports activity and real-world meeting risks"
+        },
+        {
+          "href": "#s6",
+          "text": "User conduct and safety"
+        },
+        {
+          "href": "#s7",
+          "text": "Chat and user content"
+        },
+        {
+          "href": "#s8",
+          "text": "Sessions and coordination"
+        },
+        {
+          "href": "#s9",
+          "text": "Reports, blocks, and moderation"
+        },
+        {
+          "href": "#s10",
+          "text": "Account deletion and termination"
+        },
+        {
+          "href": "#s11",
+          "text": "Disclaimers and limitation of liability"
+        },
+        {
+          "href": "#s12",
+          "text": "Changes to terms"
+        },
+        {
+          "href": "#s13",
+          "text": "Contact"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy Policy"
+        },
+        {
+          "href": "../support/",
+          "text": "Support page"
+        },
+        {
+          "href": "../support/#safety",
+          "text": "Support page"
+        },
+        {
+          "href": "../support/",
+          "text": "Support page"
+        },
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "../support/",
+          "text": "Support"
+        },
+        {
+          "href": "../support/",
+          "text": "Send us a message"
+        }
+      ],
+      "stylesheets": [
+        "../styles.css"
+      ],
+      "sourceBodyTextWords": 1096,
+      "renderedTextEqualsSourceText": true,
+      "headings": [
+        "Terms of Service.",
+        "On this page",
+        "01 Introduction",
+        "02 Eligibility",
+        "03 Account responsibilities",
+        "04 Acceptable use",
+        "05 Sports activity and real-world meeting risks",
+        "06 User conduct and safety",
+        "07 Chat and user content",
+        "08 Sessions and coordination",
+        "09 Reports, blocks, and moderation",
+        "10 Account deletion and termination",
+        "11 Disclaimers and limitation of liability",
+        "12 Changes to terms",
+        "13 Contact"
+      ]
+    },
+    "/support/": {
+      "bytes": 12671,
+      "title": "Support — SportGang",
+      "htmlHasJsClass": false,
+      "bodyTextWords": 948,
+      "links": [
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "./",
+          "text": "Support"
+        },
+        {
+          "href": "#contact",
+          "text": "Contact support"
+        },
+        {
+          "href": "#report",
+          "text": "Report a user"
+        },
+        {
+          "href": "#block",
+          "text": "Block a user"
+        },
+        {
+          "href": "#delete",
+          "text": "Delete your account"
+        },
+        {
+          "href": "#privacy",
+          "text": "Privacy & data requests"
+        },
+        {
+          "href": "#safety",
+          "text": "Safety guidelines"
+        },
+        {
+          "href": "#faq",
+          "text": "FAQ"
+        },
+        {
+          "href": "#response",
+          "text": "Response time"
+        },
+        {
+          "href": "#email",
+          "text": "Support email"
+        },
+        {
+          "href": "#privacy",
+          "text": "§5"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms page"
+        },
+        {
+          "href": "../terms/#s4",
+          "text": "acceptable use rules"
+        },
+        {
+          "href": "#contact",
+          "text": "§1"
+        },
+        {
+          "href": "../privacy/#s8",
+          "text": "Privacy Policy"
+        },
+        {
+          "href": "../privacy/#s9",
+          "text": "retention"
+        },
+        {
+          "href": "#contact",
+          "text": "§1"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy Policy"
+        },
+        {
+          "href": "../privacy/#s7",
+          "text": "Privacy §7"
+        },
+        {
+          "href": "#contact",
+          "text": "§1"
+        },
+        {
+          "href": "../",
+          "text": "S G Sport Gang"
+        },
+        {
+          "href": "../",
+          "text": "Home"
+        },
+        {
+          "href": "../privacy/",
+          "text": "Privacy"
+        },
+        {
+          "href": "../terms/",
+          "text": "Terms"
+        },
+        {
+          "href": "../support/",
+          "text": "Support"
+        },
+        {
+          "href": "./",
+          "text": "Send us a message"
+        }
+      ],
+      "stylesheets": [
+        "../styles.css"
+      ],
+      "sourceBodyTextWords": 948,
+      "renderedTextEqualsSourceText": true,
+      "headings": [
+        "Support & help.",
+        "On this page",
+        "01 Contact support",
+        "02 Report a user",
+        "03 Block a user",
+        "04 Delete your account",
+        "05 Privacy and data requests",
+        "06 Safety guidelines",
+        "07 FAQ",
+        "08 Response time",
+        "09 Support channel"
+      ]
+    }
+  },
+  "rendered": {
+    "/ @390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "nojs-home-390.jpg",
+      "bytes": 47823,
+      "fullPage": false,
+      "network": [
+        {
+          "url": "/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/assets/index-C-cld3IO.css",
+          "status": 200,
+          "type": "Stylesheet"
+        },
+        {
+          "url": "/favicon.png",
+          "status": 200,
+          "type": "Other"
+        }
+      ],
+      "layout": {
+        "scriptsRan": false,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "scrollHeight": 844,
+        "visibleElements": 10,
+        "bodyFont": "-apple-system, \"system-ui\", \"SF Pro Text\", \"Segoe UI\", \"Helv",
+        "bodyBg": "rgb(245, 244, 238)",
+        "bodyColor": "rgb(19, 41, 28)",
+        "h1": "SportsGang — running and golf partners in Sydney"
+      }
+    },
+    "/ @1440": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "nojs-home-1440.jpg",
+      "bytes": 24489,
+      "fullPage": false,
+      "network": [
+        {
+          "url": "/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/assets/index-C-cld3IO.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "layout": {
+        "scriptsRan": false,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "scrollHeight": 900,
+        "visibleElements": 10,
+        "bodyFont": "-apple-system, \"system-ui\", \"SF Pro Text\", \"Segoe UI\", \"Helv",
+        "bodyBg": "rgb(245, 244, 238)",
+        "bodyColor": "rgb(19, 41, 28)",
+        "h1": "SportsGang — running and golf partners in Sydney"
+      }
+    },
+    "/privacy/ @390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "nojs-privacy-390-full.jpg",
+      "bytes": 321733,
+      "fullPage": true,
+      "network": [
+        {
+          "url": "/privacy/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        },
+        {
+          "url": "/favicon.ico",
+          "status": 404,
+          "type": "Other"
+        }
+      ],
+      "layout": {
+        "scriptsRan": false,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "scrollHeight": 8607,
+        "visibleElements": 227,
+        "bodyFont": "system-ui, -apple-system, \"Segoe UI\", Helvetica, Arial, sans",
+        "bodyBg": "rgb(14, 16, 19)",
+        "bodyColor": "rgb(244, 245, 247)",
+        "h1": "Privacy Policy."
+      }
+    },
+    "/terms/ @390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "nojs-terms-390-full.jpg",
+      "bytes": 273556,
+      "fullPage": true,
+      "network": [
+        {
+          "url": "/terms/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "layout": {
+        "scriptsRan": false,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "scrollHeight": 7434,
+        "visibleElements": 190,
+        "bodyFont": "system-ui, -apple-system, \"Segoe UI\", Helvetica, Arial, sans",
+        "bodyBg": "rgb(14, 16, 19)",
+        "bodyColor": "rgb(244, 245, 247)",
+        "h1": "Terms of Service."
+      }
+    },
+    "/support/ @390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "nojs-support-390-full.jpg",
+      "bytes": 200678,
+      "fullPage": true,
+      "network": [
+        {
+          "url": "/support/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "layout": {
+        "scriptsRan": false,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "scrollHeight": 6510,
+        "visibleElements": 213,
+        "bodyFont": "system-ui, -apple-system, \"Segoe UI\", Helvetica, Arial, sans",
+        "bodyBg": "rgb(14, 16, 19)",
+        "bodyColor": "rgb(244, 245, 247)",
+        "h1": "Support & help."
+      }
+    }
+  },
+  "checks": {
+    "homeNoscriptHasTitle": true,
+    "homeNoscriptHasNextUpdateNote": true,
+    "homeNoscriptLinks": [
+      {
+        "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+        "text": "SportsGang on the App Store"
+      },
+      {
+        "href": "https://sportgang.netlify.app/privacy/",
+        "text": "Privacy"
+      },
+      {
+        "href": "https://sportgang.netlify.app/terms/",
+        "text": "Terms"
+      },
+      {
+        "href": "https://sportgang.netlify.app/support/",
+        "text": "Support"
+      }
+    ],
+    "homeNoscriptLinksAsExpected": true,
+    "homeRootEmpty": true,
+    "homeJsClassAbsent": true,
+    "legalPagesTextComplete": [
+      {
+        "page": "/privacy/",
+        "words": 1292,
+        "sourceWords": 1292,
+        "identical": true
+      },
+      {
+        "page": "/terms/",
+        "words": 1096,
+        "sourceWords": 1096,
+        "identical": true
+      },
+      {
+        "page": "/support/",
+        "words": 948,
+        "sourceWords": 948,
+        "identical": true
+      }
+    ],
+    "legalStylesheetLoaded": [
+      {
+        "page": "/privacy/",
+        "styles": 200
+      },
+      {
+        "page": "/terms/",
+        "styles": 200
+      },
+      {
+        "page": "/support/",
+        "styles": 200
+      }
+    ]
+  },
+  "result": {
+    "home": "PASS",
+    "legal": "PASS"
+  },
+  "noscriptLinkStyling": {
+    "paragraphColor": "rgb(19, 41, 28)",
+    "links": [
+      {
+        "text": "SportsGang on the App Store",
+        "color": "rgb(19, 41, 28)",
+        "textDecorationLine": "none",
+        "fontWeight": "400"
+      },
+      {
+        "text": "Privacy",
+        "color": "rgb(19, 41, 28)",
+        "textDecorationLine": "none",
+        "fontWeight": "400"
+      },
+      {
+        "text": "Terms",
+        "color": "rgb(19, 41, 28)",
+        "textDecorationLine": "none",
+        "fontWeight": "400"
+      },
+      {
+        "text": "Support",
+        "color": "rgb(19, 41, 28)",
+        "textDecorationLine": "none",
+        "fontWeight": "400"
+      }
+    ],
+    "note": "Tailwind preflight resets <a> to color: inherit; text-decoration: inherit, so with JavaScript disabled the four fallback links have the same colour as the paragraph text and no underline."
+  },
+  "noscriptLinksDistinguishable": false
+}

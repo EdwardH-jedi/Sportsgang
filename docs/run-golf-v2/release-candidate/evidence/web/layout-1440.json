@@ -1,0 +1,158 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new), CDP device-metrics emulation",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "deviceScaleFactor": 1,
+    "mobileEmulation": false
+  },
+  "url": "http://127.0.0.1:5196/",
+  "consoleErrorsOrWarnings": [],
+  "screenshot": {
+    "file": "first-screen-1440.jpg",
+    "bytes": 81598
+  },
+  "innerWidth": 1440,
+  "innerHeight": 900,
+  "clientWidth": 1440,
+  "docScrollWidth": 1440,
+  "bodyScrollWidth": 1440,
+  "docScrollHeight": 6904,
+  "scrollXAfterScrollLeft200": 0,
+  "horizontalOverflow": false,
+  "elementsBeyondViewport": [],
+  "elementsBeyondViewportButClippedByAncestor": 0,
+  "srOnlyElementsOutsideViewportIgnored": 1,
+  "selfClippedBoxes": [],
+  "textOutsideViewportOrClip": [],
+  "textLineOverlaps": [],
+  "textLinesChecked": 272,
+  "interactiveOverlaps": [],
+  "interactiveChecked": 24,
+  "header": {
+    "height": 65,
+    "top": 0,
+    "bottom": 65,
+    "position": "sticky",
+    "parts": {
+      "wordmark": {
+        "shown": true,
+        "left": 168,
+        "right": 286,
+        "top": 10,
+        "bottom": 54
+      },
+      "desktopNav": {
+        "shown": true,
+        "left": 514.8,
+        "right": 903.8,
+        "top": 10,
+        "bottom": 54
+      },
+      "appStoreCompact": {
+        "shown": true,
+        "left": 1132.7,
+        "right": 1272,
+        "top": 8,
+        "bottom": 56
+      },
+      "menuButton": {
+        "shown": false,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0
+      }
+    },
+    "partOverlaps": [],
+    "allPartsWithinViewport": true
+  },
+  "appStoreControls": [
+    {
+      "kind": "header-compact-button",
+      "label": "App Store",
+      "visible": true,
+      "textLines": 1,
+      "oneLine": true,
+      "width": 139.3,
+      "height": 48,
+      "left": 1132.7,
+      "right": 1272,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447"
+    },
+    {
+      "kind": "hero-button",
+      "label": "Get SportsGang on the App Store",
+      "visible": true,
+      "textLines": 1,
+      "oneLine": true,
+      "width": 328.6,
+      "height": 48,
+      "left": 168,
+      "right": 496.6,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447"
+    },
+    {
+      "kind": "faq-inline-link",
+      "label": "App Store",
+      "visible": false,
+      "textLines": null,
+      "oneLine": null,
+      "width": 75.7,
+      "height": 18,
+      "left": 897.2,
+      "right": 972.9,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447"
+    },
+    {
+      "kind": "final-cta-button",
+      "label": "Get SportsGang on the App Store",
+      "visible": true,
+      "textLines": 1,
+      "oneLine": true,
+      "width": 328.6,
+      "height": 48,
+      "left": 192,
+      "right": 520.6,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447"
+    },
+    {
+      "kind": "footer-link",
+      "label": "App Store",
+      "visible": true,
+      "textLines": 1,
+      "oneLine": true,
+      "width": 99.9,
+      "height": 44,
+      "left": 1172.1,
+      "right": 1272,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447"
+    }
+  ],
+  "hero": {
+    "h1": [
+      168,
+      188.6,
+      779.8,
+      335.4
+    ],
+    "appStoreButton": [
+      168,
+      488.9,
+      496.6,
+      536.9
+    ],
+    "nextUpdateNote": [
+      168,
+      552.9,
+      680,
+      598.4
+    ],
+    "appStoreButtonInFirstScreen": true,
+    "nextUpdateNoteInFirstScreen": true
+  },
+  "textWithEffectiveOpacityBelow0_2": [],
+  "dataRevealRemaining": 0,
+  "defects": [],
+  "result": "PASS"
+}

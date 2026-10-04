@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "prepared_at_utc": "2026-10-04T13:25:15Z",
+  "acceptance": "NOT_CLAIMED — the acceptance decision belongs to independent Codex review",
+  "branch": "chore/run-golf-v2-release-candidate-2026-10-04",
+  "base": {
+    "delivery_sha": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+    "application_sha": "c46f4146aa1c46dd8d8d1700d69581ff90a7b5d4",
+    "branch": "fix/run-golf-v2-morning-q01-q09"
+  },
+  "website_input": {
+    "sha": "97990d9773669ae6f0ad813f4246f37353ec558d",
+    "branch": "feat/run-golf-v2-web-refresh",
+    "integration_merge_sha": "410ec8d197ef6e1f0852320a8e14d63d0a951d28"
+  },
+  "legal_pages_source": {
+    "sha": "ad072fc80aa420b0e78911240809b3baabf4c8af",
+    "branch": "feature/sportgang-official-website",
+    "path": "apps/web/site/{privacy,terms,support}/index.html, styles.css",
+    "copied_byte_for_byte": true
+  },
+  "consumed_review": {
+    "publication_sha": "ce62aacff5dc88efd394abb240dc0a3d0bc3c76d",
+    "branch": "review/run-golf-v2-morning-acceptance-2026-10-04",
+    "reviewed_delivery_sha": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+    "reviewed_delivery_matches_base": true,
+    "code_verdict": "NEEDS_FIXES",
+    "q01_q09": "PASS (measured scope)",
+    "release_status": "NOT_READY"
+  },
+  "newer_implementation_found": false,
+  "final_source_sha": "a515b0073cb0f32dad97f88430a203e3427444fe",
+  "final_source_definition": "last commit touching apps/, scripts/, packages/ or .github/",
+  "delivery_sha": "NOT_EMBEDDED — the branch head after the documentation commits; see the terminal handoff and git ls-remote",
+  "commits": {
+    "MA-C": "8c18c83",
+    "MA-B": "3f55ac5",
+    "MA-A": "90a6135",
+    "contract": "a41be8c",
+    "website_merge": "410ec8d",
+    "website": [
+      "e70a946",
+      "a515b00"
+    ],
+    "mobile_a11y": [
+      "bcecdc8",
+      "e80b369"
+    ]
+  },
+  "findings": {
+    "implemented_pending_review": [
+      {
+        "id": "MA-C",
+        "severity": "P2",
+        "change": "committed per-event claim (failed_reason='delivery_unconfirmed') before the provider call; pair lock then event row; at-most-once — failures before the call return the event to pending, ambiguous outcomes after it are not resent",
+        "tests": "tests_integration/test_notification_ownership.py (11)",
+        "baseline_8b34bca": "9 failed, 2 controls passed",
+        "review_note": "reviewer's two-worker after-lock and all-commits-fail probes adapted; 'permits pending retry' holds only before the provider call"
+      },
+      {
+        "id": "MA-B",
+        "severity": "P2",
+        "change": "room-wide 5 s send deadline (WS_SEND_TIMEOUT_SECONDS), sends cancelled and awaited before lock release, concurrent 1 s closes owned by the connection manager",
+        "tests": "tests_integration/test_socket_deadline.py (7)",
+        "baseline_8b34bca": "5 failed, 2 controls passed"
+      },
+      {
+        "id": "MA-A",
+        "severity": "P2",
+        "change": "host auto-join/join/rejoin/leave stamped with PostgreSQL clock_timestamp() read after the event row lock",
+        "tests": "tests_integration/test_event_clock.py (4) + tests/test_events.py unit",
+        "baseline_8b34bca": "2 skew cases failed, 2 passed",
+        "mutation_now": "2 lock-wait cases failed"
+      },
+      {
+        "id": "A11Y-composer",
+        "change": "booking composer title/arrow capped at 1.4x, Back box line height, Send label padding",
+        "native": "dedicated iPhone 16e simulator, default and AX5; Q09 frames identical; form/HTTP/PostgreSQL agree"
+      },
+      {
+        "id": "WEB",
+        "change": "legal pages in build, next-update metadata, CI web job; D1-D3 browser defects fixed"
+      }
+    ],
+    "unresolved": [
+      {
+        "id": "R6",
+        "status": "OPEN / NOT_RUN",
+        "note": "production timestamp provenance; no production access; gate document unchanged"
+      },
+      {
+        "id": "CHAT-MAX-TEXT",
+        "status": "OPEN, not changed",
+        "note": "chat screen at accessibility-extra-extra-extra-large: More options button x 370-442 (off-screen), partner name hidden, input truncated; outside the authorised heading repair"
+      },
+      {
+        "id": "WEB-PRINT",
+        "status": "noted",
+        "note": "closed FAQ answers do not print; some cards break across pages"
+      },
+      {
+        "id": "WEB-NO-SLASH",
+        "status": "host requirement",
+        "note": "/privacy etc. without trailing slash fall back to home under vite preview; host must redirect"
+      }
+    ]
+  },
+  "verification": {
+    "api_unit": "773 passed, 0 skipped (at a41be8c; apps/api unchanged to final)",
+    "ruff": "clean",
+    "integration_utc_fresh_db": "64 passed, 0 skipped",
+    "integration_sydney_default_fresh_db": "64 passed, 0 skipped",
+    "reviewer_followups_on_rc": "11 passed, 2 failed (adapted interleavings)",
+    "probe_r1_adapted": "94 PASS / 0 FAIL / 0 HARNESS_ERROR",
+    "mobile_jest_utc": "64 suites, 968 passed, 0 skipped",
+    "mobile_jest_sydney": "64 suites, 968 passed, 0 skipped",
+    "mobile_review_probes": "16/16",
+    "mobile_lint": "0 warnings",
+    "mobile_typecheck": "clean",
+    "ios_export": "exit 0 (Hermes 4.42 MB)",
+    "launcher_docker_free": "21 ran: 14 passed, 7 skipped — TZ unset (Sydney) and TZ=UTC",
+    "launcher_docker": "21/21 — TZ unset (Sydney) and TZ=UTC",
+    "web_typecheck_build": "exit 0 at a515b00 (Node 20.20.2)",
+    "web_browser": "Chrome 154 headless: PASS except D1-D3 (fixed in a515b00, re-checked); real 200% zoom via profile setting; reduced motion emulated; Safari NOT_RUN",
+    "native": "dedicated simulator F6BD3C92-ADA5-4937-B72C-A92DF6C42DBC; default + max text PASS; VoiceOver/physical NOT_RUN",
+    "github_actions": {
+      "a41be8c": "run 37202782760 success",
+      "e70a946": "run 37202969762 success (9 jobs incl. web)",
+      "final": "see terminal handoff"
+    }
+  },
+  "qa_readiness": {
+    "status": "READY_FOR_LOCAL_MANUAL_TEST (not an acceptance)",
+    "project": "sg-rc-20261004-qa",
+    "owner_home": ".qa/owner-home (candidate worktree)",
+    "api": "http://127.0.0.1:8163 (started from a515b00, identity verified)",
+    "metro": "exp://127.0.0.1:8263 (started from a515b00, identity verified)",
+    "web_preview": "http://127.0.0.1:5196/ (detached vite preview of dist built from a515b00)",
+    "fixtures": "fresh after qa reset: 8 users, 81 sessions, 57 bookings, migration 0016",
+    "checklist": "docs/run-golf-v2/release-candidate/HUMAN_QA.md",
+    "human_stack_sportsgang_qa": "untouched"
+  },
+  "remaining_release_gates": [
+    "Independent Codex review of this candidate (MA-C, MA-B, MA-A, mobile, website)",
+    "R6 production timestamp provenance (authorised operator; NOT_RUN)",
+    "Deployed WebSocket API is exactly one process/machine",
+    "Physical iPhone, VoiceOver, Android, signed release build, real Expo/APNs delivery (NOT_RUN)",
+    "Decision on the chat screen at the largest text size",
+    "Website domain/host/canonical/share image (undecided; not deployed)"
+  ],
+  "not_done_by_instruction": [
+    "merge to main",
+    "force-push",
+    "deploy",
+    "App Store submission",
+    "paid builds",
+    "external messages",
+    "production access"
+  ]
+}
