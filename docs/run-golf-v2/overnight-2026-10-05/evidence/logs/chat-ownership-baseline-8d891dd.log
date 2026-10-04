@@ -1,0 +1,1018 @@
+
+> @protin/mobile@0.1.0 test:ci
+> jest --passWithNoTests --ci --runInBand --watchman=false --runTestsByPath src/__tests__/ChatScreen.ownership.test.tsx
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+FAIL src/__tests__/ChatScreen.ownership.test.tsx (6.824 s)
+  ✕ a successful retry clears the earlier error and shows the current messages (1122 ms)
+  ✕ messages and proposals fetched for match A never appear after switching to match B (185 ms)
+  ✕ match B does not start with the messages already shown for match A (349 ms)
+  ✕ returning to match A does not revive the request started on the first visit (A → B → A) (60 ms)
+  ✕ another account never sees the previous account's held messages (account A → B → A) (1008 ms)
+  ✕ a frame delivered to the previous socket after cleanup changes nothing (71 ms)
+  ✕ ignores a frame for another match, keeps the current match's frames (70 ms)
+  ✕ a send that settles after a match switch neither appears, restores its draft nor alerts (12 ms)
+  ✕ an earlier binding's send finishing does not release the current send's guard (11 ms)
+  ✕ a failed send does not overwrite a newer draft (10 ms)
+  ✕ blocks the partner of the match on screen, not the previous one (8 ms)
+  ✕ a safety menu or block confirmation opened before a match switch sends and navigates nothing (8 ms)
+  ✕ a block confirmation answered after unmount sends nothing (4 ms)
+  ✕ a confirm keeps its result when an older proposal refresh resolves afterwards (60 ms)
+  ✕ a proposal action that settles after a match switch changes nothing and alerts nothing (62 ms)
+  ✕ a socket closed with 4003 shows the restriction and a late history response cannot repopulate it (1003 ms)
+  ✕ a 403 restriction on send shows the restriction instead of a retryable draft (1060 ms)
+  ✕ a transient disconnect is not presented as a block and can reconnect (1061 ms)
+  ✓ closing our own socket on cleanup is not reported as a disconnect (7 ms)
+  ✓ the HTTP response and the socket echo of one sent message still show it once, in order (57 ms)
+
+  ● a successful retry clears the earlier error and shows the current messages
+
+    Unable to find an element with text: Hello again
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<Text>[39m
+          [0mNetwork request failed[0m
+        [36m</Text>[39m
+        [36m<View[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mTry again[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      211 |     fireEvent.press(u.getByText('Try again'));
+      212 |   });
+    > 213 |   await u.findByText('Hello again');
+          |           ^
+      214 |   expect(u.queryByText('Network request failed')).toBeNull();
+      215 | });
+      216 |
+
+      at Object.findByText (src/__tests__/ChatScreen.ownership.test.tsx:213:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● messages and proposals fetched for match A never appear after switching to match B
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      234 |   });
+      235 |   await settle();
+    > 236 |   expect(u.queryByText('Ava late message')).toBeNull();
+          |                                             ^
+      237 |   expect(u.queryByText('Session proposal')).toBeNull();
+      238 |   expect(u.getByText('Ben here')).toBeTruthy();
+      239 | });
+
+      at Object.toBeNull (src/__tests__/ChatScreen.ownership.test.tsx:236:45)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● match B does not start with the messages already shown for match A
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": [FiberNode], "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 4, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 262144, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      249 |   u.rerender(screen(routes.B));
+      250 |   await settle();
+    > 251 |   expect(u.queryByText('Ava says hi')).toBeNull();
+          |                                        ^
+      252 | });
+      253 |
+      254 | it('returning to match A does not revive the request started on the first visit (A → B → A)', async () => {
+
+      at Object.toBeNull (src/__tests__/ChatScreen.ownership.test.tsx:251:40)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● returning to match A does not revive the request started on the first visit (A → B → A)
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      270 |   });
+      271 |   await settle();
+    > 272 |   expect(u.queryByText('From the first visit')).toBeNull();
+          |                                                 ^
+      273 |
+      274 |   await act(async () => {
+      275 |     secondA.resolve(list([msg('match-A', 'new', 'Current history')]));
+
+      at Object.toBeNull (src/__tests__/ChatScreen.ownership.test.tsx:272:49)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● another account never sees the previous account's held messages (account A → B → A)
+
+    Unable to find an element with text: Fresh for call 2
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<ActivityIndicator />[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      292 |   mockToken = 'token-me-2';
+      293 |   u.rerender(screen(routes.A));
+    > 294 |   await u.findByText('Fresh for call 2');
+          |           ^
+      295 |
+      296 |   mockUserId = 'me-1';
+      297 |   mockToken = 'token-me-1';
+
+      at Object.findByText (src/__tests__/ChatScreen.ownership.test.tsx:294:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● a frame delivered to the previous socket after cleanup changes nothing
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      322 |     oldHandler?.({ data: JSON.stringify(msg('match-A', 'late', 'Late frame for A')) });
+      323 |   });
+    > 324 |   expect(u.queryByText('Late frame for A')).toBeNull();
+          |                                             ^
+      325 | });
+      326 |
+      327 | it("ignores a frame for another match, keeps the current match's frames", async () => {
+
+      at Object.toBeNull (src/__tests__/ChatScreen.ownership.test.tsx:324:45)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● ignores a frame for another match, keeps the current match's frames
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": null, "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      333 |     sockets[0].onmessage?.({ data: JSON.stringify(msg('match-B', 'y', 'Right room')) });
+      334 |   });
+    > 335 |   expect(u.queryByText('Wrong room')).toBeNull();
+          |                                       ^
+      336 |   expect(u.getByText('Right room')).toBeTruthy();
+      337 | });
+      338 |
+
+      at Object.toBeNull (src/__tests__/ChatScreen.ownership.test.tsx:335:39)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a send that settles after a match switch neither appears, restores its draft nor alerts
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: ""
+    Received: "For Ava"
+
+      356 |   });
+      357 |   await settle();
+    > 358 |   expect(u.getByPlaceholderText('Message…').props.value).toBe('');
+          |                                                          ^
+      359 |   expect(alertSpy).not.toHaveBeenCalled();
+      360 |
+      361 |   // A late success for A is not shown in B either.
+
+      at Object.toBe (src/__tests__/ChatScreen.ownership.test.tsx:358:58)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● an earlier binding's send finishing does not release the current send's guard
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 2
+    Received number of calls: 1
+
+      394 |     fireEvent.press(u.getByLabelText('Send'));
+      395 |   });
+    > 396 |   expect(mockApiPost).toHaveBeenCalledTimes(2);
+          |                       ^
+      397 |
+      398 |   await act(async () => {
+      399 |     sentA.resolve(msg('match-A', 'a', 'To Ava', 'me-1'));
+
+      at Object.toHaveBeenCalledTimes (src/__tests__/ChatScreen.ownership.test.tsx:396:23)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a failed send does not overwrite a newer draft
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Typed meanwhile"
+    Received: "First message"
+
+      423 |   });
+      424 |   await settle();
+    > 425 |   expect(u.getByPlaceholderText('Message…').props.value).toBe('Typed meanwhile');
+          |                                                          ^
+      426 |   expect(alertSpy).toHaveBeenCalledTimes(1);
+      427 | });
+      428 |
+
+      at Object.toBe (src/__tests__/ChatScreen.ownership.test.tsx:425:58)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● blocks the partner of the match on screen, not the previous one
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+    - "/blocks/partner-B",
+    + "/blocks/partner-A",
+      {},
+
+    Number of calls: 1
+
+      450 |     alertButton('Block')?.onPress?.();
+      451 |   });
+    > 452 |   expect(mockApiPost).toHaveBeenCalledWith('/blocks/partner-B', {});
+          |                       ^
+      453 |   expect(mockApiPost).not.toHaveBeenCalledWith('/blocks/partner-A', expect.anything());
+      454 | });
+      455 |
+
+      at Object.toHaveBeenCalledWith (src/__tests__/ChatScreen.ownership.test.tsx:452:23)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a safety menu or block confirmation opened before a match switch sends and navigates nothing
+
+    expect(jest.fn()).not.toHaveBeenCalledWith(...expected)
+
+    Expected: not "Report", Anything
+    Received:     0, ["Report", {"reportedName": "Ava", "reportedUserId": "partner-A"}]
+
+    Number of calls: 1
+
+      466 |
+      467 |   act(() => menuForA(0)); // Report
+    > 468 |   expect(navigation.navigate).not.toHaveBeenCalledWith('Report', expect.anything());
+          |                                   ^
+      469 |   act(() => menuForA(1)); // Block → must not even ask
+      470 |   expect(alertSpy).not.toHaveBeenCalled();
+      471 |
+
+      at Object.toHaveBeenCalledWith (src/__tests__/ChatScreen.ownership.test.tsx:468:35)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a block confirmation answered after unmount sends nothing
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "/blocks/partner-A", {}
+
+      493 |     block?.onPress?.();
+      494 |   });
+    > 495 |   expect(mockApiPost).not.toHaveBeenCalled();
+          |                           ^
+      496 | });
+      497 |
+      498 | // ─── Proposal actions ─────────────────────────────────────────────────────────
+
+      at Object.toHaveBeenCalled (src/__tests__/ChatScreen.ownership.test.tsx:495:27)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a confirm keeps its result when an older proposal refresh resolves afterwards
+
+    Unable to find an element with text: Session confirmed
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<RCTScrollView>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<View>[39m
+                [36m<View[39m
+                  [33maccessibilityLabel[39m=[32m"Open session proposal"[39m
+                  [33maccessibilityRole[39m=[32m"button"[39m
+                  [33maccessible[39m=[32m{true}[39m
+                [36m>[39m
+                  [36m<Text>[39m
+                    [0mSession proposal[0m
+                  [36m</Text>[39m
+                  [36m<Text>[39m
+                    [0mAva proposed a session[0m
+                  [36m</Text>[39m
+                  [36m<View>[39m
+                    [36m<Text>[39m
+                      [0mRunning[0m
+                    [36m</Text>[39m
+                    [36m<Text>[39m
+                      [0mTue 6 Oct · 11:30 am – 12:30 pm[0m
+                    [36m</Text>[39m
+                  [36m</View>[39m
+                  [36m<View>[39m
+                    [36m<View[39m
+                      [33maccessibilityLabel[39m=[32m"Accept session proposal"[39m
+                      [33maccessibilityRole[39m=[32m"button"[39m
+                      [33maccessibilityState[39m=[32m{
+                        {
+                          "disabled": false,
+                        }
+                      }[39m
+                      [33maccessible[39m=[32m{true}[39m
+                    [36m>[39m
+                      [36m<Text>[39m
+                        [0mAccept[0m
+                      [36m</Text>[39m
+                    [36m</View>[39m
+                    [36m<View[39m
+                      [33maccessibilityLabel[39m=[32m"Decline session proposal"[39m
+                      [33maccessibilityRole[39m=[32m"button"[39m
+                      [33maccessibilityState[39m=[32m{
+                        {
+                          "disabled": false,
+                        }
+                      }[39m
+                      [33maccessible[39m=[32m{true}[39m
+                    [36m>[39m
+                      [36m<Text>[39m
+                        [0mDecline[0m
+                      [36m</Text>[39m
+                    [36m</View>[39m
+                  [36m</View>[39m
+                [36m</View>[39m
+              [36m</View>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<TextInput[39m
+            [33mplaceholder[39m=[32m"Message…"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Send"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "disabled": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mSend[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      523 |   });
+      524 |   await settle();
+    > 525 |   expect(u.getByText('Session confirmed')).toBeTruthy();
+          |            ^
+      526 |   expect(u.queryByLabelText('Accept session proposal')).toBeNull();
+      527 | });
+      528 |
+
+      at Object.getByText (src/__tests__/ChatScreen.ownership.test.tsx:525:12)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a proposal action that settles after a match switch changes nothing and alerts nothing
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "Couldn't update this session.", "Network request failed"
+
+      542 |   });
+      543 |   await settle();
+    > 544 |   expect(alertSpy).not.toHaveBeenCalled();
+          |                        ^
+      545 |   expect(u.queryByText('Session declined')).toBeNull();
+      546 | });
+      547 |
+
+      at Object.toHaveBeenCalled (src/__tests__/ChatScreen.ownership.test.tsx:544:24)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a socket closed with 4003 shows the restriction and a late history response cannot repopulate it
+
+    Unable to find an element with text: You can't contact this person.
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<ActivityIndicator />[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      555 |     sockets[0].onclose?.({ code: 4003 });
+      556 |   });
+    > 557 |   await u.findByText(CONTACT_UNAVAILABLE);
+          |           ^
+      558 |   await act(async () => {
+      559 |     held.resolve(list([msg('match-A', 'h', 'Hidden history')]));
+      560 |   });
+
+      at Object.findByText (src/__tests__/ChatScreen.ownership.test.tsx:557:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at ../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at Object.<anonymous> (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)
+
+  ● a 403 restriction on send shows the restriction instead of a retryable draft
+
+    Unable to find an element with text: You can't contact this person.
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<RCTScrollView>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mEarlier[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<TextInput[39m
+            [33mplaceholder[39m=[32m"Message…"[39m
+            [33mvalue[39m=[32m"Are you there?"[39m
+          [36m/>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Send"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "disabled": false,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mSend[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      575 |     fireEvent.press(u.getByLabelText('Send'));
+      576 |   });
+    > 577 |   await u.findByText(CONTACT_UNAVAILABLE);
+          |           ^
+      578 |   expect(u.queryByText('Earlier')).toBeNull();
+      579 |   expect(u.queryByPlaceholderText('Message…')).toBeNull();
+      580 | });
+
+      at Object.findByText (src/__tests__/ChatScreen.ownership.test.tsx:577:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● a transient disconnect is not presented as a block and can reconnect
+
+    Unable to find an element with text: Live updates paused.
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<RCTScrollView>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<View>[39m
+                [36m<Text>[39m
+                  [0mStill here[0m
+                [36m</Text>[39m
+              [36m</View>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<TextInput[39m
+            [33mplaceholder[39m=[32m"Message…"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Send"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "disabled": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mSend[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      587 |     sockets[0].onclose?.({ code: 1006 });
+      588 |   });
+    > 589 |   await u.findByText('Live updates paused.');
+          |           ^
+      590 |   expect(u.queryByText(CONTACT_UNAVAILABLE)).toBeNull();
+      591 |   expect(u.getByPlaceholderText('Message…')).toBeTruthy();
+      592 |   const callsBefore = mockApiGet.mock.calls.length;
+
+      at Object.findByText (src/__tests__/ChatScreen.ownership.test.tsx:589:11)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       18 failed, 2 passed, 20 total
+Snapshots:   0 total
+Time:        6.874 s, estimated 7 s
+Ran all test suites within paths "src/__tests__/ChatScreen.ownership.test.tsx".
+npm error Lifecycle script `test:ci` failed with error:
+npm error code 1
+npm error path <worktree>/apps/mobile
+npm error workspace @protin/mobile@0.1.0
+npm error location <worktree>/apps/mobile
+npm error command failed
+npm error command sh -c jest --passWithNoTests --ci --runInBand --watchman=false --runTestsByPath src/__tests__/ChatScreen.ownership.test.tsx

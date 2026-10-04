@@ -1,0 +1,892 @@
+{
+ "d390-longname": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 83,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob Bartholomew-Featherstonehaugh Jun",
+    "value": "",
+    "type": "Heading",
+    "x": 68,
+    "y": 79,
+    "w": 146.3,
+    "h": 52,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330.0,
+    "y": 83,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 222.3,
+    "y": 93,
+    "w": 103.7,
+    "h": 24,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 156,
+    "w": 179.3,
+    "h": 16,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 211.3,
+    "y": 161,
+    "w": 162.7,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 174,
+    "w": 179.3,
+    "h": 36,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 752,
+    "w": 277.3,
+    "h": 49,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 303.3,
+    "y": 754,
+    "w": 70.7,
+    "h": 48,
+    "inside": true
+   }
+  ]
+ },
+ "kb390-keyboard-empty": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330.0,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob",
+    "value": "",
+    "type": "Heading",
+    "x": 108.3,
+    "y": 88,
+    "w": 65.3,
+    "h": 26,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 222.3,
+    "y": 89,
+    "w": 103.7,
+    "h": 24,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 148,
+    "w": 179.3,
+    "h": 16,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 211.3,
+    "y": 153,
+    "w": 162.7,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 166,
+    "w": 179.3,
+    "h": 36,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 451,
+    "w": 277.3,
+    "h": 49,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 303.3,
+    "y": 453,
+    "w": 70.7,
+    "h": 48,
+    "inside": true
+   },
+   {
+    "label": "send",
+    "value": "",
+    "type": "Button",
+    "x": 291.7,
+    "y": 722,
+    "w": 96,
+    "h": 54,
+    "inside": true
+   }
+  ]
+ },
+ "kb390-keyboard-korean": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330.0,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob",
+    "value": "",
+    "type": "Heading",
+    "x": 108.3,
+    "y": 88,
+    "w": 65.3,
+    "h": 26,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 222.3,
+    "y": 89,
+    "w": 103.7,
+    "h": 24,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 148,
+    "w": 179.3,
+    "h": 16,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 211.3,
+    "y": 153,
+    "w": 162.7,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 166,
+    "w": 179.3,
+    "h": 36,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 303.3,
+    "y": 453,
+    "w": 70.7,
+    "h": 48,
+    "inside": true
+   },
+   {
+    "label": "send",
+    "value": "",
+    "type": "Button",
+    "x": 291.7,
+    "y": 722,
+    "w": 96,
+    "h": 54,
+    "inside": true
+   }
+  ]
+ },
+ "max390-chat": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob",
+    "value": "",
+    "type": "Heading",
+    "x": 175.7,
+    "y": 82.7,
+    "w": 90.3,
+    "h": 36.7,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 71.3,
+    "y": 127,
+    "w": 254.7,
+    "h": 65.3,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330.0,
+    "y": 137.7,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 217.3,
+    "w": 358,
+    "h": 57.3,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 276.7,
+    "w": 358,
+    "h": 193,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 473.7,
+    "w": 358,
+    "h": 159.0,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 671.0,
+    "w": 184,
+    "h": 130,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 210,
+    "y": 714.3,
+    "w": 164,
+    "h": 87.7,
+    "inside": true
+   }
+  ]
+ },
+ "max390-chat-4": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob",
+    "value": "",
+    "type": "Heading",
+    "x": 85,
+    "y": 82.7,
+    "w": 90.3,
+    "h": 36.7,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 200.3,
+    "y": 85.7,
+    "w": 125.7,
+    "h": 30.7,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 148,
+    "w": 134.3,
+    "h": 45,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 195,
+    "w": 134.3,
+    "h": 75.7,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 166.3,
+    "y": 187.3,
+    "w": 207.7,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 631.7,
+    "w": 356,
+    "h": 113.3,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 289.7,
+    "y": 754,
+    "w": 84.3,
+    "h": 48,
+    "inside": true
+   }
+  ]
+ },
+ "max390-keyboard-final": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob",
+    "value": "",
+    "type": "Heading",
+    "x": 85,
+    "y": 82.7,
+    "w": 90.3,
+    "h": 36.7,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 200.3,
+    "y": 85.7,
+    "w": 125.7,
+    "h": 30.7,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330,
+    "y": 79,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 289.7,
+    "y": 453,
+    "w": 84.3,
+    "h": 48,
+    "inside": true
+   },
+   {
+    "label": "send",
+    "value": "",
+    "type": "Button",
+    "x": 291.7,
+    "y": 722,
+    "w": 96,
+    "h": 54,
+    "inside": true
+   }
+  ]
+ },
+ "max390-longname": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "QA Bob Bartholomew-Featherstonehaugh Jun",
+    "value": "",
+    "type": "Heading",
+    "x": 68,
+    "y": 79,
+    "w": 124.3,
+    "h": 73,
+    "inside": true
+   },
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 93.7,
+    "w": 44,
+    "h": 44.0,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 200.3,
+    "y": 100.3,
+    "w": 125.7,
+    "h": 30.7,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330,
+    "y": 93.7,
+    "w": 44,
+    "h": 44.0,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 177,
+    "w": 134.3,
+    "h": 45,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 224,
+    "w": 134.3,
+    "h": 75.7,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 166.3,
+    "y": 216.3,
+    "w": 207.7,
+    "h": 44.0,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 631.7,
+    "w": 356,
+    "h": 113.3,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 289.7,
+    "y": 754.0,
+    "w": 84.3,
+    "h": 48,
+    "inside": true
+   }
+  ]
+ },
+ "se-default-final": {
+  "screen_width_pt": 375,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 56,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob Bartholomew-Featherstonehaugh Jun",
+    "value": "",
+    "type": "Heading",
+    "x": 68,
+    "y": 52,
+    "w": 131.5,
+    "h": 52,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 315,
+    "y": 56,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 207.5,
+    "y": 66,
+    "w": 103.5,
+    "h": 24,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 129,
+    "w": 164,
+    "h": 16,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 196,
+    "y": 134,
+    "w": 163,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 147,
+    "w": 164,
+    "h": 36,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 609,
+    "w": 262.5,
+    "h": 49,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 288.5,
+    "y": 611,
+    "w": 70.5,
+    "h": 48,
+    "inside": true
+   }
+  ]
+ },
+ "se-max-final": {
+  "screen_width_pt": 375,
+  "frames": [
+   {
+    "label": "QA Bob Bartholomew-Featherstonehaugh Jun",
+    "value": "",
+    "type": "Heading",
+    "x": 68,
+    "y": 52,
+    "w": 109,
+    "h": 73,
+    "inside": true
+   },
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 66.5,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Propose a session",
+    "value": "",
+    "type": "Button",
+    "x": 185,
+    "y": 73.5,
+    "w": 126,
+    "h": 30.5,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 315,
+    "y": 66.5,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "PLAN A SESSION",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 150,
+    "w": 119,
+    "h": 45,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot and propose a time.",
+    "value": "",
+    "type": "StaticText",
+    "x": 16,
+    "y": 197,
+    "w": 119,
+    "h": 101,
+    "inside": true
+   },
+   {
+    "label": "Find a meeting spot",
+    "value": "",
+    "type": "Button",
+    "x": 151,
+    "y": 202,
+    "w": 208,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "Message…",
+    "value": "",
+    "type": "TextArea",
+    "x": 17,
+    "y": 488.5,
+    "w": 341,
+    "h": 113.5,
+    "inside": true
+   },
+   {
+    "label": "Send",
+    "value": "",
+    "type": "Button",
+    "x": 274.5,
+    "y": 611,
+    "w": 84.5,
+    "h": 48,
+    "inside": true
+   }
+  ]
+ },
+ "d390-restricted": {
+  "screen_width_pt": 390,
+  "frames": [
+   {
+    "label": "Back",
+    "value": "",
+    "type": "Button",
+    "x": 16,
+    "y": 83,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "QA Bob Bartholomew-Featherstonehaugh Jun",
+    "value": "",
+    "type": "Heading",
+    "x": 68,
+    "y": 79,
+    "w": 254,
+    "h": 52,
+    "inside": true
+   },
+   {
+    "label": "More options",
+    "value": "",
+    "type": "Button",
+    "x": 330,
+    "y": 83,
+    "w": 44,
+    "h": 44,
+    "inside": true
+   },
+   {
+    "label": "You can't contact this person.",
+    "value": "",
+    "type": "StaticText",
+    "x": 42.7,
+    "y": 457,
+    "w": 304.7,
+    "h": 26,
+    "inside": true
+   },
+   {
+    "label": "Messages are hidden while contact is res",
+    "value": "",
+    "type": "StaticText",
+    "x": 0,
+    "y": 491,
+    "w": 390,
+    "h": 44,
+    "inside": true
+   }
+  ]
+ }
+}
