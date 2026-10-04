@@ -39,7 +39,7 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (with reason) · BLOCKED.
 
 | ID | Implementation | Regression tests | Verification evidence | Limitations |
 |---|---|---|---|---|
-| Q08 QA launcher TZ-invariant legacy start | TODO | TODO | TODO | |
+| Q08 QA launcher TZ-invariant legacy start | PASS — legacy start compared as a UTC epoch: `proc_start_utc` asks `ps` with `TZ=UTC` and parses with `calendar.timegm`; naive `started_at` read as UTC; identity `lstart` strings unchanged (system zone), all other checks unchanged (`scripts/qa/qa.py`) | PASS — `test_legacy_start_time_check_ignores_the_callers_time_zone` (UTC, Sydney, Kiritimati, Los Angeles: adopt exact, refuse 1 h off and wrong pid); existing legacy test records start TZ-independently | PASS — Docker-free 14 pass/7 skip (host and `TZ=UTC`); Docker 21/21 host zone and 21/21 `TZ=UTC`; new test fails on base launcher; real pre-repair launcher API/Metro adopted with unchanged PIDs under `TZ=UTC` | Real adoption run's first `down` left the API running because Metro exited after the grace period (designed fail-closed); second `down` stopped it |
 | Q09 composer time-picker header at max text size | TODO | TODO | TODO | Native proof needs a dedicated simulator |
 
 ## R6 / C01 — deployment gate (separate from Q01–Q09)

@@ -77,6 +77,22 @@ def alive(pid: int) -> bool:
     return True
 
 
+@contextlib.contextmanager
+def process_tz(zone: str):
+    """Run with this Python process's TZ set to `zone` (the launcher's `ps` env has none)."""
+    saved = os.environ.get("TZ")
+    os.environ["TZ"] = zone
+    time.tzset()
+    try:
+        yield
+    finally:
+        if saved is None:
+            os.environ.pop("TZ", None)
+        else:
+            os.environ["TZ"] = saved
+        time.tzset()
+
+
 class LauncherCase(unittest.TestCase):
     """A temporary worktree with the real launcher and compose file."""
 
@@ -220,9 +236,10 @@ class ProcessIdentityTests(LauncherCase):
         self.assertFalse(alive(proc.pid))
 
     def test_legacy_record_is_adopted_only_when_every_fact_matches(self) -> None:
+        # Recorded like the previous launcher: UTC wall clock taken at spawn.
+        started = datetime.now(timezone.utc)
         proc = self.spawn(SLEEPER, "--port", "8130", cwd=self.root / "apps/api")
         actual = self.qa.proc_identity(proc.pid)
-        started = datetime.fromtimestamp(time.mktime(time.strptime(actual["lstart"], "%a %b %d %H:%M:%S %Y")))
         legacy = {
             "pid": proc.pid,
             "cmd": actual["command"],
@@ -238,6 +255,29 @@ class ProcessIdentityTests(LauncherCase):
         stale = {**legacy, "started_at": (started - timedelta(hours=1)).astimezone(timezone.utc).isoformat()}
         self.assertEqual(self.qa.check_proc(stale)[0], "foreign")
         self.assertEqual(self.qa.check_proc({**legacy, "cwd": str(self.tmp)})[0], "foreign")
+        self.assertTrue(alive(proc.pid))
+
+    def test_legacy_start_time_check_ignores_the_callers_time_zone(self) -> None:
+        """Review Q08: TZ=UTC on a Sydney host made a verified legacy process foreign.
+
+        `ps` reports the system zone; the comparison must not depend on this
+        process's TZ. Zones are chosen so at least one differs from any host's.
+        """
+        started = datetime.now(timezone.utc)
+        proc = self.spawn(SLEEPER, "--port", "8130", cwd=self.root / "apps/api")
+        actual = self.qa.proc_identity(proc.pid)
+        legacy = {
+            "pid": proc.pid,
+            "cmd": actual["command"],
+            "cwd": str(self.root / "apps/api"),
+            "started_at": started.isoformat(timespec="seconds"),
+        }
+        stale = {**legacy, "started_at": (started - timedelta(hours=1)).isoformat(timespec="seconds")}
+        for zone in ("UTC", "Australia/Sydney", "Pacific/Kiritimati", "America/Los_Angeles"):
+            with process_tz(zone):
+                self.assertEqual(self.qa.check_proc(dict(legacy))[0], "legacy", zone)
+                self.assertEqual(self.qa.check_proc(dict(stale))[0], "foreign", zone)  # still strict
+                self.assertEqual(self.qa.check_proc({**legacy, "pid": os.getpid()})[0], "foreign", zone)
         self.assertTrue(alive(proc.pid))
 
 

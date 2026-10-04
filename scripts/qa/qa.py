@@ -49,6 +49,7 @@ Stdlib only (the seeder runs inside apps/api's uv environment).
 from __future__ import annotations
 
 import argparse
+import calendar
 import contextlib
 import fcntl
 import hashlib
@@ -415,7 +416,9 @@ def project_lock(cfg: dict[str, str]):
 
 # ─── process identity ───────────────────────────────────────────────────────
 
-# Fixed locale so `lstart` always has one format; the system time zone applies.
+# Fixed locale so `lstart` always has one format. No TZ is passed, so `ps`
+# formats in the system time zone whatever the caller's TZ, and recorded
+# `lstart` strings stay comparable across callers.
 _C_ENV = {"LC_ALL": "C", "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
 
 
@@ -452,6 +455,19 @@ def proc_identity(pid: int) -> dict | None:
 _IDENTITY_KEYS = ("pgid", "lstart", "command", "cwd")
 
 
+def proc_start_utc(pid: int) -> float | None:
+    """pid's start as a UTC epoch, formatted and parsed in UTC whatever this
+    process's TZ (review Q08: `time.mktime` read the system-zone `lstart` in
+    the caller's zone, so TZ=UTC on a Sydney host was 11 h off)."""
+    r = subprocess.run(
+        ["ps", "-o", "lstart=", "-p", str(pid)], capture_output=True, text=True, env={**_C_ENV, "TZ": "UTC"}
+    )
+    text = " ".join(r.stdout.split())
+    if r.returncode != 0 or not text:
+        return None
+    return calendar.timegm(time.strptime(text, "%a %b %d %H:%M:%S %Y"))
+
+
 def _legacy_reasons(entry: dict, actual: dict) -> list[str]:
     """A pre-identity record (pid/cmd/cwd/started_at only) is accepted only on
     every available fact: own process group, cwd, launched command (npx
@@ -465,11 +481,15 @@ def _legacy_reasons(entry: dict, actual: dict) -> list[str]:
     if actual["command"] not in {cmd, cmd.replace("npx --no-install ", "npm exec ", 1)}:
         reasons.append(f"command {actual['command']!r} (recorded {cmd!r})")
     try:
-        started = time.mktime(time.strptime(actual["lstart"], "%a %b %d %H:%M:%S %Y"))
-        recorded = datetime.fromisoformat(entry["started_at"]).timestamp()
-        if abs(started - recorded) > 5:
+        started = proc_start_utc(entry["pid"])
+        recorded = datetime.fromisoformat(entry["started_at"])
+        if recorded.tzinfo is None:  # the launcher always wrote UTC
+            recorded = recorded.replace(tzinfo=timezone.utc)
+        if started is None:
+            raise ValueError("no start time")
+        if abs(started - recorded.timestamp()) > 5:
             reasons.append(f"started {actual['lstart']} (recorded {entry['started_at']})")
-    except (KeyError, ValueError):
+    except (KeyError, TypeError, ValueError):
         reasons.append("start time cannot be compared")
     return reasons
 
