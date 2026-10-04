@@ -1,0 +1,34 @@
+
+> @protin/web@0.1.0 check:routes
+> node scripts/check-routes.mjs
+
+PASS  dist/privacy/index.html equals public/
+PASS  dist/terms/index.html equals public/
+PASS  dist/support/index.html equals public/
+PASS  dist/styles.css equals public/
+PASS  / -> 200 marketing page
+PASS  GET /privacy -> 301 /privacy/
+PASS  HEAD /privacy -> 301 /privacy/
+PASS  /privacy (Accept */*) -> 301 /privacy/
+PASS  /privacy/ -> 200 exact bytes of public/privacy/index.html
+PASS  /privacy/index.html -> 200 exact bytes of public/privacy/index.html
+PASS  /privacy/no-such-file -> 404, not the marketing page
+PASS  GET /terms -> 301 /terms/
+PASS  HEAD /terms -> 301 /terms/
+PASS  /terms (Accept */*) -> 301 /terms/
+PASS  /terms/ -> 200 exact bytes of public/terms/index.html
+PASS  /terms/index.html -> 200 exact bytes of public/terms/index.html
+PASS  /terms/no-such-file -> 404, not the marketing page
+PASS  GET /support -> 301 /support/
+PASS  HEAD /support -> 301 /support/
+PASS  /support (Accept */*) -> 301 /support/
+PASS  /support/ -> 200 exact bytes of public/support/index.html
+PASS  /support/index.html -> 200 exact bytes of public/support/index.html
+PASS  /support/no-such-file -> 404, not the marketing page
+PASS  /privacy?x=1 -> 301 /privacy/?x=1
+PASS  following /privacy?x=1 reaches the privacy page in one hop
+PASS  /styles.css -> 200 exact bytes of public/styles.css
+PASS  build without privacy/index.html: /privacy/ -> 404, not the marketing page
+PASS  _redirects is outside public/ (does not ship with the build)
+
+All 28 route checks passed.

@@ -1,0 +1,15 @@
+[qa] worktree <worktree>
+[qa] HEAD ca9a04dfc182
+[qa] api: started from ca9a04dfc182; apps/api unchanged since, so it serves that code
+[qa] metro: started from ca9a04dfc182; apps/mobile, packages unchanged since, so it serves that code
+   OK  ownership    project sg-on-20261005-qa owned by this worktree (created 2026-10-04T16:35:19+00:00)
+   OK  containers   sg-on-20261005-qa postgres + redis
+   OK  api          running: pid 39984 identity verified; http://127.0.0.1:8173 health=200
+   OK  auth read    QA Alice signed in; 55 past sessions in her My Plans
+   OK  metro        running: pid 39757 identity verified; port 8273 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8173 (expected http://127.0.0.1:8173)
+   fixtures     {'qa_users': 8, 'qa_sessions': 81, 'qa_bookings': 57, 'qa_history_sessions': 55, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8273
+   credentials  <worktree>/.qa/credentials.json
+   manifest     <worktree>/.qa/manifest.json
+   logs         <worktree>/.qa/logs

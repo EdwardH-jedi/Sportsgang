@@ -1,0 +1,12 @@
+sssssss.[qa] created project qa-test-559f23af for this worktree (/private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-fqzstmuq/owners/qa-test-559f23af.json)
+.[qa] created project qa-test-3c89deb4 for this worktree (/private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-wvvk45__/owners/qa-test-3c89deb4.json)
+.[qa] created project qa-test-999c9522 for this worktree (/private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-ndvd5yqb/owners/qa-test-999c9522.json)
+.[qa] adopted project qa-test-cd4eb20f for this worktree (/private/var/folders/55/tmvqlq7s0zbfb7z81wqhmdmr0000gn/T/qa-test-fi19kkfx/owners/qa-test-cd4eb20f.json)
+..[qa] killed api (pid 38221) after it ignored SIGTERM
+.[qa] adopted running api pid 38268 (identity verified, record upgraded)
+.....[qa] stopped api (pid 38437)
+..
+----------------------------------------------------------------------
+Ran 21 tests in 16.487s
+
+OK (skipped=7)

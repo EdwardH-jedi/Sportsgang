@@ -1,0 +1,24 @@
+{
+  "skew_seconds": 120,
+  "first": {
+    "id": "23ffff34-9fa9-4da8-99d9-8906ddb8f9d2",
+    "status": "joined",
+    "joined_at": "2026-10-04 17:16:10.165858+00:00",
+    "left_at": null
+  },
+  "left": {
+    "id": "23ffff34-9fa9-4da8-99d9-8906ddb8f9d2",
+    "status": "left",
+    "joined_at": "2026-10-04 17:16:10.165858+00:00",
+    "left_at": "2026-10-04 17:16:10.180565+00:00"
+  },
+  "rejoined": {
+    "id": "23ffff34-9fa9-4da8-99d9-8906ddb8f9d2",
+    "status": "joined",
+    "joined_at": "2026-10-04 17:16:10.194894+00:00",
+    "left_at": null
+  },
+  "db_now": "2026-10-04 17:16:10.206714+00:00",
+  "row_reuse_and_capacity": true,
+  "rejoin_minus_db_seconds": -0.01182
+}

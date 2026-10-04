@@ -1,0 +1,592 @@
+[
+  {
+    "case": "d0:block",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:get:/matches/efb94ce3-2dfd-481d-846f-37d87db651c4/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/matches/efb94ce3-2dfd-481d-846f-37d87db651c4/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/bookings:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/challenges:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/discovery/actions:like",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/discovery/actions:pass",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:post:/discovery/actions:save",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:match-total",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:booking-detail",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:booking-list",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:a:report",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:get:/matches/efb94ce3-2dfd-481d-846f-37d87db651c4/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/matches/efb94ce3-2dfd-481d-846f-37d87db651c4/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/bookings:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/challenges:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/discovery/actions:like",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/discovery/actions:pass",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:post:/discovery/actions:save",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:match-total",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:booking-detail",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:booking-list",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:b:report",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:confirm",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:challenge-accept",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:decline",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:complete",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:cancel-confirmed",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:no-show",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:retained-message-row",
+    "expected": 1,
+    "actual": 1,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:unblock",
+    "expected": 204,
+    "actual": 204,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d0:restored-history",
+    "expected": 1,
+    "actual": 1,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:block",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:get:/matches/232db31f-d156-44f6-a129-14780cd68d8c/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/matches/232db31f-d156-44f6-a129-14780cd68d8c/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/bookings:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/challenges:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/discovery/actions:like",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/discovery/actions:pass",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:post:/discovery/actions:save",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:match-total",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:booking-detail",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:booking-list",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:a:report",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:get:/matches/232db31f-d156-44f6-a129-14780cd68d8c/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/matches/232db31f-d156-44f6-a129-14780cd68d8c/messages:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/bookings:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/challenges:",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/discovery/actions:like",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/discovery/actions:pass",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:post:/discovery/actions:save",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:match-total",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:booking-detail",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:booking-list",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:b:report",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:confirm",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:challenge-accept",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:decline",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:complete",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:cancel-confirmed",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:no-show",
+    "expected": 200,
+    "actual": 200,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:retained-message-row",
+    "expected": 1,
+    "actual": 1,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:unblock",
+    "expected": 204,
+    "actual": 204,
+    "verdict": "PASS"
+  },
+  {
+    "case": "d1:restored-history",
+    "expected": 1,
+    "actual": 1,
+    "verdict": "PASS"
+  },
+  {
+    "case": "blocked account deletion",
+    "expected": 204,
+    "actual": 204,
+    "verdict": "PASS"
+  },
+  {
+    "case": "deleted token auth",
+    "expected": 401,
+    "actual": 401,
+    "verdict": "PASS"
+  },
+  {
+    "case": "deletion cascades retained message",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "admission held after check -> block waits on pair lock",
+    "expected": true,
+    "actual": true,
+    "verdict": "PASS"
+  },
+  {
+    "case": "block after admission completes",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "admission-check -> (block waits) -> registration -> closure",
+    "expected": "closed 4003",
+    "actual": "closed 4003",
+    "verdict": "PASS"
+  },
+  {
+    "case": "admission + delivery held -> block waits on pair lock",
+    "expected": true,
+    "actual": true,
+    "verdict": "PASS"
+  },
+  {
+    "case": "block after delivery completes",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "wire: pre-commit frame, then closure",
+    "expected": [
+      "stored before block",
+      "closed 4003"
+    ],
+    "actual": [
+      "stored before block",
+      "closed 4003"
+    ],
+    "verdict": "PASS"
+  },
+  {
+    "case": "order: registration, frame, then block closure",
+    "expected": [
+      "registered",
+      "frame sent",
+      "block closure"
+    ],
+    "actual": [
+      "registered",
+      "frame sent",
+      "block closure"
+    ],
+    "verdict": "PASS"
+  },
+  {
+    "case": "block first: block commits while dispatcher waits before the lock",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "block first: proposal push invocations",
+    "expected": [],
+    "actual": [],
+    "verdict": "PASS"
+  },
+  {
+    "case": "existing commitment cancellation notification",
+    "expected": [
+      "booking_cancelled"
+    ],
+    "actual": [
+      "booking_cancelled"
+    ],
+    "verdict": "PASS"
+  },
+  {
+    "case": "dispatch first: block waits on pair lock during token lookup",
+    "expected": true,
+    "actual": true,
+    "verdict": "PASS"
+  },
+  {
+    "case": "dispatch first: proposal pushed before the block commits",
+    "expected": [
+      "proposal_received"
+    ],
+    "actual": [
+      "proposal_received"
+    ],
+    "verdict": "PASS"
+  },
+  {
+    "case": "dispatch first: block then completes (no deadlock)",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "fresh actor state after pair lock:send",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "inactive actor prohibited persisted rows:send",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "deactivated actor next HTTP auth:send",
+    "expected": 401,
+    "actual": 401,
+    "verdict": "PASS"
+  },
+  {
+    "case": "fresh actor state after pair lock:like",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "inactive actor prohibited persisted rows:like",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "deactivated actor next HTTP auth:like",
+    "expected": 401,
+    "actual": 401,
+    "verdict": "PASS"
+  },
+  {
+    "case": "fresh actor state after pair lock:proposal",
+    "expected": 403,
+    "actual": 403,
+    "verdict": "PASS"
+  },
+  {
+    "case": "inactive actor prohibited persisted rows:proposal",
+    "expected": 0,
+    "actual": 0,
+    "verdict": "PASS"
+  },
+  {
+    "case": "deactivated actor next HTTP auth:proposal",
+    "expected": 401,
+    "actual": 401,
+    "verdict": "PASS"
+  },
+  {
+    "case": "worker before lock: API block commits",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  },
+  {
+    "case": "separate worker, block first: provider invocations",
+    "expected": [],
+    "actual": [],
+    "verdict": "PASS"
+  },
+  {
+    "case": "worker after lock: API block waits on pair lock",
+    "expected": true,
+    "actual": true,
+    "verdict": "PASS"
+  },
+  {
+    "case": "separate worker, dispatch first: provider invoked before block commit",
+    "expected": [
+      "proposal_received"
+    ],
+    "actual": [
+      "proposal_received"
+    ],
+    "verdict": "PASS"
+  },
+  {
+    "case": "separate worker, dispatch first: block completes (no deadlock)",
+    "expected": 201,
+    "actual": 201,
+    "verdict": "PASS"
+  }
+]

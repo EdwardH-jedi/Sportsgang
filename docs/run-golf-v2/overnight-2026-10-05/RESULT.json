@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "prepared_at_utc": "2026-10-04T17:26:45Z",
+  "acceptance": "NOT_CLAIMED — no independent review ran; acceptance belongs to independent Codex review",
+  "branch": "fix/run-golf-v2-overnight-2026-10-05",
+  "base": {
+    "delivery_sha": "8d891ddb862de5345e85895a20fa65649ba1f46e",
+    "source_sha": "a515b0073cb0f32dad97f88430a203e3427444fe",
+    "branch": "chore/run-golf-v2-release-candidate-2026-10-04"
+  },
+  "latest_independent_review": {
+    "publication_sha": "ce62aacff5dc88efd394abb240dc0a3d0bc3c76d",
+    "reviewed_delivery_sha": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+    "code_verdict": "NEEDS_FIXES (MA-C/MA-B/MA-A, since implemented in 8d891dd, not yet reviewed)"
+  },
+  "newer_source_on_origin": false,
+  "preserved_untouched": [
+    "feat/run-first-ui fc3fb14dec5c53702a56354e30b47bc5f8cf8c0f",
+    "sportsgang-qa",
+    "sg-rc-20261004-qa",
+    "previews 5187 and 5196",
+    "other simulators and review worktrees"
+  ],
+  "final_source_sha": "a12a3688c6a63a4ac926d5861df03405ac0730f8",
+  "final_source_definition": "last commit touching apps/, scripts/, packages/ or .github/",
+  "delivery_sha": "NOT_EMBEDDED — the branch head after documentation commits; see the terminal handoff and git ls-remote",
+  "commits": {
+    "W3_release_preflight": "1159f49",
+    "W2_web_routes_print": "b10f510",
+    "W1_chat": "a12a368"
+  },
+  "independent_reviewer": {
+    "identity": null,
+    "status": "UNAVAILABLE",
+    "reason": "Codex CLI not installed (`which codex`: not found; openai-codex plugin setup check: codex not found, ready false); installing it is outside this task's authority",
+    "reviewed_sha": null,
+    "handoff": "docs/run-golf-v2/overnight-2026-10-05/CODEX_REVIEW_HANDOFF.md"
+  },
+  "implemented": [
+    {
+      "id": "W1-B",
+      "what": "ChatScreen request/action ownership: binding epochs (account+match), operation-owned guards, dialog expiry, updatedAt merge, failed-send draft rule, 403/4003 restriction, honest transient disconnect",
+      "commit": "a12a368",
+      "tests": "ChatScreen.ownership.test.tsx 20 (18 fail / 2 controls pass at 8d891dd)"
+    },
+    {
+      "id": "W1-A",
+      "what": "ChatScreen adaptive layout at default/max text, narrow widths, keyboard",
+      "commit": "a12a368",
+      "evidence": "evidence/native-chat/"
+    },
+    {
+      "id": "W2-A",
+      "what": "vite preview legal routes 301/404, Netlify note (no rule by design), check:routes CI step",
+      "commit": "b10f510"
+    },
+    {
+      "id": "W2-B",
+      "what": "FAQ answers in print from one DOM with state restore; print layout",
+      "commit": "b10f510"
+    },
+    {
+      "id": "W3",
+      "what": "release preflight script + tests, R6 procedure validation, topology operator check",
+      "commit": "1159f49"
+    }
+  ],
+  "reproduced": [
+    "Chat: stale retry error; cross-match and cross-account leaks of held fetches, socket frames and send outcomes (incl. A->B->A); stale send guard release; failed send overwrote a newer draft; Block targeted the previous partner after a match change; expired Report/Block dialogs still acted; stale proposal refresh undid a confirm; 4003/403 restriction not shown",
+    "Chat layout at max text: More options off-screen, name hidden, input truncated (from the previous candidate's record) and, during the fix, an oversized planning banner",
+    "Web: no-slash legal routes served the home page under vite preview; closed FAQ answers did not print",
+    "R6: the gate procedure as written is wrong/overconfident for 5 of 10 fixtures"
+  ],
+  "unresolved": [
+    {
+      "id": "R6",
+      "status": "OPEN / NOT_RUN",
+      "note": "production provenance not accessed; the procedure needs the proposed amendment (not applied; gate document unchanged)"
+    },
+    {
+      "id": "TOPOLOGY",
+      "status": "PENDING / NOT_RUN",
+      "note": "operator check prepared"
+    },
+    {
+      "id": "BOOKING-DETAIL-RECEIVER-CANCEL",
+      "status": "OBSERVED, not changed",
+      "note": "Booking Detail offers Cancel to the receiver of a proposed booking; server refuses; outside scope"
+    },
+    {
+      "id": "WEB-PRINT-WHITESPACE",
+      "status": "noted",
+      "note": "some empty space at page ends; legal pages request /favicon.ico (404)"
+    }
+  ],
+  "unavailable": [
+    "independent Codex review (candidate and final)",
+    "Safari (Remote Automation off; not enabled)",
+    "Korean IME keyboard switching on the simulator",
+    "physical iPhone",
+    "VoiceOver",
+    "Android",
+    "signed/store build",
+    "real Expo/APNs push",
+    "production services"
+  ],
+  "verification": [
+    {
+      "check": "API unit: uv run --frozen pytest -q tests",
+      "result": "773 passed, 0 skipped"
+    },
+    {
+      "check": "ruff check . && ruff format --check .",
+      "result": "clean"
+    },
+    {
+      "check": "integration on fresh UTC DB",
+      "result": "64 passed, 0 skipped"
+    },
+    {
+      "check": "integration on fresh Sydney-default DB",
+      "result": "64 passed, 0 skipped"
+    },
+    {
+      "check": "probe_r1_adapted.py",
+      "result": "94 PASS / 0 FAIL / 0 HARNESS_ERROR"
+    },
+    {
+      "check": "ce62aac follow-up + block-first probes (port guard only)",
+      "result": "11 passed, 2 failed (adapted interleavings, for review)"
+    },
+    {
+      "check": "mobile Jest TZ=UTC and Sydney",
+      "result": "65 suites / 988 passed each"
+    },
+    {
+      "check": "mobile lint / typecheck",
+      "result": "clean"
+    },
+    {
+      "check": "iOS export at final source (clean tree)",
+      "result": "exit 0; index-ed18c160be2847f21416b9235d6550eb.hbc sha256 5f870cc6149cba257b3cf37af84b8bc50dc9a122df8658e561464bed9d47395a"
+    },
+    {
+      "check": "release preflight + 17 tests",
+      "result": "CONSISTENT_WITH_MISSING_INPUTS; 17 OK"
+    },
+    {
+      "check": "launcher Docker-free, TZ unset and UTC",
+      "result": "14 passed + 7 Docker skips each (launcher unchanged)"
+    },
+    {
+      "check": "web typecheck / build / check:routes",
+      "result": "0 / 0 / 28 of 28"
+    },
+    {
+      "check": "web browser (Chrome 154 headless)",
+      "result": "PASS; Safari NOT_RUN"
+    },
+    {
+      "check": "native chat (3 new simulators)",
+      "result": "PASS for the listed states; Korean IME switching NOT_RUN"
+    },
+    {
+      "check": "GitHub Actions on ca9a04d",
+      "result": "run 37219622454: 9/9 success incl. web job"
+    }
+  ],
+  "qa_readiness": {
+    "status": "READY_FOR_LOCAL_MANUAL_TEST (not an acceptance)",
+    "project": "sg-on-20261005-qa",
+    "owner_home": ".qa/owner-home in the overnight worktree",
+    "api": "http://127.0.0.1:8173 (identity verified; serves the final source)",
+    "metro": "exp://127.0.0.1:8273 (identity verified; serves the final source)",
+    "web_preview": "http://127.0.0.1:5207/ (detached vite preview of dist built from the final source; PID in .qa/web-preview.pid)",
+    "simulator": "SportsGang Overnight KB 20261005 (iPhone 16e, iOS 26.3, F52ECE53-B7AF-449B-B8EF-FDE6C17E44CF), default text size, Welcome screen",
+    "fixtures": "fresh after qa reset: 8 synthetic users, 81 sessions, 57 bookings, migration 0016",
+    "checklist": "docs/run-golf-v2/overnight-2026-10-05/HUMAN_QA.md",
+    "startup": "cd .claude/worktrees/run-golf-v2-overnight && export SPORTSGANG_QA_HOME=$PWD/.qa/owner-home && npm run qa:up -- --no-open --no-seed",
+    "shutdown": "same env: npm run qa:down; kill \"$(cat .qa/web-preview.pid)\""
+  },
+  "remaining_release_gates": [
+    "Independent Codex review of the candidate and of this branch",
+    "R6 production timestamp provenance by the authorised operator, using an amended procedure",
+    "Live check that exactly one API process/machine serves WebSockets",
+    "Physical iPhone, VoiceOver, Android, signed store build, real push provider",
+    "Store-build legal URL inputs (EAS env) confirmed",
+    "Website domain/host/canonical/share image decisions; host redirect behaviour re-checked after any deploy"
+  ],
+  "not_done_by_instruction": [
+    "merge to main",
+    "force-push",
+    "deploy",
+    "production access",
+    "App Store submission",
+    "paid/signed builds",
+    "real push",
+    "external messages",
+    "historical audit rewrite"
+  ]
+}
