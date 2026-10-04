@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { APP_STORE_URL, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '@/lib/links';
 import { SectionIntro } from '../ui';
 import { Plus } from '../icons';
@@ -71,19 +72,79 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
 ];
 
+/**
+ * Prints every answer from the same <details> elements: each item is opened
+ * for printing, and the reader's own open/closed state is put back after.
+ */
+function usePrintAllAnswers(list: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const root = list.current;
+    if (!root) return;
+    const items = () => Array.from(root.querySelectorAll('details'));
+    // The reader's state while printing; null when not printing.
+    let saved: boolean[] | null = null;
+    // Opened by `beforeprint`: then only `afterprint` restores, because the
+    // print media query can stop matching while the print dialog is still open.
+    let byPrintEvent = false;
+
+    const openAll = (fromPrintEvent: boolean) => {
+      byPrintEvent ||= fromPrintEvent;
+      if (saved) return;
+      const all = items();
+      saved = all.map((d) => d.open);
+      all.forEach((d) => {
+        d.open = true;
+      });
+    };
+    const restore = () => {
+      if (!saved) return;
+      const before = saved;
+      saved = null;
+      byPrintEvent = false;
+      items().forEach((d, i) => {
+        d.open = before[i] ?? false;
+      });
+    };
+
+    const onBeforePrint = () => openAll(true);
+    // Fallback for print paths that only switch the media query.
+    const onPrintMedia = (e: MediaQueryListEvent) => {
+      if (e.matches) openAll(false);
+      else if (!byPrintEvent) restore();
+    };
+    const printMedia = typeof window.matchMedia === 'function' ? window.matchMedia('print') : null;
+
+    window.addEventListener('beforeprint', onBeforePrint);
+    window.addEventListener('afterprint', restore);
+    // addListener fallback for old Safari, as in useReducedMotion.
+    if (printMedia?.addEventListener) printMedia.addEventListener('change', onPrintMedia);
+    else printMedia?.addListener(onPrintMedia);
+    return () => {
+      window.removeEventListener('beforeprint', onBeforePrint);
+      window.removeEventListener('afterprint', restore);
+      if (printMedia?.removeEventListener) printMedia.removeEventListener('change', onPrintMedia);
+      else printMedia?.removeListener(onPrintMedia);
+      restore();
+    };
+  }, [list]);
+}
+
 export function Faq() {
+  const listRef = useRef<HTMLDivElement | null>(null);
+  usePrintAllAnswers(listRef);
+
   return (
     <section id="faq" aria-labelledby="faq-title" className="bg-canvas">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:py-28">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:py-28 print:gap-6 print:py-10">
         <SectionIntro id="faq-title" eyebrow="FAQ" title="Straight answers." />
-        <div className="divide-y divide-line border-y border-line">
+        <div ref={listRef} className="divide-y divide-line border-y border-line">
           {FAQS.map((f) => (
-            <details key={f.q} className="group">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-lg font-semibold text-ink [&::-webkit-details-marker]:hidden">
+            <details key={f.q} className="group print:break-inside-avoid">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-lg font-semibold text-ink print:min-h-0 print:pb-1 print:pt-3 [&::-webkit-details-marker]:hidden">
                 {f.q}
-                <Plus className="h-5 w-5 flex-none text-forest transition-transform group-open:rotate-45 motion-reduce:transition-none" />
+                <Plus className="h-5 w-5 flex-none text-forest transition-transform group-open:rotate-45 motion-reduce:transition-none print:hidden" />
               </summary>
-              <div className="pb-5 pr-8 leading-relaxed text-ink-2">{f.a}</div>
+              <div className="pb-5 pr-8 leading-relaxed text-ink-2 print:pb-3 print:pr-0">{f.a}</div>
             </details>
           ))}
         </div>

@@ -29,14 +29,14 @@ export function HowItWorks() {
 
   return (
     <section id="how-it-works" aria-labelledby="how-title" className="bg-panel">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28 print:py-10">
         <SectionIntro id="how-title" eyebrow="How it works" title="From a good fit to a plan you both agreed.">
           <p>Five clear steps. A chat needs you both, and a session needs a yes.</p>
         </SectionIntro>
 
-        <ol ref={ref} className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-3">
+        <ol ref={ref} className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-3 print:mt-6">
           {STEPS.map((s, i) => (
-            <li key={s.title} data-step className="relative rounded-3xl border border-line bg-canvas p-5 lg:p-6">
+            <li key={s.title} data-step className="relative rounded-3xl border border-line bg-canvas p-5 lg:p-6 print:break-inside-avoid">
               <span className="tabular flex h-9 w-9 items-center justify-center rounded-full bg-forest text-sm font-bold text-white">
                 {i + 1}
               </span>
@@ -46,7 +46,7 @@ export function HowItWorks() {
           ))}
         </ol>
 
-        <p className="mt-8 max-w-3xl rounded-2xl border border-line bg-canvas px-5 py-4 text-ink-2">
+        <p className="mt-8 max-w-3xl rounded-2xl border border-line bg-canvas px-5 py-4 text-ink-2 print:mt-6 print:break-inside-avoid">
           <span className="font-semibold text-ink">Prefer a group?</span> Join a run or round in Explore while spots are
           left, or host one. There is no group chat: the host sets the time, place and number of spots, and joining adds
           it to My Plans.

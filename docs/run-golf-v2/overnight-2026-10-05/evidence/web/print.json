@@ -1,0 +1,1519 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new), CDP",
+  "method": "Page.printToPDF (CDP) of http://127.0.0.1:5206/ (vite preview of this build), 1440x900 window, no header/footer, 0.4 in margins. FAQ items opened with real CDP mouse clicks before printing. A page listener (added after the app) recorded print events and each item's open property after the app handlers ran. Pages rendered to JPEG with macOS PDFKit and viewed; text extracted with PDFKit.",
+  "pdfs": {
+    "closed-a4": {
+      "file": "home-closed-a4.pdf",
+      "bytes": 821350,
+      "paper": "A4 8.27x11.69 in",
+      "margins": "0.4 in",
+      "printBackground": false,
+      "openedByRealClicks": [],
+      "openStateBefore": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "printEventsSeen": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "openStateAfter": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stateRestoredExactly": true,
+      "pageCount": "10",
+      "pageSizePt": "596x842",
+      "charsPerPage": [
+        382,
+        946,
+        838,
+        1126,
+        815,
+        785,
+        619,
+        1274,
+        1248,
+        321
+      ],
+      "keptInEvidence": "print-home-a4-faq-closed.pdf"
+    },
+    "open-2-5-9-a4": {
+      "file": "home-open-2-5-9-a4.pdf",
+      "bytes": 820790,
+      "paper": "A4 8.27x11.69 in",
+      "margins": "0.4 in",
+      "printBackground": false,
+      "openedByRealClicks": [
+        2,
+        5,
+        9
+      ],
+      "openStateBefore": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "printEventsSeen": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "openStateAfter": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "stateRestoredExactly": true,
+      "pageCount": "10",
+      "pageSizePt": "596x842",
+      "charsPerPage": [
+        382,
+        946,
+        838,
+        1126,
+        815,
+        785,
+        619,
+        1274,
+        1248,
+        321
+      ],
+      "keptInEvidence": false,
+      "note": "not kept (evidence size); same page text as the kept A4 PDF where pageSizePt matches"
+    },
+    "closed-a4-backgrounds": {
+      "file": "home-closed-a4-bg.pdf",
+      "bytes": 931577,
+      "paper": "A4 8.27x11.69 in",
+      "margins": "0.4 in",
+      "printBackground": true,
+      "openedByRealClicks": [],
+      "openStateBefore": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "printEventsSeen": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "openStateAfter": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stateRestoredExactly": true,
+      "pageCount": "10",
+      "pageSizePt": "596x842",
+      "charsPerPage": [
+        382,
+        946,
+        838,
+        1126,
+        815,
+        785,
+        619,
+        1274,
+        1248,
+        321
+      ],
+      "keptInEvidence": false,
+      "note": "not kept (evidence size); same page text as the kept A4 PDF where pageSizePt matches"
+    },
+    "closed-letter-backgrounds": {
+      "file": "home-closed-letter-bg.pdf",
+      "bytes": 924523,
+      "paper": "US Letter 8.5x11 in",
+      "margins": "0.4 in",
+      "printBackground": true,
+      "openedByRealClicks": [],
+      "openStateBefore": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "printEventsSeen": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "openStateAfter": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stateRestoredExactly": true,
+      "pageCount": "10",
+      "pageSizePt": "612x792",
+      "charsPerPage": [
+        382,
+        946,
+        838,
+        1126,
+        815,
+        785,
+        331,
+        694,
+        1597,
+        840
+      ],
+      "keptInEvidence": false,
+      "note": "not kept (evidence size); same page text as the kept A4 PDF where pageSizePt matches"
+    }
+  },
+  "printEventFlows": {
+    "dispatch beforeprint/afterprint": {
+      "openedByRealClicks": [
+        2,
+        5,
+        9
+      ],
+      "trace": [
+        {
+          "step": "start",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        },
+        {
+          "step": "beforeprint",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "afterprint",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "events": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "afterEnterOnItem1": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "emulated print media only": {
+      "openedByRealClicks": [
+        2,
+        5,
+        9
+      ],
+      "trace": [
+        {
+          "step": "start",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        },
+        {
+          "step": "media:print",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "media:screen",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "events": [
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "afterEnterOnItem1": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "beforeprint, media print, media screen, afterprint": {
+      "openedByRealClicks": [
+        2,
+        5,
+        9
+      ],
+      "trace": [
+        {
+          "step": "start",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        },
+        {
+          "step": "beforeprint",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "media:print",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "media:screen",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "afterprint",
+          "open": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "events": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      ],
+      "afterEnterOnItem1": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "media print, beforeprint, media screen, afterprint": {
+      "openedByRealClicks": [
+        1,
+        10
+      ],
+      "trace": [
+        {
+          "step": "start",
+          "open": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ]
+        },
+        {
+          "step": "media:print",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "beforeprint",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "media:screen",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "afterprint",
+          "open": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ]
+        }
+      ],
+      "events": [
+        {
+          "ev": "matchMedia(print) change",
+          "matches": true,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "matchMedia(print) change",
+          "matches": false,
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+          ]
+        }
+      ],
+      "afterEnterOnItem1": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    },
+    "all closed: beforeprint/afterprint": {
+      "openedByRealClicks": [],
+      "trace": [
+        {
+          "step": "start",
+          "open": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "step": "beforeprint",
+          "open": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "step": "afterprint",
+          "open": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "events": [
+        {
+          "ev": "beforeprint",
+          "openAfterHandlers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "ev": "afterprint",
+          "openAfterHandlers": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "afterEnterOnItem1": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "cssOnlyFallback": {
+    "engine": "Chrome/154.0.8037.97",
+    "method": "a closed <details> appended to #faq outside the FAQ list, so the component never opens it; checkVisibility() and the computed ::details-content content-visibility under screen vs emulated print media",
+    "screen": {
+      "open": false,
+      "answerCheckVisibility": false,
+      "detailsContentStyle": "hidden",
+      "faqItem1": {
+        "open": false,
+        "answerCheckVisibility": false
+      }
+    },
+    "print": {
+      "open": false,
+      "answerCheckVisibility": true,
+      "detailsContentStyle": "visible",
+      "faqItem1": {
+        "open": true,
+        "answerCheckVisibility": true
+      }
+    },
+    "backToScreen": {
+      "open": false,
+      "answerCheckVisibility": false,
+      "detailsContentStyle": "hidden",
+      "faqItem1": {
+        "open": false,
+        "answerCheckVisibility": false
+      }
+    },
+    "pass": true
+  },
+  "flowChecks": {
+    "dispatch: all open during": true,
+    "dispatch: restored": true,
+    "media: all open during": true,
+    "media: restored": true,
+    "event+media: open during": true,
+    "event+media: not restored by media alone while print event is active": true,
+    "event+media: restored by afterprint": true,
+    "media+event: open during": true,
+    "media+event: restored by afterprint": true,
+    "closed: restored to all closed": true,
+    "closed: Enter still toggles item 1": true,
+    "CSS ::details-content shows a closed answer in print": true
+  },
+  "pdfText": {
+    "engine": "Chrome/154.0.8037.97",
+    "visuallyVerified": [
+      "You can delete your account from your profile. (seen on the rendered page; PDFKit returns its words out of order)"
+    ],
+    "method": "visible text nodes of / under emulated print media at 718 CSS px (A4 width minus 0.4 in margins), searched in the whitespace-stripped PDFKit text of each PDF; 6-char chunk coverage >= 0.85 counts when PDFKit splits a line (FAQ answers: >= 0.9, including the printed link URLs)",
+    "pdfs": {
+      "home-closed-a4.pdf": {
+        "pageCount": "10",
+        "pageSizePt": "596x842",
+        "charsPerPage": [
+          382,
+          946,
+          838,
+          1126,
+          815,
+          785,
+          619,
+          1274,
+          1248,
+          321
+        ],
+        "pagesUnder40Chars": [],
+        "visibleTextNodes": 183,
+        "textNodesMissing": [
+          {
+            "t": "You can delete your account from your profile.",
+            "c": 0.83
+          }
+        ],
+        "textNodesMissingAfterVisualCheck": [],
+        "faqAnswersPresent": [
+          {
+            "item": 1,
+            "q": "Where can I get SportsGang?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 2,
+            "q": "Is the running and golf experience alrea",
+            "answerCoverage": 1
+          },
+          {
+            "item": 3,
+            "q": "Do I have to share my pace or my handica",
+            "answerCoverage": 1
+          },
+          {
+            "item": 4,
+            "q": "Are handicaps verified?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 5,
+            "q": "Will beginners be matched with experienc",
+            "answerCoverage": 1
+          },
+          {
+            "item": 6,
+            "q": "Can anyone message me?",
+            "answerCoverage": 0.95
+          },
+          {
+            "item": 7,
+            "q": "Does SportsGang book tee times, track ru",
+            "answerCoverage": 1
+          },
+          {
+            "item": 8,
+            "q": "What if someone makes me uncomfortable?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 9,
+            "q": "Is this a dating app?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 10,
+            "q": "Where are the privacy policy, terms and ",
+            "answerCoverage": 1
+          }
+        ],
+        "allTenAnswersPresent": true,
+        "printedLinkTargets": [
+          {
+            "url": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/privacy/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/terms/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/support/",
+            "inPdfText": true
+          }
+        ]
+      },
+      "home-open-2-5-9-a4.pdf": {
+        "pageCount": "10",
+        "pageSizePt": "596x842",
+        "charsPerPage": [
+          382,
+          946,
+          838,
+          1126,
+          815,
+          785,
+          619,
+          1274,
+          1248,
+          321
+        ],
+        "pagesUnder40Chars": [],
+        "visibleTextNodes": 183,
+        "textNodesMissing": [
+          {
+            "t": "You can delete your account from your profile.",
+            "c": 0.83
+          }
+        ],
+        "textNodesMissingAfterVisualCheck": [],
+        "faqAnswersPresent": [
+          {
+            "item": 1,
+            "q": "Where can I get SportsGang?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 2,
+            "q": "Is the running and golf experience alrea",
+            "answerCoverage": 1
+          },
+          {
+            "item": 3,
+            "q": "Do I have to share my pace or my handica",
+            "answerCoverage": 1
+          },
+          {
+            "item": 4,
+            "q": "Are handicaps verified?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 5,
+            "q": "Will beginners be matched with experienc",
+            "answerCoverage": 1
+          },
+          {
+            "item": 6,
+            "q": "Can anyone message me?",
+            "answerCoverage": 0.95
+          },
+          {
+            "item": 7,
+            "q": "Does SportsGang book tee times, track ru",
+            "answerCoverage": 1
+          },
+          {
+            "item": 8,
+            "q": "What if someone makes me uncomfortable?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 9,
+            "q": "Is this a dating app?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 10,
+            "q": "Where are the privacy policy, terms and ",
+            "answerCoverage": 1
+          }
+        ],
+        "allTenAnswersPresent": true,
+        "printedLinkTargets": [
+          {
+            "url": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/privacy/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/terms/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/support/",
+            "inPdfText": true
+          }
+        ]
+      },
+      "home-closed-a4-bg.pdf": {
+        "pageCount": "10",
+        "pageSizePt": "596x842",
+        "charsPerPage": [
+          382,
+          946,
+          838,
+          1126,
+          815,
+          785,
+          619,
+          1274,
+          1248,
+          321
+        ],
+        "pagesUnder40Chars": [],
+        "visibleTextNodes": 183,
+        "textNodesMissing": [
+          {
+            "t": "You can delete your account from your profile.",
+            "c": 0.83
+          }
+        ],
+        "textNodesMissingAfterVisualCheck": [],
+        "faqAnswersPresent": [
+          {
+            "item": 1,
+            "q": "Where can I get SportsGang?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 2,
+            "q": "Is the running and golf experience alrea",
+            "answerCoverage": 1
+          },
+          {
+            "item": 3,
+            "q": "Do I have to share my pace or my handica",
+            "answerCoverage": 1
+          },
+          {
+            "item": 4,
+            "q": "Are handicaps verified?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 5,
+            "q": "Will beginners be matched with experienc",
+            "answerCoverage": 1
+          },
+          {
+            "item": 6,
+            "q": "Can anyone message me?",
+            "answerCoverage": 0.95
+          },
+          {
+            "item": 7,
+            "q": "Does SportsGang book tee times, track ru",
+            "answerCoverage": 1
+          },
+          {
+            "item": 8,
+            "q": "What if someone makes me uncomfortable?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 9,
+            "q": "Is this a dating app?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 10,
+            "q": "Where are the privacy policy, terms and ",
+            "answerCoverage": 1
+          }
+        ],
+        "allTenAnswersPresent": true,
+        "printedLinkTargets": [
+          {
+            "url": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/privacy/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/terms/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/support/",
+            "inPdfText": true
+          }
+        ]
+      },
+      "home-closed-letter-bg.pdf": {
+        "pageCount": "10",
+        "pageSizePt": "612x792",
+        "charsPerPage": [
+          382,
+          946,
+          838,
+          1126,
+          815,
+          785,
+          331,
+          694,
+          1597,
+          840
+        ],
+        "pagesUnder40Chars": [],
+        "visibleTextNodes": 183,
+        "textNodesMissing": [],
+        "textNodesMissingAfterVisualCheck": [],
+        "faqAnswersPresent": [
+          {
+            "item": 1,
+            "q": "Where can I get SportsGang?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 2,
+            "q": "Is the running and golf experience alrea",
+            "answerCoverage": 1
+          },
+          {
+            "item": 3,
+            "q": "Do I have to share my pace or my handica",
+            "answerCoverage": 1
+          },
+          {
+            "item": 4,
+            "q": "Are handicaps verified?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 5,
+            "q": "Will beginners be matched with experienc",
+            "answerCoverage": 1
+          },
+          {
+            "item": 6,
+            "q": "Can anyone message me?",
+            "answerCoverage": 0.95
+          },
+          {
+            "item": 7,
+            "q": "Does SportsGang book tee times, track ru",
+            "answerCoverage": 1
+          },
+          {
+            "item": 8,
+            "q": "What if someone makes me uncomfortable?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 9,
+            "q": "Is this a dating app?",
+            "answerCoverage": 1
+          },
+          {
+            "item": 10,
+            "q": "Where are the privacy policy, terms and ",
+            "answerCoverage": 0.96
+          }
+        ],
+        "allTenAnswersPresent": true,
+        "printedLinkTargets": [
+          {
+            "url": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/privacy/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/terms/",
+            "inPdfText": true
+          },
+          {
+            "url": "https://sportgang.netlify.app/support/",
+            "inPdfText": true
+          }
+        ]
+      }
+    }
+  },
+  "visualInspection": {
+    "pagesViewed": "all 10 pages of the A4 PDF (backgrounds off), all 10 of the Letter PDF (backgrounds on), pages 1-5 of the A4 PDF with backgrounds on",
+    "faqAnswers": "all 10 answers printed on A4 pages 8-9 (closed and 2/5/9-open runs have identical page text); questions bold, answers below, no + icons",
+    "linkTargets": "App Store, Privacy, Terms and Support URLs printed after the FAQ links (page 8-9) and footer links (page 10)",
+    "header": "static dark bar with the wordmark only (no nav, App Store button or menu button), first page only",
+    "darkSections": "hero, running, closing call-to-action and footer print their dark background with white/lime text, also with background graphics off",
+    "cardsSplit": "none: no card, step, safety item, FAQ item, illustration or section intro is split across pages",
+    "blankOrClipped": "no blank page and no clipped text. Remaining empty space: A4 page 1 lower ~45% (dark hero background; the partner-card illustration is kept whole on page 2), A4 page 6 lower ~25% (the My Plans phone illustration is kept whole on page 7), A4 page 10 holds only the footer (~1/3 page).",
+    "pdfKitTextNote": "PDFKit returns the words of \"You can delete your account from your profile.\" out of order; the sentence is on A4 page 8 (seen on the rendered page)."
+  },
+  "result": "PASS"
+}

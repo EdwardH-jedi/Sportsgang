@@ -5,10 +5,10 @@ export function FinalCTA() {
   const ref = useAnimeReveal<HTMLDivElement>();
 
   return (
-    <section aria-labelledby="cta-title" className="bg-canvas px-4 pb-20 sm:px-6 lg:pb-28">
+    <section aria-labelledby="cta-title" className="bg-canvas px-4 pb-20 sm:px-6 lg:pb-28 print:pb-8">
       <div
         ref={ref}
-        className="on-dark hero-glow relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] px-5 py-14 text-white sm:px-12 sm:py-16 lg:py-20"
+        className="on-dark hero-glow relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] px-5 py-14 text-white sm:px-12 sm:py-16 lg:py-20 print:break-inside-avoid print:py-8"
       >
         <div className="bg-lanes pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
         <div className="relative max-w-2xl">

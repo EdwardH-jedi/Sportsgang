@@ -40,13 +40,13 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="on-dark sticky top-0 z-40 border-b border-white/10 bg-forest-darkest/95 backdrop-blur supports-[backdrop-filter]:bg-forest-darkest/85">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+    <header className="on-dark sticky top-0 z-40 border-b border-white/10 bg-forest-darkest/95 backdrop-blur supports-[backdrop-filter]:bg-forest-darkest/85 print:static print:backdrop-blur-none">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 print:h-12">
         <a href="#top" className="flex min-h-11 items-center rounded-md text-2xl leading-none" aria-label="SportsGang — back to top">
           <Wordmark />
         </a>
 
-        <nav aria-label="Primary" className="hidden md:block">
+        <nav aria-label="Primary" className="hidden md:block print:hidden">
           <ul className="flex items-center gap-1">
             {NAV.map((item) => (
               <li key={item.href}>
@@ -61,7 +61,8 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Controls are not printed; the wordmark is. */}
+        <div className="flex items-center gap-2 print:hidden">
           {/* Hidden on the narrowest phones, where the hero action sits right below. */}
           <span className="hidden min-[360px]:inline-flex">
             <AppStoreButton compact className="whitespace-nowrap" />
@@ -86,7 +87,7 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Primary"
-          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-white/10 px-4 pb-5 pt-2 md:hidden"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-white/10 px-4 pb-5 pt-2 md:hidden print:hidden"
         >
           <ul className="grid gap-1">
             {NAV.map((item) => (

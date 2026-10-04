@@ -126,3 +126,43 @@
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* ---- Print --------------------------------------------------------------
+   Layout tweaks live next to the markup as `print:` classes: the header
+   loses its controls and stickiness, section spacing shrinks, and cards,
+   figures and FAQ items avoid page breaks (a block taller than a page still
+   breaks, so nothing is clipped). The FAQ opens every item for printing and
+   restores the reader's state afterwards (Faq.tsx). */
+
+@media print {
+  /* Dark sections keep their background on paper, even with the browser's
+     "background graphics" off: their white and lime text would otherwise
+     print light on white. */
+  .on-dark {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Blurred shadows print as grey boxes in some PDF viewers. */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Closed FAQ answers print even when no print event ran, where the
+     browser supports ::details-content. Same DOM, no print-only copy. */
+  details::details-content {
+    content-visibility: visible;
+  }
+
+  /* Paper can't follow a link: write out where the footer and FAQ links go
+     (App Store, Privacy, Terms, Support). */
+  footer a[href^='http']::after,
+  #faq details a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+}

@@ -77,7 +77,7 @@ export function PlansPreview() {
 
   return (
     <section id="my-plans" aria-labelledby="plans-title" className="bg-canvas">
-      <div ref={ref} className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-28">
+      <div ref={ref} className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-28 print:gap-8 print:py-10">
         <div>
           <div data-plan>
             <SectionIntro id="plans-title" eyebrow="My Plans" title="Every plan in one place.">
@@ -89,7 +89,7 @@ export function PlansPreview() {
           </div>
           <dl className="mt-10 space-y-5">
             {NOTES.map((n) => (
-              <div key={n.title} data-plan className="border-l-2 border-forest pl-4">
+              <div key={n.title} data-plan className="border-l-2 border-forest pl-4 print:break-inside-avoid">
                 <dt className="font-semibold text-ink">{n.title}</dt>
                 <dd className="mt-1 leading-relaxed text-ink-2">{n.body}</dd>
               </div>

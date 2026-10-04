@@ -1,0 +1,1417 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new); keys sent with CDP Input.dispatchKeyEvent; focus emulation on",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "deviceScaleFactor": 1
+  },
+  "skipLink": {
+    "focusedFirst": {
+      "text": "Skip to content",
+      "href": "#main",
+      "rect": {
+        "x": 16,
+        "y": 12,
+        "w": 155,
+        "h": 48
+      },
+      "inViewport": true,
+      "indicatorPresent": true,
+      "focusVisibleMatches": true,
+      "note": "becomes a visible lime pill (focus:not-sr-only) fixed at top-left when focused"
+    },
+    "afterEnter": {
+      "hash": "#main",
+      "activeId": "main",
+      "activeTag": "main",
+      "mainTop": 64,
+      "scrollY": 1
+    },
+    "nextTabTarget": {
+      "tag": "a",
+      "text": "Get SportsGang on the App Store (opens the App Store listing)",
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "region": "main#top"
+    },
+    "pass": true
+  },
+  "tabOrder": [
+    {
+      "tag": "a",
+      "text": "Skip to content",
+      "ariaLabel": null,
+      "href": "#main",
+      "ariaExpanded": null,
+      "region": "body",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "body",
+      "rect": {
+        "x": 16,
+        "y": 12,
+        "w": 155,
+        "h": 48
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 1
+    },
+    {
+      "tag": "a",
+      "text": "sportsgang",
+      "ariaLabel": "SportsGang — back to top",
+      "href": "#top",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 168,
+        "y": 10,
+        "w": 118,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 2
+    },
+    {
+      "tag": "a",
+      "text": "Running",
+      "ariaLabel": null,
+      "href": "#running",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 515,
+        "y": 10,
+        "w": 78,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 3
+    },
+    {
+      "tag": "a",
+      "text": "Golf",
+      "ariaLabel": null,
+      "href": "#golf",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 597,
+        "y": 10,
+        "w": 51,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 4
+    },
+    {
+      "tag": "a",
+      "text": "How it works",
+      "ariaLabel": null,
+      "href": "#how-it-works",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 652,
+        "y": 10,
+        "w": 109,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 5
+    },
+    {
+      "tag": "a",
+      "text": "My Plans",
+      "ariaLabel": null,
+      "href": "#my-plans",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 765,
+        "y": 10,
+        "w": 83,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 6
+    },
+    {
+      "tag": "a",
+      "text": "FAQ",
+      "ariaLabel": null,
+      "href": "#faq",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 853,
+        "y": 10,
+        "w": 51,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 7
+    },
+    {
+      "tag": "a",
+      "text": "App Store (opens the App Store listing)",
+      "ariaLabel": null,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "ariaExpanded": null,
+      "region": "header",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(13, 42, 27, 0.6) 0px 8px 24px -12px",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "header.on-dark.sticky.top-0.z-40 \"sportsgang Running Golf Ho",
+      "rect": {
+        "x": 1133,
+        "y": 8,
+        "w": 139,
+        "h": 48
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 8
+    },
+    {
+      "tag": "a",
+      "text": "Get SportsGang on the App Store (opens the App Store listing)",
+      "ariaLabel": null,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "ariaExpanded": null,
+      "region": "main#top",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(13, 42, 27, 0.6) 0px 8px 24px -12px",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 6.03,
+      "backdropFrom": "section#top.on-dark.hero-glow.relative.overflow-hidden \"SYDN",
+      "rect": {
+        "x": 168,
+        "y": 489,
+        "w": 329,
+        "h": 48
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 9
+    },
+    {
+      "tag": "a",
+      "text": "See how it works",
+      "ariaLabel": null,
+      "href": "#how-it-works",
+      "ariaExpanded": null,
+      "region": "main#top",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 6.03,
+      "backdropFrom": "section#top.on-dark.hero-glow.relative.overflow-hidden \"SYDN",
+      "rect": {
+        "x": 509,
+        "y": 489,
+        "w": 202,
+        "h": 48
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 0,
+      "step": 10
+    },
+    {
+      "tag": "summary",
+      "text": "Where can I get SportsGang?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 452,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 11,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Is the running and golf experience already in the app?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 513,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 12,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Do I have to share my pace or my handicap?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 574,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 13,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Are handicaps verified?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 635,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 14,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Will beginners be matched with experienced golfers?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 696,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 15,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Can anyone message me?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 757,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 16,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Does SportsGang book tee times, track runs or offer coaching?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 818,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4911,
+      "step": 17,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "What if someone makes me uncomfortable?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 840,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 4950,
+      "step": 18,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Is this a dating app?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 452,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5399,
+      "step": 19,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "summary",
+      "text": "Where are the privacy policy, terms and support?",
+      "ariaLabel": null,
+      "href": null,
+      "ariaExpanded": null,
+      "region": "main#faq",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(30, 91, 59)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29,
+      "backdropFrom": "section#faq.bg-canvas \"FAQ Straight answers. Where can I get",
+      "rect": {
+        "x": 634,
+        "y": 513,
+        "w": 638,
+        "h": 60
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5399,
+      "step": 20,
+      "faqTogglePass": true
+    },
+    {
+      "tag": "a",
+      "text": "Get SportsGang on the App Store (opens the App Store listing)",
+      "ariaLabel": null,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "ariaExpanded": null,
+      "region": "main#cta-title",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(13, 42, 27, 0.6) 0px 8px 24px -12px",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 6.03,
+      "backdropFrom": "div.on-dark.hero-glow.relative.mx-auto \"Your next run or rou",
+      "rect": {
+        "x": 192,
+        "y": 458,
+        "w": 329,
+        "h": 48
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5921,
+      "step": 21
+    },
+    {
+      "tag": "a",
+      "text": "Privacy",
+      "ariaLabel": null,
+      "href": "https://sportgang.netlify.app/privacy/",
+      "ariaExpanded": null,
+      "region": "footer",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "footer.on-dark.bg-forest-darkest.text-white \"sportsgang Runn",
+      "rect": {
+        "x": 904,
+        "y": 834,
+        "w": 83,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5921,
+      "step": 22
+    },
+    {
+      "tag": "a",
+      "text": "Terms",
+      "ariaLabel": null,
+      "href": "https://sportgang.netlify.app/terms/",
+      "ariaExpanded": null,
+      "region": "footer",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "footer.on-dark.bg-forest-darkest.text-white \"sportsgang Runn",
+      "rect": {
+        "x": 994,
+        "y": 834,
+        "w": 75,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5921,
+      "step": 23
+    },
+    {
+      "tag": "a",
+      "text": "Support",
+      "ariaLabel": null,
+      "href": "https://sportgang.netlify.app/support/",
+      "ariaExpanded": null,
+      "region": "footer",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "footer.on-dark.bg-forest-darkest.text-white \"sportsgang Runn",
+      "rect": {
+        "x": 1077,
+        "y": 834,
+        "w": 87,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5921,
+      "step": 24
+    },
+    {
+      "tag": "a",
+      "text": "App Store",
+      "ariaLabel": null,
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "ariaExpanded": null,
+      "region": "footer",
+      "inMobileMenu": false,
+      "focusVisibleMatches": true,
+      "outline": {
+        "style": "solid",
+        "width": "3px",
+        "color": "rgb(197, 238, 91)",
+        "offset": "3px"
+      },
+      "boxShadow": "none",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 11.55,
+      "backdropFrom": "footer.on-dark.bg-forest-darkest.text-white \"sportsgang Runn",
+      "rect": {
+        "x": 1172,
+        "y": 834,
+        "w": 100,
+        "h": 44
+      },
+      "inViewport": true,
+      "headerBottom": 65,
+      "centerCoveredBy": null,
+      "obscured": false,
+      "seenBefore": false,
+      "hash": "",
+      "scrollY": 5921,
+      "step": 25
+    },
+    {
+      "step": 26,
+      "tag": "body",
+      "note": "focus left the last focusable element"
+    }
+  ],
+  "summary": {
+    "count": 25,
+    "withoutVisibleIndicator": [],
+    "outlineContrastBelow3": [],
+    "notInViewportWhenFocused": [],
+    "obscuredWhenFocused": [],
+    "compact": [
+      "1. <a> \"Skip to content\" -> #main",
+      "2. <a> [aria-label=SportsGang — back to top] \"sportsgang\" -> #top",
+      "3. <a> \"Running\" -> #running",
+      "4. <a> \"Golf\" -> #golf",
+      "5. <a> \"How it works\" -> #how-it-works",
+      "6. <a> \"My Plans\" -> #my-plans",
+      "7. <a> \"FAQ\" -> #faq",
+      "8. <a> \"App Store (opens the App Store listing)\" -> https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "9. <a> \"Get SportsGang on the App Store (opens the App Store listing)\" -> https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "10. <a> \"See how it works\" -> #how-it-works",
+      "11. <summary> \"Where can I get SportsGang?\"",
+      "12. <summary> \"Is the running and golf experience already in the app?\"",
+      "13. <summary> \"Do I have to share my pace or my handicap?\"",
+      "14. <summary> \"Are handicaps verified?\"",
+      "15. <summary> \"Will beginners be matched with experienced golfers?\"",
+      "16. <summary> \"Can anyone message me?\"",
+      "17. <summary> \"Does SportsGang book tee times, track runs or offer coaching?\"",
+      "18. <summary> \"What if someone makes me uncomfortable?\"",
+      "19. <summary> \"Is this a dating app?\"",
+      "20. <summary> \"Where are the privacy policy, terms and support?\"",
+      "21. <a> \"Get SportsGang on the App Store (opens the App Store listing)\" -> https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "22. <a> \"Privacy\" -> https://sportgang.netlify.app/privacy/",
+      "23. <a> \"Terms\" -> https://sportgang.netlify.app/terms/",
+      "24. <a> \"Support\" -> https://sportgang.netlify.app/support/",
+      "25. <a> \"App Store\" -> https://apps.apple.com/au/app/sportsgang/id6767027447"
+    ]
+  },
+  "faq": {
+    "mechanism": "native <details>/<summary>; no aria-expanded attribute in the DOM; expanded state read from the Chrome accessibility tree (Accessibility.getPartialAXTree)",
+    "items": [
+      {
+        "question": "Where can I get SportsGang?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where can I get SportsGang?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where can I get SportsGang?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where can I get SportsGang?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where can I get SportsGang?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where can I get SportsGang?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Is the running and golf experience already in the app?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is the running and golf experience already in the app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is the running and golf experience already in the app?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is the running and golf experience already in the app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is the running and golf experience already in the app?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is the running and golf experience already in the app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Do I have to share my pace or my handicap?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Do I have to share my pace or my handicap?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Do I have to share my pace or my handicap?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Do I have to share my pace or my handicap?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Do I have to share my pace or my handicap?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Do I have to share my pace or my handicap?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Are handicaps verified?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Are handicaps verified?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Are handicaps verified?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Are handicaps verified?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Are handicaps verified?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Are handicaps verified?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Will beginners be matched with experienced golfers?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Will beginners be matched with experienced golfers?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Will beginners be matched with experienced golfers?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Will beginners be matched with experienced golfers?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Will beginners be matched with experienced golfers?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Will beginners be matched with experienced golfers?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Can anyone message me?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Can anyone message me?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Can anyone message me?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Can anyone message me?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Can anyone message me?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Can anyone message me?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Does SportsGang book tee times, track runs or offer coaching?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Does SportsGang book tee times, track runs or offer coaching?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Does SportsGang book tee times, track runs or offer coaching?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Does SportsGang book tee times, track runs or offer coaching?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Does SportsGang book tee times, track runs or offer coaching?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Does SportsGang book tee times, track runs or offer coaching?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "What if someone makes me uncomfortable?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "What if someone makes me uncomfortable?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "What if someone makes me uncomfortable?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "What if someone makes me uncomfortable?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "What if someone makes me uncomfortable?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "What if someone makes me uncomfortable?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Is this a dating app?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is this a dating app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is this a dating app?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is this a dating app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is this a dating app?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Is this a dating app?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      },
+      {
+        "question": "Where are the privacy policy, terms and support?",
+        "initial": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where are the privacy policy, terms and support?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterEnter1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where are the privacy policy, terms and support?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterEnter2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where are the privacy policy, terms and support?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "afterSpace1": {
+          "open": true,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where are the privacy policy, terms and support?",
+          "axExpanded": true,
+          "stillFocused": true
+        },
+        "afterSpace2": {
+          "open": false,
+          "domAriaExpanded": null,
+          "role": "DisclosureTriangle",
+          "name": "Where are the privacy policy, terms and support?",
+          "axExpanded": false,
+          "stillFocused": true
+        },
+        "pass": true
+      }
+    ],
+    "allPass": true
+  },
+  "faqOpenAnswerLinks": [
+    {
+      "step": 12,
+      "text": "App Store",
+      "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29
+    },
+    {
+      "step": 22,
+      "text": "Privacy Policy",
+      "href": "https://sportgang.netlify.app/privacy/",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29
+    },
+    {
+      "step": 23,
+      "text": "Terms of Service",
+      "href": "https://sportgang.netlify.app/terms/",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29
+    },
+    {
+      "step": 24,
+      "text": "Support",
+      "href": "https://sportgang.netlify.app/support/",
+      "indicatorPresent": true,
+      "outlineContrastVsBackdrop": 7.29
+    }
+  ],
+  "defects": [],
+  "result": "PASS"
+}

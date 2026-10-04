@@ -1,0 +1,32 @@
+{
+  "purpose": "Shows the route check detects the original defect and bad Netlify rules. Copies of apps/web/scripts/check-routes.mjs run from a scratch directory, not committed.",
+  "withoutPreviewHook": {
+    "change": "vite preview started with configFile: false (no sportsgang-legal-routes-preview middleware)",
+    "exitCode": 1,
+    "failed": [
+      "FAIL  GET /privacy -> 301 /privacy/  [status 200, location undefined]",
+      "FAIL  HEAD /privacy -> 301 /privacy/  [status 200, location undefined]",
+      "FAIL  /privacy (Accept */*) -> 301 /privacy/",
+      "FAIL  /privacy/no-such-file -> 404, not the marketing page",
+      "FAIL  GET /terms -> 301 /terms/  [status 200, location undefined]",
+      "FAIL  HEAD /terms -> 301 /terms/  [status 200, location undefined]",
+      "FAIL  /terms (Accept */*) -> 301 /terms/",
+      "FAIL  /terms/no-such-file -> 404, not the marketing page",
+      "FAIL  GET /support -> 301 /support/  [status 200, location undefined]",
+      "FAIL  HEAD /support -> 301 /support/  [status 200, location undefined]",
+      "FAIL  /support (Accept */*) -> 301 /support/",
+      "FAIL  /support/no-such-file -> 404, not the marketing page",
+      "FAIL  /privacy?x=1 -> 301 /privacy/?x=1  [location undefined]",
+      "FAIL  build without privacy/index.html: /privacy/ -> 404, not the marketing page  [status 200, marketing home page]"
+    ]
+  },
+  "badRedirectsFile": {
+    "change": "REDIRECTS pointed at a temp file with: \"/privacy /privacy/ 301\", \"/*  /index.html  200!\", \"/bad\"",
+    "exitCode": 1,
+    "failed": [
+      "FAIL  _redirects line 3 parses  [/bad]",
+      "FAIL  _redirects line 1 does not target a legal route  [/privacy /privacy/ 301]",
+      "FAIL  _redirects line 2 is not a forced catch-all  [/* /index.html 200!]"
+    ]
+  }
+}

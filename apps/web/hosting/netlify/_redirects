@@ -1,0 +1,21 @@
+# Netlify _redirects for the SportsGang marketing site build (apps/web/dist).
+# Platform: Netlify only.  Status: UNREVIEWED, NOT DEPLOYED.
+# This folder is outside public/, so nothing here ships with the build.
+# Read README.md next to this file before copying it anywhere.
+#
+# This rule set is deliberately empty.
+#
+# /privacy, /terms, /support: the reference host already answers each with a
+# 301 to the trailing-slash form, query string kept, and serves /privacy/ from
+# privacy/index.html (observed 5 Oct 2026 on the current deploy). Netlify
+# matches redirect rules with or without a trailing slash, so a rule such as
+#   /privacy  /privacy/  301
+# is shadowed by the file and does nothing, and it redirects in a loop when
+# the file is missing or the rule is forced with "!".
+#
+# Do not add a single-page-app fallback such as "/*  /index.html  200!".
+# Forced, it would serve the marketing page at /privacy/, /terms/ and
+# /support/. The site has no client-side routes and needs no fallback.
+#
+# scripts/check-routes.mjs (npm run check:routes -w @protin/web) rejects a
+# rule for a legal route and a forced catch-all in this file.

@@ -1,0 +1,66 @@
+{
+  "note": "Read-only requests to the reference host, redirects not followed. The site serves the separate official-website build (apps/web/site on feature/sportgang-official-website), not this build. Nothing was deployed or changed.",
+  "observedAt": "2026-10-04T16:58:47.910Z",
+  "tool": "curl 8.7.1",
+  "requests": [
+    {
+      "request": "GET /privacy",
+      "status": 301,
+      "location": "/privacy/",
+      "server": "Netlify",
+      "contentType": "text/html",
+      "bytes": 98
+    },
+    {
+      "request": "GET /terms",
+      "status": 301,
+      "location": "/terms/",
+      "server": "Netlify",
+      "contentType": "text/html",
+      "bytes": 98
+    },
+    {
+      "request": "GET /support",
+      "status": 301,
+      "location": "/support/",
+      "server": "Netlify",
+      "contentType": "text/html",
+      "bytes": 98
+    },
+    {
+      "request": "GET /privacy?x=1",
+      "status": 301,
+      "location": "/privacy/?x=1",
+      "server": "Netlify",
+      "contentType": "text/html",
+      "bytes": 98
+    },
+    {
+      "request": "GET /privacy/",
+      "status": 200,
+      "location": null,
+      "server": "Netlify",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 15373,
+      "sha256": "425c2a61056a2d06c39c00318b765beb8b096b0aa13fef9f3900f150918d9f0c"
+    },
+    {
+      "request": "GET /terms/",
+      "status": 200,
+      "location": null,
+      "server": "Netlify",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 13535,
+      "sha256": "5a0e7f1424506734924b7655e4aacb01b3d26a48faadbbe79389cf2d31e89a1c"
+    },
+    {
+      "request": "GET /support/",
+      "status": 200,
+      "location": null,
+      "server": "Netlify",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 13076,
+      "sha256": "39d0133a7e5defa2085f644090e9195d0b488d23f4482766ab4a8f999a5beb38"
+    }
+  ]
+}

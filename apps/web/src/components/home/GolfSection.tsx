@@ -72,7 +72,7 @@ export function GolfSection() {
 
   return (
     <section id="golf" aria-labelledby="golf-title" className="bg-contours relative bg-canvas">
-      <div ref={ref} className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:py-28">
+      <div ref={ref} className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:py-28 print:gap-8 print:py-10">
         <div className="lg:order-2">
           <div data-golf>
             <SectionIntro id="golf-title" eyebrow="Golf" title="Golfers who suit your game.">
@@ -91,7 +91,7 @@ export function GolfSection() {
           </ul>
           <ul className="mt-10 grid gap-6 sm:grid-cols-2">
             {POINTS.map((p) => (
-              <li key={p.title} data-golf>
+              <li key={p.title} data-golf className="print:break-inside-avoid">
                 <p className="flex items-start gap-2 font-semibold text-ink">
                   <Check className="mt-0.5 h-4 w-4 flex-none text-forest" />
                   {p.title}

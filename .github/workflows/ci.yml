@@ -121,6 +121,12 @@ jobs:
             cmp "apps/web/public/$page" "apps/web/dist/$page"
           done
 
+      # In `vite preview` of the build, /privacy, /terms and /support must 301
+      # to the slash form and never serve the marketing page; also lints the
+      # unreviewed Netlify rules in apps/web/hosting/netlify/_redirects.
+      - name: Legal routes in the production preview
+        run: npm run check:routes -w @protin/web
+
   lint-mobile:
     runs-on: ubuntu-latest
     steps:

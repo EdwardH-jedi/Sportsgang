@@ -1,0 +1,198 @@
+{
+  "tool": "curl 8.7.1",
+  "preview": "http://127.0.0.1:5206 (vite preview of apps/web/dist, this worktree)",
+  "homeLinkedAssets": [
+    "/favicon.png",
+    "/apple-touch-icon.png",
+    "/assets/index-B4gTA2md.js",
+    "/assets/index-C76m2eWz.css"
+  ],
+  "legalLinkedAssets": [
+    "/styles.css"
+  ],
+  "requests": [
+    {
+      "request": "GET /",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 3819,
+      "sha256": "1265387c8381f47176db5e179aff80bbf26783b45eed5b52a675452f0c06b20b",
+      "bodyIs": "home",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /privacy",
+      "status": 301,
+      "location": "/privacy/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bodyIs": "empty"
+    },
+    {
+      "request": "GET /privacy/",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "bodyIs": "privacy",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /terms",
+      "status": 301,
+      "location": "/terms/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bodyIs": "empty"
+    },
+    {
+      "request": "GET /terms/",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 13209,
+      "sha256": "bd3cf76dab142f5a5f57b596c08763ab65503a86336c33782b92b5cbe933be6a",
+      "bodyIs": "terms",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /support",
+      "status": 301,
+      "location": "/support/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bodyIs": "empty"
+    },
+    {
+      "request": "GET /support/",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 12750,
+      "sha256": "a91bb8229ac2e90312a6e19d3efd349fbed687e3d8a35823f195ac421ebfe897",
+      "bodyIs": "support",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /privacy?x=1",
+      "status": 301,
+      "location": "/privacy/?x=1",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bodyIs": "empty"
+    },
+    {
+      "request": "GET /privacy/?x=1",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "bodyIs": "privacy",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /privacy/index.html",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "bodyIs": "privacy",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /privacy/no-such-file",
+      "status": 404,
+      "location": null,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 10,
+      "sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b",
+      "bodyIs": "other"
+    },
+    {
+      "request": "GET /styles.css",
+      "status": 200,
+      "location": null,
+      "contentType": "text/css",
+      "bytes": 33071,
+      "sha256": "c0337a664b11fda3f7d1f5296a424b7960cff2b627a6a09dbd02ec6051092bda",
+      "bodyIs": "styles",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /favicon.png",
+      "status": 200,
+      "location": null,
+      "contentType": "image/png",
+      "bytes": 2781,
+      "sha256": "2d5875a5df988ac1887116bb6da38c7957b380ecc4d6dce46999451347c7907d",
+      "bodyIs": "other",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /apple-touch-icon.png",
+      "status": 200,
+      "location": null,
+      "contentType": "image/png",
+      "bytes": 7959,
+      "sha256": "0194af9ffbbc6a53c6408307918777403163832a864a7774c0acfda5a788a907",
+      "bodyIs": "other",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /assets/index-B4gTA2md.js",
+      "status": 200,
+      "location": null,
+      "contentType": "text/javascript",
+      "bytes": 198165,
+      "sha256": "00d2609e339102401accee3c1219a42d7b59fc00fb7eb1a9d4b3d169a17b1a5c",
+      "bodyIs": "other",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "GET /assets/index-C76m2eWz.css",
+      "status": 200,
+      "location": null,
+      "contentType": "text/css",
+      "bytes": 32684,
+      "sha256": "920ebda322cda6741bdae31859d3c1a665c6b3e7a0930f9e8bc3cf7631619013",
+      "bodyIs": "other",
+      "byteIdenticalToDist": true
+    },
+    {
+      "request": "HEAD /privacy",
+      "status": 301,
+      "location": "/privacy/",
+      "contentLength": "0"
+    },
+    {
+      "request": "HEAD /terms",
+      "status": 301,
+      "location": "/terms/",
+      "contentLength": "0"
+    },
+    {
+      "request": "HEAD /support",
+      "status": 301,
+      "location": "/support/",
+      "contentLength": "0"
+    }
+  ],
+  "checks": {
+    "noSlash301": true,
+    "queryKept": true,
+    "slashFormsExactBytes": true,
+    "noLegalRouteIsHome": true,
+    "stylesExact": true,
+    "linkedAssets200AndIdentical": true,
+    "unknownLegalSubpath404": true
+  },
+  "result": "PASS"
+}

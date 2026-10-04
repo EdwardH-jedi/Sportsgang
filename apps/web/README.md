@@ -18,6 +18,7 @@ npm run typecheck --workspace @protin/web
 npm run build --workspace @protin/web          # tsc --noEmit && vite build → apps/web/dist
 npm run preview --workspace @protin/web -- --host 127.0.0.1 --port 5187 --strictPort
 npm run dev --workspace @protin/web            # dev server, http://localhost:5173
+npm run check:routes --workspace @protin/web   # legal routes in `vite preview` of dist (after build)
 ```
 
 `preview` serves the last build, so run `build` first. Port 5187 is only a
@@ -58,6 +59,24 @@ Content is never left hidden: nothing is hidden without JavaScript (the
 shows everything immediately without calling anime.js, print shows
 everything, and a timeout reveals targets if an animation never finishes.
 
+## Print
+
+Printing `/` gives the content without the screen chrome. Print rules are
+`print:` classes next to the markup plus one `@media print` block in
+`src/styles/index.css`:
+
+- The FAQ opens every item for printing (`beforeprint`, or the print media
+  query) and puts back the reader's own open/closed state after
+  (`afterprint`). Where the browser supports `::details-content`, closed
+  answers also print without that script. There is no print-only copy.
+- The header prints as a static wordmark bar, without navigation or buttons.
+- Section spacing shrinks; cards, illustrations, FAQ items and section
+  headings avoid page breaks (a block taller than a page still breaks).
+- Dark sections keep their background (`print-color-adjust: exact`) so their
+  light text stays readable with background graphics off.
+- Footer and FAQ links print their destination after the link text. The hero
+  and closing App Store buttons rely on the footer for the printed URL.
+
 ## Type checking note
 
 The repository root hoists React 19 type packages for the mobile app, while
@@ -85,6 +104,11 @@ build carries those pages unchanged: `public/{privacy,terms,support}/index.html`
 and `public/styles.css` are byte-for-byte copies of `apps/web/site/` on
 `feature/sportgang-official-website` at `ad072fc` (the live pages minus the
 comment Netlify injects), and CI compares them with `dist/`. Change them on
-that branch first, then copy them here. The host must redirect `/privacy` to
-`/privacy/` (Netlify does by default; `vite preview` serves the home page
-for paths without the trailing slash).
+that branch first, then copy them here.
+
+The host must redirect `/privacy`, `/terms` and `/support` to the
+trailing-slash form and must never answer a legal path with the marketing
+page. `vite preview` does this through a preview-only middleware in
+`vite.config.ts`, checked in CI by `npm run check:routes`; that does not
+configure any production host. See `hosting/netlify/README.md` (unreviewed,
+not deployed) for the reference host and what other hosts must do.

@@ -1,0 +1,521 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new)",
+  "method": "prefers-reduced-motion emulated with CDP Emulation.setEmulatedMedia before navigation (EMULATION, not an OS setting). Scan = every text-bearing element in header/main/footer (excluding sr-only and closed FAQ answers): effective opacity (product over ancestors) and any ancestor translateY.",
+  "reduce1440": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "prefersReducedMotion": "reduce (emulated via CDP Emulation.setEmulatedMedia)",
+    "afterLoad300ms": {
+      "reduceMatches": true,
+      "scrollBehavior": "auto",
+      "scrollY": 0,
+      "dataRevealCount": 0,
+      "faded": [],
+      "translated": []
+    },
+    "after60msJumps": [
+      {
+        "section": "running",
+        "scrollY": 654,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "golf",
+        "scrollY": 1607,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "how-it-works",
+        "scrollY": 2682,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "my-plans",
+        "scrollY": 3652,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "safety",
+        "scrollY": 4592,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "faq",
+        "scrollY": 5186,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      }
+    ],
+    "finalWholePage": {
+      "reduceMatches": true,
+      "scrollBehavior": "auto",
+      "scrollY": 6004,
+      "dataRevealCount": 0,
+      "faded": [],
+      "translated": []
+    }
+  },
+  "reduce390": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "prefersReducedMotion": "reduce (emulated via CDP Emulation.setEmulatedMedia)",
+    "afterLoad300ms": {
+      "reduceMatches": true,
+      "scrollBehavior": "auto",
+      "scrollY": 0,
+      "dataRevealCount": 0,
+      "faded": [],
+      "translated": []
+    },
+    "after60msJumps": [
+      {
+        "section": "running",
+        "scrollY": 1146,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "golf",
+        "scrollY": 2674,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "how-it-works",
+        "scrollY": 4329,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "my-plans",
+        "scrollY": 6006,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "safety",
+        "scrollY": 7538,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      },
+      {
+        "section": "faq",
+        "scrollY": 8636,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      }
+    ],
+    "finalWholePage": {
+      "reduceMatches": true,
+      "scrollBehavior": "auto",
+      "scrollY": 9795,
+      "dataRevealCount": 0,
+      "faded": [],
+      "translated": []
+    }
+  },
+  "baselineNoPreference1440": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "prefersReducedMotion": "no-preference (default)",
+    "afterLoad300ms": {
+      "reduceMatches": false,
+      "scrollBehavior": "smooth",
+      "scrollY": 0,
+      "dataRevealCount": 37,
+      "faded": [
+        {
+          "el": "p \"Sydney · Running & golf\"",
+          "effectiveOpacity": 0.905
+        },
+        {
+          "el": "h1 \"Find your pace.Find your people.\"",
+          "effectiveOpacity": 0.72
+        },
+        {
+          "el": "span \"Find your people.\"",
+          "effectiveOpacity": 0.72
+        },
+        {
+          "el": "p \"SportsGang helps Sydney runners and golf\"",
+          "effectiveOpacity": 0.28
+        },
+        {
+          "el": "a \"Get SportsGang on the App Store (opens t\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "a \"See how it works\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "p \"For iPhone. The running and golf experie\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Explore\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Sydney\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Running\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Golf\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"M\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "p \"Mia\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "p \"Paddington · Running\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Fits both ways\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Pace ranges overlap at 5:45–6:15 /km\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Both like 5 km and 10 km\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "span \"Both prefer mornings\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "div \"Pass\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "div \"Show interest\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "p \"Interest is private. A chat opens if you\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "figcaption \"Illustration with example data, not a sc\"",
+          "effectiveOpacity": 0
+        },
+        {
+          "el": "p \"Running\"",
+          "effectiveOpacity": 0.905
+        },
+        {
+          "el": "h2 \"Run at your pace — or just for the compa\"",
+          "effectiveOpacity": 0.905
+        }
+      ],
+      "translated": [
+        {
+          "ancestor": "p.inline-flex.items-center.gap-2",
+          "translateY": 2.284,
+          "sampleText": "p \"Sydney · Running & golf\""
+        },
+        {
+          "ancestor": "h1.mt-6.text-[2.75rem].font-bold",
+          "translateY": 6.709,
+          "sampleText": "h1 \"Find your pace.Find your people.\""
+        },
+        {
+          "ancestor": "p.mt-6.max-w-xl.text-lg",
+          "translateY": 17.271,
+          "sampleText": "p \"SportsGang helps Sydney runners and golf\""
+        },
+        {
+          "ancestor": "div.mt-8.flex.flex-col",
+          "translateY": 24,
+          "sampleText": "a \"Get SportsGang on the App Store (opens t\""
+        },
+        {
+          "ancestor": "div.",
+          "translateY": 24,
+          "sampleText": "p \"For iPhone. The running and golf experie\""
+        },
+        {
+          "ancestor": "div.print:mt-8",
+          "translateY": 24,
+          "sampleText": "span \"Explore\""
+        },
+        {
+          "ancestor": "div.",
+          "translateY": 2.284,
+          "sampleText": "p \"Running\""
+        }
+      ]
+    },
+    "after60msJumps": [
+      {
+        "section": "running",
+        "scrollY": 654,
+        "fadedTextInViewport": 28,
+        "translatedInViewport": 7,
+        "samples": [
+          {
+            "el": "p \"Running\"",
+            "effectiveOpacity": 0.953
+          },
+          {
+            "el": "h2 \"Run at your pace — or just for the compa\"",
+            "effectiveOpacity": 0.953
+          },
+          {
+            "el": "p \"Tell SportsGang the distances, times and\"",
+            "effectiveOpacity": 0.953
+          }
+        ],
+        "translatedSamples": [
+          {
+            "ancestor": "div.",
+            "translateY": 1.121,
+            "sampleText": "p \"Running\""
+          },
+          {
+            "ancestor": "li.print:break-inside-avoid",
+            "translateY": 2.619,
+            "sampleText": "p \"See where your paces overlap\""
+          },
+          {
+            "ancestor": "li.print:break-inside-avoid",
+            "translateY": 5.739,
+            "sampleText": "p \"Social running counts too\""
+          }
+        ]
+      },
+      {
+        "section": "golf",
+        "scrollY": 1607,
+        "fadedTextInViewport": 29,
+        "translatedInViewport": 7,
+        "samples": [
+          {
+            "el": "p \"Golf\"",
+            "effectiveOpacity": 0.205
+          },
+          {
+            "el": "h2 \"Golfers who suit your game.\"",
+            "effectiveOpacity": 0.205
+          },
+          {
+            "el": "p \"Add your handicap situation — an officia\"",
+            "effectiveOpacity": 0.205
+          }
+        ],
+        "translatedSamples": [
+          {
+            "ancestor": "div.",
+            "translateY": 19.075,
+            "sampleText": "p \"Golf\""
+          },
+          {
+            "ancestor": "ul.mt-6.flex.flex-wrap",
+            "translateY": 24,
+            "sampleText": "li \"Similar level\""
+          },
+          {
+            "ancestor": "li.print:break-inside-avoid",
+            "translateY": 24,
+            "sampleText": "p \"Similar level, explained\""
+          }
+        ]
+      },
+      {
+        "section": "how-it-works",
+        "scrollY": 2682,
+        "fadedTextInViewport": 15,
+        "translatedInViewport": 5,
+        "samples": [
+          {
+            "el": "span \"1\"",
+            "effectiveOpacity": 0.105
+          },
+          {
+            "el": "h3 \"Set your preferences\"",
+            "effectiveOpacity": 0.105
+          },
+          {
+            "el": "p \"Choose running, golf or both. Runners ad\"",
+            "effectiveOpacity": 0.105
+          }
+        ],
+        "translatedSamples": [
+          {
+            "ancestor": "li.relative.rounded-3xl.border",
+            "translateY": 21.476,
+            "sampleText": "span \"1\""
+          },
+          {
+            "ancestor": "li.relative.rounded-3xl.border",
+            "translateY": 24,
+            "sampleText": "span \"2\""
+          },
+          {
+            "ancestor": "li.relative.rounded-3xl.border",
+            "translateY": 24,
+            "sampleText": "span \"3\""
+          }
+        ]
+      },
+      {
+        "section": "my-plans",
+        "scrollY": 3652,
+        "fadedTextInViewport": 37,
+        "translatedInViewport": 6,
+        "samples": [
+          {
+            "el": "p \"My Plans\"",
+            "effectiveOpacity": 0.105
+          },
+          {
+            "el": "h2 \"Every plan in one place.\"",
+            "effectiveOpacity": 0.105
+          },
+          {
+            "el": "p \"One-to-one sessions and group runs and r\"",
+            "effectiveOpacity": 0.105
+          }
+        ],
+        "translatedSamples": [
+          {
+            "ancestor": "div.",
+            "translateY": 21.476,
+            "sampleText": "p \"My Plans\""
+          },
+          {
+            "ancestor": "div.border-l-2.border-forest.pl-4",
+            "translateY": 24,
+            "sampleText": "dt \"Upcoming\""
+          },
+          {
+            "ancestor": "div.border-l-2.border-forest.pl-4",
+            "translateY": 24,
+            "sampleText": "dt \"Pending\""
+          }
+        ]
+      },
+      {
+        "section": "safety",
+        "scrollY": 4592,
+        "fadedTextInViewport": 8,
+        "translatedInViewport": 4,
+        "samples": [
+          {
+            "el": "h3 \"Private interest\"",
+            "effectiveOpacity": 0.205
+          },
+          {
+            "el": "p \"Showing interest is private. A chat open\"",
+            "effectiveOpacity": 0.205
+          },
+          {
+            "el": "h3 \"Report or block\"",
+            "effectiveOpacity": 0
+          }
+        ],
+        "translatedSamples": [
+          {
+            "ancestor": "li.rounded-3xl.border.border-line",
+            "translateY": 19.075,
+            "sampleText": "h3 \"Private interest\""
+          },
+          {
+            "ancestor": "li.rounded-3xl.border.border-line",
+            "translateY": 24,
+            "sampleText": "h3 \"Report or block\""
+          },
+          {
+            "ancestor": "li.rounded-3xl.border.border-line",
+            "translateY": 24,
+            "sampleText": "h3 \"Plans you agreed\""
+          }
+        ]
+      },
+      {
+        "section": "faq",
+        "scrollY": 5186,
+        "fadedTextInViewport": 0,
+        "translatedInViewport": 0,
+        "samples": [],
+        "translatedSamples": []
+      }
+    ],
+    "finalWholePage": {
+      "reduceMatches": false,
+      "scrollBehavior": "smooth",
+      "scrollY": 6004,
+      "dataRevealCount": 0,
+      "faded": [],
+      "translated": []
+    }
+  },
+  "checks": {
+    "reduceMatchesInPage": true,
+    "scrollBehaviorAutoUnderReduce": true,
+    "noFadedOrTranslatedTextUnderReduce": [
+      0,
+      0
+    ],
+    "dataRevealLeftUnderReduce": [
+      0,
+      0
+    ],
+    "finalFadedUnderReduce": [
+      0,
+      0
+    ],
+    "baselineDetectsAnimation": true,
+    "baselineFinalFaded": 0,
+    "baselineScrollBehavior": "smooth"
+  },
+  "result": "PASS"
+}

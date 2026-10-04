@@ -1,0 +1,391 @@
+{
+  "tool": "apps/web/scripts/check-routes.mjs, Node v20.20.2, Vite 6.4.2 preview, node:http client",
+  "homeSha256": "1265387c8381f47176db5e179aff80bbf26783b45eed5b52a675452f0c06b20b",
+  "netlifyRedirectRules": 0,
+  "results": [
+    {
+      "check": "dist/privacy/index.html equals public/",
+      "pass": true
+    },
+    {
+      "check": "dist/terms/index.html equals public/",
+      "pass": true
+    },
+    {
+      "check": "dist/support/index.html equals public/",
+      "pass": true
+    },
+    {
+      "check": "dist/styles.css equals public/",
+      "pass": true
+    },
+    {
+      "check": "/ -> 200 marketing page",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "check": "GET /privacy -> 301 /privacy/",
+      "pass": true,
+      "detail": "status 301, location /privacy/"
+    },
+    {
+      "check": "HEAD /privacy -> 301 /privacy/",
+      "pass": true,
+      "detail": "status 301, location /privacy/"
+    },
+    {
+      "check": "/privacy (Accept */*) -> 301 /privacy/",
+      "pass": true
+    },
+    {
+      "check": "/privacy/ -> 200 exact bytes of public/privacy/index.html",
+      "pass": true,
+      "detail": "status 200, public/privacy/index.html"
+    },
+    {
+      "check": "/privacy/index.html -> 200 exact bytes of public/privacy/index.html",
+      "pass": true,
+      "detail": "status 200, public/privacy/index.html"
+    },
+    {
+      "check": "/privacy/no-such-file -> 404, not the marketing page",
+      "pass": true
+    },
+    {
+      "check": "GET /terms -> 301 /terms/",
+      "pass": true,
+      "detail": "status 301, location /terms/"
+    },
+    {
+      "check": "HEAD /terms -> 301 /terms/",
+      "pass": true,
+      "detail": "status 301, location /terms/"
+    },
+    {
+      "check": "/terms (Accept */*) -> 301 /terms/",
+      "pass": true
+    },
+    {
+      "check": "/terms/ -> 200 exact bytes of public/terms/index.html",
+      "pass": true,
+      "detail": "status 200, public/terms/index.html"
+    },
+    {
+      "check": "/terms/index.html -> 200 exact bytes of public/terms/index.html",
+      "pass": true,
+      "detail": "status 200, public/terms/index.html"
+    },
+    {
+      "check": "/terms/no-such-file -> 404, not the marketing page",
+      "pass": true
+    },
+    {
+      "check": "GET /support -> 301 /support/",
+      "pass": true,
+      "detail": "status 301, location /support/"
+    },
+    {
+      "check": "HEAD /support -> 301 /support/",
+      "pass": true,
+      "detail": "status 301, location /support/"
+    },
+    {
+      "check": "/support (Accept */*) -> 301 /support/",
+      "pass": true
+    },
+    {
+      "check": "/support/ -> 200 exact bytes of public/support/index.html",
+      "pass": true,
+      "detail": "status 200, public/support/index.html"
+    },
+    {
+      "check": "/support/index.html -> 200 exact bytes of public/support/index.html",
+      "pass": true,
+      "detail": "status 200, public/support/index.html"
+    },
+    {
+      "check": "/support/no-such-file -> 404, not the marketing page",
+      "pass": true
+    },
+    {
+      "check": "/privacy?x=1 -> 301 /privacy/?x=1",
+      "pass": true,
+      "detail": "location /privacy/?x=1"
+    },
+    {
+      "check": "following /privacy?x=1 reaches the privacy page in one hop",
+      "pass": true,
+      "detail": "status 200, public/privacy/index.html"
+    },
+    {
+      "check": "/styles.css -> 200 exact bytes of public/styles.css",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "check": "build without privacy/index.html: /privacy/ -> 404, not the marketing page",
+      "pass": true,
+      "detail": "status 404, other"
+    },
+    {
+      "check": "_redirects is outside public/ (does not ship with the build)",
+      "pass": true
+    }
+  ],
+  "responses": [
+    {
+      "build": "dist",
+      "request": "GET /",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 3819,
+      "sha256": "1265387c8381f47176db5e179aff80bbf26783b45eed5b52a675452f0c06b20b",
+      "body": "marketing home page"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/privacy/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "HEAD /privacy",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/privacy/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy",
+      "accept": "*/*",
+      "status": 301,
+      "location": "/privacy/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy/",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "body": "public/privacy/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy/index.html",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "body": "public/privacy/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy/no-such-file",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 404,
+      "location": null,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 10,
+      "sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b",
+      "body": "other"
+    },
+    {
+      "build": "dist",
+      "request": "GET /terms",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/terms/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "HEAD /terms",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/terms/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /terms",
+      "accept": "*/*",
+      "status": 301,
+      "location": "/terms/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /terms/",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 13209,
+      "sha256": "bd3cf76dab142f5a5f57b596c08763ab65503a86336c33782b92b5cbe933be6a",
+      "body": "public/terms/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /terms/index.html",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 13209,
+      "sha256": "bd3cf76dab142f5a5f57b596c08763ab65503a86336c33782b92b5cbe933be6a",
+      "body": "public/terms/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /terms/no-such-file",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 404,
+      "location": null,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 10,
+      "sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b",
+      "body": "other"
+    },
+    {
+      "build": "dist",
+      "request": "GET /support",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/support/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "HEAD /support",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/support/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /support",
+      "accept": "*/*",
+      "status": 301,
+      "location": "/support/",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /support/",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 12750,
+      "sha256": "a91bb8229ac2e90312a6e19d3efd349fbed687e3d8a35823f195ac421ebfe897",
+      "body": "public/support/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /support/index.html",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 12750,
+      "sha256": "a91bb8229ac2e90312a6e19d3efd349fbed687e3d8a35823f195ac421ebfe897",
+      "body": "public/support/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /support/no-such-file",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 404,
+      "location": null,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 10,
+      "sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b",
+      "body": "other"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy?x=1",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 301,
+      "location": "/privacy/?x=1",
+      "contentType": null,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "body": "empty"
+    },
+    {
+      "build": "dist",
+      "request": "GET /privacy/?x=1",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "bytes": 15047,
+      "sha256": "ac01d480d0ee06d6cbeb4874d698700716438962aecb9bc274fa134db9ed4e37",
+      "body": "public/privacy/index.html"
+    },
+    {
+      "build": "dist",
+      "request": "GET /styles.css",
+      "accept": "text/css,*/*;q=0.1",
+      "status": 200,
+      "location": null,
+      "contentType": "text/css",
+      "bytes": 33071,
+      "sha256": "c0337a664b11fda3f7d1f5296a424b7960cff2b627a6a09dbd02ec6051092bda",
+      "body": "public/styles.css"
+    },
+    {
+      "build": "dist without privacy/index.html",
+      "request": "GET /privacy/",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "status": 404,
+      "location": null,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 10,
+      "sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b",
+      "body": "other"
+    }
+  ]
+}

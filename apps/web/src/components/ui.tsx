@@ -46,7 +46,7 @@ export function Illustration({
   children: React.ReactNode;
 }) {
   return (
-    <figure className={className}>
+    <figure className={`print:break-inside-avoid ${className}`}>
       <div role="img" aria-label={label}>
         <div aria-hidden="true">{children}</div>
       </div>
@@ -69,7 +69,7 @@ export function SectionIntro({
   dark?: boolean;
 }) {
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl print:break-inside-avoid print:break-after-avoid">
       <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${dark ? 'text-lime' : 'text-forest'}`}>
         {eyebrow}
       </p>

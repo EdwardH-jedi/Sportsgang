@@ -93,7 +93,7 @@ export function RunningSection() {
   return (
     <section id="running" aria-labelledby="running-title" className="on-dark relative overflow-hidden bg-forest-dark text-white">
       <div className="bg-lanes pointer-events-none absolute inset-0 opacity-50" aria-hidden="true" />
-      <div ref={ref} className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:py-28">
+      <div ref={ref} className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:py-28 print:gap-8 print:py-10">
         <div>
           <div data-run>
             <SectionIntro id="running-title" eyebrow="Running" title="Run at your pace — or just for the company." dark>
@@ -106,7 +106,7 @@ export function RunningSection() {
           </div>
           <ul className="mt-10 grid gap-6 sm:grid-cols-2">
             {POINTS.map((p) => (
-              <li key={p.title} data-run>
+              <li key={p.title} data-run className="print:break-inside-avoid">
                 <p className="flex items-start gap-2 font-semibold text-white">
                   <Check className="mt-0.5 h-4 w-4 flex-none text-lime" />
                   {p.title}

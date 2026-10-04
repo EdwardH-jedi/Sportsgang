@@ -17,7 +17,7 @@ const LINKS = [
 export function SiteFooter() {
   return (
     <footer className="on-dark bg-forest-darkest text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-end md:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-end md:justify-between print:break-inside-avoid print:gap-4 print:py-6">
         <div>
           <Wordmark className="text-3xl" />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/75">

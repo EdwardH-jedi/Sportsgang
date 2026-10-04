@@ -1,0 +1,395 @@
+{
+  "realZoom": {
+    "engine": "Google Chrome 154.0.8037.97 headless (new)",
+    "method": "Chrome page zoom set through the temporary profile's preference partition.default_zoom_level = 3.801784 (zoom factor 1.2^level = 2.00), window 1440x900 at device scale 1. This is Chrome's real browser-zoom mechanism (the HostZoomMap that Cmd+= changes), applied through a preference rather than the keyboard shortcut.",
+    "metricsBeforeChecks": {
+      "innerWidth": 720,
+      "innerHeight": 406,
+      "outerWidth": 1440,
+      "outerHeight": 900,
+      "devicePixelRatio": 2,
+      "clientWidth": 720,
+      "scrollWidth": 720,
+      "horizontalOverflow": false
+    },
+    "zoomApplied": true,
+    "label": "real page zoom 200% of 1440x900",
+    "metrics": {
+      "innerWidth": 720,
+      "innerHeight": 406,
+      "outerWidth": 1440,
+      "outerHeight": 900,
+      "devicePixelRatio": 2,
+      "clientWidth": 720,
+      "scrollWidth": 720,
+      "horizontalOverflow": false
+    },
+    "layout": {
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "scrollXAfterScrollLeft300": 0,
+      "horizontalOverflow": false,
+      "elementsBeyondViewport": [],
+      "headerHeight": 65,
+      "desktopNavShown": false,
+      "menuButtonShown": true,
+      "appStoreControls": [
+        {
+          "label": "App Store",
+          "lines": 1,
+          "width": 139
+        },
+        {
+          "label": "Get SportsGang on the App Store",
+          "lines": 1,
+          "width": 329
+        },
+        {
+          "label": "Get SportsGang on the App Store",
+          "lines": 1,
+          "width": 329
+        }
+      ]
+    },
+    "screenshot": {
+      "file": "zoom-200-real-1440.jpg",
+      "bytes": 58748
+    },
+    "menu": {
+      "before": {
+        "ariaExpanded": "false",
+        "menuPresent": false,
+        "focusOnButton": true,
+        "headerBottom": 65
+      },
+      "afterEnter": {
+        "ariaExpanded": "true",
+        "menuPresent": true,
+        "focusOnButton": true,
+        "headerBottom": 408
+      },
+      "menuFitsViewport": false,
+      "menuLinks": [
+        {
+          "href": "#running",
+          "top": 73,
+          "bottom": 121,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#golf",
+          "top": 125,
+          "bottom": 173,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#how-it-works",
+          "top": 177,
+          "bottom": 225,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#my-plans",
+          "top": 229,
+          "bottom": 277,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#faq",
+          "top": 281,
+          "bottom": 329,
+          "visibleInViewport": true
+        },
+        {
+          "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+          "top": 341,
+          "bottom": 389,
+          "visibleInViewport": true
+        }
+      ],
+      "afterEscape": {
+        "ariaExpanded": "false",
+        "menuPresent": false,
+        "focusOnButton": true,
+        "headerBottom": 65
+      },
+      "afterChoosingFaq": {
+        "hash": "#faq",
+        "menuPresent": false,
+        "headerBottom": 65,
+        "headingTop": 172,
+        "headingBottom": 211,
+        "innerHeight": 406,
+        "headingVisible": true
+      },
+      "pass": true
+    },
+    "pass": true
+  },
+  "emulatedZoom": {
+    "engine": "Google Chrome 154.0.8037.97 headless (new)",
+    "method": "EMULATED zoom: CDP Emulation.setDeviceMetricsOverride 720x450 CSS px, deviceScaleFactor 2, mobile false (layout equivalent of 200 % zoom on a 1440x900 window). Not real zoom.",
+    "label": "emulated 200% (720x450 @2x)",
+    "metrics": {
+      "innerWidth": 720,
+      "innerHeight": 450,
+      "outerWidth": 1440,
+      "outerHeight": 900,
+      "devicePixelRatio": 2,
+      "clientWidth": 720,
+      "scrollWidth": 720,
+      "horizontalOverflow": false
+    },
+    "layout": {
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "scrollXAfterScrollLeft300": 0,
+      "horizontalOverflow": false,
+      "elementsBeyondViewport": [],
+      "headerHeight": 65,
+      "desktopNavShown": false,
+      "menuButtonShown": true,
+      "appStoreControls": [
+        {
+          "label": "App Store",
+          "lines": 1,
+          "width": 139
+        },
+        {
+          "label": "Get SportsGang on the App Store",
+          "lines": 1,
+          "width": 329
+        },
+        {
+          "label": "Get SportsGang on the App Store",
+          "lines": 1,
+          "width": 329
+        }
+      ]
+    },
+    "menu": {
+      "before": {
+        "ariaExpanded": "false",
+        "menuPresent": false,
+        "focusOnButton": true,
+        "headerBottom": 65
+      },
+      "afterEnter": {
+        "ariaExpanded": "true",
+        "menuPresent": true,
+        "focusOnButton": true,
+        "headerBottom": 410
+      },
+      "menuFitsViewport": true,
+      "menuLinks": [
+        {
+          "href": "#running",
+          "top": 73,
+          "bottom": 121,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#golf",
+          "top": 125,
+          "bottom": 173,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#how-it-works",
+          "top": 177,
+          "bottom": 225,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#my-plans",
+          "top": 229,
+          "bottom": 277,
+          "visibleInViewport": true
+        },
+        {
+          "href": "#faq",
+          "top": 281,
+          "bottom": 329,
+          "visibleInViewport": true
+        },
+        {
+          "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+          "top": 341,
+          "bottom": 389,
+          "visibleInViewport": true
+        }
+      ],
+      "afterEscape": {
+        "ariaExpanded": "false",
+        "menuPresent": false,
+        "focusOnButton": true,
+        "headerBottom": 65
+      },
+      "afterChoosingFaq": {
+        "hash": "#faq",
+        "menuPresent": false,
+        "headerBottom": 65,
+        "headingTop": 172,
+        "headingBottom": 211,
+        "innerHeight": 450,
+        "headingVisible": true
+      },
+      "pass": true
+    },
+    "pass": true
+  },
+  "claudeInChrome": {
+    "attempted": false,
+    "outcome": "NOT_RUN in this run: the user's own Chrome was not used. Real zoom was applied only in a throwaway headless profile (realZoom above)."
+  },
+  "result": {
+    "realZoom200": "PASS",
+    "emulatedZoom200": "PASS",
+    "emulatedZoom300": "PASS",
+    "emulatedZoom400": "PASS"
+  },
+  "higherZoomEmulated": {
+    "engine": "Google Chrome 154.0.8037.97 headless (new)",
+    "method": "EMULATED zoom: CDP device metrics, 300 % of 1440x900 = 480x300 CSS px @3x and 400 % of 1280x1024 = 320x256 CSS px @4x, mobile false. Not real zoom.",
+    "cases": [
+      {
+        "viewport": "480x300 @3x",
+        "overflow": {
+          "scrollWidth": 480,
+          "clientWidth": 480,
+          "scrollXAfterScrollLeft300": 0,
+          "horizontalOverflow": false
+        },
+        "menuOpenedWithEnter": "true",
+        "menuItemsWhenFocusedByTab": [
+          {
+            "text": "Running",
+            "inMenu": true,
+            "top": 73,
+            "bottom": 121,
+            "fullyVisible": true
+          },
+          {
+            "text": "Golf",
+            "inMenu": true,
+            "top": 125,
+            "bottom": 173,
+            "fullyVisible": true
+          },
+          {
+            "text": "How it works",
+            "inMenu": true,
+            "top": 177,
+            "bottom": 225,
+            "fullyVisible": true
+          },
+          {
+            "text": "My Plans",
+            "inMenu": true,
+            "top": 229,
+            "bottom": 277,
+            "fullyVisible": true
+          },
+          {
+            "text": "FAQ",
+            "inMenu": true,
+            "top": 252,
+            "bottom": 300,
+            "fullyVisible": true
+          },
+          {
+            "text": "Get SportsGang on the App Store",
+            "inMenu": true,
+            "top": 232,
+            "bottom": 280,
+            "fullyVisible": true
+          }
+        ],
+        "afterEscape": {
+          "expanded": "false",
+          "focusOnButton": true
+        },
+        "chooseFaqFromMenu": {
+          "hash": "#faq",
+          "menuOpen": false,
+          "headerBottom": 65,
+          "headingTop": 172,
+          "headingBottom": 204,
+          "innerHeight": 300,
+          "headingVisible": true
+        },
+        "pass": true,
+        "screenshot": null
+      },
+      {
+        "viewport": "320x256 @4x",
+        "overflow": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollXAfterScrollLeft300": 0,
+          "horizontalOverflow": false
+        },
+        "menuOpenedWithEnter": "true",
+        "menuItemsWhenFocusedByTab": [
+          {
+            "text": "Running",
+            "inMenu": true,
+            "top": 73,
+            "bottom": 121,
+            "fullyVisible": true
+          },
+          {
+            "text": "Golf",
+            "inMenu": true,
+            "top": 125,
+            "bottom": 173,
+            "fullyVisible": true
+          },
+          {
+            "text": "How it works",
+            "inMenu": true,
+            "top": 177,
+            "bottom": 225,
+            "fullyVisible": true
+          },
+          {
+            "text": "My Plans",
+            "inMenu": true,
+            "top": 208,
+            "bottom": 256,
+            "fullyVisible": true
+          },
+          {
+            "text": "FAQ",
+            "inMenu": true,
+            "top": 136,
+            "bottom": 184,
+            "fullyVisible": true
+          },
+          {
+            "text": "Get SportsGang on the App Store",
+            "inMenu": true,
+            "top": 196,
+            "bottom": 250,
+            "fullyVisible": true
+          }
+        ],
+        "afterEscape": {
+          "expanded": "false",
+          "focusOnButton": true
+        },
+        "chooseFaqFromMenu": {
+          "hash": "#faq",
+          "menuOpen": false,
+          "headerBottom": 65,
+          "headingTop": 172,
+          "headingBottom": 204,
+          "innerHeight": 256,
+          "headingVisible": true
+        },
+        "pass": true,
+        "screenshot": "zoom-400-emulated-320x256-menu-open.jpg"
+      }
+    ]
+  }
+}

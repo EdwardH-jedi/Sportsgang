@@ -26,11 +26,11 @@ export function SafetySection() {
 
   return (
     <section id="safety" aria-labelledby="safety-title" className="bg-panel">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24 print:py-10">
         <SectionIntro id="safety-title" eyebrow="Safety" title="Meet up on your terms." />
-        <ul ref={ref} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul ref={ref} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:mt-6">
           {ITEMS.map((item) => (
-            <li key={item.title} data-safe className="rounded-3xl border border-line bg-canvas p-6">
+            <li key={item.title} data-safe className="rounded-3xl border border-line bg-canvas p-6 print:break-inside-avoid">
               <Shield className="h-6 w-6 text-forest" />
               <h3 className="mt-4 text-lg font-semibold text-ink">{item.title}</h3>
               <p className="mt-2 leading-relaxed text-ink-2">{item.body}</p>

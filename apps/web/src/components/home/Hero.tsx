@@ -55,7 +55,7 @@ export function Hero() {
       <div className="bg-lanes pointer-events-none absolute inset-x-0 bottom-0 h-40 opacity-60" aria-hidden="true" />
       <div
         ref={ref}
-        className="relative mx-auto grid max-w-6xl gap-14 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10 lg:pb-28"
+        className="relative mx-auto grid max-w-6xl gap-14 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10 lg:pb-28 print:block print:pb-8 print:pt-6"
       >
         <div>
           <p
@@ -92,7 +92,9 @@ export function Hero() {
           </div>
         </div>
 
-        <div data-hero>
+        {/* The hero prints as a plain block: as a grid, Chrome (154) moved the
+            whole hero to page 2 instead of breaking before the illustration. */}
+        <div data-hero className="print:mt-8">
           <Illustration
             label="Illustration of a SportsGang partner card for a runner named Mia: Fits both ways; pace ranges overlap at 5:45 to 6:15 per kilometre; both like 5 and 10 kilometres; both prefer mornings; Pass and Show interest actions. Example data."
             captionClassName="text-white/70"

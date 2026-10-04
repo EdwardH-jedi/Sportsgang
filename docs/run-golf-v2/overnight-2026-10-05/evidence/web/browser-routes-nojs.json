@@ -1,0 +1,396 @@
+{
+  "engine": "Google Chrome 154.0.8037.97 headless (new), CDP",
+  "noJs": {
+    "/": {
+      "request": "/",
+      "scriptsDisabled": true,
+      "finalUrl": "/",
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/assets/index-C76m2eWz.css",
+          "status": 200,
+          "type": "Stylesheet"
+        },
+        {
+          "url": "/favicon.png",
+          "status": 200,
+          "type": "Other"
+        }
+      ],
+      "rootEmpty": true,
+      "noscriptLinks": [
+        {
+          "text": "SportsGang on the App Store",
+          "href": "https://apps.apple.com/au/app/sportsgang/id6767027447",
+          "underline": "underline",
+          "weight": "600"
+        },
+        {
+          "text": "Privacy",
+          "href": "https://sportgang.netlify.app/privacy/",
+          "underline": "underline",
+          "weight": "600"
+        },
+        {
+          "text": "Terms",
+          "href": "https://sportgang.netlify.app/terms/",
+          "underline": "underline",
+          "weight": "600"
+        },
+        {
+          "text": "Support",
+          "href": "https://sportgang.netlify.app/support/",
+          "underline": "underline",
+          "weight": "600"
+        }
+      ],
+      "screenshot": {
+        "file": "nojs-home-390.jpg",
+        "bytes": 46560
+      }
+    },
+    "/privacy": {
+      "request": "/privacy",
+      "scriptsDisabled": true,
+      "finalUrl": "/privacy/",
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/privacy",
+          "status": 301,
+          "location": "/privacy/",
+          "type": "Document"
+        },
+        {
+          "url": "/privacy/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        },
+        {
+          "url": "/favicon.ico",
+          "status": 404,
+          "type": "Other"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)",
+      "screenshot": {
+        "file": "nojs-privacy-from-no-slash-390.jpg",
+        "bytes": 58239
+      }
+    },
+    "/terms": {
+      "request": "/terms",
+      "scriptsDisabled": true,
+      "finalUrl": "/terms/",
+      "title": "Terms of Service — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/terms",
+          "status": 301,
+          "location": "/terms/",
+          "type": "Document"
+        },
+        {
+          "url": "/terms/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/support": {
+      "request": "/support",
+      "scriptsDisabled": true,
+      "finalUrl": "/support/",
+      "title": "Support — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/support",
+          "status": 301,
+          "location": "/support/",
+          "type": "Document"
+        },
+        {
+          "url": "/support/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/privacy?x=1": {
+      "request": "/privacy?x=1",
+      "scriptsDisabled": true,
+      "finalUrl": "/privacy/?x=1",
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/privacy?x=1",
+          "status": 301,
+          "location": "/privacy/?x=1",
+          "type": "Document"
+        },
+        {
+          "url": "/privacy/?x=1",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/privacy/": {
+      "request": "/privacy/",
+      "scriptsDisabled": true,
+      "finalUrl": "/privacy/",
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/privacy/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/terms/": {
+      "request": "/terms/",
+      "scriptsDisabled": true,
+      "finalUrl": "/terms/",
+      "title": "Terms of Service — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/terms/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/support/": {
+      "request": "/support/",
+      "scriptsDisabled": true,
+      "finalUrl": "/support/",
+      "title": "Support — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/support/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    }
+  },
+  "jsOn": {
+    "/": {
+      "request": "/",
+      "scriptsDisabled": false,
+      "finalUrl": "/",
+      "title": "SportsGang — Running and golf partners in Sydney, in the next update",
+      "htmlHasJsClass": true,
+      "network": [
+        {
+          "url": "/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/assets/index-C76m2eWz.css",
+          "status": 200,
+          "type": "Stylesheet"
+        },
+        {
+          "url": "/assets/index-B4gTA2md.js",
+          "status": 200,
+          "type": "Script"
+        }
+      ],
+      "h1": "Find your pace.Find your people."
+    },
+    "/privacy": {
+      "request": "/privacy",
+      "scriptsDisabled": false,
+      "finalUrl": "/privacy/",
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/privacy",
+          "status": 301,
+          "location": "/privacy/",
+          "type": "Document"
+        },
+        {
+          "url": "/privacy/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/terms": {
+      "request": "/terms",
+      "scriptsDisabled": false,
+      "finalUrl": "/terms/",
+      "title": "Terms of Service — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/terms",
+          "status": 301,
+          "location": "/terms/",
+          "type": "Document"
+        },
+        {
+          "url": "/terms/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/support": {
+      "request": "/support",
+      "scriptsDisabled": false,
+      "finalUrl": "/support/",
+      "title": "Support — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/support",
+          "status": 301,
+          "location": "/support/",
+          "type": "Document"
+        },
+        {
+          "url": "/support/",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    },
+    "/privacy?x=1": {
+      "request": "/privacy?x=1",
+      "scriptsDisabled": false,
+      "finalUrl": "/privacy/?x=1",
+      "title": "Privacy Policy — SportGang",
+      "htmlHasJsClass": false,
+      "network": [
+        {
+          "url": "/privacy?x=1",
+          "status": 301,
+          "location": "/privacy/?x=1",
+          "type": "Document"
+        },
+        {
+          "url": "/privacy/?x=1",
+          "status": 200,
+          "type": "Document"
+        },
+        {
+          "url": "/styles.css",
+          "status": 200,
+          "type": "Stylesheet"
+        }
+      ],
+      "renderedTextEqualsPublicFile": true,
+      "stylesheet": 200,
+      "bodyBackground": "rgb(14, 16, 19)"
+    }
+  },
+  "checks": {
+    "noJsHomeNoscript": true,
+    "noJsNoSlashRedirectsServerSide": true,
+    "noJsQueryKept": true,
+    "noJsSlashForms": true,
+    "jsOnNoSlash": true,
+    "jsOnQueryKept": true,
+    "jsOnHomeRenders": true
+  },
+  "result": "PASS"
+}
