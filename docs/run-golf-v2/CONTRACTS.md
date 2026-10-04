@@ -317,6 +317,14 @@ Responses (`EventSummary` / `EventDetail`) add `run_details` and
   asyncpg rejected the aware UTC value (HTTP 500 on PostgreSQL only). The
   model now matches the migrated column; no migration or data rewrite was
   needed and existing values keep their meaning.
+- One clock (review MA-A): the host's auto-join, a join, a rejoin and a
+  leave all take their instant from the database clock, read after the event
+  row lock (`events._membership_time`: PostgreSQL `clock_timestamp()`; `now()`
+  would be the transaction start, which can predate a long wait for the
+  lock). The API host's clock is not used, so a leave never precedes its join
+  and a rejoin never precedes its leave. Unit tests on SQLite use the
+  process's UTC clock. This concerns these TIMESTAMPTZ columns only, not the
+  naive audit columns of §9.
 
 ## 6. My Plans (client aggregation)
 
@@ -465,8 +473,8 @@ lock is refused — Q02).
 |---|---|
 | Contact write (message, discovery action, proposal, confirmation, challenge) | check → insert → commit |
 | Realtime admission (`/matches/{id}/ws`) | check → register the already-accepted socket → rollback |
-| Realtime delivery (after `POST …/messages` commits) | check → send the frame to every registered socket → rollback |
-| Proposal push (`/internal/process-notifications` or `worker.py`) | check → token lookup → provider call → mark → commit |
+| Realtime delivery (after `POST …/messages` commits) | check → send the frame to every registered socket, concurrently within one deadline → rollback |
+| Proposal push (`/internal/process-notifications` or `worker.py`) | (event already claimed) check → token lookup → provider call → mark → commit |
 
 **Linearization rule.** Because the block's lock conflicts with every
 effect's lock, each effect happens entirely before the block commits or is
@@ -476,26 +484,70 @@ socket closure runs after its commit, so it finds every socket registered
 before the commit, and none can register after it. Pre-block history
 (stored messages, frames sent and pushes made before the commit) is
 retained, as before. Status notices (confirmed, declined, cancelled,
-reminder) are not contact and take no pair lock.
+reminder) are not contact and take no pair lock; they are claimed like every
+notification event (below).
 
 **Bounds and failure behaviour.**
 
 - Accepting the WebSocket handshake happens before the lock; a refused
   socket is then closed with 4003. Nothing reaches a socket before it is
   registered.
-- One frame to one socket is bounded by `chat.WS_SEND_TIMEOUT_SECONDS`
-  (5 s); a socket that cannot take it in time is dropped (closed 1011), so a
-  slow client cannot hold the lock.
+- A delivery sends to all of the room's sockets at once, under one deadline
+  for the whole room: `chat.WS_SEND_TIMEOUT_SECONDS` (5 s), whatever the
+  number of sockets (review MA-B). Sends still running at the deadline — or
+  when the delivery is cancelled — are cancelled **and awaited** before the
+  lock is released, so no send continues after it. Their sockets, and any
+  whose send failed, are dropped from the room and closed (1011) in the
+  background. A block that arrives during a delivery therefore waits at most
+  about 5 s plus database overhead (the regression tests require the
+  delivery to end within 5–6 s with 1, 3 and 20 stalled sockets).
+- Closing a room (after a block, or a refused delivery) unregisters all of
+  its sockets first, then attempts every close concurrently, each bounded by
+  `chat.WS_CLOSE_TIMEOUT_SECONDS` (1 s). The attempts are owned by the
+  connection manager, not by the caller, so a hung or failing close, or a
+  cancelled block request, cannot stop the others. The block's HTTP response
+  waits for them at most about 1 s.
 - The dispatcher takes the pair lock with PostgreSQL `lock_timeout =
-  notifications.CONTACT_LOCK_TIMEOUT` (5 s). If it expires, that event and
-  the rest of the cycle are left pending — not sent, not marked — for the
-  next run. Each event is its own transaction, committed before the next.
+  notifications.CONTACT_LOCK_TIMEOUT` (5 s). If it expires, that event goes
+  back to pending and the rest of the cycle is left for the next run — not
+  sent, not marked. Each event is claimed and dispatched in its own
+  transactions, committed before the next event.
 - The whole provider call is bounded by
-  `notifications.PROVIDER_TIMEOUT_SECONDS` (10 s); a timeout marks the event
-  `delivery_failed`. A block that arrives during a proposal push therefore
-  waits at most about this long.
-- Lock order is always id order and an effect holds one pair at a time, so
-  blocks and effects cannot deadlock.
+  `notifications.PROVIDER_TIMEOUT_SECONDS` (10 s). A block that arrives
+  during a proposal push therefore waits at most about this long. A timeout
+  leaves the event unconfirmed (below), because the provider may still have
+  accepted it.
+- Lock order: pair locks in id order, one pair at a time; a dispatch then
+  writes its event row last — the order account deletion uses (user row,
+  then cascaded event rows). Blocks never touch event rows. So blocks,
+  effects, dispatches and deletions cannot deadlock.
+
+**Notification event ownership (review MA-C).** The worker and the
+`/internal` endpoint may run at once. Each due event is claimed before the
+provider is called, by a conditional `UPDATE … SET failed_reason =
+'delivery_unconfirmed' WHERE id = … AND sent_at IS NULL AND failed_reason IS
+NULL`, committed on its own. Only the claimer dispatches it; a concurrent
+claimer waits for that commit, re-reads the row and gets nothing, and a
+claimed event drops out of every processor's due query. Decisions use the
+row as it is in the database, never an entity cached by an earlier query.
+
+| State | `sent_at` / `failed_reason` | Next |
+|---|---|---|
+| pending | NULL / NULL | claimed by one processor |
+| unconfirmed (claimed) | NULL / `delivery_unconfirmed` | one of the states below |
+| sent | instant / NULL | final |
+| restricted | NULL / `contact_restricted` | final (proposal while the pair is restricted) |
+| failed | NULL / `delivery_failed` | final (the provider said no, or the transport failed) |
+| no token | NULL / `no_push_token_after_48h` | final |
+| pending again | NULL / NULL | no token yet (< 48 h), or the dispatch stopped *before* the provider call (lock timeout, error, cancellation) |
+| unconfirmed (final) | NULL / `delivery_unconfirmed` | the dispatch stopped *after* the provider call started: timeout, cancellation, crash, or a failed commit after the provider accepted |
+
+Delivery is **at most once, not exactly once**. An event whose provider
+outcome was not recorded stays unconfirmed and is not sent again, because the
+provider may already have delivered it; it can be lost, never blindly
+repeated. An operator can requeue one after checking by clearing
+`failed_reason`. A stronger guarantee would need an idempotency key that the
+provider honours, which Expo's push API is not verified to offer.
 
 **Topology limit.** Socket bookkeeping is in-process. The rule above closes
 every socket of the pair when the API runs as one process (today's
@@ -504,12 +556,15 @@ processes because the boundary is in PostgreSQL. If more than one API
 process serves WebSockets (e.g. a second Fly `app` machine started by
 `auto_start_machines`), a block's closure cannot reach sockets held by the
 other process; that topology is not supported for realtime chat and is out
-of scope for this repair (no distributed realtime layer was added).
+of scope for this repair (no distributed realtime layer was added). The
+room deadline and close-attempt ownership are per process too.
 
-Verified on PostgreSQL in `tests_integration/test_contact_restriction.py`
-and `tests_integration/test_contact_authority.py` (deterministic barriers,
-real uvicorn/WebSocket client, a separate worker process; waits observed in
-`pg_stat_activity`); SQLite (unit suite) ignores the locking clause.
+Verified on PostgreSQL in `tests_integration/test_contact_restriction.py`,
+`test_contact_authority.py`, `test_notification_ownership.py` (two worker
+processes, worker and endpoint overlap) and `test_socket_deadline.py`
+(deterministic barriers, real uvicorn/WebSocket client, separate worker
+processes; waits observed in `pg_stat_activity`); SQLite (unit suite)
+ignores the locking clause.
 
 ### Client
 
