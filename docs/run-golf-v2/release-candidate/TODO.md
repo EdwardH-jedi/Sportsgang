@@ -42,7 +42,7 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (reason) · BLOCKED.
 | WEB-2 | GitHub Actions web job (locked install, typecheck, production build) | DONE — `e70a946`; job "Website typecheck and build" green in run 37202969762 |
 | WEB-3 | Static `/privacy/`, `/terms/`, `/support/` preserved in the build from the official site branch; verified on the production preview | DONE — byte copies of `ad072fc`; `/privacy/` `/terms/` `/support/` 200 with identical bytes on `vite preview`; no-slash paths fall back to home (host must redirect) |
 | WEB-4 | Upcoming-update wording in title/description/OG/Twitter | DONE — `e70a946` (and the no-script note) |
-| WEB-5 | CLAIM_MATRIX updated with the Codex verdict and candidate code | TODO |
+| WEB-5 | CLAIM_MATRIX updated with the Codex verdict and candidate code | DONE — verdict `ce62aac` recorded (NEEDS_FIXES / Q01–Q09 PASS / NOT_READY); A5, A6 updated; E1, E2, E7 stay PENDING |
 | WEB-6 | Browser checks: 320/390/768/1440, full keyboard, menu, FAQ, anchors, real zoom, reduced motion, no-JS, print, Safari | TODO |
 
 ## Wave 4 — verification and home testing

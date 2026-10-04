@@ -7,13 +7,29 @@ with its evidence, status and the condition for publishing it.
 Source references are to the mobile/API application at `ecd1e86` (the code
 under Codex review). This branch contains the same mobile/API files.
 
+## Release-candidate update (5 Oct 2026)
+
+Updated on `chore/run-golf-v2-release-candidate-2026-10-04`, which integrates
+this site (`97990d9`) with the repaired app. The latest independent verdict is
+Codex's morning acceptance review (publication `ce62aac`, reviewed delivery
+`8b34bca`): **code NEEDS_FIXES** (new findings MA-C, MA-B, MA-A, all P2),
+**Q01–Q09 PASS** within its measured scope, and **release NOT_READY** (R6
+production provenance, single-API-process topology and device/release gates
+open). The release candidate implements MA-C, MA-B and MA-A; they are **not
+accepted** until a fresh independent review says so. No status below is
+raised on the strength of this candidate's own tests.
+
+Changes in this update: A5 (the build now carries the legal pages), A6 (the
+preview tags now carry the next-update wording), E1, E2 and E7 (evidence
+pointers to the latest verdict; still PENDING).
+
 ## Status key
 
 | Status | Meaning |
 |---|---|
 | VERIFIED | Checked against a live public source on 4 Oct 2026 Sydney time (`evidence/link-check.txt`). |
 | IMPLEMENTED | Present in v2 source at `ecd1e86` with its own tests. **Not in the App Store build** (store version is 1.0). |
-| PENDING | Implemented at `ecd1e86` as a Codex review repair (R1–R7); depends on Codex accepting it. |
+| PENDING | Implemented as a Codex review repair (R1–R7 and their follow-ups); depends on an independent review accepting it. The latest verdict (`ce62aac`) is NEEDS_FIXES for the code as a whole. |
 | NEGATIVE | A "does not do" statement, checked against source. It stays true unless the feature is added. |
 | REMOVED | Was on the old site; unsupported, so removed from every rendered surface. |
 
@@ -30,8 +46,8 @@ under Codex review). This branch contains the same mobile/API files.
 | A2 | "For iPhone." (next-update note) | iTunes lookup `supportedDevices` lists iPhone models; app is an iOS build (`eas.json`) | VERIFIED | C3 |
 | A3 | "The running and golf experience on this page arrives with the next SportsGang update." / FAQ "The version on the App Store today is an earlier release that works differently" | iTunes lookup `version: 1.0`, `currentVersionReleaseDate: 2026-05-15`; v1 description (`docs/release/APP_STORE_METADATA.md` §4) covers gym, golf, tennis and running with an Events tab | VERIFIED | C3 — **remove or reword when the update ships** |
 | A4 | "Built for Sydney first, and times in the app are Sydney time" (FAQ) | `apps/mobile/src/screens/plans/MyPlansScreen.tsx:183` eyebrow "Sydney time"; `BookingComposerScreen.tsx:180` "Times are Sydney time (AEST/AEDT)."; onboarding "Your Sydney suburb" (`OnboardingStep1Screen.tsx:163`) | IMPLEMENTED | C1 |
-| A5 | Privacy, Terms, Support links → `https://sportgang.netlify.app/{privacy,terms,support}/` (footer, FAQ, noscript) | `evidence/link-check.txt`: all 200; URLs recorded in `docs/release/APP_STORE_METADATA.md` §8 and `apps/mobile/.env.example:67`; App Store `sellerUrl` is the same site | VERIFIED (reachable) | C3 for the links; the pages' own content has gaps — see RELEASE_HANDOFF §2 |
-| A6 | Page `<title>`, meta description, `og:description`, `twitter:description` ("…agree a time in chat, and keep every plan in one place. For iPhone." / "Show interest, chat, propose a session, and see it in My Plans.") | Same evidence as B and D below | IMPLEMENTED | C1 — **these appear in search results and link previews without the next-update note**; deploy the site with or after the update, or add "next update" wording to these tags |
+| A5 | Privacy, Terms, Support links → `https://sportgang.netlify.app/{privacy,terms,support}/` (footer, FAQ, noscript) | `evidence/link-check.txt`: all 200; URLs recorded in `docs/release/APP_STORE_METADATA.md` §8 and `apps/mobile/.env.example:67`; App Store `sellerUrl` is the same site | VERIFIED (reachable) | C3 for the links; the pages' own content has gaps — see RELEASE_HANDOFF §2. The site build now also serves byte-for-byte copies of these pages at `/privacy/`, `/terms/`, `/support/` (from `feature/sportgang-official-website` `ad072fc`; CI compares them with `dist/`), so deploying the build to that host keeps the links working. Content unchanged. |
+| A6 | Page `<title>`, meta description, `og:*`, `twitter:*` ("SportsGang — Running and golf partners in Sydney, in the next update" / "Coming in the next SportsGang update for iPhone: …" / "Coming in the next SportsGang update: …") and the no-script note | Wording: `apps/web/index.html`; features: B and D below; store version 1.0 (A3) | VERIFIED (wording) | C3 — the tags now carry the next-update wording, like the page; **reword when the update ships** |
 
 ## B. Running
 
@@ -74,13 +90,13 @@ under Codex review). This branch contains the same mobile/API files.
 
 | # | Public wording | Evidence | Status | Condition |
 |---|---|---|---|---|
-| E1 | "Report or block them from a chat or their profile" | Chat: `ChatScreen.tsx:165-174` (Report, Block); profile: `PartnerDetailScreen.tsx:228-230` (Report), `:121` block | IMPLEMENTED | C1 (block on partner detail is R4 → C2) |
-| E2 | "Once blocked, neither of you can message, propose a session or show interest" | `docs/run-golf-v2/CONTRACTS.md` §8 (`:397-450`), `apps/api/app/services/safety.py:56` `is_contact_restricted`; evidence `docs/run-golf-v2/r1-r7-evidence/api-probe-adapted.json` on the R1–R7 branch | PENDING (R1) | C2 — Codex accepts R1 |
+| E1 | "Report or block them from a chat or their profile" | Chat: `ChatScreen.tsx:165-174` (Report, Block); profile: `PartnerDetailScreen.tsx:228-230` (Report), `:121` block | IMPLEMENTED | C1 (block on partner detail is R4 → C2; its follow-ups Q05/Q06 PASS at `ce62aac`, code verdict NEEDS_FIXES). At the largest text size the chat header's More options button is partly off-screen (release-candidate native evidence) — not changed |
+| E2 | "Once blocked, neither of you can message, propose a session or show interest" | `docs/run-golf-v2/CONTRACTS.md` §8, `apps/api/app/services/safety.py` `is_contact_restricted` / `lock_contact`; R1's follow-ups Q01–Q03 PASS at `ce62aac` (one API process); MA-B/MA-C (bounds, notification ownership) implemented in the release candidate, not yet reviewed | PENDING (R1) | C2 — an independent review accepts the release candidate's code, and the deployment serves WebSockets from one API process |
 | E3 | "…and you won't see each other in Explore" | `discovery.py:182-184` bidirectional block exclusion (pre-existing) | IMPLEMENTED | C1 |
 | E4 | "A 1:1 session only counts as confirmed when the other person confirms it" | `usePlans.ts:18` ("nothing is labelled confirmed" while proposed), `:73-85` | IMPLEMENTED | C1 |
 | E5 | "You can delete your account from your profile" | `ProfileScreen.tsx:80,265-267` "Delete my account" (also in v1) | IMPLEMENTED (and live in v1) | C3 |
 | E6 | "Is this a dating app? No." | Product direction (`CLAUDE.md`); no dating features in source | NEGATIVE | C3 |
-| E7 | Metadata: "Fixes for time display and the time picker" | R6 / R5 repairs at `ecd1e86` (`docs/run-golf-v2/R1_R7_IMPLEMENTATION_REPORT.md` on the R1–R7 branch) | PENDING (R5, R6) | C2 — Codex accepts R5 and R6; R6 also needs the production timestamp check (RELEASE_HANDOFF §4) |
+| E7 | Metadata: "Fixes for time display and the time picker" | R5 picker: Q09 PASS at `ce62aac`; R6 time display: gate OPEN, production provenance NOT_RUN (`docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md`) | PENDING (R5, R6) | C2 — an independent review accepts the code, and R6's production timestamp check is done by the authorised operator (RELEASE_HANDOFF §4) |
 
 ## F. Removed from the site (REMOVED)
 
