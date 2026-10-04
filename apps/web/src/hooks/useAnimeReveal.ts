@@ -14,7 +14,10 @@ type RevealOptions = {
   /** CSS selector for child elements that should reveal individually.
    *  When omitted, the container itself is revealed. */
   childSelector?: string;
-  /** IntersectionObserver threshold — default 0.18 */
+  /** IntersectionObserver threshold — default 0. The observer also trims the
+   *  bottom 12% of the viewport, so a reveal starts once the container's top
+   *  is a little way into view. A non-zero threshold must stay reachable for
+   *  a container taller than the viewport (ratio ≤ viewport / height). */
   threshold?: number;
 };
 
@@ -28,6 +31,8 @@ type RevealOptions = {
  *    requested stagger
  *  - if the user prefers reduced motion, instantly mark targets visible
  *    without ever calling anime.js
+ *  - if an animation has not finished when it should have, snap targets
+ *    visible (content never stays hidden because an animation failed)
  *
  * Animations only target `opacity` and `transform`, so they never trigger
  * layout. Each target is animated exactly once.
@@ -72,9 +77,14 @@ export function useAnimeReveal<T extends HTMLElement = HTMLElement>(
 
     let played = false;
     let instance: anime.AnimeInstance | null = null;
+    let safety: number | undefined;
     const play = () => {
       if (played) return;
       played = true;
+      // If the animation never completes (throttled tab, anime.js failure),
+      // show the content anyway once it should have finished.
+      const total = (opts.delay ?? 0) + (opts.duration ?? 700) + (opts.stagger ?? 90) * targets.length;
+      safety = window.setTimeout(snapVisible, total + 800);
       try {
         instance = anime({
           targets,
@@ -98,6 +108,7 @@ export function useAnimeReveal<T extends HTMLElement = HTMLElement>(
       // No IntersectionObserver support — fall back to immediate play.
       play();
       return () => {
+        window.clearTimeout(safety);
         if (instance) instance.pause();
         anime.remove(targets);
       };
@@ -113,12 +124,13 @@ export function useAnimeReveal<T extends HTMLElement = HTMLElement>(
           }
         }
       },
-      { threshold: opts.threshold ?? 0.18 }
+      { threshold: opts.threshold ?? 0, rootMargin: '0px 0px -12% 0px' }
     );
     observer.observe(container);
 
     return () => {
       observer.disconnect();
+      window.clearTimeout(safety);
       if (instance) instance.pause();
       anime.remove(targets);
     };

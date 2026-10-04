@@ -1,0 +1,55 @@
+External link check — 2026-10-03T17:41:37Z (UTC), from this machine with curl (public GET requests, no credentials, no App Store Connect).
+
+https://apps.apple.com/au/app/sportsgang/id6767027447
+  status, final URL: 200 https://apps.apple.com/au/app/sportsgang/id6767027447 redirects=0
+  title: ‎SportsGang App - App Store
+  page contains "id6767027447": True | contains "SportsGang": True
+https://sportgang.netlify.app/privacy/
+  status, final URL: 200 https://sportgang.netlify.app/privacy/ redirects=0
+  title: Privacy Policy — SportGang
+  "Last updated" text: Last updated May 2026 On this page In
+  email addresses on page: none
+  mentions "SportGang": … Privacy Policy — SportGang S G Sport Gang Home Privacy Terms Support Legal · Privacy Pr…
+  mentions "gym": …ms Support Contact Send us a message Sports today Gym Golf Tennis Running © 2026 SportGang Sydney, Australia v1 · pre-la…
+  mentions "tennis": …t Contact Send us a message Sports today Gym Golf Tennis Running © 2026 SportGang Sydney, Australia v1 · pre-launch …
+https://sportgang.netlify.app/terms/
+  status, final URL: 200 https://sportgang.netlify.app/terms/ redirects=0
+  title: Terms of Service — SportGang
+  "Last updated" text: Last updated May 2026 On this page In
+  email addresses on page: none
+  mentions "SportGang": … Terms of Service — SportGang S G Sport Gang Home Privacy Terms Support Legal · Terms Term…
+  mentions "gym": …tion with a matched player. We are not a venue, a gym, a tour operator, a booking platform for third-party courts, or a …
+  mentions "tennis": …t Contact Send us a message Sports today Gym Golf Tennis Running © 2026 SportGang Sydney, Australia v1 · pre-launch …
+https://sportgang.netlify.app/support/
+  status, final URL: 200 https://sportgang.netlify.app/support/ redirects=0
+  title: Support — SportGang
+  "Last updated" text: not found
+  email addresses on page: none
+  mentions "SportGang": … Support — SportGang S G Sport Gang Home Privacy Terms Support Help · Support Sup…
+  mentions "gym": …e recommend: Meet in public. Pick a public court, gym, or running route — not a private address — until you've met befor…
+  mentions "tennis": …s the app support today? v1 supports gym , golf , tennis , and running . More sports may be added based on community dem…
+  mentions "v1 supports": …s. 07 FAQ What sports does the app support today? v1 supports gym , golf , tennis , and running . More sports may be add…
+https://sportgang.netlify.app/
+  status, final URL: 200 https://sportgang.netlify.app/ redirects=0
+  title: SportGang — Find your next game.
+  "Last updated" text: not found
+  email addresses on page: none
+  mentions "SportGang": … SportGang — Find your next game. S G Sport Gang Home Privacy Terms Sup…
+  mentions "gym": …me, not the profile. Coming soon on the App Store Gym Golf Tennis Running 9:41 ●●● Find players Badminton Tennis Running…
+  mentions "tennis": …he profile. Coming soon on the App Store Gym Golf Tennis Running 9:41 ●●● Find players Badminton Tennis Running JL Jorda…
+  mentions "Android": …ne place. Coming soon on the App Store iOS first. Android to follow. S G Sport Gang Built around the game, not the profi…
+  mentions "Coming soon": …ne place. Built around the game, not the profile. Coming soon on the App Store Gym Golf Tennis Running 9:41 ●●● Find pla…
+
+iTunes lookup https://itunes.apple.com/lookup?id=6767027447&country=au :
+  trackName: SportsGang
+  bundleId: com.edh1223.protin
+  version: 1.0
+  releaseDate: 2026-05-14T07:00:00Z
+  currentVersionReleaseDate: 2026-05-15T03:58:02Z
+  price: 0.0
+  primaryGenreName: Health & Fitness
+  sellerUrl: https://sportgang.netlify.app/
+  userRatingCount: 0
+  minimumOsVersion: 15.1
+  supportedDevices: iPhone, iPad and iPod touch models (iPhone app; list omitted)
+  sellerName: present (an individual developer account; not reproduced here)

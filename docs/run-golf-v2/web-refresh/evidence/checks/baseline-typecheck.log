@@ -1,0 +1,107 @@
+# Baseline before any change (apps/web at 0030072). Exit code recorded at the time: 2. 19 TS2786 errors, all from lucide-react icons typed against the root React 19 @types/react.
+
+> @protin/web@0.1.0 typecheck
+> tsc --noEmit
+
+src/components/home/ActivityCards.tsx(107,22): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/FinalCTA.tsx(23,14): error TS2786: 'Zap' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/GroupEvents.tsx(89,20): error TS2786: 'Users' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/GroupEvents.tsx(98,20): error TS2786: 'Users' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/GroupEvents.tsx(125,22): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/GroupEvents.tsx(140,12): error TS2786: 'Users' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/HeroSection.tsx(240,16): error TS2786: 'ChevronDown' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/HowItWorks.tsx(80,22): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/RankSystem.tsx(169,14): error TS2786: 'Award' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/RankSystem.tsx(192,20): error TS2786: 'Award' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/RankSystem.tsx(214,20): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/RankSystem.tsx(229,14): error TS2786: 'TrendingUp' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/RankSystem.tsx(239,14): error TS2786: 'Sparkles' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/SafetySection.tsx(58,14): error TS2786: 'ShieldCheck' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/SafetySection.tsx(85,20): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/home/WaitlistForm.tsx(190,14): error TS2786: 'ArrowRight' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/components/Modal.tsx(93,14): error TS2786: 'X' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/content/legal.tsx(12,8): error TS2786: 'AlertTriangle' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+src/content/legal.tsx(105,10): error TS2786: 'Mail' cannot be used as a JSX component.
+  Its type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not a valid JSX element type.
+    Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'import("<worktree>/node_modules/@types/react/index").ReactNode' is not assignable to type 'React.ReactNode'.
+        Type 'bigint' is not assignable to type 'ReactNode'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path <worktree>/apps/web
+npm error workspace @protin/web@0.1.0
+npm error location <worktree>/apps/web
+npm error command failed
+npm error command sh -c tsc --noEmit
