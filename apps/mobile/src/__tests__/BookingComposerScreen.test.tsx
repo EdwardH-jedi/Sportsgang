@@ -10,7 +10,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
+import { render, fireEvent, waitFor, act, within } from '@testing-library/react-native';
 
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
 import {
@@ -374,6 +375,29 @@ describe('BookingComposerScreen', () => {
         endsAt: sydneyUtc(defaultSydneyDate(), '23:45'),
       })
     );
+  });
+
+  it('picker header can wrap and keeps Done whole with a full touch target (review Q09)', () => {
+    // A style contract only: the layout at the largest text sizes is proven
+    // natively (docs/run-golf-v2/morning-fixes, Q09 evidence), not here.
+    const { getByLabelText, getByText } = renderComposer();
+    fireEvent.press(getByLabelText('Choose start time'));
+
+    const close = getByLabelText('Close start time picker');
+    const closeStyle = StyleSheet.flatten(close.props.style);
+    expect(closeStyle).toMatchObject({ minHeight: 44, minWidth: 44, marginLeft: 'auto' });
+
+    const done = getByText('Done');
+    expect(done.props.numberOfLines).toBeUndefined(); // never truncated
+    expect(done.props.maxFontSizeMultiplier).toBeUndefined(); // still scales
+
+    // The picker's header row is the nearest row-direction ancestor of Done.
+    let header = close.parent;
+    while (header && StyleSheet.flatten(header.props.style)?.flexDirection !== 'row') header = header.parent;
+    expect(header).toBeTruthy();
+    expect(StyleSheet.flatten(header!.props.style)).toMatchObject({ flexDirection: 'row', flexWrap: 'wrap' });
+    const title = within(header!).getByText('Start time');
+    expect(StyleSheet.flatten(title.props.style)).toMatchObject({ flexShrink: 1 });
   });
 
   it('selecting an end time before start time disables Send and shows a friendly inline error', () => {

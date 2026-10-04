@@ -608,13 +608,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopLeftRadius: radii.lg,
     borderTopRightRadius: radii.lg,
-    maxHeight: '70%',
+    // Content-sized; the cap only matters at the largest text sizes, where
+    // the wrapped header and the hint need the room (review Q09).
+    maxHeight: '90%',
     paddingTop: spacing.md,
   },
+  // Wraps instead of overflowing: at the largest accessibility text sizes the
+  // title takes the first line and Done moves to its own line, right-aligned,
+  // with its whole label and target on screen (review Q09). Text still scales.
   modalHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
@@ -623,8 +631,14 @@ const styles = StyleSheet.create({
   modalTitle: {
     ...typography.h3,
     color: colors.textPrimary,
+    flexShrink: 1,
   },
   modalClose: {
+    marginLeft: 'auto',
+    minHeight: 44,
+    minWidth: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
@@ -640,5 +654,7 @@ const styles = StyleSheet.create({
     ...typography.bodySmall,
     color: colors.textTertiary,
     marginTop: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    textAlign: 'center',
   },
 });

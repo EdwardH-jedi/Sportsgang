@@ -1,0 +1,10 @@
+{
+  "http_status": 200,
+  "booking": {
+    "id": "b05aab5f-a3fe-4719-a6c0-74156fcd3d05",
+    "status": "proposed",
+    "starts_at": "2026-10-05T00:30:00Z",
+    "ends_at": "2026-10-05T01:30:00Z",
+    "sport": "running"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "device": "SportsGang Morning Q01-Q09 (new iPhone 16e simulator, iOS 26.3, 390x844 pt), Expo Go 54.0.7",
+  "first_max_text_attempt_before_sheet_fix": {
+    "content_size": "accessibility-extra-extra-extra-large",
+    "frames": {
+      "Start time": {
+        "width": 293,
+        "x": 24,
+        "y": 269.3333282470703,
+        "height": 93
+      },
+      "Close start time picker": {
+        "width": 151,
+        "x": 215,
+        "y": 366.3333282470703,
+        "height": 79.66665649414062
+      },
+      "15-minute increments": {
+        "x": 0,
+        "y": 747,
+        "height": 128.6666259765625,
+        "width": 390
+      }
+    },
+    "note": "header fixed (Done fits); footer hint ended at y=875.7 > 844, which led to the sheet/hint change"
+  },
+  "final_max_text_start": {
+    "content_size": "accessibility-extra-extra-extra-large",
+    "frames": {
+      "Start time": {
+        "y": 213.6666717529297,
+        "width": 293,
+        "x": 24,
+        "height": 93
+      },
+      "Close start time picker": {
+        "width": 151,
+        "y": 310.6666717529297,
+        "x": 215,
+        "height": 79.66668701171875,
+        "right_edge": 366,
+        "fits_390": true,
+        "min_44": true
+      },
+      "15-minute increments": {
+        "width": 390,
+        "height": 128.66668701171875,
+        "y": 691.3333435058594,
+        "x": 0
+      }
+    }
+  },
+  "final_max_text_end": {
+    "content_size": "accessibility-extra-extra-extra-large",
+    "frames": {
+      "End time": {
+        "height": 93,
+        "y": 213.6666717529297,
+        "width": 261,
+        "x": 24
+      },
+      "Close end time picker": {
+        "height": 79.66668701171875,
+        "y": 310.6666717529297,
+        "width": 151,
+        "x": 215,
+        "right_edge": 366,
+        "fits_390": true,
+        "min_44": true
+      }
+    }
+  },
+  "final_default_start": {
+    "content_size": "large (default)",
+    "frames": {
+      "Close start time picker": {
+        "height": 44,
+        "x": 310.6666564941406,
+        "y": 457,
+        "width": 55.333343505859375,
+        "right_edge": 366.0,
+        "fits_390": true,
+        "min_44": true
+      },
+      "Start time": {
+        "height": 26,
+        "x": 24,
+        "y": 466,
+        "width": 85.66666412353516
+      },
+      "15-minute increments": {
+        "x": 104.66666412353516,
+        "y": 802,
+        "width": 180.33334350585938,
+        "height": 18
+      }
+    }
+  },
+  "review_reference": {
+    "defect_max_text_close_frame": {
+      "x": 317,
+      "width": 151,
+      "right_edge": 468
+    },
+    "default_close_frame": {
+      "x": 310.67,
+      "width": 55.33
+    }
+  }
+}
