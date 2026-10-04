@@ -478,6 +478,9 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 22,
+    // Explicit, so the arrow's box scales with its capped size: without it,
+    // the box kept the uncapped line height (79x102 pt at the largest size).
+    lineHeight: 26,
     color: colors.textPrimary,
   },
   headerCenter: {
@@ -596,6 +599,9 @@ const styles = StyleSheet.create({
     // (LoginScreen, RegisterScreen, AuthEntry, CreateBattle, BattleDetail).
     borderRadius: radii.pill,
     paddingVertical: spacing.md,
+    // Keeps a wrapped label clear of the pill's rounded ends at the largest
+    // text sizes; at default size the label is short and centred anyway.
+    paddingHorizontal: spacing.xl,
     alignItems: 'center',
     marginTop: spacing.sm,
   },
@@ -605,6 +611,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     ...typography.button,
     color: colors.textInverse,
+    textAlign: 'center',
   },
   pressed: { opacity: 0.65 },
 

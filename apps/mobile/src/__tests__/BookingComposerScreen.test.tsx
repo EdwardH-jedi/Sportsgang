@@ -267,7 +267,7 @@ describe('BookingComposerScreen', () => {
     expect(getByText('Propose a session')).toBeTruthy();
   });
 
-  it('caps the header title and Back arrow at the app screen-title scale (release candidate)', () => {
+  it('caps the header title and Back arrow, and pads the Send label, for large text (release candidate)', () => {
     // A style contract only: the layout at the largest text sizes is proven
     // natively (docs/run-golf-v2/release-candidate/evidence/native), not here.
     const { getByText, getByLabelText } = renderComposer();
@@ -276,7 +276,11 @@ describe('BookingComposerScreen', () => {
     expect(title.props.maxFontSizeMultiplier).toBe(1.4);
     expect(StyleSheet.flatten(title.props.style)).toMatchObject({ textAlign: 'center' });
     expect(getByText('←').props.maxFontSizeMultiplier).toBe(1.4);
+    expect(StyleSheet.flatten(getByText('←').props.style)).toMatchObject({ lineHeight: 26 });
     expect(getByLabelText('Back').props.hitSlop).toBe(8);
+    // A wrapped Send label stays clear of the pill's rounded ends.
+    expect(StyleSheet.flatten(getByLabelText('Send proposal').props.style)).toMatchObject({ paddingHorizontal: 32 });
+    expect(StyleSheet.flatten(getByText('Send proposal').props.style)).toMatchObject({ textAlign: 'center' });
   });
 
   it('renders date + start + end as tappable selectors with friendly defaults', () => {
