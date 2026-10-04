@@ -85,10 +85,11 @@ async def send_message(
 # ─── Realtime delivery ───────────────────────────────────────────────────────
 
 
-# Upper bound for one frame to one socket. Delivery holds the pair's contact
-# lock while it sends (CONTRACTS.md §8), so a slow client must not hold it
-# open: a socket that can't take the frame in time is dropped.
-WS_SEND_TIMEOUT_SECONDS = 5.0
+# Delivery holds the pair's contact lock while it sends (CONTRACTS.md §8), so
+# these bound how long a slow client can make a block wait, whatever the
+# number of sockets in the room (review MA-B):
+WS_SEND_TIMEOUT_SECONDS = 5.0  # one deadline for the whole room's concurrent sends
+WS_CLOSE_TIMEOUT_SECONDS = 1.0  # each close attempt, all attempts concurrent
 
 
 class ConnectionManager:
@@ -96,6 +97,7 @@ class ConnectionManager:
 
     def __init__(self) -> None:
         self._rooms: dict[str, list[WebSocket]] = {}
+        self._closing: set[asyncio.Task] = set()  # close attempts still running
 
     async def connect(self, room: str, ws: WebSocket) -> None:
         """Register an accepted socket; the caller holds the pair's contact lock."""
@@ -107,22 +109,53 @@ class ConnectionManager:
             conns.remove(ws)
 
     async def broadcast(self, room: str, data: dict) -> None:
-        for ws in list(self._rooms.get(room, [])):
-            try:
-                await asyncio.wait_for(ws.send_json(data), timeout=WS_SEND_TIMEOUT_SECONDS)
-            except Exception:
-                self.disconnect(room, ws)
-                try:
-                    await asyncio.wait_for(ws.close(code=WS_CLOSE_UNAVAILABLE), timeout=1.0)
-                except Exception:
-                    pass
+        """Send one frame to every socket in the room, all within one deadline.
+
+        Sends still running at the deadline, or when this call is cancelled,
+        are cancelled and awaited before it returns, so none continues after
+        the caller releases the contact lock. Sockets whose send failed or did
+        not finish are dropped from the room and closed in the background.
+        """
+        sends = {asyncio.create_task(ws.send_json(data)): ws for ws in self._rooms.get(room, [])}
+        if not sends:
+            return
+        try:
+            await asyncio.wait(sends, timeout=WS_SEND_TIMEOUT_SECONDS)
+        finally:
+            for task in sends:
+                task.cancel()
+            await asyncio.wait(sends)
+            for task, ws in sends.items():
+                if task.cancelled() or task.exception() is not None:
+                    self.disconnect(room, ws)
+                    self._close(ws, WS_CLOSE_UNAVAILABLE)
 
     async def close_room(self, room: str, code: int) -> None:
-        for ws in self._rooms.pop(room, []):
-            try:
-                await ws.close(code=code)
-            except Exception:
-                pass
+        await self.close_rooms([room], code)
+
+    async def close_rooms(self, rooms: list[str], code: int) -> None:
+        """Unregister every socket in `rooms` and wait for their close attempts.
+
+        All attempts start before this first suspends and run concurrently,
+        each bounded by WS_CLOSE_TIMEOUT_SECONDS. A hung or failing close, or
+        cancelling this call, cannot stop the attempts on the other sockets.
+        """
+        closing = [self._close(ws, code) for room in rooms for ws in self._rooms.pop(room, [])]
+        if closing:
+            await asyncio.wait(closing)
+
+    def _close(self, ws: WebSocket, code: int) -> asyncio.Task:
+        task = asyncio.create_task(self._close_one(ws, code))
+        self._closing.add(task)
+        task.add_done_callback(self._closing.discard)
+        return task
+
+    @staticmethod
+    async def _close_one(ws: WebSocket, code: int) -> None:
+        try:
+            await asyncio.wait_for(ws.close(code=code), timeout=WS_CLOSE_TIMEOUT_SECONDS)
+        except Exception:
+            pass  # already gone, or can't take the close frame: it is unregistered either way
 
 
 connections = ConnectionManager()
@@ -173,5 +206,5 @@ async def close_pair_rooms(db: AsyncSession, a: UUID, b: UUID) -> None:
             and_(Match.user1_id == b, Match.user2_id == a),
         )
     )
-    for (match_id,) in (await db.execute(stmt)).all():
-        await connections.close_room(str(match_id), WS_CLOSE_FORBIDDEN)
+    rooms = [str(match_id) for (match_id,) in (await db.execute(stmt)).all()]
+    await connections.close_rooms(rooms, WS_CLOSE_FORBIDDEN)

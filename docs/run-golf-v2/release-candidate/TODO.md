@@ -23,7 +23,7 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (reason) · BLOCKED.
 | ID | Item | Status |
 |---|---|---|
 | MA-C | Atomic per-event notification ownership; two processors and worker/internal overlap invoke the provider once; fresh state; claim/lock order documented; provider-success/DB-failure ambiguity documented | DONE — committed claim (`delivery_unconfirmed`), `test_notification_ownership.py` 11/11; baseline 8b34bca 9 fail / 2 controls pass |
-| MA-B | Room-wide broadcast deadline independent of socket count; cancel+await sends before authority release; every closure attempted under a bound despite failure/hang/cancellation | TODO |
+| MA-B | Room-wide broadcast deadline independent of socket count; cancel+await sends before authority release; every closure attempted under a bound despite failure/hang/cancellation | DONE — 5 s room deadline, 1 s concurrent closes owned by the manager; `test_socket_deadline.py` 7/7; baseline 8b34bca 5 fail / 2 controls pass |
 | MA-A | One database clock for first join/leave/rejoin, read after the event row lock; ±120 s host skew; real lock-wait ordering; row reuse/capacity preserved | TODO |
 | W1-DOC | CONTRACTS §8 (and event timestamps) updated by one owner | TODO |
 
