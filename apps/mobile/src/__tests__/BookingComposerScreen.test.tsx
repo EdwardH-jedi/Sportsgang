@@ -267,6 +267,18 @@ describe('BookingComposerScreen', () => {
     expect(getByText('Propose a session')).toBeTruthy();
   });
 
+  it('caps the header title and Back arrow at the app screen-title scale (release candidate)', () => {
+    // A style contract only: the layout at the largest text sizes is proven
+    // natively (docs/run-golf-v2/release-candidate/evidence/native), not here.
+    const { getByText, getByLabelText } = renderComposer();
+    const title = getByText('Propose a session');
+    expect(title.props.accessibilityRole).toBe('header');
+    expect(title.props.maxFontSizeMultiplier).toBe(1.4);
+    expect(StyleSheet.flatten(title.props.style)).toMatchObject({ textAlign: 'center' });
+    expect(getByText('←').props.maxFontSizeMultiplier).toBe(1.4);
+    expect(getByLabelText('Back').props.hitSlop).toBe(8);
+  });
+
   it('renders date + start + end as tappable selectors with friendly defaults', () => {
     const { getByLabelText, getByText } = renderComposer();
     expect(getByLabelText('Choose date')).toBeTruthy();

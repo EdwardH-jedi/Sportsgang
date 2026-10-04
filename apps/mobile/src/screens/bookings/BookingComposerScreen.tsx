@@ -132,18 +132,27 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Header */}
+        {/* Header. Title and arrow scale with Dynamic Type up to the cap the
+            app's other screen titles use (ScreenHeader), so at the largest
+            sizes the title wraps between words instead of mid-word and the
+            form stays in view; hitSlop gives Back a 44-pt target without
+            changing its look. */}
         <View style={styles.header}>
           <Pressable
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
             onPress={() => navigation.goBack()}
             accessibilityRole="button"
             accessibilityLabel="Back"
+            hitSlop={spacing.sm}
           >
-            <Text style={styles.backText}>{'←'}</Text>
+            <Text style={styles.backText} maxFontSizeMultiplier={1.4}>
+              {'←'}
+            </Text>
           </Pressable>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Propose a session</Text>
+            <Text style={styles.headerTitle} accessibilityRole="header" maxFontSizeMultiplier={1.4}>
+              Propose a session
+            </Text>
           </View>
           <View style={styles.headerSpacer} />
         </View>
@@ -478,6 +487,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     ...typography.h3,
     color: colors.textPrimary,
+    textAlign: 'center', // when it wraps at large text sizes
   },
   headerSpacer: { width: 32 },
   form: {
