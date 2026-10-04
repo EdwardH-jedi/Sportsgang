@@ -81,7 +81,13 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <nav id="mobile-nav" aria-label="Primary" className="border-t border-white/10 px-4 pb-5 pt-2 md:hidden">
+        // Scrolls inside the sticky header when taller than the viewport
+        // (high browser zoom), so every item stays reachable.
+        <nav
+          id="mobile-nav"
+          aria-label="Primary"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-white/10 px-4 pb-5 pt-2 md:hidden"
+        >
           <ul className="grid gap-1">
             {NAV.map((item) => (
               <li key={item.href}>
