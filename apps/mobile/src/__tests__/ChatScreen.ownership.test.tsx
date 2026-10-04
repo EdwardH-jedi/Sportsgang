@@ -565,6 +565,27 @@ it('a socket closed with 4003 shows the restriction and a late history response 
   expect(u.getByLabelText('More options')).toBeTruthy(); // reporting stays available
 });
 
+it('a proposal refresh in flight when the restriction arrives cannot bring a card back', async () => {
+  let bookingCalls = 0;
+  const heldRefresh = deferred<unknown>();
+  routeGets({
+    '/bookings?match_id=match-A': () => (++bookingCalls === 1 ? Promise.resolve(list([])) : heldRefresh.promise),
+  });
+  const u = render(screen(routes.A));
+  await settle();
+  refocus(); // a proposals refresh starts and is held
+  act(() => {
+    sockets[0].onclose?.({ code: 4003 });
+  });
+  await u.findByText(CONTACT_UNAVAILABLE);
+  await act(async () => {
+    heldRefresh.resolve(list([proposal()]));
+  });
+  await settle();
+  expect(u.queryByText('Session proposal')).toBeNull();
+  expect(u.getByText(CONTACT_UNAVAILABLE)).toBeTruthy();
+});
+
 it('a 403 restriction on send shows the restriction instead of a retryable draft', async () => {
   routeGets({ '/matches/match-A/messages': () => Promise.resolve(list([msg('match-A', 'a1', 'Earlier')])) });
   mockApiPost.mockRejectedValue(new Error(CONTACT_UNAVAILABLE));
