@@ -54,7 +54,7 @@
         "severity": "P2",
         "change": "committed per-event claim (failed_reason='delivery_unconfirmed') before the provider call; pair lock then event row; at-most-once — failures before the call return the event to pending, ambiguous outcomes after it are not resent",
         "tests": "tests_integration/test_notification_ownership.py (11)",
-        "baseline_8b34bca": "9 failed, 2 controls passed",
+        "baseline_8b34bca": "9 failed (7 duplicate invocations, 1 pair lock held after an exception, 1 label-only: provider-timeout not resent but marked delivery_failed), 2 controls passed",
         "review_note": "reviewer's two-worker after-lock and all-commits-fail probes adapted; 'permits pending retry' holds only before the provider call"
       },
       {

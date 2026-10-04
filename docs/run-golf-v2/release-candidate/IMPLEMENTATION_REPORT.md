@@ -73,9 +73,13 @@ The cases:
 - provider success followed by a failed commit;
 - no-token retry.
 
-**Against `8b34bca`: 9 fail and 2 controls pass.** The failures are duplicate
-invocations, plus the base holding the pair lock after an exception until session
-close.
+**Against `8b34bca`: 9 fail and 2 controls pass.**
+- **7 are duplicate provider invocations:** two workers ×2, endpoint/worker overlap
+  ×2, stale due list, cancel during the call, commit failure.
+- **1 is the base holding the pair lock after an exception** until the session
+  closes.
+- **1 is only a label:** in `[provider-timeout]` the base does not resend either; it
+  fails because the base marks the row `delivery_failed` and has no `UNCONFIRMED`.
 
 Changed reviewer interleavings (also in the handoff):
 - The review's two-worker probe paused both workers at the token lookup. That

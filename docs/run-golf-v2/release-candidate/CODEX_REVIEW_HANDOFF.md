@@ -91,7 +91,7 @@ cd apps/api && uv run --frozen alembic upgrade head
 | Full integration on a **fresh** UTC database (flush Redis first) | 64 passed, 0 skipped |
 | Same on a fresh database with `ALTER DATABASE … SET timezone TO 'Australia/Sydney'` | 64 passed, 0 skipped |
 | `uv run --frozen pytest -q tests`; `ruff check .`; `ruff format --check .` | 773 passed; clean |
-| Baseline: a detached worktree at `8b34bca`; copy the three new test files and `tests_integration/notification_worker_barrier.py`; for `test_socket_deadline.py` define `WS_CLOSE_TIMEOUT_SECONDS = 1.0` locally and read `_closing` with `getattr(…, ())` | ownership 9 failed / 2 passed; deadline 5 failed / 2 passed; clock 2 failed / 2 passed |
+| Baseline: a detached worktree at `8b34bca`; copy the three new test files and `tests_integration/notification_worker_barrier.py`; for `test_socket_deadline.py` define `WS_CLOSE_TIMEOUT_SECONDS = 1.0` locally and read `_closing` with `getattr(…, ())` | ownership 9 failed / 2 passed (7 duplicate invocations, 1 pair lock held after an exception, 1 label-only: `[provider-timeout]` — the base does not resend but marks `delivery_failed`); deadline 5 failed / 2 passed; clock 2 failed / 2 passed |
 | Mutation: replace `func.clock_timestamp()` with `func.now()` in `events._membership_time` | the two lock-wait cases fail |
 | `REVIEW_EVIDENCE=<dir> .venv/bin/python ../../docs/run-golf-v2/morning-fixes/evidence/probe_r1_adapted.py` | 94 PASS |
 | Root: `npm run test:ci -w @protin/mobile -- --runInBand --watchman=false` (also with `TZ=UTC`) | 64 suites, 968 passed |
