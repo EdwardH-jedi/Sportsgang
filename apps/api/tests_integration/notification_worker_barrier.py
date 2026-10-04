@@ -1,15 +1,17 @@
-"""Separate notification process for test_contact_authority.py (not a test module).
+"""Separate notification process for the integration tests (not a test module).
 
 Runs `process_pending_notifications` in its own process and database pool,
 like `worker.py`, with one barrier for one recipient, then reports each
-provider invocation on stdout. A recording provider stands in for Expo; no
+provider invocation on stdout (`OTHER_INVOCATION` for other bookings). A recording provider stands in for Expo; no
 network call is made.
 
-    python tests_integration/notification_worker_barrier.py <before-lock|after-lock> <recipient_id> <booking_id>
+    python tests_integration/notification_worker_barrier.py <mode> <recipient_id> <booking_id> [event_id]
 
-`before-lock` pauses before the proposal's pair lock is taken; `after-lock`
-pauses at the token lookup, which runs under the lock. The process prints
-`BARRIER` when paused and continues after a line on stdin.
+`before-dispatch` pauses before event `event_id` is claimed (and prints
+`OUTCOME <outcome>` for it); `before-lock` pauses before the recipient's
+proposal takes its pair lock; `after-lock` pauses at the recipient's token
+lookup, which runs under the lock. The process prints `BARRIER` when paused
+and continues after a line on stdin.
 """
 
 from __future__ import annotations
@@ -31,12 +33,21 @@ async def _pause() -> None:
     await asyncio.to_thread(sys.stdin.readline)
 
 
-async def main(mode: str, recipient_id: str, booking_id: str) -> None:
+async def main(mode: str, recipient_id: str, booking_id: str, event_id: str = "") -> None:
+    original_dispatch = notifications._dispatch
     original_lock = safety.lock_contact
     original_token = notifications._get_latest_push_token
 
+    async def dispatch(db, event, now):
+        if mode != "before-dispatch" or str(getattr(event, "id", event)) != event_id:
+            return await original_dispatch(db, event, now)
+        await _pause()
+        outcome = await original_dispatch(db, event, now)
+        print(f"OUTCOME {outcome}", flush=True)
+        return outcome
+
     async def lock(db, a, b):
-        if mode == "before-lock":
+        if mode == "before-lock" and recipient_id in {str(a), str(b)}:
             await _pause()
         return await original_lock(db, a, b)
 
@@ -48,9 +59,12 @@ async def main(mode: str, recipient_id: str, booking_id: str) -> None:
     async def provider(token_value, title, body, data):
         if data["bookingId"] == booking_id:
             print(f"PROVIDER_INVOCATION {data['type']}", flush=True)
+        else:
+            print(f"OTHER_INVOCATION {data['type']} {data['bookingId']}", flush=True)
         return True
 
     with (
+        patch.object(notifications, "_dispatch", dispatch),
         patch.object(safety, "lock_contact", lock),
         patch.object(notifications, "_get_latest_push_token", token),
         patch.object(notifications, "_send_expo_push", provider),
@@ -62,4 +76,4 @@ async def main(mode: str, recipient_id: str, booking_id: str) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main(*sys.argv[1:4]))
+    asyncio.run(main(*sys.argv[1:5]))

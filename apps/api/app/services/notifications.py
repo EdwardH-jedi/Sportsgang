@@ -14,11 +14,12 @@ Production notes:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 import httpx
-from sqlalchemy import and_, select, text
+from sqlalchemy import and_, select, text, update
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -182,51 +183,126 @@ def _is_lock_timeout(exc: DBAPIError) -> bool:
     return "55P03" in codes  # lock_not_available
 
 
-async def _dispatch(db: AsyncSession, event: NotificationEvent, now: datetime) -> str:
-    """Try one due event; returns "sent", "failed" or "pending". The caller commits."""
-    # A proposal notice is not pushed once the pair is restricted (the
-    # proposal itself stays readable in My Plans). Status notices about an
-    # existing booking — confirmed, declined, cancelled, reminder — still go.
-    if event.notification_type == "proposal_received" and event.booking_id is not None:
-        booking = (await db.execute(select(Booking).where(Booking.id == event.booking_id))).scalar_one_or_none()
-        if booking is not None:
-            if db.get_bind().dialect.name == "postgresql":
-                await db.execute(text("SELECT set_config('lock_timeout', :t, true)"), {"t": CONTACT_LOCK_TIMEOUT})
-            if not await safety.lock_contact(db, booking.proposer_id, booking.partner_id):
-                event.failed_reason = "contact_restricted"
+# Event states (review MA-C). `failed_reason` doubles as the ownership marker,
+# so no column is added:
+#   pending      sent_at NULL, failed_reason NULL — due events are picked from these
+#   unconfirmed  failed_reason = UNCONFIRMED — owned by one dispatch, committed
+#                before the provider is called
+#   then         sent (sent_at set, failed_reason NULL) | contact_restricted |
+#                delivery_failed | no_push_token_after_48h | pending again (no
+#                token yet, or the dispatch stopped before the provider call)
+# A dispatch interrupted once the provider call has started — timeout,
+# cancellation, a crash, or a failed commit after the provider accepted —
+# stays unconfirmed. It is not retried, because the provider may already have
+# delivered it; an operator can requeue it by clearing failed_reason.
+UNCONFIRMED = "delivery_unconfirmed"
+
+
+def _pending(event_id: UUID):
+    return and_(
+        NotificationEvent.id == event_id,
+        NotificationEvent.sent_at.is_(None),
+        NotificationEvent.failed_reason.is_(None),
+    )
+
+
+async def _claim(db: AsyncSession, event_id: UUID) -> bool:
+    """Own one still-pending event: mark it unconfirmed and commit (review MA-C).
+
+    The conditional UPDATE is evaluated on the current row, so of two
+    processors (worker, internal endpoint) only one claims it; the other waits
+    for that commit, re-reads the row and gets nothing. An owned event drops
+    out of every processor's due query.
+    """
+    stmt = (
+        update(NotificationEvent)
+        .where(_pending(event_id))
+        .values(failed_reason=UNCONFIRMED)
+        .execution_options(synchronize_session=False)
+    )
+    claimed = (await db.execute(stmt)).rowcount == 1
+    await db.commit()
+    return claimed
+
+
+async def _settle(db: AsyncSession, event_id: UUID, **values) -> None:
+    """Move an owned event to its next state; the caller commits."""
+    stmt = (
+        update(NotificationEvent)
+        .where(NotificationEvent.id == event_id, NotificationEvent.failed_reason == UNCONFIRMED)
+        .values(**values)
+        .execution_options(synchronize_session=False)
+    )
+    await db.execute(stmt)
+
+
+async def _release(db: AsyncSession, event_id: UUID) -> None:
+    """Return an owned event to pending after a failure before the provider call."""
+    await db.rollback()
+    await _settle(db, event_id, failed_reason=None)
+    await db.commit()
+
+
+async def _dispatch(db: AsyncSession, event_id: UUID, now: datetime) -> str:
+    """Try one due event; returns "sent", "failed", "pending" or "skipped". The caller commits.
+
+    The claim is its own transaction and holds no lock afterwards. The
+    dispatch transaction then takes, for a proposal, the pair's contact lock
+    (users rows) and writes the event row last — the order account deletion
+    uses (user row, then cascaded event rows) — so the two cannot deadlock.
+    """
+    if not await _claim(db, event_id):
+        return "skipped"  # another processor owns it, or it is already settled
+    try:
+        stmt = select(NotificationEvent).where(NotificationEvent.id == event_id)
+        event = (await db.execute(stmt.execution_options(populate_existing=True))).scalar_one_or_none()
+        if event is None:
+            return "skipped"  # deleted with its account
+
+        # A proposal notice is not pushed once the pair is restricted (the
+        # proposal itself stays readable in My Plans). Status notices about an
+        # existing booking — confirmed, declined, cancelled, reminder — still go.
+        if event.notification_type == "proposal_received" and event.booking_id is not None:
+            pair = (
+                await db.execute(select(Booking.proposer_id, Booking.partner_id).where(Booking.id == event.booking_id))
+            ).one_or_none()
+            if pair is not None:
+                if db.get_bind().dialect.name == "postgresql":
+                    await db.execute(text("SELECT set_config('lock_timeout', :t, true)"), {"t": CONTACT_LOCK_TIMEOUT})
+                if not await safety.lock_contact(db, pair.proposer_id, pair.partner_id):
+                    await _settle(db, event_id, failed_reason="contact_restricted")
+                    return "failed"
+
+        # Re-resolve push token in case user re-registered since scheduling
+        fresh_token = await _get_latest_push_token(db, event.user_id)
+        token = fresh_token or event.push_token
+
+        if not token:
+            age_hours = (now - _ensure_utc(event.scheduled_at)).total_seconds() / 3600
+            if age_hours > 48:
+                await _settle(db, event_id, failed_reason="no_push_token_after_48h")
                 return "failed"
+            await _settle(db, event_id, failed_reason=None)
+            return "pending"  # retry on next cycle
 
-    # Re-resolve push token in case user re-registered since scheduling
-    fresh_token = await _get_latest_push_token(db, event.user_id)
-    token = fresh_token or event.push_token
-
-    if not token:
-        age_hours = (now - _ensure_utc(event.scheduled_at)).total_seconds() / 3600
-        if age_hours > 48:
-            event.failed_reason = "no_push_token_after_48h"
-            return "failed"
-        return "pending"  # retry on next cycle
+        data = {"type": event.notification_type, "bookingId": str(event.booking_id) if event.booking_id else None}
+        title, body = event.title, event.body
+    except BaseException:
+        # Nothing was sent: hand the event back. If this fails too, it stays
+        # unconfirmed (not retried) and the original error propagates.
+        with contextlib.suppress(Exception):
+            await _release(db, event_id)
+        raise
 
     try:
-        success = await asyncio.wait_for(
-            _send_expo_push(
-                token,
-                event.title,
-                event.body,
-                {
-                    "type": event.notification_type,
-                    "bookingId": str(event.booking_id) if event.booking_id else None,
-                },
-            ),
-            timeout=PROVIDER_TIMEOUT_SECONDS,
-        )
+        success = await asyncio.wait_for(_send_expo_push(token, title, body, data), timeout=PROVIDER_TIMEOUT_SECONDS)
     except asyncio.TimeoutError:
-        success = False
+        return "failed"  # stays unconfirmed: the provider may have accepted it
 
     if success:
-        event.sent_at = datetime.now(tz=timezone.utc)
+        await _settle(db, event_id, sent_at=datetime.now(tz=timezone.utc), failed_reason=None)
         return "sent"
-    event.failed_reason = "delivery_failed"
+    await _settle(db, event_id, failed_reason="delivery_failed")
     return "failed"
 
 
@@ -235,29 +311,42 @@ async def process_pending_notifications(
 ) -> ProcessNotificationsResult:
     """
     Send all due (scheduled_at <= now, sent_at = NULL) notification events.
-    Intended to be called by a cron job or an internal worker endpoint.
+    Intended to be called by a cron job or an internal worker endpoint; both
+    may run at once.
 
-    Each event is its own transaction, committed before the next, so a
-    proposal's contact lock is held for that one dispatch only. If the pair
-    lock is not free within CONTACT_LOCK_TIMEOUT, the cycle stops: that event
-    and the rest stay pending for the next run, unsent and unmarked.
+    Each event is claimed (see UNCONFIRMED) and dispatched in its own
+    transactions, committed before the next event, so overlapping processors
+    invoke the provider at most once per event and a proposal's contact lock
+    is held for that one dispatch only. If the pair lock is not free within
+    CONTACT_LOCK_TIMEOUT, the cycle stops: that event and the rest stay
+    pending for the next run, unsent.
+
+    Not exactly-once: a provider call whose outcome is not recorded leaves
+    the event unconfirmed rather than sending it again, so an interrupted
+    notice may be lost but is never blindly repeated. Stronger guarantees
+    need an idempotency key the provider honours.
     """
     now = datetime.now(tz=timezone.utc)
-    stmt = select(NotificationEvent).where(
-        and_(
-            NotificationEvent.scheduled_at <= now,
-            NotificationEvent.sent_at.is_(None),
-            NotificationEvent.failed_reason.is_(None),
+    stmt = (
+        select(NotificationEvent.id)
+        .where(
+            and_(
+                NotificationEvent.scheduled_at <= now,
+                NotificationEvent.sent_at.is_(None),
+                NotificationEvent.failed_reason.is_(None),
+            )
         )
+        .order_by(NotificationEvent.scheduled_at, NotificationEvent.id)
     )
-    events = list((await db.execute(stmt)).scalars().all())
+    event_ids = list((await db.execute(stmt)).scalars().all())
+    await db.commit()  # end the read; each event below gets its own transaction
 
     processed = 0
     failed = 0
 
-    for event in events:
+    for event_id in event_ids:
         try:
-            outcome = await _dispatch(db, event, now)
+            outcome = await _dispatch(db, event_id, now)
         except DBAPIError as exc:
             if not _is_lock_timeout(exc):
                 raise

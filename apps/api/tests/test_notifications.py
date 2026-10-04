@@ -226,53 +226,39 @@ def test_ensure_utc_converts_non_utc_aware() -> None:
     assert out == datetime(2026, 4, 19, 12, 0, 0, tzinfo=timezone.utc)
 
 
-async def test_process_pending_notifications_handles_naive_scheduled_at() -> None:
+async def test_process_pending_notifications_handles_naive_scheduled_at(monkeypatch) -> None:
     """Regression: DB returning a naive scheduled_at must not crash processing."""
-    from datetime import datetime, timedelta
-    from types import SimpleNamespace
     from uuid import uuid4
 
+    from sqlalchemy import select
+
+    from app.models.notification import NotificationEvent
     from app.services import notifications as notif_svc
 
-    # Naive datetime simulates what SQLite (and some driver combos) return
-    # for a DateTime(timezone=True) column.
+    # SQLite hands back a naive datetime for this DateTime(timezone=True) column.
     naive_scheduled = datetime.utcnow() - timedelta(hours=72)
+    async with _TestSession() as db:
+        event = NotificationEvent(
+            user_id=uuid4(),
+            booking_id=None,
+            notification_type="proposal_received",
+            title="t",
+            body="b",
+            push_token=None,  # triggers the no-token aging path that subtracts datetimes
+            scheduled_at=naive_scheduled,
+        )
+        db.add(event)
+        await db.commit()
+        event_id = event.id
 
-    event = SimpleNamespace(
-        id=uuid4(),
-        user_id=uuid4(),
-        booking_id=None,
-        notification_type="proposal_received",
-        title="t",
-        body="b",
-        push_token=None,  # triggers the no-token aging path that subtracts datetimes
-        scheduled_at=naive_scheduled,
-        sent_at=None,
-        failed_reason=None,
-    )
-
-    class _Result:
-        def scalars(self):
-            class _S:
-                def all(inner_self):
-                    return [event]
-
-            return _S()
-
-        def scalar_one_or_none(self):
-            return None
-
-    class _FakeDB:
-        async def execute(self, _stmt):
-            return _Result()
-
-        async def commit(self):
-            return None
-
-    result = await notif_svc.process_pending_notifications(_FakeDB())
+    monkeypatch.setattr(notif_svc, "_send_expo_push", AsyncMock(return_value=False))
+    async with _TestSession() as db:
+        result = await notif_svc.process_pending_notifications(db)
+        row = (await db.execute(select(NotificationEvent).where(NotificationEvent.id == event_id))).scalar_one()
     # No TypeError, and >48h-old no-token event is marked failed
     assert result.failed == 1
-    assert event.failed_reason == "no_push_token_after_48h"
+    assert row.failed_reason == "no_push_token_after_48h"
+    notif_svc._send_expo_push.assert_not_awaited()
 
 
 # ---------------------------------------------------------------------------
