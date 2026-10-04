@@ -92,6 +92,35 @@ jobs:
       - name: Typecheck
         run: npm run typecheck -w @protin/mobile
 
+  web:
+    name: Website typecheck and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck -w @protin/web
+
+      - name: Production build
+        run: npm run build -w @protin/web
+
+      # The app and the App Store record link to /privacy/, /terms/ and
+      # /support/ on the site's host; the build must carry those pages unchanged.
+      - name: Legal pages are in the build
+        run: |
+          for page in privacy/index.html terms/index.html support/index.html styles.css; do
+            cmp "apps/web/public/$page" "apps/web/dist/$page"
+          done
+
   lint-mobile:
     runs-on: ubuntu-latest
     steps:

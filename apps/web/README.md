@@ -79,6 +79,12 @@ Not deployed from this branch. Any static host can serve `apps/web/dist`
 (build command `npm run build --workspace @protin/web`, Node 20).
 
 Before deploying, read `docs/run-golf-v2/web-refresh/RELEASE_HANDOFF.md`.
-In particular, publishing this build to `sportgang.netlify.app` as-is
-would replace the `/privacy/`, `/terms/` and `/support/` pages that the
-app's recorded legal URLs and the App Store record's seller URL point to.
+The app's recorded legal URLs and the App Store record's seller URL point
+to `/privacy/`, `/terms/` and `/support/` on `sportgang.netlify.app`. The
+build carries those pages unchanged: `public/{privacy,terms,support}/index.html`
+and `public/styles.css` are byte-for-byte copies of `apps/web/site/` on
+`feature/sportgang-official-website` at `ad072fc` (the live pages minus the
+comment Netlify injects), and CI compares them with `dist/`. Change them on
+that branch first, then copy them here. The host must redirect `/privacy` to
+`/privacy/` (Netlify does by default; `vite preview` serves the home page
+for paths without the trailing slash).
