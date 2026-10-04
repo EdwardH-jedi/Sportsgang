@@ -1,0 +1,8 @@
+worktree /Users/edwardhwang/Desktop/github-repo-only/Sportsgang
+HEAD ffca063fa3408ee6654980cfd72bf61fd3d0f654
+branch refs/heads/feat/run-first-ui
+
+worktree /Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2
+HEAD 8b8afb0524d5da133730562fb04acd1078be5e8d
+branch refs/heads/feat/run-golf-v2
+

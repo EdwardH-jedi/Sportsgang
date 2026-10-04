@@ -1,0 +1,341 @@
+{
+  "before": {
+    "users": {
+      "count": 3,
+      "row_hashes": [
+        "188cc0e593afa9707b6a8dafbdab74876c81df1ad75c49068c59a5ebc9f2a347",
+        "e4efe870b27a914aba420125fc9915b3afacb461f588fc6a442ab77b4ea1f77d",
+        "ffbec6751e7fa65a3f70b6ed8432cf9f06875b99f58687abc672fea632c660b5"
+      ],
+      "columns": [
+        "id",
+        "email",
+        "hashed_password",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "apple_sub",
+        "apple_refresh_token"
+      ]
+    },
+    "user_profiles": {
+      "count": 3,
+      "row_hashes": [
+        "1992fb128934a62670037d73db389141c28ca61a7651ae592f4732db296b9f4b",
+        "76999a16c60d8452c0a0d27ade4dab295eb91a122a3420b91ae79176918a2ca4",
+        "971e39cf56efa4609c93efb0a44c113cee6861f6276ae33dbd5d828662240691"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "display_name",
+        "bio",
+        "birth_year",
+        "suburb",
+        "avatar_url",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "sport_profiles": {
+      "count": 8,
+      "row_hashes": [
+        "27dd81b6310752e2e12badc98fcb0d37dc82020199ef273277a0cba78264452d",
+        "3658bd474ab04e2ed11f2a720b41d7395e61b4ec7132711895986ca29d8afac0",
+        "66c599cf9adf8fbc205c70406027806a1edebd5884f6331f92c0b91a645b53df",
+        "6b4d24596d8f5c51ce00c5af3ebd8765a626093d7754c456287641a9a6cf5f5d",
+        "9c195429585d11ffdc409b3acd98d07f82c0b281d8547857567fe079fd4866b1",
+        "adeb9bb2fb5658cb92376dc8938205ab62abf86cfb306220d68c4eccf1215e52",
+        "b72973407e109fccd103243741c2911f3dfae19fc768db273a52e4227a79962a",
+        "dad002905a0278bfc2dec07e5c4f5c718c53023e06bac400483619b1f2bd5144"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "sport",
+        "level",
+        "preferred_times",
+        "gym_name",
+        "golf_club",
+        "goals",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "identity_preferences": {
+      "count": 2,
+      "row_hashes": [
+        "7ffed7d2dfcc2de283d26593b4c693aedf426566bc19c2c2c8d337da6c2238ee",
+        "bbc829d5171f01afcfa418c8c636213eaf3b7675aa7b21252a7dade4bf223cd1"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "open_to",
+        "age_range_min",
+        "age_range_max",
+        "max_distance_km",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "matches": {
+      "count": 1,
+      "row_hashes": [
+        "2795a50d49a267cf87e281691ff95d651b2c6066d2f6bc0ec634fbe1965af971"
+      ],
+      "columns": [
+        "id",
+        "user1_id",
+        "user2_id",
+        "sport",
+        "status",
+        "created_at"
+      ]
+    },
+    "messages": {
+      "count": 1,
+      "row_hashes": [
+        "477cbbc569b1575338b84c73126828fdb1e2ec3a97e67b77fabce4956415cf73"
+      ],
+      "columns": [
+        "id",
+        "match_id",
+        "sender_id",
+        "body",
+        "created_at"
+      ]
+    },
+    "bookings": {
+      "count": 1,
+      "row_hashes": [
+        "8caf48016124736f14b6de32a72f15df5a162b4a040724f1ceffba2ce12e2dad"
+      ],
+      "columns": [
+        "id",
+        "match_id",
+        "proposer_id",
+        "partner_id",
+        "sport",
+        "starts_at",
+        "ends_at",
+        "location",
+        "notes",
+        "status",
+        "created_at",
+        "updated_at",
+        "venue_id"
+      ]
+    },
+    "events": {
+      "count": 1,
+      "row_hashes": [
+        "d7254cbb54f2b378e441c4226e6d441c77236848fba3cafe8bad4f211876168b"
+      ],
+      "columns": [
+        "id",
+        "host_user_id",
+        "title",
+        "sport",
+        "mode",
+        "starts_at",
+        "location_text",
+        "capacity",
+        "description",
+        "visibility",
+        "status",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "event_participants": {
+      "count": 2,
+      "row_hashes": [
+        "4a244898b0b3dc64fd2848b34e9d0325b979f06e9ecc5c4c2daa2f08f358666d",
+        "6fb0a4ab3a20d459c21e537a7140f94a5fbab4f9281bb88d6f6d52ad6beb3c81"
+      ],
+      "columns": [
+        "id",
+        "event_id",
+        "user_id",
+        "status",
+        "joined_at",
+        "left_at",
+        "attendance_status",
+        "attendance_confirmed_by_host_at",
+        "attendance_self_reported_at",
+        "attendance_note"
+      ]
+    }
+  },
+  "after": {
+    "users": {
+      "count": 3,
+      "row_hashes": [
+        "188cc0e593afa9707b6a8dafbdab74876c81df1ad75c49068c59a5ebc9f2a347",
+        "e4efe870b27a914aba420125fc9915b3afacb461f588fc6a442ab77b4ea1f77d",
+        "ffbec6751e7fa65a3f70b6ed8432cf9f06875b99f58687abc672fea632c660b5"
+      ],
+      "columns": [
+        "id",
+        "email",
+        "hashed_password",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "apple_sub",
+        "apple_refresh_token"
+      ]
+    },
+    "user_profiles": {
+      "count": 3,
+      "row_hashes": [
+        "1992fb128934a62670037d73db389141c28ca61a7651ae592f4732db296b9f4b",
+        "76999a16c60d8452c0a0d27ade4dab295eb91a122a3420b91ae79176918a2ca4",
+        "971e39cf56efa4609c93efb0a44c113cee6861f6276ae33dbd5d828662240691"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "display_name",
+        "bio",
+        "birth_year",
+        "suburb",
+        "avatar_url",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "sport_profiles": {
+      "count": 8,
+      "row_hashes": [
+        "27dd81b6310752e2e12badc98fcb0d37dc82020199ef273277a0cba78264452d",
+        "3658bd474ab04e2ed11f2a720b41d7395e61b4ec7132711895986ca29d8afac0",
+        "66c599cf9adf8fbc205c70406027806a1edebd5884f6331f92c0b91a645b53df",
+        "6b4d24596d8f5c51ce00c5af3ebd8765a626093d7754c456287641a9a6cf5f5d",
+        "9c195429585d11ffdc409b3acd98d07f82c0b281d8547857567fe079fd4866b1",
+        "adeb9bb2fb5658cb92376dc8938205ab62abf86cfb306220d68c4eccf1215e52",
+        "b72973407e109fccd103243741c2911f3dfae19fc768db273a52e4227a79962a",
+        "dad002905a0278bfc2dec07e5c4f5c718c53023e06bac400483619b1f2bd5144"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "sport",
+        "level",
+        "preferred_times",
+        "gym_name",
+        "golf_club",
+        "goals",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "identity_preferences": {
+      "count": 2,
+      "row_hashes": [
+        "7ffed7d2dfcc2de283d26593b4c693aedf426566bc19c2c2c8d337da6c2238ee",
+        "bbc829d5171f01afcfa418c8c636213eaf3b7675aa7b21252a7dade4bf223cd1"
+      ],
+      "columns": [
+        "id",
+        "user_id",
+        "open_to",
+        "age_range_min",
+        "age_range_max",
+        "max_distance_km",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "matches": {
+      "count": 1,
+      "row_hashes": [
+        "2795a50d49a267cf87e281691ff95d651b2c6066d2f6bc0ec634fbe1965af971"
+      ],
+      "columns": [
+        "id",
+        "user1_id",
+        "user2_id",
+        "sport",
+        "status",
+        "created_at"
+      ]
+    },
+    "messages": {
+      "count": 1,
+      "row_hashes": [
+        "477cbbc569b1575338b84c73126828fdb1e2ec3a97e67b77fabce4956415cf73"
+      ],
+      "columns": [
+        "id",
+        "match_id",
+        "sender_id",
+        "body",
+        "created_at"
+      ]
+    },
+    "bookings": {
+      "count": 1,
+      "row_hashes": [
+        "8caf48016124736f14b6de32a72f15df5a162b4a040724f1ceffba2ce12e2dad"
+      ],
+      "columns": [
+        "id",
+        "match_id",
+        "proposer_id",
+        "partner_id",
+        "sport",
+        "starts_at",
+        "ends_at",
+        "location",
+        "notes",
+        "status",
+        "created_at",
+        "updated_at",
+        "venue_id"
+      ]
+    },
+    "events": {
+      "count": 1,
+      "row_hashes": [
+        "d7254cbb54f2b378e441c4226e6d441c77236848fba3cafe8bad4f211876168b"
+      ],
+      "columns": [
+        "id",
+        "host_user_id",
+        "title",
+        "sport",
+        "mode",
+        "starts_at",
+        "location_text",
+        "capacity",
+        "description",
+        "visibility",
+        "status",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "event_participants": {
+      "count": 2,
+      "row_hashes": [
+        "4a244898b0b3dc64fd2848b34e9d0325b979f06e9ecc5c4c2daa2f08f358666d",
+        "6fb0a4ab3a20d459c21e537a7140f94a5fbab4f9281bb88d6f6d52ad6beb3c81"
+      ],
+      "columns": [
+        "id",
+        "event_id",
+        "user_id",
+        "status",
+        "joined_at",
+        "left_at",
+        "attendance_status",
+        "attendance_confirmed_by_host_at",
+        "attendance_self_reported_at",
+        "attendance_note"
+      ]
+    }
+  },
+  "equal": true
+}

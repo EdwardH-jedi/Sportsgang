@@ -1,0 +1,14 @@
+{
+  "name": "cache-acceptance",
+  "command": [
+    "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/node_modules/.bin/jest",
+    "--config",
+    "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/docs/run-golf-v2/review-evidence/jest.review.config.js",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2/apps/mobile",
+  "exit_code": 1,
+  "elapsed_seconds": 1.48,
+  "head": "8b8afb0524d5da133730562fb04acd1078be5e8d"
+}

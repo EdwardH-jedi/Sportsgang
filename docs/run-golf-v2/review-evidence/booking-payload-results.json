@@ -1,0 +1,6 @@
+{
+  "composer_offset_free_payload_status": 201,
+  "composer_response": "{\"id\":\"27cc6691-5c57-486d-b3dd-50fa872d74fa\",\"match_id\":\"30232e02-f149-4d55-a1fe-79e831e55bb5\",\"proposer_id\":\"bbb30721-a097-407d-92bc-830ad3ee351a\",\"partner_id\":\"346548e5-f607-4962-b0a5-a6ffb053071d\",\"sport\":\"running\",\"starts_at\":\"2026-10-04T22:00:00Z\",\"ends_at\":\"2026-10-04T23:00:00Z\",\"location\":\"Codex exact composer payload\",\"notes\":null,\"status\":\"proposed\",\"created_at\":\"2026-10-03T01:20:57.819786\",\"updated_at\":\"2026-10-03T01:20:57.819786\",\"partner\":{\"user_id\":\"346548e5-f607-4962-b0a5-a6ffb053071d\",\"display_name\":\"Codex Bob\",\"suburb\":\"Newtown\",\"bio_excerpt\":null,\"bio\":null,\"avatar_url\":null,\"photo_urls\":[],\"age\":36,\"sport_profiles\":[{\"sport\":\"running\",\"level\":\"intermediate\",\"gym_name\":null,\"golf_club\":null,\"preferences_configured\":false,\"preferred_times\":[],\"golf_handicap_tenths\":null,\"golf_handicap_source\":null,\"golf_experience\":null,\"golf_partner_intents\":null,\"golf_preferred_holes\":null,\"run_pace_mode\":null,\"run_pace_min_sec_per_km\":null,\"run_pace_max_sec_per_km\":null,\"run_distances_km\":null,\"run_group_style\":null}],\"compatibility\":null},\"venue\":null}",
+  "aware_payload_status": 201,
+  "aware_stored_starts_at": "2026-10-05T09:00:00Z"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "native_run": {
+    "id": "ec89d93e-91ac-4ef7-8500-52e0d77dbe64",
+    "starts_at": "2026-10-03T19:30:00Z",
+    "run_details": {
+      "distance_km": 5.0,
+      "pace_mode": "social",
+      "pace_min_sec_per_km": null,
+      "pace_max_sec_per_km": null,
+      "group_style": "stay_together",
+      "beginner_friendly": false,
+      "walk_breaks_ok": false
+    }
+  },
+  "native_golf": {
+    "id": "bdf8a097-d1e6-4239-855e-adf7fbeaac6f",
+    "starts_at": "2026-10-03T21:00:00Z",
+    "capacity": 2,
+    "participant_count": 2,
+    "status": "full",
+    "golf_details": {
+      "holes": 9,
+      "tee_time_status": "secured",
+      "estimated_cost_cents": 3500,
+      "handicap_min_tenths": null,
+      "handicap_max_tenths": null,
+      "beginners_welcome": false
+    }
+  },
+  "additional_user_join_status": 422
+}

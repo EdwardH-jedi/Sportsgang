@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "migration_exit_code": 0,
+  "all_retained_columns_identical": true,
+  "counts": {
+    "users": 9,
+    "user_profiles": 9,
+    "sport_profiles": 24,
+    "identity_preferences": 0,
+    "matches": 3,
+    "messages": 3,
+    "bookings": 3,
+    "events": 3,
+    "event_participants": 6
+  }
+}
