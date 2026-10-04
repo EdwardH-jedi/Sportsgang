@@ -12,7 +12,7 @@ Step-by-step versions of most items are in [../HOME_TEST_RUNBOOK.md](../HOME_TES
 | API | `http://127.0.0.1:8173` |
 | App (Expo Go, simulator) | `exp://127.0.0.1:8273` |
 | Website preview | `http://127.0.0.1:5207/` (production build; legal pages at `/privacy/`, `/terms/`, `/support/`) |
-| Simulator | "SportsGang Overnight KB 20261005" (iPhone 16e, iOS 26.3), default text size, software keyboard enabled, on the Welcome screen |
+| Simulator | "SportsGang Overnight KB 20261005" (iPhone 16e, iOS 26.3), default text size, software keyboard enabled, signed in as QA Alice |
 | Accounts | `qa.alice`, `qa.bob`, `qa.cara`, `qa.dan`, `qa.fern`, `qa.eve`, `qa.newbie`, `qa.mod` `@example.com`; shared password in `.qa/credentials.json` (git-ignored, mode 600) |
 | Source | `RESULT.json` → `final_source_sha`; `npm run qa:status` shows what the API and Metro run |
 

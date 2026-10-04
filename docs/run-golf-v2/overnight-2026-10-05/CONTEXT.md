@@ -26,4 +26,5 @@ Read this first after compaction or interruption.
 - Next: W0 handoff doc, W4 full verification (fresh PG/Redis 55671/56671), W5 QA reset + preview, delivery docs, push, CI.
 - 04:35 AEDT — W4 verification done at final source `a12a368` (all green; reviewer probes 11/2 as before). W5: QA project restarted from HEAD and reset (fresh fixtures); web preview detached on 5207 (`.qa/web-preview.pid`); simulators "SportsGang Overnight 20261005" and "SE" deleted (obsolete, task-owned); "KB" kept at default size. Delivery docs written (IMPLEMENTATION_REPORT, CODEX_REVIEW_HANDOFF, HUMAN_QA, RESULT.json).
 - Remaining after push: confirm CI on the delivery head; remove the disposable test containers `sg-on-20261005-pg`/`-redis` once CI is green.
+- 04:45 AEDT — internal review follow-up: one more ownership test (`a9b92c2`, final source); mobile 989 ×2; QA restarted from `a9b92c2` (no reset); KB simulator signed in as Alice (login verified).
 

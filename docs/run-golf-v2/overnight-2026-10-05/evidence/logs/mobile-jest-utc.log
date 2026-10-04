@@ -2,6 +2,10 @@
 > @protin/mobile@0.1.0 test:ci
 > jest --passWithNoTests --ci --runInBand --watchman=false
 
+PASS src/__tests__/BookingDetailScreen.test.tsx
+PASS src/__tests__/ChatScreen.test.tsx
+PASS src/__tests__/myPlansPaging.test.tsx
+PASS src/__tests__/sessionListSync.test.tsx
 PASS src/__tests__/NearbyCourtsModal.test.tsx
   ● Console
 
@@ -85,160 +89,7 @@ PASS src/__tests__/NearbyCourtsModal.test.tsx
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
-PASS src/__tests__/BookingDetailScreen.test.tsx
-PASS src/__tests__/BookingComposerScreen.test.tsx
 PASS src/__tests__/MatchesScreen.test.tsx
-PASS src/__tests__/exploreStore.test.ts
-PASS src/__tests__/sessionListSync.test.tsx
-PASS src/__tests__/PartnerDetailScreen.test.tsx
-PASS src/__tests__/CreateBattleScreen.test.tsx
-PASS src/__tests__/OnboardingStep1Screen.test.tsx
-PASS src/__tests__/preferenceInvalidation.test.tsx
-  ● Console
-
-    console.error
-      An update to PartnersView inside a test was not wrapped in act(...).
-      
-      When testing, code that causes React state updates should be wrapped into act(...):
-      
-      act(() => {
-        /* fire events that update state */
-      });
-      /* assert on the output */
-      
-      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
-      304 |       assertFeedShape(data);
-      305 |       if (generation !== feedGeneration) return;
-    > 306 |       set({
-          |       ^
-      307 |         feed: {
-      308 |           ...EMPTY_FEED,
-      309 |           key,
-
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
-      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
-      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
-      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
-      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
-      at ../../node_modules/zustand/vanilla.js:11:39
-          at Set.forEach (<anonymous>)
-      at setState (../../node_modules/zustand/vanilla.js:11:17)
-      at set (src/stores/explore.ts:306:7)
-      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
-      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
-
-    console.error
-      An update to PartnersView inside a test was not wrapped in act(...).
-      
-      When testing, code that causes React state updates should be wrapped into act(...):
-      
-      act(() => {
-        /* fire events that update state */
-      });
-      /* assert on the output */
-      
-      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
-      304 |       assertFeedShape(data);
-      305 |       if (generation !== feedGeneration) return;
-    > 306 |       set({
-          |       ^
-      307 |         feed: {
-      308 |           ...EMPTY_FEED,
-      309 |           key,
-
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
-      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
-      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
-      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
-      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
-      at ../../node_modules/zustand/vanilla.js:11:39
-          at Set.forEach (<anonymous>)
-      at setState (../../node_modules/zustand/vanilla.js:11:17)
-      at set (src/stores/explore.ts:306:7)
-      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
-      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
-
-    console.error
-      An update to PartnersView inside a test was not wrapped in act(...).
-      
-      When testing, code that causes React state updates should be wrapped into act(...):
-      
-      act(() => {
-        /* fire events that update state */
-      });
-      /* assert on the output */
-      
-      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
-      304 |       assertFeedShape(data);
-      305 |       if (generation !== feedGeneration) return;
-    > 306 |       set({
-          |       ^
-      307 |         feed: {
-      308 |           ...EMPTY_FEED,
-      309 |           key,
-
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
-      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
-      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
-      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
-      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
-      at ../../node_modules/zustand/vanilla.js:11:39
-          at Set.forEach (<anonymous>)
-      at setState (../../node_modules/zustand/vanilla.js:11:17)
-      at set (src/stores/explore.ts:306:7)
-      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
-      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
-
-    console.error
-      An update to PartnersView inside a test was not wrapped in act(...).
-      
-      When testing, code that causes React state updates should be wrapped into act(...):
-      
-      act(() => {
-        /* fire events that update state */
-      });
-      /* assert on the output */
-      
-      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
-
-      304 |       assertFeedShape(data);
-      305 |       if (generation !== feedGeneration) return;
-    > 306 |       set({
-          |       ^
-      307 |         feed: {
-      308 |           ...EMPTY_FEED,
-      309 |           key,
-
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
-      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
-      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
-      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
-      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
-      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
-      at ../../node_modules/zustand/vanilla.js:11:39
-          at Set.forEach (<anonymous>)
-      at setState (../../node_modules/zustand/vanilla.js:11:17)
-      at set (src/stores/explore.ts:306:7)
-      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
-      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
-
-PASS src/__tests__/OnboardingStep3Screen.test.tsx
-PASS src/__tests__/EditProfileScreen.test.tsx
-PASS src/__tests__/MyPlansScreen.test.tsx
-PASS src/__tests__/sessions.test.tsx
-PASS src/__tests__/LoginScreen.test.tsx
-PASS src/__tests__/BattleDetailScreen.test.tsx
-PASS src/__tests__/myPlansPaging.test.tsx
-PASS src/__tests__/sessionTime.test.ts
-PASS src/__tests__/ProfileScreen.test.tsx
-PASS src/__tests__/setupFlow.test.tsx
-PASS src/__tests__/auth.test.ts
 PASS src/__tests__/ExploreScreen.test.tsx
   ● Console
 
@@ -540,11 +391,186 @@ PASS src/__tests__/ExploreScreen.test.tsx
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
+PASS src/__tests__/ChatScreen.ownership.test.tsx
+PASS src/__tests__/ProfileScreen.test.tsx
+PASS src/__tests__/MyPlansScreen.test.tsx
+PASS src/__tests__/OnboardingStep2Screen.test.tsx
+PASS src/__tests__/EditProfileScreen.test.tsx
+PASS src/__tests__/BlockedUsersScreen.test.tsx
+PASS src/__tests__/EditSportPreferencesScreen.test.tsx
+PASS src/__tests__/OnboardingStep1Screen.test.tsx
+PASS src/__tests__/preferenceInvalidation.test.tsx
+  ● Console
+
+    console.error
+      An update to PartnersView inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      304 |       assertFeedShape(data);
+      305 |       if (generation !== feedGeneration) return;
+    > 306 |       set({
+          |       ^
+      307 |         feed: {
+      308 |           ...EMPTY_FEED,
+      309 |           key,
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
+      at ../../node_modules/zustand/vanilla.js:11:39
+          at Set.forEach (<anonymous>)
+      at setState (../../node_modules/zustand/vanilla.js:11:17)
+      at set (src/stores/explore.ts:306:7)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      An update to PartnersView inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      304 |       assertFeedShape(data);
+      305 |       if (generation !== feedGeneration) return;
+    > 306 |       set({
+          |       ^
+      307 |         feed: {
+      308 |           ...EMPTY_FEED,
+      309 |           key,
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
+      at ../../node_modules/zustand/vanilla.js:11:39
+          at Set.forEach (<anonymous>)
+      at setState (../../node_modules/zustand/vanilla.js:11:17)
+      at set (src/stores/explore.ts:306:7)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      An update to PartnersView inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      304 |       assertFeedShape(data);
+      305 |       if (generation !== feedGeneration) return;
+    > 306 |       set({
+          |       ^
+      307 |         feed: {
+      308 |           ...EMPTY_FEED,
+      309 |           key,
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
+      at ../../node_modules/zustand/vanilla.js:11:39
+          at Set.forEach (<anonymous>)
+      at setState (../../node_modules/zustand/vanilla.js:11:17)
+      at set (src/stores/explore.ts:306:7)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      An update to PartnersView inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      304 |       assertFeedShape(data);
+      305 |       if (generation !== feedGeneration) return;
+    > 306 |       set({
+          |       ^
+      307 |         feed: {
+      308 |           ...EMPTY_FEED,
+      309 |           key,
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at forceStoreRerender (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3430:24)
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3415:41
+      at ../../node_modules/zustand/vanilla.js:11:39
+          at Set.forEach (<anonymous>)
+      at setState (../../node_modules/zustand/vanilla.js:11:17)
+      at set (src/stores/explore.ts:306:7)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+PASS src/__tests__/OnboardingStep3Screen.test.tsx
+PASS src/__tests__/setupFlow.test.tsx
+PASS src/__tests__/BookingComposerScreen.test.tsx
+PASS src/__tests__/LoginScreen.test.tsx
+PASS src/__tests__/useVenueLocation.test.tsx
+PASS src/__tests__/sessions.test.tsx
+PASS src/__tests__/CreateBattleScreen.test.tsx
+PASS src/__tests__/useUserHonorSummary.test.ts
+PASS src/__tests__/PartnerDetailScreen.test.tsx
 PASS src/__tests__/RegisterScreen.test.tsx
-PASS src/__tests__/ChallengeDetailScreen.test.tsx
-PASS src/__tests__/AttendanceCheckScreen.test.tsx
+PASS src/__tests__/RootNavigator.test.tsx
+PASS src/__tests__/sydneyTime.test.ts
+PASS src/__tests__/blockedDateSydney.test.tsx
+PASS src/__tests__/BattleDetailScreen.test.tsx
 PASS src/__tests__/BattlesScreen.test.tsx
+PASS src/__tests__/CalendarPicker.test.tsx
 PASS src/__tests__/ReportScreen.test.tsx
+PASS src/__tests__/AttendanceCheckScreen.test.tsx
+PASS src/__tests__/ChallengeDetailScreen.test.tsx
+PASS src/__tests__/SafetyCenterScreen.test.tsx
+PASS src/__tests__/TournamentCard.test.tsx
+PASS src/__tests__/TournamentDetailScreen.test.tsx
+PASS src/__tests__/ChallengeListScreen.test.tsx
+PASS src/__tests__/WheelPicker.test.tsx
+PASS src/__tests__/Select.test.tsx
+PASS src/__tests__/PublicProfileScreen.test.tsx
+PASS src/__tests__/HonorGuideScreen.test.tsx
+PASS src/__tests__/TournamentsScreen.test.tsx
+PASS src/__tests__/AuthEntryScreen.test.tsx
+PASS src/__tests__/RankSummaryCard.test.tsx
+PASS src/__tests__/SplashScreen.test.tsx
+PASS src/__tests__/HonorCard.test.tsx
+PASS src/__tests__/profileStore.test.ts
+PASS src/__tests__/LocalRankSection.test.tsx
+PASS src/__tests__/exploreStore.test.ts
+PASS src/__tests__/legal.test.ts
+PASS src/__tests__/RankBadge.test.tsx
 PASS src/__tests__/api.test.ts
   ● Console
 
@@ -565,46 +591,20 @@ PASS src/__tests__/api.test.ts
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
-PASS src/__tests__/RootNavigator.test.tsx
-PASS src/__tests__/EditSportPreferencesScreen.test.tsx
-PASS src/__tests__/WheelPicker.test.tsx
-PASS src/__tests__/BlockedUsersScreen.test.tsx
-PASS src/__tests__/profileStore.test.ts
-PASS src/__tests__/preferenceFormState.test.ts
-PASS src/__tests__/OnboardingStep2Screen.test.tsx
-PASS src/__tests__/SplashScreen.test.tsx
-PASS src/__tests__/PublicProfileScreen.test.tsx
-PASS src/__tests__/TournamentDetailScreen.test.tsx
-PASS src/__tests__/ChallengeListScreen.test.tsx
-PASS src/__tests__/legal.test.ts
-PASS src/__tests__/RankSummaryCard.test.tsx
-PASS src/__tests__/CalendarPicker.test.tsx
-PASS src/__tests__/TournamentsScreen.test.tsx
-PASS src/__tests__/sydneyTime.test.ts
-PASS src/__tests__/useVenueLocation.test.tsx
-PASS src/__tests__/LocalRankSection.test.tsx
-PASS src/__tests__/SafetyCenterScreen.test.tsx
-PASS src/__tests__/TournamentCard.test.tsx
-PASS src/__tests__/HonorCard.test.tsx
-PASS src/__tests__/messages.test.ts
-PASS src/__tests__/honorSystem.test.ts
-PASS src/__tests__/AuthEntryScreen.test.tsx
-PASS src/__tests__/challenges.lib.test.ts
-PASS src/__tests__/HonorGuideScreen.test.tsx
-PASS src/__tests__/auditInstants.test.ts
 PASS src/__tests__/HonorBadge.test.tsx
-PASS src/__tests__/Select.test.tsx
-PASS src/__tests__/useUserHonorSummary.test.ts
+PASS src/__tests__/sessionTime.test.ts
+PASS src/__tests__/auth.test.ts
+PASS src/__tests__/preferenceFormState.test.ts
+PASS src/__tests__/honorSystem.test.ts
+PASS src/__tests__/messages.test.ts
+PASS src/__tests__/auditInstants.test.ts
+PASS src/__tests__/challenges.lib.test.ts
 PASS src/__tests__/venueLocation.test.ts
-PASS src/__tests__/RankBadge.test.tsx
-PASS src/__tests__/blockedDateSydney.test.tsx
-PASS src/__tests__/displayName.test.ts
 PASS src/__tests__/rank.test.ts
-PASS src/__tests__/ChatScreen.test.tsx
-PASS src/__tests__/ChatScreen.ownership.test.tsx
+PASS src/__tests__/displayName.test.ts
 
 Test Suites: 65 passed, 65 total
-Tests:       988 passed, 988 total
+Tests:       989 passed, 989 total
 Snapshots:   0 total
-Time:        29.302 s
+Time:        25.818 s, estimated 26 s
 Ran all test suites.

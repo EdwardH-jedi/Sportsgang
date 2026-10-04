@@ -10,7 +10,7 @@ acceptance.**
 | Branch | `fix/run-golf-v2-overnight-2026-10-05` (worktree `.claude/worktrees/run-golf-v2-overnight`) |
 | Base delivery | `8d891ddb862de5345e85895a20fa65649ba1f46e` (`chore/run-golf-v2-release-candidate-2026-10-04`); its last source `a515b0073cb0f32dad97f88430a203e3427444fe` |
 | Latest independent review consulted | `ce62aacff5dc88efd394abb240dc0a3d0bc3c76d` (`review/run-golf-v2-morning-acceptance-2026-10-04`, reviewed `8b34bca`) |
-| **Final source SHA** | `a12a3688c6a63a4ac926d5861df03405ac0730f8` — the last commit touching `apps/`, `scripts/`, `packages/` or `.github/` |
+| **Final source SHA** | `a9b92c2430456e1b0055436824c6ad6dfcd7c6e4` — the last commit touching `apps/`, `scripts/`, `packages/` or `.github/` (adds one chat test to `a12a368`) |
 | Delivery SHA | the branch head after the documentation commits (reported in the terminal handoff; not embedded here) |
 
 Origin was fetched at 03:16 AEDT: no newer implementation or acceptance existed for the
@@ -24,6 +24,7 @@ simulator and review evidence was left untouched.
 | `1159f49` | W3: release preflight script, R6 procedure validation, topology operator check |
 | `b10f510` | W2: deterministic legal routes in the preview, full FAQ in print, CI route check |
 | `a12a368` | W1: chat request/action ownership and adaptive layout |
+| `a9b92c2` | W1 follow-up: one more ownership test (a proposal refresh in flight when the chat becomes restricted) |
 | later | documentation and evidence only |
 
 ## 2. Independent review (W0, W4) — not run
@@ -39,8 +40,9 @@ base, as instructed when no defect is reproduced.
 
 ## 3. Wave 1 — chat (`apps/mobile/src/screens/chat/ChatScreen.tsx`)
 
-**Reproduced first.** `ChatScreen.ownership.test.tsx` adds 20 behavioural tests. At `8d891dd`,
-18 fail at their defect assertion and 2 controls pass (`evidence/logs/chat-ownership-baseline-8d891dd.log`):
+**Reproduced first.** `ChatScreen.ownership.test.tsx` adds 20 behavioural tests (a 21st,
+added after an internal review in `a9b92c2`, pins a refresh in flight during a restriction). At `8d891dd`,
+the first 20 gave 18 failures at their defect assertion and 2 passing controls (`evidence/logs/chat-ownership-baseline-8d891dd.log`):
 
 - a successful retry still showed the old error;
 - match A's late messages/proposals appeared in match B, and B started with A's messages;
@@ -132,7 +134,10 @@ coordinator ([evidence/web/README.md](evidence/web/README.md)):
   the read-only operator check for exactly one `app` machine (and no `WEB_CONCURRENCY`) is
   prepared; the live check is PENDING / NOT_RUN.
 
-## 6. Verification (this session, at the final source)
+## 6. Verification (this session)
+
+API, web, scripts and launcher checks ran at `a12a368`; `a9b92c2` changes only a mobile test
+file, after which the mobile suites were re-run.
 
 | Check | Result |
 |---|---|
@@ -143,10 +148,10 @@ coordinator ([evidence/web/README.md](evidence/web/README.md)):
 | …includes contact authority, notification ownership (11), socket deadline (7), event clock (4) | pass |
 | Adapted R1 probe | **94 PASS / 0 FAIL / 0 harness errors** |
 | Review follow-up + block-first probes (unchanged but the port guard) | 11 passed, 2 failed — the two adapted interleavings (handoff) |
-| Mobile Jest, TZ=UTC and Sydney | **65 suites / 988 tests** each, 0 skipped |
-| Chat suites | ownership 20/20, existing 51/51 |
+| Mobile Jest, TZ=UTC and Sydney (at `a9b92c2`) | **65 suites / 989 tests** each, 0 skipped |
+| Chat suites | ownership 21/21, existing 51/51 |
 | Mobile lint / typecheck | 0 warnings / clean |
-| iOS export (clean tree, final source) | exit 0, Hermes 4.43 MB |
+| iOS export (clean tree at `a12a368`; `a9b92c2` changes no bundled file) | exit 0, Hermes 4.43 MB |
 | Release preflight + tests | exit 0; 17/17 |
 | Launcher, Docker-free, TZ unset and UTC | 21 ran: 14 passed + 7 Docker skips, each (launcher code unchanged; Docker variants not re-run) |
 | Web typecheck / build / `check:routes` | 0 / 0 / 28 of 28; legal bytes identical in `dist/` |

@@ -8,9 +8,9 @@ reviewer; Claude's own results are implementation evidence only.
 |---|---|
 | Branch | `fix/run-golf-v2-overnight-2026-10-05` |
 | Base delivery / source | `8d891ddb862de5345e85895a20fa65649ba1f46e` / `a515b0073cb0f32dad97f88430a203e3427444fe` (MA-A/B/C, composer large text, website) |
-| Final source SHA | `a12a3688c6a63a4ac926d5861df03405ac0730f8` |
+| Final source SHA | `a9b92c2430456e1b0055436824c6ad6dfcd7c6e4` |
 | Delivery SHA | the branch head: `git ls-remote origin refs/heads/fix/run-golf-v2-overnight-2026-10-05` |
-| Per-wave commits | W3 `1159f49` · W2 `b10f510` · W1 `a12a368` (disjoint files) |
+| Per-wave commits | W3 `1159f49` · W2 `b10f510` · W1 `a12a368` + test `a9b92c2` (disjoint files) |
 | Previous publication | `ce62aac` (morning acceptance; reviewed `8b34bca`) |
 
 Reviewer rules: change no product code; overwrite no original evidence; temporary execution
@@ -93,8 +93,8 @@ cd apps/api && uv run --frozen alembic upgrade head
 | `pytest -q tests`; `ruff check .`; `ruff format --check .` | 773 passed; clean |
 | `REVIEW_EVIDENCE=<dir> .venv/bin/python ../../docs/run-golf-v2/morning-fixes/evidence/probe_r1_adapted.py` | 94 PASS |
 | `ce62aac` follow-up and block-first probes (port guard changed only) | 11 passed, 2 failed (Part A.4) |
-| Root: `npm run test:ci -w @protin/mobile -- --runInBand --watchman=false` (also `TZ=UTC`) | 65 suites, 988 passed |
-| Chat ownership baseline: copy `apps/mobile/src/__tests__/ChatScreen.ownership.test.tsx` into a worktree at `8d891dd` and run it | 18 failed, 2 passed |
+| Root: `npm run test:ci -w @protin/mobile -- --runInBand --watchman=false` (also `TZ=UTC`) | 65 suites, 989 passed |
+| Chat ownership baseline: copy `apps/mobile/src/__tests__/ChatScreen.ownership.test.tsx` into a worktree at `8d891dd` and run it | 18 failed, 2 passed (of the first 20; the 21st also fails there) |
 | Root: `npm run lint -w @protin/mobile`; `npm run typecheck -w @protin/mobile` | clean |
 | Root: `npm run typecheck -w @protin/web && npm run build -w @protin/web && npm run check:routes -w @protin/web` (Node 20) | 0 / 0 / 28 of 28 |
 | `python3 -m unittest scripts/release/test_preflight.py`; `python3 scripts/release/preflight.py` | 17 OK; exit 0 |

@@ -21,13 +21,14 @@
     "previews 5187 and 5196",
     "other simulators and review worktrees"
   ],
-  "final_source_sha": "a12a3688c6a63a4ac926d5861df03405ac0730f8",
+  "final_source_sha": "a9b92c2430456e1b0055436824c6ad6dfcd7c6e4",
   "final_source_definition": "last commit touching apps/, scripts/, packages/ or .github/",
   "delivery_sha": "NOT_EMBEDDED — the branch head after documentation commits; see the terminal handoff and git ls-remote",
   "commits": {
     "W3_release_preflight": "1159f49",
     "W2_web_routes_print": "b10f510",
-    "W1_chat": "a12a368"
+    "W1_chat": "a12a368",
+    "W1_followup_test": "a9b92c2"
   },
   "independent_reviewer": {
     "identity": null,
@@ -40,8 +41,8 @@
     {
       "id": "W1-B",
       "what": "ChatScreen request/action ownership: binding epochs (account+match), operation-owned guards, dialog expiry, updatedAt merge, failed-send draft rule, 403/4003 restriction, honest transient disconnect",
-      "commit": "a12a368",
-      "tests": "ChatScreen.ownership.test.tsx 20 (18 fail / 2 controls pass at 8d891dd)"
+      "commit": "a12a368 + a9b92c2",
+      "tests": "ChatScreen.ownership.test.tsx 21 (first 20: 18 fail / 2 controls pass at 8d891dd)"
     },
     {
       "id": "W1-A",
@@ -131,14 +132,14 @@
     },
     {
       "check": "mobile Jest TZ=UTC and Sydney",
-      "result": "65 suites / 988 passed each"
+      "result": "65 suites / 989 passed each (at a9b92c2)"
     },
     {
       "check": "mobile lint / typecheck",
       "result": "clean"
     },
     {
-      "check": "iOS export at final source (clean tree)",
+      "check": "iOS export (clean tree at a12a368; a9b92c2 changes no bundled file)",
       "result": "exit 0; index-ed18c160be2847f21416b9235d6550eb.hbc sha256 5f870cc6149cba257b3cf37af84b8bc50dc9a122df8658e561464bed9d47395a"
     },
     {
@@ -170,10 +171,10 @@
     "status": "READY_FOR_LOCAL_MANUAL_TEST (not an acceptance)",
     "project": "sg-on-20261005-qa",
     "owner_home": ".qa/owner-home in the overnight worktree",
-    "api": "http://127.0.0.1:8173 (identity verified; serves the final source)",
-    "metro": "exp://127.0.0.1:8273 (identity verified; serves the final source)",
+    "api": "http://127.0.0.1:8173 (identity verified; started from a9b92c2)",
+    "metro": "exp://127.0.0.1:8273 (identity verified; started from a9b92c2)",
     "web_preview": "http://127.0.0.1:5207/ (detached vite preview of dist built from the final source; PID in .qa/web-preview.pid)",
-    "simulator": "SportsGang Overnight KB 20261005 (iPhone 16e, iOS 26.3, F52ECE53-B7AF-449B-B8EF-FDE6C17E44CF), default text size, Welcome screen",
+    "simulator": "SportsGang Overnight KB 20261005 (iPhone 16e, iOS 26.3, F52ECE53-B7AF-449B-B8EF-FDE6C17E44CF), default text size, Welcome screen — signed in as QA Alice (login verified after the reset)",
     "fixtures": "fresh after qa reset: 8 synthetic users, 81 sessions, 57 bookings, migration 0016",
     "checklist": "docs/run-golf-v2/overnight-2026-10-05/HUMAN_QA.md",
     "startup": "cd .claude/worktrees/run-golf-v2-overnight && export SPORTSGANG_QA_HOME=$PWD/.qa/owner-home && npm run qa:up -- --no-open --no-seed",
@@ -197,5 +198,6 @@
     "real push",
     "external messages",
     "historical audit rewrite"
-  ]
+  ],
+  "verification_note": "API, web, scripts and launcher checks ran at a12a368; a9b92c2 changes only a mobile test file, after which the mobile suites were re-run"
 }

@@ -3,6 +3,9 @@
 > jest --passWithNoTests --ci --runInBand --watchman=false
 
 PASS src/__tests__/BookingDetailScreen.test.tsx
+PASS src/__tests__/myPlansPaging.test.tsx
+PASS src/__tests__/ChatScreen.test.tsx
+PASS src/__tests__/sessionListSync.test.tsx
 PASS src/__tests__/NearbyCourtsModal.test.tsx
   ● Console
 
@@ -86,9 +89,6 @@ PASS src/__tests__/NearbyCourtsModal.test.tsx
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
-PASS src/__tests__/sessionListSync.test.tsx
-PASS src/__tests__/myPlansPaging.test.tsx
-PASS src/__tests__/ChatScreen.test.tsx
 PASS src/__tests__/MatchesScreen.test.tsx
 PASS src/__tests__/ExploreScreen.test.tsx
   ● Console
@@ -396,11 +396,9 @@ PASS src/__tests__/MyPlansScreen.test.tsx
 PASS src/__tests__/ChatScreen.ownership.test.tsx
 PASS src/__tests__/OnboardingStep2Screen.test.tsx
 PASS src/__tests__/EditProfileScreen.test.tsx
-PASS src/__tests__/BlockedUsersScreen.test.tsx
-PASS src/__tests__/RootNavigator.test.tsx
 PASS src/__tests__/OnboardingStep1Screen.test.tsx
+PASS src/__tests__/BlockedUsersScreen.test.tsx
 PASS src/__tests__/EditSportPreferencesScreen.test.tsx
-PASS src/__tests__/BookingComposerScreen.test.tsx
 PASS src/__tests__/preferenceInvalidation.test.tsx
   ● Console
 
@@ -536,43 +534,35 @@ PASS src/__tests__/preferenceInvalidation.test.tsx
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
-PASS src/__tests__/setupFlow.test.tsx
 PASS src/__tests__/OnboardingStep3Screen.test.tsx
+PASS src/__tests__/setupFlow.test.tsx
 PASS src/__tests__/LoginScreen.test.tsx
-PASS src/__tests__/CreateBattleScreen.test.tsx
+PASS src/__tests__/BookingComposerScreen.test.tsx
 PASS src/__tests__/useVenueLocation.test.tsx
 PASS src/__tests__/sessions.test.tsx
-PASS src/__tests__/PartnerDetailScreen.test.tsx
-PASS src/__tests__/BattleDetailScreen.test.tsx
 PASS src/__tests__/useUserHonorSummary.test.ts
-PASS src/__tests__/RegisterScreen.test.tsx
+PASS src/__tests__/CreateBattleScreen.test.tsx
 PASS src/__tests__/BattlesScreen.test.tsx
+PASS src/__tests__/RootNavigator.test.tsx
+PASS src/__tests__/PartnerDetailScreen.test.tsx
+PASS src/__tests__/RegisterScreen.test.tsx
 PASS src/__tests__/sydneyTime.test.ts
+PASS src/__tests__/BattleDetailScreen.test.tsx
 PASS src/__tests__/blockedDateSydney.test.tsx
-PASS src/__tests__/ChallengeDetailScreen.test.tsx
-PASS src/__tests__/WheelPicker.test.tsx
-PASS src/__tests__/exploreStore.test.ts
-PASS src/__tests__/AttendanceCheckScreen.test.tsx
-PASS src/__tests__/ReportScreen.test.tsx
 PASS src/__tests__/CalendarPicker.test.tsx
-PASS src/__tests__/AuthEntryScreen.test.tsx
-PASS src/__tests__/PublicProfileScreen.test.tsx
-PASS src/__tests__/TournamentsScreen.test.tsx
-PASS src/__tests__/LocalRankSection.test.tsx
-PASS src/__tests__/ChallengeListScreen.test.tsx
-PASS src/__tests__/profileStore.test.ts
-PASS src/__tests__/SafetyCenterScreen.test.tsx
-PASS src/__tests__/SplashScreen.test.tsx
+PASS src/__tests__/ReportScreen.test.tsx
+PASS src/__tests__/AttendanceCheckScreen.test.tsx
+PASS src/__tests__/ChallengeDetailScreen.test.tsx
+PASS src/__tests__/HonorBadge.test.tsx
 PASS src/__tests__/TournamentDetailScreen.test.tsx
+PASS src/__tests__/WheelPicker.test.tsx
+PASS src/__tests__/ChallengeListScreen.test.tsx
+PASS src/__tests__/PublicProfileScreen.test.tsx
+PASS src/__tests__/SafetyCenterScreen.test.tsx
 PASS src/__tests__/HonorGuideScreen.test.tsx
-PASS src/__tests__/HonorCard.test.tsx
+PASS src/__tests__/TournamentsScreen.test.tsx
 PASS src/__tests__/Select.test.tsx
-PASS src/__tests__/RankSummaryCard.test.tsx
-PASS src/__tests__/sessionTime.test.ts
-PASS src/__tests__/auth.test.ts
-PASS src/__tests__/TournamentCard.test.tsx
-PASS src/__tests__/RankBadge.test.tsx
-PASS src/__tests__/legal.test.ts
+PASS src/__tests__/AuthEntryScreen.test.tsx
 PASS src/__tests__/api.test.ts
   ● Console
 
@@ -593,19 +583,28 @@ PASS src/__tests__/api.test.ts
       at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
-PASS src/__tests__/HonorBadge.test.tsx
-PASS src/__tests__/venueLocation.test.ts
-PASS src/__tests__/honorSystem.test.ts
+PASS src/__tests__/TournamentCard.test.tsx
+PASS src/__tests__/HonorCard.test.tsx
+PASS src/__tests__/RankSummaryCard.test.tsx
+PASS src/__tests__/sessionTime.test.ts
+PASS src/__tests__/exploreStore.test.ts
+PASS src/__tests__/LocalRankSection.test.tsx
+PASS src/__tests__/profileStore.test.ts
+PASS src/__tests__/SplashScreen.test.tsx
 PASS src/__tests__/preferenceFormState.test.ts
-PASS src/__tests__/auditInstants.test.ts
-PASS src/__tests__/challenges.lib.test.ts
+PASS src/__tests__/auth.test.ts
+PASS src/__tests__/RankBadge.test.tsx
+PASS src/__tests__/legal.test.ts
 PASS src/__tests__/displayName.test.ts
+PASS src/__tests__/honorSystem.test.ts
+PASS src/__tests__/auditInstants.test.ts
 PASS src/__tests__/messages.test.ts
+PASS src/__tests__/venueLocation.test.ts
+PASS src/__tests__/challenges.lib.test.ts
 PASS src/__tests__/rank.test.ts
 
 Test Suites: 65 passed, 65 total
-Tests:       988 passed, 988 total
+Tests:       989 passed, 989 total
 Snapshots:   0 total
-Time:        25.122 s, estimated 30 s
+Time:        25.283 s, estimated 26 s
 Ran all test suites.
-exit=0
