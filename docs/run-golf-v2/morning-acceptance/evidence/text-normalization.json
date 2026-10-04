@@ -1,0 +1,65 @@
+[
+  {
+    "log": "mobile-full.log",
+    "original_gzip": "raw-text-originals/mobile-full.log.gz",
+    "original_sha256": "ef99bc104e33e81b23ea01f5547c5549ae269cbee8f8b09dafb152cb1aa7157a",
+    "presentation_sha256": "6a2922b8f34a05c16336a5290d95caaaaf9e375d57a9c9eb1d4868b484fc6ac4",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "native-qa-start.log",
+    "original_gzip": "raw-text-originals/native-qa-start.log.gz",
+    "original_sha256": "a779708047a2060c3788d23c9b15c81dea4a30eb15861ea8434dcb3ad6b46411",
+    "presentation_sha256": "9fce0c71b50f5fa7034ed682779dee4007edf21e0e341810f1ddb58e3e26fcd1",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "original-mobile-probes.log",
+    "original_gzip": "raw-text-originals/original-mobile-probes.log.gz",
+    "original_sha256": "4a3ce7452046e7256e8f4e8561c6747c4d36efe4215c43fb9ac3e8797ce2b702",
+    "presentation_sha256": "a1cfe201ee234fcf95f3190e944e43ad12bae963428e29b3e6444521f99cc6f2",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "qa-docker-sydney.log",
+    "original_gzip": "raw-text-originals/qa-docker-sydney.log.gz",
+    "original_sha256": "6b997386e862aeff831ef980ae9f840680295fce16fc300f10f5a8e60c8ae943",
+    "presentation_sha256": "890b59b5d6a2030e4163a329f831fccac17fe344a694228dd1f917c4e08c8aaf",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "qa-docker-utc.log",
+    "original_gzip": "raw-text-originals/qa-docker-utc.log.gz",
+    "original_sha256": "f332eadb5ae7d906f4cc7ef284b71ce996bd5a2825a2d46b4e59a62112c192b0",
+    "presentation_sha256": "6794b7199fb96ad59621641e71508879959a38048c7db2f6412002832fe9c83c",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "reviewer-qa-down.log",
+    "original_gzip": "raw-text-originals/reviewer-qa-down.log.gz",
+    "original_sha256": "a83de12ffa9f7a7a1d9046e286d7a781ad98f1fc6648d20b716fe8da01f2f066",
+    "presentation_sha256": "b5b7ad9c85cd8316d05a9f58027a31e138684d21b538813efbf73cb2a2f363cf",
+    "transformation": "rstrip trailing whitespace per line; preserve final newline"
+  },
+  {
+    "log": "mobile-lint.log",
+    "original_gzip": "raw-text-originals/mobile-lint.log.gz",
+    "original_sha256": "82185739745a9c9be23cc5f2d819b32f6585cce861a817334295ff3e2da914d4",
+    "presentation_sha256": "8ae4c63116360e3e734c8e841d4577ae411b5954288620970497a7bfeebc2b5f",
+    "transformation": "remove extra final blank lines only"
+  },
+  {
+    "log": "mobile-typecheck.log",
+    "original_gzip": "raw-text-originals/mobile-typecheck.log.gz",
+    "original_sha256": "e96b4b6696feafb0ef61a1beea466f79a3da3d302b0dfd95f2958ae9884108d0",
+    "presentation_sha256": "cb0ebc084de58756f7dde6141bd980c9a01f21956f78132a15bea03d05710955",
+    "transformation": "remove extra final blank lines only"
+  },
+  {
+    "log": "test_independent_followups.py",
+    "original_gzip": "raw-text-originals/test_independent_followups.py.gz",
+    "original_sha256": "f28b5df59bb4c0982074b8caee97474ddbcbd49cfb92b12ffda5f4b2309f22b2",
+    "presentation_sha256": "a98390f6a7331b9d473e29eff3659e452a09f48a12b8d7eaa6307e553eb15b0c",
+    "transformation": "remove extra final blank lines only"
+  }
+]

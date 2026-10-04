@@ -1,0 +1,51 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect _
+
+    async def test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect():
+        await engine.dispose(close=False)
+        async with app.router.lifespan_context(app),_Server() as srv:
+            a,ai,at,b,bi,bt,m=await _pair(srv.client,'independent-block-first')
+            async with AsyncSessionLocal() as db:
+                stored=await chat.send_message(db,UUID(m),UUID(bi),'stored effect must be dropped')
+            ws=await connect(srv.ws(m,at))
+            await _registered(m,1)
+            await ws.close()
+            await _registered(m,0)
+            # A real disconnect cannot leave the admission SHARE lock held.
+            blocked=await asyncio.wait_for(srv.client.post(f'/blocks/{bi}',headers=a),1)
+            assert blocked.status_code==201
+            async with engine.connect() as c:
+                assert (await c.execute(text('SELECT count(*) FROM blocks WHERE blocker_id=:a AND blocked_id=:b'),{'a':ai,'b':bi})).scalar_one()==1
+            invoked=[]
+            async def record(room,data):
+                invoked.append(data)
+            with patch.object(chat.connections,'broadcast',record):
+                async with AsyncSessionLocal() as db:
+                    assert await chat.deliver_message(db,stored) is False
+            assert invoked==[], 'server broadcast invocation, not later client arrival'
+            async with connect(srv.ws(m,at)) as refused:
+>               assert await _closed_with(refused,4003)
+E               assert None
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_block_first.py:44: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 failed, 5 warnings in 1.30s

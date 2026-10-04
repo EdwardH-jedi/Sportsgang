@@ -1,0 +1,10 @@
+{
+  "verified_identity": {
+    "pgid": 28911,
+    "lstart": "Sun Oct 4 15:36:51 2026",
+    "command": "/Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python ../../docs/run-golf-v2/morning-acceptance/evidence/native_recording_api.py",
+    "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api"
+  },
+  "signal": "SIGTERM",
+  "exited": true
+}

@@ -1,0 +1,6 @@
+[qa] stopped metro (pid 27838)
+ Container sg-morning-review-20261004-postgres-1 Stopping
+ Container sg-morning-review-20261004-redis-1 Stopping
+ Container sg-morning-review-20261004-postgres-1 Stopped
+ Container sg-morning-review-20261004-redis-1 Stopped
+[qa] containers stopped; demo data kept in volume sg-morning-review-20261004_pgdata

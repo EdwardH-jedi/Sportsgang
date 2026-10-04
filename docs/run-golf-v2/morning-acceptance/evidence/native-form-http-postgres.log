@@ -1,0 +1,23 @@
+{
+  "http": {
+    "payload": {
+      "match_id": "d8035e8c-674a-43db-95c5-bf5c7b81b0a8",
+      "sport": "running",
+      "starts_at": "2026-10-05T00:30:00.000Z",
+      "ends_at": "2026-10-05T01:30:00.000Z"
+    },
+    "status": 201
+  },
+  "postgres": {
+    "id": "7089c0b5-3975-4c25-af79-b6561549fe23",
+    "status": "proposed",
+    "starts_at": "2026-10-05 00:30:00+00:00",
+    "ends_at": "2026-10-05 01:30:00+00:00"
+  },
+  "form_date": "2026-10-05",
+  "form_start": "11:30 AM Sydney",
+  "form_end": "12:30 PM Sydney",
+  "form_pixels": "native/fresh-default-form.png",
+  "sql": "SELECT id,status,starts_at,ends_at FROM bookings WHERE match_id=:m AND starts_at=:s AND ends_at=:e ORDER BY created_at DESC",
+  "consistent": true
+}

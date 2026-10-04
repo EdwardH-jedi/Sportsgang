@@ -1,0 +1,28 @@
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8152 (pid 24917)
+[qa] Metro up on port 8252 (pid 24970)
+LEGACY PROCESS CHECKS {"api": {"pid": 24917, "started_at": "2026-10-04T04:32:52+00:00", "identity": {"pgid": 24917, "lstart": "Sun Oct 4 15:32:52 2026", "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8152", "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api"}, "start_utc": 1791088372, "check": ["legacy", "pid 24917 matches its legacy record"]}, "metro": {"pid": 24970, "started_at": "2026-10-04T04:32:54+00:00", "identity": {"pgid": 24970, "lstart": "Sun Oct 4 15:32:54 2026", "command": "npm exec expo start --localhost --port 8252", "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/mobile"}, "start_utc": 1791088374, "check": ["legacy", "pid 24970 matches its legacy record"]}}
+[qa] adopted project sg-morning-review-20261004 for this worktree (/private/tmp/sg-morning-review-private-20261004/owners/sg-morning-review-20261004.json)
+[qa] adopted running api pid 24917 (identity verified, record upgraded)
+[qa] adopted running metro pid 24970 (identity verified, record upgraded)
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] worktree /private/tmp/sportsgang-morning-acceptance-20261004
+[qa] HEAD 8b34bca78adc
+[qa] api: started from 8b34bca78adc; apps/api unchanged since, so it serves that code
+[qa] metro: started from 8b34bca78adc; apps/mobile, packages unchanged since, so it serves that code
+[qa] ERROR: environment is not ready (see status above)
+   OK  ownership    project sg-morning-review-20261004 owned by this worktree (adopted 2026-10-04T04:32:56+00:00)
+   OK  containers   sg-morning-review-20261004 postgres + redis
+   OK  api          running: pid 24917 identity verified; http://127.0.0.1:8152 health=200
+   BAD auth read    no cached QA token (run qa:seed)
+   OK  metro        running: pid 24970 identity verified; port 8252 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8152 (expected http://127.0.0.1:8152)
+   fixtures     {'qa_users': 0, 'qa_sessions': 0, 'qa_bookings': 0, 'qa_history_sessions': 0, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8252
+   credentials  /private/tmp/sportsgang-morning-acceptance-20261004/.qa/credentials.json
+   manifest     /private/tmp/sportsgang-morning-acceptance-20261004/.qa/manifest.json
+   logs         /private/tmp/sportsgang-morning-acceptance-20261004/.qa/logs
+up exit 1 (no seeded auth is expected)
+REAL LEGACY ADOPTION same_pids = True
+[qa] ERROR: metro (pid 24970) did not exit; nothing further was signalled
+down exit 1

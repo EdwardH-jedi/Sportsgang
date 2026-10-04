@@ -1,0 +1,7 @@
+{
+  "chunk_id": "cc81b1",
+  "wall_time_seconds": 0.008817459,
+  "exit_code": 0,
+  "original_token_count": 166,
+  "output": "supabase_storage_our-trace|public.ecr.aws/supabase/storage-api:v1.79.28|5000/tcp|running\nsupabase_rest_our-trace|public.ecr.aws/supabase/postgrest:v16.4|3000/tcp|running\nsupabase_auth_our-trace|public.ecr.aws/supabase/gotrue:v2.197.0|9999/tcp|running\nsupabase_kong_our-trace|public.ecr.aws/supabase/kong:2.8.1|8001/tcp, 8088/tcp, 8443-8444/tcp, 0.0.0.0:54321->8000/tcp, [::]:54321->8000/tcp|running\nsupabase_db_our-trace|ghcr.io/supabase/postgres:17.11.0.002|0.0.0.0:54322->5432/tcp, [::]:54322->5432/tcp|running\nsportsgang-qa-redis-1|redis:7-alpine|127.0.0.1:56470->6379/tcp|running\nsportsgang-qa-postgres-1|postgres:16-alpine|127.0.0.1:55470->5432/tcp|running\n"
+}

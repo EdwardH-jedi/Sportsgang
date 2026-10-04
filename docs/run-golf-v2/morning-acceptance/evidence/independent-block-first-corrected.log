@@ -1,0 +1,21 @@
+.                                                                        [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+::test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 5 warnings in 1.30s

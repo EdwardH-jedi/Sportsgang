@@ -1,0 +1,209 @@
+FFFF.FF.....                                                             [100%]
+=================================== FAILURES ===================================
+___________________ test_event_times_follow_one_clock[-120] ____________________
+
+skew = -120
+
+    @pytest.mark.parametrize('skew', [-120, 120])
+    async def test_event_times_follow_one_clock(skew):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            h, hi, _ = await _register(c, 'clock-host')
+            u, ui, _ = await _register(c, 'clock-member')
+            third, ti, _ = await _register(c, 'clock-third')
+            created = await c.post('/events', headers=h, json=_run_session(capacity=2))
+            assert created.status_code == 201, created.text
+            eid = created.json()['id']
+            assert (await c.post(f'/events/{eid}/join', headers=u)).status_code == 200
+            first = await participant(eid, ui)
+            class Skewed(datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return datetime.now(tz) + timedelta(seconds=skew)
+            with patch.object(events, 'datetime', Skewed):
+                assert (await c.post(f'/events/{eid}/leave', headers=u)).status_code == 200
+                left = await participant(eid, ui)
+                assert (await c.post(f'/events/{eid}/join', headers=u)).status_code == 200
+                rejoined = await participant(eid, ui)
+            async with engine.connect() as conn:
+                dbnow = (await conn.execute(text('SELECT clock_timestamp()'))).scalar_one()
+            # Capacity and row identity remain correct even when audit time is wrong.
+            full = await c.post(f'/events/{eid}/join', headers=third)
+            preserved = await participant(eid, ui)
+            controls = first['id'] == left['id'] == rejoined['id'] == preserved['id'] and full.status_code == 422 and rejoined['status']=='joined' and rejoined['left_at'] is None
+            evidence(f'event-clock-{skew}', dict(skew_seconds=skew, first=first, left=left, rejoined=rejoined, db_now=dbnow, row_reuse_and_capacity=controls, rejoin_minus_db_seconds=(rejoined['joined_at']-dbnow).total_seconds()))
+            assert controls
+>           assert left['left_at'] >= first['joined_at'], 'leave must not precede first join'
+E           AssertionError: leave must not precede first join
+E           assert datetime.datetime(2026, 10, 4, 3, 38, 17, 859295, tzinfo=datetime.timezone.utc) >= datetime.datetime(2026, 10, 4, 3, 40, 17, 843576, tzinfo=datetime.timezone.utc)
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:97: AssertionError
+____________________ test_event_times_follow_one_clock[120] ____________________
+
+skew = 120
+
+    @pytest.mark.parametrize('skew', [-120, 120])
+    async def test_event_times_follow_one_clock(skew):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            h, hi, _ = await _register(c, 'clock-host')
+            u, ui, _ = await _register(c, 'clock-member')
+            third, ti, _ = await _register(c, 'clock-third')
+            created = await c.post('/events', headers=h, json=_run_session(capacity=2))
+            assert created.status_code == 201, created.text
+            eid = created.json()['id']
+            assert (await c.post(f'/events/{eid}/join', headers=u)).status_code == 200
+            first = await participant(eid, ui)
+            class Skewed(datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return datetime.now(tz) + timedelta(seconds=skew)
+            with patch.object(events, 'datetime', Skewed):
+                assert (await c.post(f'/events/{eid}/leave', headers=u)).status_code == 200
+                left = await participant(eid, ui)
+                assert (await c.post(f'/events/{eid}/join', headers=u)).status_code == 200
+                rejoined = await participant(eid, ui)
+            async with engine.connect() as conn:
+                dbnow = (await conn.execute(text('SELECT clock_timestamp()'))).scalar_one()
+            # Capacity and row identity remain correct even when audit time is wrong.
+            full = await c.post(f'/events/{eid}/join', headers=third)
+            preserved = await participant(eid, ui)
+            controls = first['id'] == left['id'] == rejoined['id'] == preserved['id'] and full.status_code == 422 and rejoined['status']=='joined' and rejoined['left_at'] is None
+            evidence(f'event-clock-{skew}', dict(skew_seconds=skew, first=first, left=left, rejoined=rejoined, db_now=dbnow, row_reuse_and_capacity=controls, rejoin_minus_db_seconds=(rejoined['joined_at']-dbnow).total_seconds()))
+            assert controls
+            assert left['left_at'] >= first['joined_at'], 'leave must not precede first join'
+>           assert abs((rejoined['joined_at']-dbnow).total_seconds()) < 2, 'rejoin must use the same DB time provenance as first join'
+E           AssertionError: rejoin must use the same DB time provenance as first join
+E           assert 119.991551 < 2
+E            +  where 119.991551 = abs(119.991551)
+E            +    where 119.991551 = <built-in method total_seconds of datetime.timedelta object at 0x10a28e730>()
+E            +      where <built-in method total_seconds of datetime.timedelta object at 0x10a28e730> = (datetime.datetime(2026, 10, 4, 3, 42, 18, 562521, tzinfo=datetime.timezone.utc) - datetime.datetime(2026, 10, 4, 3, 40, 18, 570970, tzinfo=datetime.timezone.utc)).total_seconds
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:98: AssertionError
+___________ test_concurrent_processors_claim_event_once[two-workers] ___________
+
+topology = 'two-workers'
+
+    @pytest.mark.parametrize('topology', ['two-workers', 'worker-internal-endpoint'])
+    async def test_concurrent_processors_claim_event_once(topology):
+        procs = []
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            a, ai, b, bi, bid = await notice(c, topology)
+            procs.append(await worker(bi, bid))
+            api_calls = []
+            try:
+                if topology == 'two-workers':
+                    procs.append(await worker(bi, bid))
+                else:
+                    async def provider(token, title, body, data):
+                        if data['bookingId'] == bid:
+                            api_calls.append(data['type'])
+                        return True
+                    with patch.object(notifications, '_send_expo_push', provider):
+                        r = await c.post('/internal/process-notifications')
+                        assert r.status_code == 200, r.text
+                outputs = [await finish_worker(p) for p in procs]
+                invocations = len(api_calls) + sum(sum(s.startswith('PROVIDER_INVOCATION') for s in lines) for lines in outputs)
+                async with engine.connect() as conn:
+                    row = dict((await conn.execute(text('SELECT sent_at,failed_reason FROM notification_events WHERE booking_id=:b'), {'b':bid})).mappings().one())
+                evidence('notification-' + topology, dict(invocations=invocations, api_calls=api_calls, worker_outputs=outputs, row=row))
+>               assert invocations == 1, 'processors must claim one pending event before invoking the provider'
+E               AssertionError: processors must claim one pending event before invoking the provider
+E               assert 2 == 1
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:139: AssertionError
+____ test_concurrent_processors_claim_event_once[worker-internal-endpoint] _____
+
+topology = 'worker-internal-endpoint'
+
+    @pytest.mark.parametrize('topology', ['two-workers', 'worker-internal-endpoint'])
+    async def test_concurrent_processors_claim_event_once(topology):
+        procs = []
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            a, ai, b, bi, bid = await notice(c, topology)
+            procs.append(await worker(bi, bid))
+            api_calls = []
+            try:
+                if topology == 'two-workers':
+                    procs.append(await worker(bi, bid))
+                else:
+                    async def provider(token, title, body, data):
+                        if data['bookingId'] == bid:
+                            api_calls.append(data['type'])
+                        return True
+                    with patch.object(notifications, '_send_expo_push', provider):
+                        r = await c.post('/internal/process-notifications')
+                        assert r.status_code == 200, r.text
+                outputs = [await finish_worker(p) for p in procs]
+                invocations = len(api_calls) + sum(sum(s.startswith('PROVIDER_INVOCATION') for s in lines) for lines in outputs)
+                async with engine.connect() as conn:
+                    row = dict((await conn.execute(text('SELECT sent_at,failed_reason FROM notification_events WHERE booking_id=:b'), {'b':bid})).mappings().one())
+                evidence('notification-' + topology, dict(invocations=invocations, api_calls=api_calls, worker_outputs=outputs, row=row))
+>               assert invocations == 1, 'processors must claim one pending event before invoking the provider'
+E               AssertionError: processors must claim one pending event before invoking the provider
+E               assert 2 == 1
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:139: AssertionError
+_____________ test_broadcast_total_bound_does_not_scale_per_socket _____________
+
+    async def test_broadcast_total_bound_does_not_scale_per_socket():
+        trials = []
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            for n in [1,3]:
+                a, ai, b, bi, m = await pair(c, 'slow')
+                async with AsyncSessionLocal() as db:
+                    msg = await chat.send_message(db, UUID(m), UUID(ai), 'slow sockets')
+                    sockets = [Socket(slow=True, fail_close=(i==0)) for i in range(n)]
+                    chat.connections._rooms[m] = sockets
+                    t = time.monotonic()
+                    delivery = asyncio.create_task(chat.deliver_message(db, msg))
+                    await sockets[0].send_entered.wait()
+                    block = asyncio.create_task(c.post(f'/blocks/{bi}', headers=a))
+                    await _lock_waiter(BLOCK_WAIT)
+                    assert await delivery
+                    r = await block
+                    trials.append(dict(connections=n, seconds=time.monotonic()-t, block_status=r.status_code, registry_count=len(chat.connections._rooms.get(m, []))))
+            evidence('broadcast-total-time', dict(timeout_seconds=chat.WS_SEND_TIMEOUT_SECONDS, trials=trials, transport='synthetic backpressure at send_json boundary; real PostgreSQL locks and HTTP block'))
+            assert all(t['block_status']==201 and t['registry_count']==0 for t in trials)
+>           assert trials[1]['seconds'] <= chat.WS_SEND_TIMEOUT_SECONDS + 2, 'three sockets must share one total delivery deadline'
+E           AssertionError: three sockets must share one total delivery deadline
+E           assert 15.081020666984841 <= (5.0 + 2)
+E            +  where 5.0 = chat.WS_SEND_TIMEOUT_SECONDS
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:206: AssertionError
+____________ test_stuck_close_does_not_prevent_other_socket_closure ____________
+
+    async def test_stuck_close_does_not_prevent_other_socket_closure():
+        manager = chat.ConnectionManager()
+        stuck, other = Socket(hang_close=True), Socket()
+        manager._rooms['review'] = [stuck, other]
+        task = asyncio.create_task(manager.close_room('review', 4003))
+        await stuck.close_entered.wait()
+        try:
+            await asyncio.wait_for(asyncio.shield(task), .3)
+            timed_out = False
+        except TimeoutError:
+            timed_out = True
+        finally:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+        evidence('socket-close-stuck', dict(first_close_hung=timed_out, second_closed=other.closed, registry=manager._rooms))
+>       assert other.closed, 'a stuck close must not strand later registered sockets'
+E       AssertionError: a stuck close must not strand later registered sockets
+E       assert False
+E        +  where False = <test_independent_followups.Socket object at 0x10a36b680>.closed
+
+../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py:227: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+::test_event_times_follow_one_clock[-120]
+::test_event_times_follow_one_clock[120]
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 failed, 6 passed, 3 warnings in 28.21s

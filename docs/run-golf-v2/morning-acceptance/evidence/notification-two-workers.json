@@ -1,0 +1,18 @@
+{
+  "invocations": 2,
+  "api_calls": [],
+  "worker_outputs": [
+    [
+      "PROVIDER_INVOCATION proposal_received",
+      "RESULT processed=1 failed=0"
+    ],
+    [
+      "PROVIDER_INVOCATION proposal_received",
+      "RESULT processed=1 failed=0"
+    ]
+  ],
+  "row": {
+    "sent_at": "2026-10-04 03:40:19.707796+00:00",
+    "failed_reason": null
+  }
+}

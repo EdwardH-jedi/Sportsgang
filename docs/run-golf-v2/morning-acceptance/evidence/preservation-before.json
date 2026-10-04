@@ -1,0 +1,50 @@
+{
+  "worktrees": [
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang",
+      "head": "e8ad7e3fc0a977396c511fa228980a2af5b22d3a",
+      "status": ""
+    },
+    {
+      "path": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "head": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+      "status": ""
+    },
+    {
+      "path": "/private/tmp/sportsgang-r1-r7-review-20261004",
+      "head": "d41efc2cbabed59f4b988e6177aa9354b9bdc3fd",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2",
+      "head": "541f03512280acb818724456afd2eb88e70558c8",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-fixes",
+      "head": "07893825ffa4250a400608f81605d474ad62558b",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-home-test",
+      "head": "60a264c9180103da18d0aa6aac794840381fd3be",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-morning",
+      "head": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-r1-r7",
+      "head": "cd567c80af2f6d23fc9cbe4bd178507c37d85ae3",
+      "status": ""
+    },
+    {
+      "path": "/Users/edwardhwang/Desktop/github-repo-only/Sportsgang/.claude/worktrees/run-golf-v2-web-refresh",
+      "head": "97990d9773669ae6f0ad813f4246f37353ec558d",
+      "status": ""
+    }
+  ],
+  "report_hashes": {}
+}

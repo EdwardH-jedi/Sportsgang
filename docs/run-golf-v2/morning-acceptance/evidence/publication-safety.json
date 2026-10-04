@@ -1,0 +1,35 @@
+{
+  "private_value_scan": "PASS",
+  "JWT_scan": "PASS",
+  "JSON_and_command_log_links": "PASS",
+  "trailing_whitespace_files_before_normalization": [
+    [
+      "evidence/native-qa-start.log",
+      16
+    ],
+    [
+      "evidence/reviewer-qa-down.log",
+      4
+    ],
+    [
+      "evidence/qa-docker-utc.log",
+      173
+    ],
+    [
+      "evidence/mobile-full.log",
+      42
+    ],
+    [
+      "evidence/qa-docker-sydney.log",
+      173
+    ],
+    [
+      "evidence/original-mobile-probes.log",
+      6
+    ]
+  ],
+  "raw_originals_preserved_and_hash_verified": true,
+  "trailing_whitespace_files_after_normalization": [],
+  "initial_staged_diff_check": "exit2: extra final blank lines in two logs and reviewer probe source; originals preserved before correction",
+  "normalization_records": 9
+}

@@ -1,0 +1,24 @@
+.............                                                            [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+tests_integration/test_contact_authority.py::test_admission_after_a_committed_block_is_refused_and_never_registered
+tests_integration/test_contact_authority.py::test_admission_after_a_committed_block_is_refused_and_never_registered
+tests_integration/test_contact_authority.py::test_delivery_past_its_check_makes_the_block_wait_and_is_ordered_before_closure
+tests_integration/test_contact_authority.py::test_review_two_barrier_case_keeps_admission_and_delivery_before_the_block
+  /private/tmp/sportsgang-morning-acceptance-20261004/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+13 passed, 8 warnings in 12.04s

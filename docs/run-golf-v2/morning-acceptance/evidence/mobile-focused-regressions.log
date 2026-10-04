@@ -1,0 +1,15 @@
+
+> @protin/mobile@0.1.0 test:ci
+> jest --passWithNoTests --ci --runInBand --watchman=false --runTestsByPath src/__tests__/BookingDetailScreen.test.tsx src/__tests__/PartnerDetailScreen.test.tsx src/__tests__/exploreStore.test.ts src/__tests__/MatchesScreen.test.tsx src/__tests__/BookingComposerScreen.test.tsx
+
+PASS src/__tests__/BookingDetailScreen.test.tsx
+PASS src/__tests__/BookingComposerScreen.test.tsx
+PASS src/__tests__/MatchesScreen.test.tsx
+PASS src/__tests__/exploreStore.test.ts
+PASS src/__tests__/PartnerDetailScreen.test.tsx
+
+Test Suites: 5 passed, 5 total
+Tests:       171 passed, 171 total
+Snapshots:   0 total
+Time:        6.007 s
+Ran all test suites within paths "src/__tests__/BookingDetailScreen.test.tsx", "src/__tests__/PartnerDetailScreen.test.tsx", "src/__tests__/exploreStore.test.ts", "src/__tests__/MatchesScreen.test.tsx", "src/__tests__/BookingComposerScreen.test.tsx".

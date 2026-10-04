@@ -1,0 +1,1038 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-04",
+  "prepared_at_utc": "2026-10-04T06:32:20Z",
+  "reviewed_delivery_sha": "8b34bca78adc028423defbfb2caca8f4cc2d8a0a",
+  "reviewed_application_sha": "c46f4146aa1c46dd8d8d1700d69581ff90a7b5d4",
+  "previous_independent_review_sha": "d41efc2cbabed59f4b988e6177aa9354b9bdc3fd",
+  "separate_website_delivery_sha": "97990d9773669ae6f0ad813f4246f37353ec558d",
+  "candidate_branch": "fix/run-golf-v2-morning-q01-q09",
+  "publication_branch": "review/run-golf-v2-morning-acceptance-2026-10-04",
+  "code_verdict": "NEEDS_FIXES",
+  "q01_q09_dispositions": {
+    "Q01": {
+      "disposition": "PASS",
+      "scope": "Real PostgreSQL/WebSocket block-first and effect-first ordering in one API process; finite closure follow-up MA-B remains",
+      "evidence": [
+        "r1-adapted-results.json",
+        "contact-authority-regressions.log",
+        "independent-block-first-corrected.log"
+      ]
+    },
+    "Q02": {
+      "disposition": "PASS",
+      "scope": "Actor deactivation after real pair-lock wait; fresh 403 and zero prohibited rows",
+      "evidence": [
+        "contact-authority-regressions.log",
+        "r1-adapted-results.json"
+      ]
+    },
+    "Q03": {
+      "disposition": "PASS",
+      "scope": "Block ordering, separate worker, timeout and retry; overlapping processor ownership follow-up MA-C remains",
+      "evidence": [
+        "contact-authority-regressions.log",
+        "r1-adapted-results.json",
+        "independent-followups-configured.log"
+      ]
+    },
+    "Q04": {
+      "disposition": "PASS",
+      "scope": "Booking binding epochs: route/account A-B-A, unmount, expired dialog, stale completion/guard ownership",
+      "evidence": [
+        "original-mobile-probes.log",
+        "mobile-focused-regressions.log"
+      ]
+    },
+    "Q05": {
+      "disposition": "PASS",
+      "scope": "Owner epoch, unique operation-token release, both like/block orders and account/reset sequences",
+      "evidence": [
+        "original-mobile-probes.log",
+        "mobile-focused-regressions.log"
+      ]
+    },
+    "Q06": {
+      "disposition": "PASS",
+      "scope": "Block confirmation expiry across blur/refocus, unmount, route/account changes and one-shot/retry controls",
+      "evidence": [
+        "original-mobile-probes.log",
+        "mobile-focused-regressions.log"
+      ]
+    },
+    "Q07": {
+      "disposition": "PASS",
+      "scope": "Newest Matches request, unmount, retained owner replacement and success clearing errors; retained tests distinct from logout",
+      "evidence": [
+        "original-mobile-probes.log",
+        "mobile-focused-regressions.log"
+      ]
+    },
+    "Q08": {
+      "disposition": "PASS",
+      "scope": "Strict timezone-independent identity checks and real unchanged-PID legacy adoption; harness teardown refusal is not a teardown PASS",
+      "evidence": [
+        "qa-unit-utc.log",
+        "qa-docker-utc.log",
+        "qa-docker-sydney.log",
+        "qa-real-legacy-adoption-utc.json",
+        "qa-real-adoption.log"
+      ]
+    },
+    "Q09": {
+      "disposition": "PASS",
+      "scope": "Dedicated iPhone 16e iOS26.3 Expo Go: default/max Done text/target, neighbors, settled swipes, reopen, start/end, actual form-HTTP-PG",
+      "evidence": [
+        "native-layout-and-selection.json",
+        "native-form-http-postgres.json",
+        "native-http-bookings.jsonl",
+        "native/"
+      ]
+    }
+  },
+  "additional_findings": [
+    {
+      "id": "MA-C",
+      "investigation": "C",
+      "severity": "P2",
+      "status": "REPRODUCED",
+      "title": "Concurrent notification processors invoke provider twice for one pending event",
+      "source": [
+        "apps/api/app/services/notifications.py:245-266"
+      ],
+      "evidence": [
+        "notification-two-workers.json",
+        "notification-worker-internal-endpoint.json"
+      ],
+      "acceptance_criteria": [
+        "Atomic per-event ownership with fresh pending predicates after waits",
+        "Two workers and worker/internal overlap invoke provider once per event, including status notices and multi-event batches",
+        "Claim timeout/cancellation/exception/rollback releases ownership and permits pending retry",
+        "Original proposal block-first/effect-first and per-event transaction behavior stay green"
+      ],
+      "external_delivery_limit": "Provider success followed by database commit failure or ambiguous network outcome remains ambiguous; no absolute exactly-once delivery claim"
+    },
+    {
+      "id": "MA-B",
+      "investigation": "B",
+      "severity": "P2",
+      "status": "REPRODUCED_AT_CONTROLLED_TRANSPORT_BOUNDARY",
+      "title": "Serial slow sockets extend contact authority; hanging close and cancellation skip remaining closures",
+      "source": [
+        "apps/api/app/services/chat.py:109-125",
+        "apps/api/app/services/chat.py:137-162"
+      ],
+      "evidence": [
+        "broadcast-total-time.json",
+        "socket-close-stuck.json"
+      ],
+      "measured_seconds": {
+        "one_socket": 5.0357678750297055,
+        "three_sockets": 15.081020666984841
+      },
+      "acceptance_criteria": [
+        "Document and enforce a total room deadline independent of connection count; <=7s is proposed probe budget, not current contract",
+        "One/three/many stalled sockets plus failed/hanging closes finish within total deadline",
+        "All send tasks cancelled and awaited before authority release; no post-block send invocation",
+        "All closure attempts accounted for despite cancellation, registry cleanup cannot lose later sockets",
+        "Real PostgreSQL block completes within bound plus measured DB overhead and original real-WebSocket ordering stays green"
+      ],
+      "limitations": [
+        "Synthetic send_json backpressure/hanging close; no saturated kernel TCP or production incident reproduction",
+        "Block closure runs after commit; hung close delays response/remaining closure, not already-committed pair lock"
+      ]
+    },
+    {
+      "id": "MA-A",
+      "investigation": "A",
+      "severity": "P2",
+      "status": "REPRODUCED",
+      "title": "Group-event first join and leave/rejoin use inconsistent database/API clocks",
+      "source": [
+        "apps/api/app/models/event.py:108",
+        "apps/api/app/services/events.py:435",
+        "apps/api/app/services/events.py:492"
+      ],
+      "evidence": [
+        "event-clock--120.json",
+        "event-clock-120.json"
+      ],
+      "acceptance_criteria": [
+        "Database-derived time authority for first join/leave/rejoin, sampled after event-lock acquisition",
+        "Host +/-120s skew cannot move membership timestamps; first join <= leave <= rejoin",
+        "Real event-lock wait cannot record transition before preceding transition",
+        "Same participant ID, clearing left_at, capacity, concurrency, full-to-open and privacy/terminal rules preserved",
+        "Existing SQLite API and PostgreSQL event regressions pass"
+      ]
+    }
+  ],
+  "implementation_priority": [
+    "MA-C",
+    "MA-B",
+    "MA-A"
+  ],
+  "checks_actually_run": [
+    {
+      "name": "original-mobile-prepare",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/overnight-evidence-2026-10-04/make_mobile_probes.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.021,
+      "log": "evidence/original-mobile-prepare.log"
+    },
+    {
+      "name": "migrate",
+      "command": [
+        ".venv/bin/alembic",
+        "upgrade",
+        "head"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 3.519,
+      "log": "evidence/migrate.log"
+    },
+    {
+      "name": "original-mobile-probes",
+      "command": [
+        "npm",
+        "run",
+        "test:ci",
+        "-w",
+        "@protin/mobile",
+        "--",
+        "--runInBand",
+        "--watchman=false",
+        "--runTestsByPath",
+        "src/__tests__/codex-overnight-booking.test.tsx",
+        "src/__tests__/codex-overnight-store.test.tsx",
+        "src/__tests__/codex-overnight-partner.test.tsx",
+        "src/__tests__/codex-overnight-matches.test.tsx"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 3.919,
+      "log": "evidence/original-mobile-probes.log",
+      "passed": 16,
+      "suites": 4,
+      "warnings": "React act warnings in raw log"
+    },
+    {
+      "name": "adapted-r1",
+      "command": [
+        ".venv/bin/python",
+        "../../docs/run-golf-v2/morning-fixes/evidence/probe_r1_adapted.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 9.788,
+      "log": "evidence/adapted-r1.log",
+      "assertions_passed": 94,
+      "assertions_failed": 0,
+      "harness_errors": 0
+    },
+    {
+      "name": "independent-followups",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 1,
+      "seconds": 1.073,
+      "log": "evidence/independent-followups.log",
+      "setup_errors": 12,
+      "classification": "Reviewer harness omitted API pytest config"
+    },
+    {
+      "name": "mobile-focused-regressions",
+      "command": [
+        "npm",
+        "run",
+        "test:ci",
+        "-w",
+        "@protin/mobile",
+        "--",
+        "--runInBand",
+        "--watchman=false",
+        "--runTestsByPath",
+        "src/__tests__/BookingDetailScreen.test.tsx",
+        "src/__tests__/PartnerDetailScreen.test.tsx",
+        "src/__tests__/exploreStore.test.ts",
+        "src/__tests__/MatchesScreen.test.tsx",
+        "src/__tests__/BookingComposerScreen.test.tsx"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 6.601,
+      "log": "evidence/mobile-focused-regressions.log",
+      "passed": 171,
+      "suites": 5
+    },
+    {
+      "name": "independent-followups-configured",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "pyproject.toml",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_followups.py",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 1,
+      "seconds": 28.595,
+      "log": "evidence/independent-followups-configured.log",
+      "passed": 6,
+      "failed": 6,
+      "warnings": 3,
+      "failure_mapping": {
+        "MA-A": 2,
+        "MA-B": 2,
+        "MA-C": 2
+      }
+    },
+    {
+      "name": "contact-authority-regressions",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests_integration/test_contact_authority.py",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 12.566,
+      "log": "evidence/contact-authority-regressions.log",
+      "passed": 13,
+      "warnings": 8,
+      "skips": 0
+    },
+    {
+      "name": "qa-unit-utc",
+      "command": [
+        "env",
+        "TZ=UTC",
+        "python3",
+        "-m",
+        "unittest",
+        "scripts/qa/test_qa.py",
+        "-v"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 16.843,
+      "log": "evidence/qa-unit-utc.log",
+      "ran": 21,
+      "passed": 14,
+      "skips": 7,
+      "skip_reason": "Docker opt-in"
+    },
+    {
+      "name": "mobile-full",
+      "command": [
+        "npm",
+        "run",
+        "test:ci",
+        "-w",
+        "@protin/mobile",
+        "--",
+        "--runInBand",
+        "--watchman=false"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 28.132,
+      "log": "evidence/mobile-full.log",
+      "passed": 967,
+      "suites": 64,
+      "skips": 0,
+      "console_error_blocks": 18
+    },
+    {
+      "name": "migrate-full",
+      "command": [
+        ".venv/bin/alembic",
+        "upgrade",
+        "head"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.719,
+      "log": "evidence/migrate-full.log"
+    },
+    {
+      "name": "api-unit",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 126.228,
+      "log": "evidence/api-unit.log",
+      "passed": 772,
+      "warnings": 867,
+      "skips": 0
+    },
+    {
+      "name": "qa-docker-utc",
+      "command": [
+        "env",
+        "TZ=UTC",
+        "QA_TEST_DOCKER=1",
+        "python3",
+        "-m",
+        "unittest",
+        "scripts/qa/test_qa.py",
+        "-v"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 90.386,
+      "log": "evidence/qa-docker-utc.log",
+      "ran": 21,
+      "passed": 21,
+      "skips": 0
+    },
+    {
+      "name": "mobile-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@protin/mobile"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 2.743,
+      "log": "evidence/mobile-typecheck.log"
+    },
+    {
+      "name": "mobile-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@protin/mobile"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 2.673,
+      "log": "evidence/mobile-lint.log"
+    },
+    {
+      "name": "integration-full-utc",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests_integration",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 39.869,
+      "log": "evidence/integration-full-utc.log",
+      "passed": 42,
+      "warnings": 35,
+      "skips": 0,
+      "database": "sg_review_full"
+    },
+    {
+      "name": "qa-real-adoption",
+      "command": [
+        "env",
+        "TZ=UTC",
+        "MORNING_ROOT=/private/tmp/sportsgang-morning-acceptance-20261004",
+        "MORNING_BOOT=/private/tmp/sg-morning-review-private-20261004",
+        "MORNING_EVIDENCE=/private/tmp/sportsgang-morning-acceptance-20261004/docs/run-golf-v2/morning-acceptance/evidence",
+        "MORNING_PROJECT=sg-morning-review-20261004",
+        "python3",
+        "docs/run-golf-v2/morning-fixes/evidence/probe_qa_real_adapted.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 17.97,
+      "log": "evidence/qa-real-adoption.log",
+      "adopted_same_API_PID": 24917,
+      "adopted_same_Metro_PID": 24970,
+      "teardown": "Harness caught down exit1 for Metro not exiting; overall probe exit0 is not teardown acceptance"
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.549,
+      "log": "evidence/ruff-check.log"
+    },
+    {
+      "name": "ruff-format",
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.018,
+      "log": "evidence/ruff-format.log",
+      "formatted_files": 148
+    },
+    {
+      "name": "native-qa-start",
+      "command": [
+        "python3",
+        "scripts/qa/qa.py",
+        "up",
+        "--mode",
+        "simulator",
+        "--no-open"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 137.45,
+      "log": "evidence/native-qa-start.log"
+    },
+    {
+      "name": "native-api-stop",
+      "command": [
+        "python3",
+        "scripts/qa/qa.py",
+        "stop-api"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.417,
+      "log": "evidence/native-api-stop.log"
+    },
+    {
+      "name": "qa-docker-sydney",
+      "command": [
+        "env",
+        "TZ=Australia/Sydney",
+        "QA_TEST_DOCKER=1",
+        "python3",
+        "-m",
+        "unittest",
+        "scripts/qa/test_qa.py",
+        "-v"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 92.624,
+      "log": "evidence/qa-docker-sydney.log",
+      "ran": 21,
+      "passed": 21,
+      "skips": 0
+    },
+    {
+      "name": "migrate-sydney",
+      "command": [
+        ".venv/bin/alembic",
+        "upgrade",
+        "head"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 1.235,
+      "log": "evidence/migrate-sydney.log"
+    },
+    {
+      "name": "integration-full-sydney",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests_integration",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 38.898,
+      "log": "evidence/integration-full-sydney.log",
+      "passed": 42,
+      "warnings": 35,
+      "skips": 0,
+      "database": "sg_review_sydney",
+      "database_default_timezone": "Australia/Sydney",
+      "API_session_timezone": "UTC"
+    },
+    {
+      "name": "c01-utc",
+      "command": [
+        ".venv/bin/python",
+        "../../docs/run-golf-v2/morning-fixes/evidence/probe_r6_overlap_by_zone.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.278,
+      "log": "evidence/c01-utc.log"
+    },
+    {
+      "name": "c01-sydney",
+      "command": [
+        "env",
+        "DB_NAIVE_TIMEZONE=Australia/Sydney",
+        ".venv/bin/python",
+        "../../docs/run-golf-v2/morning-fixes/evidence/probe_r6_overlap_by_zone.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.201,
+      "log": "evidence/c01-sydney.log"
+    },
+    {
+      "name": "native-chats",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "chats"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.461,
+      "log": "evidence/native-chats.log"
+    },
+    {
+      "name": "native-default-picker",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-start-picker"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.68,
+      "log": "evidence/native-default-picker.log"
+    },
+    {
+      "name": "native-default-15",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-before-15-to-30"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.527,
+      "log": "evidence/native-default-15.log"
+    },
+    {
+      "name": "native-default-15-to-30",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-15-to-30"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.544,
+      "log": "evidence/native-default-15-to-30.log"
+    },
+    {
+      "name": "native-default-45-to-30",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-45-to-30"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.524,
+      "log": "evidence/native-default-45-to-30.log"
+    },
+    {
+      "name": "native-default-swipe",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-after-swipe"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.498,
+      "log": "evidence/native-default-swipe.log"
+    },
+    {
+      "name": "native-default-settled-form",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-swipe-form"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.414,
+      "log": "evidence/native-default-settled-form.log"
+    },
+    {
+      "name": "native-max-picker",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-start-picker"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.513,
+      "log": "evidence/native-max-picker.log"
+    },
+    {
+      "name": "native-max-15-to-30",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-15-to-30"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.512,
+      "log": "evidence/native-max-15-to-30.log"
+    },
+    {
+      "name": "native-max-45-to-30",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-45-to-30"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.523,
+      "log": "evidence/native-max-45-to-30.log"
+    },
+    {
+      "name": "native-max-swipe",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-after-swipe"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.528,
+      "log": "evidence/native-max-swipe.log"
+    },
+    {
+      "name": "native-max-form-start",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-form-start"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.37,
+      "log": "evidence/native-max-form-start.log"
+    },
+    {
+      "name": "native-max-reopen",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-reopened-start"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.545,
+      "log": "evidence/native-max-reopen.log"
+    },
+    {
+      "name": "native-layout-selection",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/summarize_native.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.028,
+      "log": "evidence/native-layout-selection.log"
+    },
+    {
+      "name": "native-max-end",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "max-end-picker"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.509,
+      "log": "evidence/native-max-end.log"
+    },
+    {
+      "name": "native-default-reopen",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-reopened-start"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.501,
+      "log": "evidence/native-default-reopen.log"
+    },
+    {
+      "name": "native-default-swipe-final",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-swipe-settled"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.534,
+      "log": "evidence/native-default-swipe-final.log"
+    },
+    {
+      "name": "native-default-end",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "default-end-picker"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.487,
+      "log": "evidence/native-default-end.log"
+    },
+    {
+      "name": "native-form-final",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "final-form-before-send"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.4,
+      "log": "evidence/native-form-final.log"
+    },
+    {
+      "name": "native-layout-final",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/summarize_native.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.031,
+      "log": "evidence/native-layout-final.log"
+    },
+    {
+      "name": "native-scroll-to-send",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "form-send-button"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.384,
+      "log": "evidence/native-scroll-to-send.log"
+    },
+    {
+      "name": "native-submit-form",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "fresh-default-form"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.391,
+      "log": "evidence/native-submit-form.log"
+    },
+    {
+      "name": "native-after-submit",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/capture_native.py",
+        "after-native-submit"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.374,
+      "log": "evidence/native-after-submit.log"
+    },
+    {
+      "name": "native-form-http-postgres",
+      "command": [
+        ".venv/bin/python",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/verify_native_data.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 0.368,
+      "log": "evidence/native-form-http-postgres.log",
+      "consistency": "PASS",
+      "HTTP_status": 201,
+      "booking_id": "7089c0b5-3975-4c25-af79-b6561549fe23"
+    },
+    {
+      "name": "independent-block-first",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "pyproject.toml",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_block_first.py",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 1,
+      "seconds": 1.63,
+      "log": "evidence/independent-block-first.log",
+      "failed": 1,
+      "classification": "Reviewer asserted None return from internally asserting helper"
+    },
+    {
+      "name": "native-layout-complete",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/summarize_native.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.036,
+      "log": "evidence/native-layout-complete.log",
+      "native_frame_selection_assertions": "PASS"
+    },
+    {
+      "name": "independent-block-first-corrected",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "pyproject.toml",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/test_independent_block_first.py",
+        "-q",
+        "-rs"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": 0,
+      "seconds": 1.628,
+      "log": "evidence/independent-block-first-corrected.log",
+      "passed": 1,
+      "warnings": 5
+    },
+    {
+      "name": "native-api-recording",
+      "command": [
+        ".venv/bin/python",
+        "../../docs/run-golf-v2/morning-acceptance/evidence/native_recording_api.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api",
+      "exit_code": -15,
+      "seconds": 6420.909,
+      "log": "evidence/native-api-recording.log",
+      "classification": "Long-running temporary server intentionally terminated with verified SIGTERM; subprocess -15, wrapper shell241"
+    },
+    {
+      "name": "native-recording-cleanup",
+      "command": [
+        "python3",
+        "docs/run-golf-v2/morning-acceptance/evidence/stop_recording_api.py"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 0.367,
+      "log": "evidence/native-recording-cleanup.log"
+    },
+    {
+      "name": "reviewer-qa-down",
+      "command": [
+        "python3",
+        "scripts/qa/qa.py",
+        "down"
+      ],
+      "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004",
+      "exit_code": 0,
+      "seconds": 1.04,
+      "log": "evidence/reviewer-qa-down.log"
+    }
+  ],
+  "limitations": [
+    "No production access or production timezone provenance inspection; R6 gate OPEN",
+    "Realtime authority tested in one API process; no multi-process socket closure claim",
+    "Provider invocation uses recording provider, not actual APNs/Expo delivery",
+    "Backpressure/close-hang socket probes inject transport boundary operations; actual real WS ordering tested separately",
+    "Physical device, Android, VoiceOver and signed release builds NOT_RUN",
+    "Native broad form accessibility and cached-font layout outside narrow picker result; clean final submission after default relaunch",
+    "Normal logout unmounts Main; retained-account lifecycle stress tests are distinct",
+    "Real legacy adoption passes identity; in-process harness teardown refusal recorded without declaring a product defect",
+    "Initial two reviewer harness mistakes retained with corrected decisive runs",
+    "No pre-run report hash manifest; final all-existing-doc comparisons use pinned Git blobs and initial clean tree evidence",
+    "Provider-success/database-failure external ambiguity separately reproduced; no exactly-once claim"
+  ],
+  "release_status": "NOT_READY",
+  "remaining_deployment_device_gates": [
+    {
+      "gate": "R6_PRODUCTION_PROVENANCE",
+      "status": "OPEN_NOT_RUN",
+      "acceptance": "Authorized operator supplies historical DB/session TimeZone provenance per morning-fixes/R6_C01_DEPLOYMENT_GATE.md; history disposition before deployment"
+    },
+    {
+      "gate": "SINGLE_API_WEBSOCKET_TOPOLOGY",
+      "status": "OPEN_NOT_RUN",
+      "acceptance": "Verify deployed WebSocket API exactly one process/machine until distributed registry/closure supported"
+    },
+    {
+      "gate": "FOLLOWUP_CODE_ACCEPTANCE",
+      "status": "NEEDS_FIXES",
+      "acceptance": "MA-C/MA-B/MA-A meet decisive tests followed by fresh independent review"
+    },
+    {
+      "gate": "DEVICE_AND_RELEASE_VALIDATION",
+      "status": "OPEN_NOT_RUN",
+      "acceptance": "Required physical/Android/VoiceOver/signed-build and real provider checks completed with their own evidence"
+    }
+  ],
+  "isolation": {
+    "project": "sg-morning-review-20261004",
+    "postgres_port": 55752,
+    "redis_port": 56752,
+    "API_port": 8152,
+    "Metro_port": 8252,
+    "dedicated_simulator": "B0603E58-8D8E-485C-B2C6-BB3B931444C2",
+    "cleanup": "Reviewer API/Metro/containers stopped, private disposable volume retained, only reviewer simulator shut down"
+  },
+  "preservation_evidence": [
+    "evidence/preservation-before.json",
+    "evidence/preservation-after.json",
+    "evidence/services-after.json",
+    "evidence/simulators-after.json"
+  ],
+  "application_code_modified": false,
+  "original_reports_overwritten": false,
+  "production_accessed": false,
+  "deployment_performed": false,
+  "publication_sha_note": "Exact containing commit SHA and remote verification are reported after publication; no self-referential SHA embedded in this commit"
+}

@@ -1,0 +1,54 @@
+{
+  "process_tz": "UTC",
+  "system_zone_lstart_example": "Sun Oct 4 15:32:52 2026",
+  "before": {
+    "api": {
+      "pid": 24917,
+      "started_at": "2026-10-04T04:32:52+00:00",
+      "identity": {
+        "pgid": 24917,
+        "lstart": "Sun Oct 4 15:32:52 2026",
+        "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8152",
+        "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/api"
+      },
+      "start_utc": 1791088372,
+      "check": [
+        "legacy",
+        "pid 24917 matches its legacy record"
+      ]
+    },
+    "metro": {
+      "pid": 24970,
+      "started_at": "2026-10-04T04:32:54+00:00",
+      "identity": {
+        "pgid": 24970,
+        "lstart": "Sun Oct 4 15:32:54 2026",
+        "command": "npm exec expo start --localhost --port 8252",
+        "cwd": "/private/tmp/sportsgang-morning-acceptance-20261004/apps/mobile"
+      },
+      "start_utc": 1791088374,
+      "check": [
+        "legacy",
+        "pid 24970 matches its legacy record"
+      ]
+    }
+  },
+  "after": {
+    "api": {
+      "pid": 24917,
+      "check": [
+        "running",
+        "pid 24917 identity verified"
+      ]
+    },
+    "metro": {
+      "pid": 24970,
+      "check": [
+        "running",
+        "pid 24970 identity verified"
+      ]
+    }
+  },
+  "same_pids": true,
+  "owner_how": "adopted"
+}

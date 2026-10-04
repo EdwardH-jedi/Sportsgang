@@ -1,0 +1,18 @@
+{
+  "timeout_seconds": 5.0,
+  "trials": [
+    {
+      "connections": 1,
+      "seconds": 5.0357678750297055,
+      "block_status": 201,
+      "registry_count": 0
+    },
+    {
+      "connections": 3,
+      "seconds": 15.081020666984841,
+      "block_status": 201,
+      "registry_count": 0
+    }
+  ],
+  "transport": "synthetic backpressure at send_json boundary; real PostgreSQL locks and HTTP block"
+}

@@ -1,0 +1,457 @@
+[
+  {
+    "capture": "after-native-submit",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "chats",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "default-15-to-30",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "y": 457,
+          "height": 44,
+          "width": 55.333343505859375,
+          "x": 310.6666564941406
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-45-to-30",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 310.6666564941406,
+          "width": 55.333343505859375,
+          "y": 457,
+          "height": 44
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-after-swipe",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "y": 457,
+          "height": 44,
+          "x": 310.6666564941406,
+          "width": 55.333343505859375
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-before-15-to-30",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 310.6666564941406,
+          "width": 55.333343505859375,
+          "y": 457,
+          "height": 44
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 15",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-end-picker",
+    "close_targets": [
+      {
+        "label": "Close end time picker",
+        "frame": {
+          "height": 44,
+          "width": 55.333343505859375,
+          "x": 310.6666564941406,
+          "y": 457
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 12",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-reopened-start",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "y": 457,
+          "x": 310.6666564941406,
+          "width": 55.333343505859375,
+          "height": 44
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-start-picker",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 310.6666564941406,
+          "y": 457,
+          "width": 55.333343505859375,
+          "height": 44
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 09",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 00",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "default-swipe-form",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "default-swipe-settled",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "y": 457,
+          "height": 44,
+          "x": 310.6666564941406,
+          "width": 55.333343505859375
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 45",
+        "center": 668.0,
+        "band_center": 668.0,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "final-form-before-send",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "form-send-button",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "fresh-default-form",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "max-15-to-30",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 215,
+          "y": 310.6666717529297,
+          "width": 151,
+          "height": 79.66668701171875
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "max-45-to-30",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 215,
+          "width": 151,
+          "height": 79.66668701171875,
+          "y": 310.6666717529297
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "max-after-swipe",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "x": 215,
+          "y": 310.6666717529297,
+          "width": 151,
+          "height": 79.66668701171875
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 45",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "max-end-picker",
+    "close_targets": [
+      {
+        "label": "Close end time picker",
+        "frame": {
+          "y": 310.6666717529297,
+          "x": 215,
+          "height": 79.66668701171875,
+          "width": 151
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 12",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "max-form-start",
+    "close_targets": [],
+    "wheels": {}
+  },
+  {
+    "capture": "max-reopened-start",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "y": 310.6666717529297,
+          "x": 215,
+          "height": 79.66668701171875,
+          "width": 151
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 30",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  },
+  {
+    "capture": "max-start-picker",
+    "close_targets": [
+      {
+        "label": "Close start time picker",
+        "frame": {
+          "width": 151,
+          "height": 79.66668701171875,
+          "x": 215,
+          "y": 310.6666717529297
+        },
+        "fits": true,
+        "minimum_target": true
+      }
+    ],
+    "wheels": {
+      "hour": {
+        "label": "Set hour 11",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      },
+      "minute": {
+        "label": "Set minute 45",
+        "center": 557.3333435058594,
+        "band_center": 557.3333435058594,
+        "distance": 0.0
+      }
+    }
+  }
+]

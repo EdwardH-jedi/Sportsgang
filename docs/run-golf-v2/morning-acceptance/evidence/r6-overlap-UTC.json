@@ -1,0 +1,20 @@
+{
+  "db_naive_timezone": "UTC",
+  "pinned_session_timezone": "UTC",
+  "rows": [
+    {
+      "actual_instant": "2026-04-04T15:30:00+00:00",
+      "stored_naive": "2026-04-04T15:30:00",
+      "serialized": "2026-04-04T15:30:00+00:00",
+      "exact": true
+    },
+    {
+      "actual_instant": "2026-04-04T16:30:00+00:00",
+      "stored_naive": "2026-04-04T16:30:00",
+      "serialized": "2026-04-04T16:30:00+00:00",
+      "exact": true
+    }
+  ],
+  "distinct_stored_values": 2,
+  "scope": "read-only PostgreSQL scalar conversion plus the actual AuditInstant converter; not a live INSERT"
+}

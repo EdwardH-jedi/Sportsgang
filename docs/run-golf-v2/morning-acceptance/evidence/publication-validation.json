@@ -1,0 +1,9 @@
+{
+  "staged_diff_check_exit": 0,
+  "application_diff_vs_pinned_delivery": [],
+  "staged_scope": "only docs/run-golf-v2/morning-acceptance",
+  "branch_verified": "review/run-golf-v2-morning-acceptance-2026-10-04",
+  "application_sha_verified": "c46f4146aa1c46dd8d8d1700d69581ff90a7b5d4",
+  "private_value_and_JWT_scan_including_decompressed_originals": "PASS",
+  "original_presentation_hashes": "PASS"
+}

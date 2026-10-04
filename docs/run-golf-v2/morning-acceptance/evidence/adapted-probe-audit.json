@@ -1,0 +1,9 @@
+{
+  "original_sha256": "93c7c243b4023b56d986f2c09cca88c196a9313f9981d7b1c1d381719b14cabb",
+  "adapted_sha256": "fb67c43fa27a2a774920e7f0b4feeabed6b65e8e5beaeeaff254235adfe34901",
+  "identical_function_ast": {
+    "matrix": true,
+    "fresh_account": true
+  },
+  "scheduling_inspection": "Block task starts while effect holds FOR SHARE; observe PostgreSQL FOR NO KEY UPDATE waiter, then release effect. Never await completed block while retaining the effect barrier."
+}

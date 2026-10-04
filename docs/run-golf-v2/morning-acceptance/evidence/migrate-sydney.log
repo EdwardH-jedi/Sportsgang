@@ -1,0 +1,18 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, users and profiles
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, discovery actions and matches
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, messages and bookings
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, google calendar tokens, notifications, safety (reports + blocks)
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, add apple_sub to users and make hashed_password nullable
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, profile photos table
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, venues table + bookings.venue_id
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, honor_events + rank_events tables
+INFO  [alembic.runtime.migration] Running upgrade 0008 -> 0009, tournaments + tournament_participants tables
+INFO  [alembic.runtime.migration] Running upgrade 0009 -> 0010, events + event_participants tables
+INFO  [alembic.runtime.migration] Running upgrade 0010 -> 0011, attendance columns on event_participants
+INFO  [alembic.runtime.migration] Running upgrade 0011 -> 0012, extend reports with target_type / target_event_id / status / updated_at
+INFO  [alembic.runtime.migration] Running upgrade 0012 -> 0013, rank_profiles + honor_titles + honor_history tables
+INFO  [alembic.runtime.migration] Running upgrade 0013 -> 0014, sports_challenges + challenge_result_submissions tables
+INFO  [alembic.runtime.migration] Running upgrade 0014 -> 0015, add apple_refresh_token to users (Sign in with Apple revocation)
+INFO  [alembic.runtime.migration] Running upgrade 0015 -> 0016, run + golf v2: sport preference and group-session detail columns
