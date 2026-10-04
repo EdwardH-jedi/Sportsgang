@@ -471,6 +471,48 @@ async def test_rejoin_after_leave(client: AsyncClient) -> None:
     assert rejoin.json()["has_joined"] is True
 
 
+async def test_every_membership_transition_takes_its_time_from_one_clock(client: AsyncClient, monkeypatch) -> None:
+    """Host auto-join, first join, leave and rejoin all use _membership_time (review MA-A)."""
+    from uuid import UUID
+
+    from sqlalchemy import select
+
+    from app.models.event import EventParticipant
+    from app.services import events as events_service
+
+    await _wipe_events()
+    base = datetime(2026, 10, 4, 1, 0, tzinfo=timezone.utc)
+    instants = iter(base + timedelta(minutes=i) for i in range(4))
+
+    async def clock(db) -> datetime:
+        return next(instants)
+
+    monkeypatch.setattr(events_service, "_membership_time", clock)
+    a_tok, _ = await _register(client, "evt_clock_a@example.com")
+    b_tok, b_id = await _register(client, "evt_clock_b@example.com")
+    event_id = (await client.post("/events", json=_payload(), headers=_auth(a_tok))).json()["id"]
+
+    async def guest_row() -> EventParticipant:
+        async with _TestSession() as db:
+            stmt = select(EventParticipant).where(EventParticipant.user_id == UUID(b_id))
+            return (await db.execute(stmt)).scalar_one()
+
+    assert (await client.post(f"/events/{event_id}/join", headers=_auth(b_tok))).status_code == 200
+    first = await guest_row()
+    assert (await client.post(f"/events/{event_id}/leave", headers=_auth(b_tok))).status_code == 200
+    left = await guest_row()
+    assert (await client.post(f"/events/{event_id}/join", headers=_auth(b_tok))).status_code == 200
+    rejoined = await guest_row()
+
+    def utc(value: datetime) -> datetime:  # SQLite returns naive UTC
+        return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value
+
+    assert utc(first.joined_at) == base + timedelta(minutes=1)  # minute 0 was the host's auto-join
+    assert utc(left.left_at) == base + timedelta(minutes=2)
+    assert rejoined.id == first.id and rejoined.left_at is None
+    assert utc(rejoined.joined_at) == base + timedelta(minutes=3)
+
+
 async def test_host_cannot_leave_own_event(client: AsyncClient) -> None:
     """
     Host cannot orphan their own event until a cancel / transfer-host

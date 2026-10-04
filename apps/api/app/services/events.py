@@ -66,6 +66,21 @@ async def _joined_count(db: AsyncSession, event_id: UUID) -> int:
     return int((await db.execute(stmt)).scalar_one())
 
 
+async def _membership_time(db: AsyncSession) -> datetime:
+    """The instant of a join, leave or rejoin, from one clock (review MA-A).
+
+    Every membership transition takes its time from the database clock, read
+    when it is called — after the event row lock, since PostgreSQL's `now()`
+    is the transaction start and can predate a long wait for that lock. So a
+    leave never precedes its join and a rejoin never precedes its leave,
+    whatever the API host's clock says. SQLite (unit tests) has no such
+    clock and uses this process's UTC time.
+    """
+    if db.get_bind().dialect.name == "postgresql":
+        return (await db.execute(select(func.clock_timestamp()))).scalar_one().astimezone(timezone.utc)
+    return datetime.now(tz=timezone.utc)
+
+
 async def _active_participant(db: AsyncSession, event_id: UUID, user_id: UUID) -> EventParticipant | None:
     stmt = select(EventParticipant).where(
         EventParticipant.event_id == event_id,
@@ -260,6 +275,7 @@ async def create_event(db: AsyncSession, host_user_id: UUID, body: CreateEventRe
             event_id=e.id,
             user_id=host_user_id,
             status="joined",
+            joined_at=await _membership_time(db),
         )
     )
     await db.flush()
@@ -429,16 +445,18 @@ async def join_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) ->
         EventParticipant.status == "left",
     )
     prior = (await db.execute(rejoin_stmt)).scalars().first()
+    joined_at = await _membership_time(db)
     if prior is not None:
         prior.status = "joined"
         prior.left_at = None
-        prior.joined_at = datetime.now(tz=timezone.utc)
+        prior.joined_at = joined_at
     else:
         db.add(
             EventParticipant(
                 event_id=e.id,
                 user_id=current_user_id,
                 status="joined",
+                joined_at=joined_at,
             )
         )
 
@@ -489,7 +507,7 @@ async def leave_event(db: AsyncSession, event_id: UUID, current_user_id: UUID) -
     # Soft leave — preserves the audit trail for the future no-show /
     # attendance stream. Status flips to "left" rather than deleting.
     participant.status = "left"
-    participant.left_at = datetime.now(tz=timezone.utc)
+    participant.left_at = await _membership_time(db)
     await db.flush()
 
     new_count = await _joined_count(db, e.id)
