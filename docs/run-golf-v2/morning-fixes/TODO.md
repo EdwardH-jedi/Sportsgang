@@ -1,6 +1,6 @@
 # Morning repair cycle — Q01–Q09 (+ R6/C01 gate)
 
-Status: IN_PROGRESS
+Status: DELIVERED FOR INDEPENDENT REVIEW — Q01–Q09 PASS locally; R6/C01 gate open (production provenance NOT_RUN)
 Branch: `fix/run-golf-v2-morning-q01-q09` (worktree `.claude/worktrees/run-golf-v2-morning`)
 Base: `d41efc2cbabed59f4b988e6177aa9354b9bdc3fd` — the review publication commit. Its
 application code is byte-identical to the reviewed `ecd1e86` (the `ecd1e86..d41efc2`
@@ -54,12 +54,13 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (with reason) · BLOCKED.
 
 ## Broad verification
 
-- [ ] API pytest · [ ] PostgreSQL integration (UTC + Sydney DB default) · [ ] adapted R1 probe
-- [ ] mobile Jest (CI-like) · [ ] mobile lint · [ ] typechecks · [ ] iOS bundle export
-- [ ] QA launcher: Docker-free, Docker host zone, Docker `TZ=UTC`
-- [ ] CI on the pushed head
+- [x] API pytest 772 passed · [x] integration 42/42 UTC and 42/42 Sydney default (Sydney attempt 1: 2 clock-skew failures, explained in the report) · [x] adapted R1 probe 94/0/0
+- [x] mobile Jest 967/967 · [x] review mobile probes 16/16 · [x] mobile lint 0 warnings · [x] typechecks · [x] iOS bundle export
+- [x] QA launcher: Docker-free 14/7 skip and Docker 21/21, host zone and `TZ=UTC`; real legacy adoption under `TZ=UTC`
+- [x] CI: run 37166797458 on `3f5ad41` 8/8; delivery-head run reported in the final message
+- NOT_RUN: physical iPhone, VoiceOver, Android, signed native build, real provider push, production.
 
 ## Delivery
 
-- [ ] IMPLEMENTATION_REPORT.md · [ ] CODEX_REVIEW_HANDOFF.md · [ ] evidence/
-- [ ] Commits per wave, pushed; remote head verified
+- [x] IMPLEMENTATION_REPORT.md · [x] CODEX_REVIEW_HANDOFF.md · [x] R6_C01_DEPLOYMENT_GATE.md · [x] evidence/
+- [x] Commits per wave (`20049db`, `55cebf8`, `3f5ad41`, `c46f414`, `3721d58`, docs), pushed; remote head verified in the final message

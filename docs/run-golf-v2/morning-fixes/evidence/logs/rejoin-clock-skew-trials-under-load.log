@@ -1,0 +1,10 @@
+repaired run 1: 1 failed, 4 passed, 6 deselected, 4 warnings in 3.37s
+repaired run 2: 1 failed, 4 passed, 6 deselected, 4 warnings in 3.32s
+repaired run 3: 5 passed, 6 deselected, 4 warnings in 3.21s
+repaired run 4: 5 passed, 6 deselected, 4 warnings in 3.46s
+repaired run 5: 1 failed, 4 passed, 6 deselected, 4 warnings in 3.32s
+base run 1: 5 passed, 6 deselected, 4 warnings in 3.23s
+base run 2: 5 passed, 6 deselected, 4 warnings in 3.25s
+base run 3: 5 passed, 6 deselected, 4 warnings in 3.22s
+base run 4: 5 passed, 6 deselected, 4 warnings in 3.32s
+base run 5: 5 passed, 6 deselected, 4 warnings in 3.33s

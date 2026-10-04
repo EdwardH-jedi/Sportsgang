@@ -1,0 +1,54 @@
+{
+  "process_tz": "UTC",
+  "system_zone_lstart_example": "Sun Oct 4 11:59:47 2026",
+  "before": {
+    "api": {
+      "pid": 95216,
+      "started_at": "2026-10-04T00:59:47+00:00",
+      "identity": {
+        "pgid": 95216,
+        "lstart": "Sun Oct 4 11:59:47 2026",
+        "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8158",
+        "cwd": "<worktree>/apps/api"
+      },
+      "start_utc": 1791075587,
+      "check": [
+        "legacy",
+        "pid 95216 matches its legacy record"
+      ]
+    },
+    "metro": {
+      "pid": 95251,
+      "started_at": "2026-10-04T00:59:49+00:00",
+      "identity": {
+        "pgid": 95251,
+        "lstart": "Sun Oct 4 11:59:49 2026",
+        "command": "npm exec expo start --localhost --port 8198",
+        "cwd": "<worktree>/apps/mobile"
+      },
+      "start_utc": 1791075589,
+      "check": [
+        "legacy",
+        "pid 95251 matches its legacy record"
+      ]
+    }
+  },
+  "after": {
+    "api": {
+      "pid": 95216,
+      "check": [
+        "running",
+        "pid 95216 identity verified"
+      ]
+    },
+    "metro": {
+      "pid": 95251,
+      "check": [
+        "running",
+        "pid 95251 identity verified"
+      ]
+    }
+  },
+  "same_pids": true,
+  "owner_how": "adopted"
+}

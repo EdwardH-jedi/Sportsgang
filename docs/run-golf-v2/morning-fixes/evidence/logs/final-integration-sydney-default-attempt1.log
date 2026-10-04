@@ -1,0 +1,114 @@
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+...............................FF.........                               [100%]
+=================================== FAILURES ===================================
+__________ test_leave_then_rejoin_reuses_the_participant_row[running] __________
+
+make_session = <function _run_session at 0x10c4a47c0>
+
+    @pytest.mark.parametrize("make_session", [_run_session, _golf_round], ids=["running", "golf"])
+    async def test_leave_then_rejoin_reuses_the_participant_row(make_session) -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "rejoin-host")
+                guest = await _register(client, "rejoin-guest")
+                guest_id = await _me(client, guest)
+                event_id = (await client.post("/events", json=make_session(capacity=4), headers=host)).json()["id"]
+    
+                # Inserted by the column default: an absolute instant (timestamptz).
+                host_row = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) != guest_id)
+                assert host_row["joined_at"].tzinfo is not None
+                assert abs(host_row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+    
+                assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+                first = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+                left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                assert left.status_code == 200, left.text
+                assert left.json()["participant_count"] == 1
+    
+                rejoin = await client.post(f"/events/{event_id}/join", headers=guest)
+                assert rejoin.status_code == 200, rejoin.text
+                body = rejoin.json()
+                assert body["participant_count"] == 2
+                assert body["has_joined"] is True
+                assert guest_id in {p["user_id"] for p in body["participants"]}
+                # Serialized as an explicit UTC instant.
+                assert all(p["joined_at"].endswith("Z") for p in body["participants"])
+    
+                guest_rows = [r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id]
+                assert len(guest_rows) == 1, "rejoin must reactivate, not duplicate"
+                row = guest_rows[0]
+                assert row["id"] == first["id"]
+                assert row["status"] == "joined"
+                assert row["left_at"] is None
+>               assert row["joined_at"] >= first["joined_at"]
+E               assert datetime.datetime(2026, 10, 4, 1, 27, 19, 744288, tzinfo=datetime.timezone.utc) >= datetime.datetime(2026, 10, 4, 1, 27, 19, 746774, tzinfo=datetime.timezone.utc)
+
+tests_integration/test_event_capacity.py:286: AssertionError
+___________ test_leave_then_rejoin_reuses_the_participant_row[golf] ____________
+
+make_session = <function _golf_round at 0x10c4a4720>
+
+    @pytest.mark.parametrize("make_session", [_run_session, _golf_round], ids=["running", "golf"])
+    async def test_leave_then_rejoin_reuses_the_participant_row(make_session) -> None:
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                host = await _register(client, "rejoin-host")
+                guest = await _register(client, "rejoin-guest")
+                guest_id = await _me(client, guest)
+                event_id = (await client.post("/events", json=make_session(capacity=4), headers=host)).json()["id"]
+    
+                # Inserted by the column default: an absolute instant (timestamptz).
+                host_row = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) != guest_id)
+                assert host_row["joined_at"].tzinfo is not None
+                assert abs(host_row["joined_at"] - _utc_now()) < timedelta(minutes=2)
+    
+                assert (await client.post(f"/events/{event_id}/join", headers=guest)).status_code == 200
+                first = next(r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id)
+                left = await client.post(f"/events/{event_id}/leave", headers=guest)
+                assert left.status_code == 200, left.text
+                assert left.json()["participant_count"] == 1
+    
+                rejoin = await client.post(f"/events/{event_id}/join", headers=guest)
+                assert rejoin.status_code == 200, rejoin.text
+                body = rejoin.json()
+                assert body["participant_count"] == 2
+                assert body["has_joined"] is True
+                assert guest_id in {p["user_id"] for p in body["participants"]}
+                # Serialized as an explicit UTC instant.
+                assert all(p["joined_at"].endswith("Z") for p in body["participants"])
+    
+                guest_rows = [r for r in await _participant_rows(event_id) if str(r["user_id"]) == guest_id]
+                assert len(guest_rows) == 1, "rejoin must reactivate, not duplicate"
+                row = guest_rows[0]
+                assert row["id"] == first["id"]
+                assert row["status"] == "joined"
+                assert row["left_at"] is None
+>               assert row["joined_at"] >= first["joined_at"]
+E               assert datetime.datetime(2026, 10, 4, 1, 27, 20, 288816, tzinfo=datetime.timezone.utc) >= datetime.datetime(2026, 10, 4, 1, 27, 20, 291586, tzinfo=datetime.timezone.utc)
+
+tests_integration/test_event_capacity.py:286: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  <worktree>/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+  <worktree>/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+  <worktree>/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+tests_integration/test_contact_authority.py: 5 warnings
+tests_integration/test_contact_restriction.py: 6 warnings
+  <worktree>/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+tests_integration/test_event_capacity.py: 20 warnings
+  <worktree>/apps/api/app/routers/events.py:78: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await events_service.join_event(db, event_id, current_user.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 failed, 40 passed, 34 warnings in 37.95s
+exit 1

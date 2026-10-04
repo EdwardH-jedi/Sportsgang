@@ -1,0 +1,131 @@
+F.FFFFFFF.FFF                                                            [100%]
+=================================== FAILURES ===================================
+E   AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+    assert 631187.726016666 < 631187.719158958
+     +  where 631187.726016666 = time()
+     +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:81: AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+E   AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+    assert 631194.07143225 < 631194.056910541
+     +  where 631194.07143225 = time()
+     +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:81: AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+E   AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+    assert 631199.738530833 < 631199.735599208
+     +  where 631199.738530833 = time()
+     +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:81: AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+E   AssertionError: {"id":"17bdd452-6c36-4a71-b5d6-c8a7fe255a62","match_id":"ae390e62-815a-4950-b063-c15a95280279","sender_id":"8a72708e-8238-46ba-85a6-d86a2e94debb","body":"inactive after lock","created_at":"2026-10-04T00:48:17.122090Z"}
+    assert False
+     +  where False = _restricted(<Response [201 Created]>)
+------------------------------ Captured log call -------------------------------
+ERROR    asyncio:base_events.py:1833 Task exception was never retrieved
+future: <Task finished name='Task-304' coro=<AsyncClient.post() done, defined at <worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py:1838> exception=ReadError('')>
+Traceback (most recent call last):
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/connection.py", line 103, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1859, in post
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "<worktree>/apps/api/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:327: AssertionError: {"id":"17bdd452-6c36-4a71-b5d6-c8a7fe255a62","match_id":"ae390e62-815a-4950-b063-c15a95280279","sender_id":"8a72708e-8238-46ba-85a6-d86a2e94debb","body":"inactive after lock","created_at":"2026-10-04T00:48:17.122090Z"}
+E   AssertionError: {"action":"like","match_created":false,"match_id":null}
+    assert False
+     +  where False = _restricted(<Response [200 OK]>)
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:327: AssertionError: {"action":"like","match_created":false,"match_id":null}
+E   AssertionError: {"id":"f3396d17-0c9c-4965-825f-b83aa6f05e92","match_id":"b57b3626-0c15-4137-9387-c211df2e1574","proposer_id":"178cb30d-2a81-4d2a-872d-c91d4d95cf1a","partner_id":"c1d61a0d-aa28-4fa4-a7f2-6630104be7b8","sport":"running","starts_at":"2026-10-07T00:48:18.385732Z","ends_at":"2026-10-07T01:48:18.385732Z","location":null,"notes":null,"status":"proposed","created_at":"2026-10-04T00:48:18.407733Z","updated_at":"2026-10-04T00:48:18.407733Z","partner":{"user_id":"c1d61a0d-aa28-4fa4-a7f2-6630104be7b8","display_name":"cr-fresh-proposal-b-2034bee8ce@example.com","suburb":null,"bio_excerpt":null,"bio":null,"avatar_url":null,"photo_urls":[],"age":null,"sport_profiles":[],"compatibility":null},"venue":null}
+    assert False
+     +  where False = _restricted(<Response [201 Created]>)
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:327: AssertionError: {"id":"f3396d17-0c9c-4965-825f-b83aa6f05e92","match_id":"b57b3626-0c15-4137-9387-c211df2e1574","proposer_id":"178cb30d-2a81-4d2a-872d-c91d4d95cf1a","partner_id":"c1d61a0d-aa28-4fa4-a7f2-6630104be7b8","sport":"running","starts_at":"2026-10-07T00:48:18.385732Z","ends_at":"2026-10-07T01:48:18.385732Z","location":null,"notes":null,"status":"proposed","created_at":"2026-10-04T00:48:18.407733Z","updated_at":"2026-10-04T00:48:18.407733Z","partner":{"user_id":"c1d61a0d-aa28-4fa4-a7f2-6630104be7b8","display_name":"cr-fresh-proposal-b-2034bee8ce@example.com","suburb":null,"bio_excerpt":null,"bio":null,"avatar_url":null,"photo_urls":[],"age":null,"sport_profiles":[],"compatibility":null},"venue":null}
+E   AttributeError: module 'app.services.safety' has no attribute 'lock_contact'
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:388: AttributeError: module 'app.services.safety' has no attribute 'lock_contact'
+E   AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+    assert 631208.140559958 < 631208.132739916
+     +  where 631208.140559958 = time()
+     +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:81: AssertionError: no backend waited on a lock in %FOR NO KEY UPDATE%
+E   AttributeError: <module 'app.services.notifications' from '<baseline-d41efc2>/apps/api/app/services/notifications.py'> has no attribute 'CONTACT_LOCK_TIMEOUT'
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:470: AttributeError: <module 'app.services.notifications' from '<baseline-d41efc2>/apps/api/app/services/notifications.py'> has no attribute 'CONTACT_LOCK_TIMEOUT'
+E   AssertionError: b''
+    assert '' == 'BARRIER'
+      
+      - BARRIER
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:502: AssertionError: b''
+E   AssertionError: b''
+    assert '' == 'BARRIER'
+      
+      - BARRIER
+<baseline-d41efc2>/apps/api/tests_integration/test_contact_authority.py:502: AssertionError: b''
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests_integration/test_contact_authority.py::test_admission_after_a_committed_block_is_refused_and_never_registered
+PASSED tests_integration/test_contact_authority.py::test_status_notices_about_existing_bookings_still_dispatch_while_blocked
+FAILED tests_integration/test_contact_authority.py::test_admission_past_its_check_makes_the_block_wait_and_is_then_closed
+FAILED tests_integration/test_contact_authority.py::test_delivery_past_its_check_makes_the_block_wait_and_is_ordered_before_closure
+FAILED tests_integration/test_contact_authority.py::test_review_two_barrier_case_keeps_admission_and_delivery_before_the_block
+FAILED tests_integration/test_contact_authority.py::test_actor_deactivated_while_waiting_on_the_pair_lock_is_refused[send]
+FAILED tests_integration/test_contact_authority.py::test_actor_deactivated_while_waiting_on_the_pair_lock_is_refused[like]
+FAILED tests_integration/test_contact_authority.py::test_actor_deactivated_while_waiting_on_the_pair_lock_is_refused[proposal]
+FAILED tests_integration/test_contact_authority.py::test_block_that_commits_before_dispatch_authorization_suppresses_the_proposal_push
+FAILED tests_integration/test_contact_authority.py::test_dispatch_that_holds_the_pair_lock_first_makes_the_block_wait_without_deadlock
+FAILED tests_integration/test_contact_authority.py::test_dispatch_that_cannot_take_the_pair_lock_in_time_leaves_the_notice_pending
+FAILED tests_integration/test_contact_authority.py::test_separate_worker_holding_the_pair_lock_makes_the_block_wait
+FAILED tests_integration/test_contact_authority.py::test_block_committed_while_a_separate_worker_waits_before_the_lock_suppresses_the_push
+11 failed, 2 passed in 29.34s
+exit 1

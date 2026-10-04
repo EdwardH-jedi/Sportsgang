@@ -1,0 +1,431 @@
+test_cleanup_failure_is_reported_and_not_escalated (scripts.qa.test_qa.ComposeLifecycleTests.test_cleanup_failure_is_reported_and_not_escalated) ... [qa] created project qa-test-e98b98da for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-e98b98da)
+ Network qa-test-e98b98da_default Creating 
+ Network qa-test-e98b98da_default Created 
+ Volume qa-test-e98b98da_pgdata Creating 
+ Volume qa-test-e98b98da_pgdata Created 
+ Container qa-test-e98b98da-postgres-1 Creating 
+ Container qa-test-e98b98da-redis-1 Creating 
+ Container qa-test-e98b98da-postgres-1 Created 
+ Container qa-test-e98b98da-redis-1 Created 
+ Container qa-test-e98b98da-redis-1 Starting 
+ Container qa-test-e98b98da-postgres-1 Starting 
+ Container qa-test-e98b98da-postgres-1 Started 
+ Container qa-test-e98b98da-redis-1 Started 
+ Container qa-test-e98b98da-postgres-1 Waiting 
+ Container qa-test-e98b98da-redis-1 Waiting 
+ Container qa-test-e98b98da-redis-1 Healthy 
+ Container qa-test-e98b98da-postgres-1 Healthy 
+[qa] startup failed; stopping what this run started: containers, api
+ok
+test_conflicting_instance_cannot_control_a_running_stack (scripts.qa.test_qa.ComposeLifecycleTests.test_conflicting_instance_cannot_control_a_running_stack) ... [qa] created project qa-test-9e9ddb86 for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-9e9ddb86)
+ Network qa-test-9e9ddb86_default Creating 
+ Network qa-test-9e9ddb86_default Created 
+ Volume qa-test-9e9ddb86_pgdata Creating 
+ Volume qa-test-9e9ddb86_pgdata Created 
+ Container qa-test-9e9ddb86-postgres-1 Creating 
+ Container qa-test-9e9ddb86-redis-1 Creating 
+ Container qa-test-9e9ddb86-redis-1 Created 
+ Container qa-test-9e9ddb86-postgres-1 Created 
+ Container qa-test-9e9ddb86-redis-1 Starting 
+ Container qa-test-9e9ddb86-postgres-1 Starting 
+ Container qa-test-9e9ddb86-postgres-1 Started 
+ Container qa-test-9e9ddb86-redis-1 Started 
+ Container qa-test-9e9ddb86-postgres-1 Waiting 
+ Container qa-test-9e9ddb86-redis-1 Waiting 
+ Container qa-test-9e9ddb86-redis-1 Healthy 
+ Container qa-test-9e9ddb86-postgres-1 Healthy 
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56286 (pid 87098)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56287 (pid 87117)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-9e9ddb86 owned by this worktree (created 2026-10-04T00:56:27+00:00)
+   OK  containers   qa-test-9e9ddb86 postgres + redis
+   OK  api          running: pid 87098 identity verified; http://127.0.0.1:56286 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 87117 identity verified; port 56287 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56286 (expected http://127.0.0.1:56286)
+   app URL      exp://127.0.0.1:56287
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] created project qa-test-392bd133 for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-392bd133)
+ Network qa-test-392bd133_default Creating 
+ Network qa-test-392bd133_default Created 
+ Volume qa-test-392bd133_pgdata Creating 
+ Volume qa-test-392bd133_pgdata Created 
+ Container qa-test-392bd133-postgres-1 Creating 
+ Container qa-test-392bd133-redis-1 Creating 
+ Container qa-test-392bd133-postgres-1 Created 
+ Container qa-test-392bd133-redis-1 Created 
+ Container qa-test-392bd133-postgres-1 Starting 
+ Container qa-test-392bd133-redis-1 Starting 
+ Container qa-test-392bd133-redis-1 Started 
+ Container qa-test-392bd133-postgres-1 Started 
+ Container qa-test-392bd133-redis-1 Waiting 
+ Container qa-test-392bd133-postgres-1 Waiting 
+ Container qa-test-392bd133-redis-1 Healthy 
+ Container qa-test-392bd133-postgres-1 Healthy 
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56313 (pid 87515)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56314 (pid 87533)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-392bd133 owned by this worktree (created 2026-10-04T00:56:35+00:00)
+   OK  containers   qa-test-392bd133 postgres + redis
+   OK  api          running: pid 87515 identity verified; http://127.0.0.1:56313 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 87533 identity verified; port 56314 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56313 (expected http://127.0.0.1:56313)
+   app URL      exp://127.0.0.1:56314
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 87533)
+[qa] stopped api (pid 87515)
+ Container qa-test-392bd133-postgres-1 Stopping 
+ Container qa-test-392bd133-redis-1 Stopping 
+ Container qa-test-392bd133-postgres-1 Stopped 
+ Container qa-test-392bd133-redis-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-392bd133_pgdata
+[qa] stopped metro (pid 87117)
+[qa] stopped api (pid 87098)
+ Container qa-test-9e9ddb86-postgres-1 Stopping 
+ Container qa-test-9e9ddb86-redis-1 Stopping 
+ Container qa-test-9e9ddb86-redis-1 Stopped 
+ Container qa-test-9e9ddb86-postgres-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-9e9ddb86_pgdata
+ok
+test_existing_unrecorded_stack_is_adopted_by_its_own_config_only (scripts.qa.test_qa.ComposeLifecycleTests.test_existing_unrecorded_stack_is_adopted_by_its_own_config_only) ...  Network qa-test-86cb1a3e_default Creating 
+ Network qa-test-86cb1a3e_default Created 
+ Volume qa-test-86cb1a3e_pgdata Creating 
+ Volume qa-test-86cb1a3e_pgdata Created 
+ Container qa-test-86cb1a3e-postgres-1 Creating 
+ Container qa-test-86cb1a3e-redis-1 Creating 
+ Container qa-test-86cb1a3e-redis-1 Created 
+ Container qa-test-86cb1a3e-postgres-1 Created 
+ Container qa-test-86cb1a3e-redis-1 Starting 
+ Container qa-test-86cb1a3e-postgres-1 Starting 
+ Container qa-test-86cb1a3e-postgres-1 Started 
+ Container qa-test-86cb1a3e-redis-1 Started 
+ Container qa-test-86cb1a3e-redis-1 Waiting 
+ Container qa-test-86cb1a3e-postgres-1 Waiting 
+ Container qa-test-86cb1a3e-redis-1 Healthy 
+ Container qa-test-86cb1a3e-postgres-1 Healthy 
+[qa] adopted project qa-test-86cb1a3e for this worktree (<tmp>
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56343 (pid 88263)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56344 (pid 88299)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-86cb1a3e owned by this worktree (adopted 2026-10-04T00:56:49+00:00)
+   OK  containers   qa-test-86cb1a3e postgres + redis
+   OK  api          running: pid 88263 identity verified; http://127.0.0.1:56343 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 88299 identity verified; port 56344 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56343 (expected http://127.0.0.1:56343)
+   app URL      exp://127.0.0.1:56344
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 88299)
+[qa] stopped api (pid 88263)
+ Container qa-test-86cb1a3e-redis-1 Stopping 
+ Container qa-test-86cb1a3e-postgres-1 Stopping 
+ Container qa-test-86cb1a3e-postgres-1 Stopped 
+ Container qa-test-86cb1a3e-redis-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-86cb1a3e_pgdata
+ok
+test_failed_startup_stops_only_what_it_started (scripts.qa.test_qa.ComposeLifecycleTests.test_failed_startup_stops_only_what_it_started) ... [qa] created project qa-test-ecde47d8 for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-ecde47d8)
+ Network qa-test-ecde47d8_default Creating 
+ Network qa-test-ecde47d8_default Created 
+ Volume qa-test-ecde47d8_pgdata Creating 
+ Volume qa-test-ecde47d8_pgdata Created 
+ Container qa-test-ecde47d8-redis-1 Creating 
+ Container qa-test-ecde47d8-postgres-1 Creating 
+ Container qa-test-ecde47d8-postgres-1 Created 
+ Container qa-test-ecde47d8-redis-1 Created 
+ Container qa-test-ecde47d8-postgres-1 Starting 
+ Container qa-test-ecde47d8-redis-1 Starting 
+ Container qa-test-ecde47d8-redis-1 Started 
+ Container qa-test-ecde47d8-postgres-1 Started 
+ Container qa-test-ecde47d8-redis-1 Waiting 
+ Container qa-test-ecde47d8-postgres-1 Waiting 
+ Container qa-test-ecde47d8-redis-1 Healthy 
+ Container qa-test-ecde47d8-postgres-1 Healthy 
+[qa] startup failed; stopping what this run started: containers, api
+ok
+test_occupied_port_moves_and_the_listener_survives (scripts.qa.test_qa.ComposeLifecycleTests.test_occupied_port_moves_and_the_listener_survives) ... [qa] created project qa-test-50e1d345 for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-50e1d345)
+ Network qa-test-50e1d345_default Creating 
+ Network qa-test-50e1d345_default Created 
+ Volume qa-test-50e1d345_pgdata Creating 
+ Volume qa-test-50e1d345_pgdata Created 
+ Container qa-test-50e1d345-postgres-1 Creating 
+ Container qa-test-50e1d345-redis-1 Creating 
+ Container qa-test-50e1d345-postgres-1 Created 
+ Container qa-test-50e1d345-redis-1 Created 
+ Container qa-test-50e1d345-redis-1 Starting 
+ Container qa-test-50e1d345-postgres-1 Starting 
+ Container qa-test-50e1d345-postgres-1 Started 
+ Container qa-test-50e1d345-redis-1 Started 
+ Container qa-test-50e1d345-redis-1 Waiting 
+ Container qa-test-50e1d345-postgres-1 Waiting 
+ Container qa-test-50e1d345-redis-1 Healthy 
+ Container qa-test-50e1d345-postgres-1 Healthy 
+[qa] port 56388 for QA_API_PORT is used by something else; using 56389
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56389 (pid 89175)
+[qa] port 56389 for QA_METRO_PORT is used by something else; using 56392
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56392 (pid 89202)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-50e1d345 owned by this worktree (created 2026-10-04T00:57:00+00:00)
+   OK  containers   qa-test-50e1d345 postgres + redis
+   OK  api          running: pid 89175 identity verified; http://127.0.0.1:56389 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89202 identity verified; port 56392 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56389 (expected http://127.0.0.1:56389)
+   app URL      exp://127.0.0.1:56392
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 89202)
+[qa] stopped api (pid 89175)
+ Container qa-test-50e1d345-postgres-1 Stopping 
+ Container qa-test-50e1d345-redis-1 Stopping 
+ Container qa-test-50e1d345-redis-1 Stopped 
+ Container qa-test-50e1d345-postgres-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-50e1d345_pgdata
+ok
+test_previous_launcher_stack_is_adopted_without_a_restart (scripts.qa.test_qa.ComposeLifecycleTests.test_previous_launcher_stack_is_adopted_without_a_restart) ...  Network qa-test-e3fecfd5_default Creating 
+ Network qa-test-e3fecfd5_default Created 
+ Volume qa-test-e3fecfd5_pgdata Creating 
+ Volume qa-test-e3fecfd5_pgdata Created 
+ Container qa-test-e3fecfd5-redis-1 Creating 
+ Container qa-test-e3fecfd5-postgres-1 Creating 
+ Container qa-test-e3fecfd5-redis-1 Created 
+ Container qa-test-e3fecfd5-postgres-1 Created 
+ Container qa-test-e3fecfd5-postgres-1 Starting 
+ Container qa-test-e3fecfd5-redis-1 Starting 
+ Container qa-test-e3fecfd5-redis-1 Started 
+ Container qa-test-e3fecfd5-postgres-1 Started 
+ Container qa-test-e3fecfd5-postgres-1 Waiting 
+ Container qa-test-e3fecfd5-redis-1 Waiting 
+ Container qa-test-e3fecfd5-redis-1 Healthy 
+ Container qa-test-e3fecfd5-postgres-1 Healthy 
+[qa] adopted project qa-test-e3fecfd5 for this worktree (<tmp>
+[qa] adopted running api pid 89370 (identity verified, record upgraded)
+[qa] adopted running metro pid 89371 (identity verified, record upgraded)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-e3fecfd5 owned by this worktree (adopted 2026-10-04T00:57:14+00:00)
+   OK  containers   qa-test-e3fecfd5 postgres + redis
+   OK  api          running: pid 89370 identity verified; http://127.0.0.1:56425 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89371 identity verified; port 56426 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56425 (expected http://127.0.0.1:56425)
+   app URL      exp://127.0.0.1:56426
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 89371)
+[qa] stopped api (pid 89370)
+ Container qa-test-e3fecfd5-postgres-1 Stopping 
+ Container qa-test-e3fecfd5-redis-1 Stopping 
+ Container qa-test-e3fecfd5-postgres-1 Stopped 
+ Container qa-test-e3fecfd5-redis-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-e3fecfd5_pgdata
+ok
+test_up_restart_down_reset_on_a_disposable_project (scripts.qa.test_qa.ComposeLifecycleTests.test_up_restart_down_reset_on_a_disposable_project) ... [qa] created project qa-test-826f9a11 for this worktree (<tmp>
+[qa] starting PostgreSQL and Redis (project qa-test-826f9a11)
+ Network qa-test-826f9a11_default Creating 
+ Network qa-test-826f9a11_default Created 
+ Volume qa-test-826f9a11_pgdata Creating 
+ Volume qa-test-826f9a11_pgdata Created 
+ Container qa-test-826f9a11-redis-1 Creating 
+ Container qa-test-826f9a11-postgres-1 Creating 
+ Container qa-test-826f9a11-postgres-1 Created 
+ Container qa-test-826f9a11-redis-1 Created 
+ Container qa-test-826f9a11-redis-1 Starting 
+ Container qa-test-826f9a11-postgres-1 Starting 
+ Container qa-test-826f9a11-redis-1 Started 
+ Container qa-test-826f9a11-postgres-1 Started 
+ Container qa-test-826f9a11-postgres-1 Waiting 
+ Container qa-test-826f9a11-redis-1 Waiting 
+ Container qa-test-826f9a11-redis-1 Healthy 
+ Container qa-test-826f9a11-postgres-1 Healthy 
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56440 (pid 89568)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56441 (pid 89591)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-826f9a11 owned by this worktree (created 2026-10-04T00:57:16+00:00)
+   OK  containers   qa-test-826f9a11 postgres + redis
+   OK  api          running: pid 89568 identity verified; http://127.0.0.1:56440 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89591 identity verified; port 56441 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56440 (expected http://127.0.0.1:56440)
+   app URL      exp://127.0.0.1:56441
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 89591)
+[qa] stopped api (pid 89568)
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56440 (pid 89682)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56441 (pid 89700)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-826f9a11 owned by this worktree (created 2026-10-04T00:57:16+00:00)
+   OK  containers   qa-test-826f9a11 postgres + redis
+   OK  api          running: pid 89682 identity verified; http://127.0.0.1:56440 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89700 identity verified; port 56441 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56440 (expected http://127.0.0.1:56440)
+   app URL      exp://127.0.0.1:56441
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 89700)
+[qa] stopped api (pid 89682)
+ Container qa-test-826f9a11-redis-1 Stopping 
+ Container qa-test-826f9a11-postgres-1 Stopping 
+ Container qa-test-826f9a11-postgres-1 Stopped 
+ Container qa-test-826f9a11-redis-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-826f9a11_pgdata
+[qa] starting PostgreSQL and Redis (project qa-test-826f9a11)
+ Container qa-test-826f9a11-redis-1 Starting 
+ Container qa-test-826f9a11-postgres-1 Starting 
+ Container qa-test-826f9a11-redis-1 Started 
+ Container qa-test-826f9a11-postgres-1 Started 
+ Container qa-test-826f9a11-redis-1 Waiting 
+ Container qa-test-826f9a11-postgres-1 Waiting 
+ Container qa-test-826f9a11-redis-1 Healthy 
+ Container qa-test-826f9a11-postgres-1 Healthy 
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56440 (pid 89847)
+<tmp>:748: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("metro", metro_command(cfg, mode), MOBILE_DIR, metro_env(cfg, mode))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] Metro up on port 56441 (pid 89891)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-826f9a11 owned by this worktree (created 2026-10-04T00:57:16+00:00)
+   OK  containers   qa-test-826f9a11 postgres + redis
+   OK  api          running: pid 89847 identity verified; http://127.0.0.1:56440 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89891 identity verified; port 56441 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56440 (expected http://127.0.0.1:56440)
+   app URL      exp://127.0.0.1:56441
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] resetting the sportsgang_qa database (project qa-test-826f9a11 only)
+[qa] stopped api (pid 89847)
+<tmp>:707: ResourceWarning: unclosed file <_io.TextIOWrapper name='<tmp>' mode='a' encoding='UTF-8'>
+  entry = start_detached("api", api_command(cfg, host), API_DIR, api_env(cfg))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[qa] API up at http://127.0.0.1:56440 (pid 89999)
+[qa] worktree <tmp>
+[qa] HEAD 
+[qa] api: start source not recorded
+[qa] metro: start source not recorded
+   OK  ownership    project qa-test-826f9a11 owned by this worktree (created 2026-10-04T00:57:16+00:00)
+   OK  containers   qa-test-826f9a11 postgres + redis
+   OK  api          running: pid 89999 identity verified; http://127.0.0.1:56440 health=200
+   OK  auth read    test stand-in
+   OK  metro        running: pid 89891 identity verified; port 56441 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:56440 (expected http://127.0.0.1:56440)
+   app URL      exp://127.0.0.1:56441
+   credentials  <tmp>
+   manifest     <tmp>
+   logs         <tmp>
+[qa] stopped metro (pid 89891)
+[qa] stopped api (pid 89999)
+ Container qa-test-826f9a11-redis-1 Stopping 
+ Container qa-test-826f9a11-postgres-1 Stopping 
+ Container qa-test-826f9a11-redis-1 Stopped 
+ Container qa-test-826f9a11-postgres-1 Stopped 
+[qa] containers stopped; demo data kept in volume qa-test-826f9a11_pgdata
+ok
+test_concurrent_command_on_the_same_project_is_refused (scripts.qa.test_qa.OwnershipTests.test_concurrent_command_on_the_same_project_is_refused) ... ok
+test_down_with_a_foreign_record_stops_nothing (scripts.qa.test_qa.OwnershipTests.test_down_with_a_foreign_record_stops_nothing) ... [qa] created project qa-test-77218cef for this worktree (<tmp>
+ok
+test_regenerated_config_is_refused (scripts.qa.test_qa.OwnershipTests.test_regenerated_config_is_refused) ... [qa] created project qa-test-50a28a37 for this worktree (<tmp>
+ok
+test_second_worktree_cannot_claim_or_control_the_project (scripts.qa.test_qa.OwnershipTests.test_second_worktree_cannot_claim_or_control_the_project) ... [qa] created project qa-test-c84ec447 for this worktree (<tmp>
+ok
+test_unrecorded_containers_are_adopted_only_with_this_config (scripts.qa.test_qa.OwnershipTests.test_unrecorded_containers_are_adopted_only_with_this_config) ... [qa] adopted project qa-test-af322c5b for this worktree (<tmp>
+ok
+test_volume_without_owner_or_containers_is_refused (scripts.qa.test_qa.OwnershipTests.test_volume_without_owner_or_containers_is_refused) ... ok
+test_group_that_ignores_sigterm_is_killed_only_after_verification (scripts.qa.test_qa.ProcessIdentityTests.test_group_that_ignores_sigterm_is_killed_only_after_verification) ... [qa] killed api (pid 90139) after it ignored SIGTERM
+ok
+test_legacy_record_is_adopted_only_when_every_fact_matches (scripts.qa.test_qa.ProcessIdentityTests.test_legacy_record_is_adopted_only_when_every_fact_matches) ... [qa] adopted running api pid 90423 (identity verified, record upgraded)
+ok
+test_legacy_start_time_check_ignores_the_callers_time_zone (scripts.qa.test_qa.ProcessIdentityTests.test_legacy_start_time_check_ignores_the_callers_time_zone)
+Review Q08: TZ=UTC on a Sydney host made a verified legacy process foreign. ... ok
+test_port_marker_and_prefix_collisions_are_refused (scripts.qa.test_qa.ProcessIdentityTests.test_port_marker_and_prefix_collisions_are_refused) ... ok
+test_process_outside_its_own_group_is_refused (scripts.qa.test_qa.ProcessIdentityTests.test_process_outside_its_own_group_is_refused) ... ok
+test_reused_pid_with_another_start_time_is_never_signalled (scripts.qa.test_qa.ProcessIdentityTests.test_reused_pid_with_another_start_time_is_never_signalled) ... ok
+test_verified_group_is_stopped_with_its_children (scripts.qa.test_qa.ProcessIdentityTests.test_verified_group_is_stopped_with_its_children) ... [qa] stopped api (pid 90632)
+ok
+test_wrong_cwd_is_refused (scripts.qa.test_qa.ProcessIdentityTests.test_wrong_cwd_is_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 91.998s
+
+OK
+exit 0

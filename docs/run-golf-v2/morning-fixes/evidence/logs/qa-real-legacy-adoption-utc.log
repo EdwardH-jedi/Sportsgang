@@ -1,0 +1,46 @@
+[qa] starting PostgreSQL and Redis (project sportsgang-qa)
+ Network sg-morning-q08-real_default Creating 
+ Network sg-morning-q08-real_default Created 
+ Volume sg-morning-q08-real_pgdata Creating 
+ Volume sg-morning-q08-real_pgdata Created 
+ Container sg-morning-q08-real-redis-1 Creating 
+ Container sg-morning-q08-real-postgres-1 Creating 
+ Container sg-morning-q08-real-redis-1 Created 
+ Container sg-morning-q08-real-postgres-1 Created 
+ Container sg-morning-q08-real-redis-1 Starting 
+ Container sg-morning-q08-real-postgres-1 Starting 
+ Container sg-morning-q08-real-postgres-1 Started 
+ Container sg-morning-q08-real-redis-1 Started 
+ Container sg-morning-q08-real-postgres-1 Waiting 
+ Container sg-morning-q08-real-redis-1 Waiting 
+ Container sg-morning-q08-real-redis-1 Healthy 
+ Container sg-morning-q08-real-postgres-1 Healthy 
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] API up at http://127.0.0.1:8158 (pid 95216)
+[qa] Metro up on port 8198 (pid 95251)
+LEGACY PROCESS CHECKS {"api": {"pid": 95216, "started_at": "2026-10-04T00:59:47+00:00", "identity": {"pgid": 95216, "lstart": "Sun Oct 4 11:59:47 2026", "command": "uv run --frozen uvicorn app.main:app --host 127.0.0.1 --port 8158", "cwd": "<worktree>/apps/api"}, "start_utc": 1791075587, "check": ["legacy", "pid 95216 matches its legacy record"]}, "metro": {"pid": 95251, "started_at": "2026-10-04T00:59:49+00:00", "identity": {"pgid": 95251, "lstart": "Sun Oct 4 11:59:49 2026", "command": "npm exec expo start --localhost --port 8198", "cwd": "<worktree>/apps/mobile"}, "start_utc": 1791075589, "check": ["legacy", "pid 95251 matches its legacy record"]}}
+[qa] adopted project sg-morning-q08-real for this worktree (<scratch>/q08-boot/owners/sg-morning-q08-real.json)
+[qa] adopted running api pid 95216 (identity verified, record upgraded)
+[qa] adopted running metro pid 95251 (identity verified, record upgraded)
+[qa] database sportsgang_qa at migration 0016 (head)
+[qa] worktree <worktree>
+[qa] HEAD 20049db38a3b + uncommitted changes
+[qa] api: started from 20049db38a3b; apps/api unchanged since, so it serves that code
+[qa] metro: started from 20049db38a3b at 2026-10-04T00:59:49+00:00; apps/mobile, packages has uncommitted changes — run qa:restart if they are newer
+[qa] ERROR: environment is not ready (see status above)
+   OK  ownership    project sg-morning-q08-real owned by this worktree (adopted 2026-10-04T00:59:51+00:00)
+   OK  containers   sg-morning-q08-real postgres + redis
+   OK  api          running: pid 95216 identity verified; http://127.0.0.1:8158 health=200
+   BAD auth read    no cached QA token (run qa:seed)
+   OK  metro        running: pid 95251 identity verified; port 8198 (simulator mode)
+   OK  app API URL  served http://127.0.0.1:8158 (expected http://127.0.0.1:8158)
+   fixtures     {'qa_users': 0, 'qa_sessions': 0, 'qa_bookings': 0, 'qa_history_sessions': 0, 'migration': '0016'}
+   app URL      exp://127.0.0.1:8198
+   credentials  <worktree>/.qa/credentials.json
+   manifest     <worktree>/.qa/manifest.json
+   logs         <worktree>/.qa/logs
+up exit 1 (no seeded auth is expected)
+REAL LEGACY ADOPTION same_pids = True
+[qa] ERROR: metro (pid 95251) did not exit; nothing further was signalled
+down exit 1
+exit 0
