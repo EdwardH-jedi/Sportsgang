@@ -630,3 +630,200 @@ describe('BookingDetailScreen binding (review R3)', () => {
     expect(u.queryByText('Partner Z')).toBeNull();
   });
 });
+
+// ─── Binding epochs (review Q04) ────────────────────────────────────────────
+// Reviewer probes (codex-overnight-booking) kept as permanent regressions:
+// leaving a route/account binding expires its work for good, even when the
+// same account and booking come back.
+
+describe('BookingDetailScreen binding epochs (review Q04)', () => {
+  let alertSpy: jest.SpyInstance;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockApiGet.mockReset();
+    mockApiPost.mockReset();
+    mockUserId = 'proposer-111';
+    alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  });
+  afterEach(() => alertSpy.mockRestore());
+
+  const book = (id: string, status = 'proposed') => bookingFor(id, `Partner ${id}`, { status });
+  const screen = (id: string) => (
+    <BookingDetailScreen route={makeRoute(id) as any} navigation={makeNavigation() as any} />
+  );
+  const noShowButton = () =>
+    alertSpy.mock.calls[0][2].find((b: { text: string }) => b.text === 'Record no-show');
+
+  it('CONTROL A pending -> B resolves -> A resolves keeps B and targets B', async () => {
+    const a = deferred<any>();
+    const b = deferred<any>();
+    mockApiGet.mockReturnValueOnce(a.promise).mockReturnValueOnce(b.promise);
+    const u = render(screen('A'));
+    u.rerender(screen('B'));
+    await act(async () => b.resolve(book('B')));
+    await act(async () => a.resolve(book('A')));
+    expect(u.getByText('Partner B')).toBeTruthy();
+    expect(u.queryByText('Partner A')).toBeNull();
+    mockApiPost.mockResolvedValue(book('B', 'cancelled'));
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    expect(mockApiPost).toHaveBeenCalledWith('/bookings/B/cancel', {});
+  });
+
+  it('an old transition cannot become current on route A -> B -> A', async () => {
+    const transition = deferred<any>();
+    mockApiGet
+      .mockResolvedValueOnce(book('A'))
+      .mockResolvedValueOnce(book('B'))
+      .mockResolvedValueOnce(book('A', 'confirmed'));
+    mockApiPost.mockReturnValueOnce(transition.promise);
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    u.rerender(screen('B'));
+    await u.findByText('Partner B');
+    u.rerender(screen('A'));
+    await u.findByText('Confirmed');
+    await act(async () => transition.resolve(book('A', 'cancelled')));
+    expect(mockApiPost).toHaveBeenCalledWith('/bookings/A/cancel', {});
+    expect(u.getByText('Confirmed')).toBeTruthy();
+    expect(u.queryByText('Cancelled')).toBeNull();
+  });
+
+  it.each([['succeeds', true], ['fails', false]])(
+    'an old transition that %s after account A -> B -> A changes and alerts nothing',
+    async (_label, succeeds) => {
+      const transition = deferred<any>();
+      mockApiGet
+        .mockResolvedValueOnce(book('A'))
+        .mockResolvedValueOnce(book('A'))
+        .mockResolvedValueOnce(book('A'));
+      mockApiPost.mockReturnValueOnce(transition.promise);
+      const u = render(screen('A'));
+      await u.findByText('Partner A');
+      await act(async () => {
+        fireEvent.press(u.getByText('Cancel'));
+      });
+      mockUserId = 'account-b';
+      u.rerender(screen('A'));
+      await act(async () => {});
+      mockUserId = 'proposer-111';
+      u.rerender(screen('A'));
+      await act(async () => {});
+      await act(async () =>
+        succeeds ? transition.resolve(book('A', 'cancelled')) : transition.reject(new Error('obsolete failure'))
+      );
+      expect(alertSpy).not.toHaveBeenCalled();
+      expect(u.getByText('Awaiting confirmation')).toBeTruthy();
+      expect(u.queryByText('Cancelled')).toBeNull();
+    }
+  );
+
+  it('an old confirmation dialog expires across route A -> B -> A', async () => {
+    mockApiGet
+      .mockResolvedValueOnce(book('A', 'confirmed'))
+      .mockResolvedValueOnce(book('B', 'confirmed'))
+      .mockResolvedValueOnce(book('A', 'confirmed'));
+    mockApiPost.mockResolvedValue(book('A', 'no_show'));
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    fireEvent.press(u.getByText('Record no-show'));
+    const button = noShowButton();
+    u.rerender(screen('B'));
+    await u.findByText('Partner B');
+    u.rerender(screen('A'));
+    await u.findByText('Partner A');
+    await act(async () => button.onPress());
+    expect(mockApiPost).not.toHaveBeenCalled();
+  });
+
+  it('an old confirmation dialog expires across account A -> B -> A', async () => {
+    mockApiGet
+      .mockResolvedValueOnce(book('A', 'confirmed'))
+      .mockRejectedValueOnce(new Error('Not a participant'))
+      .mockResolvedValueOnce(book('A', 'confirmed'));
+    mockApiPost.mockResolvedValue(book('A', 'no_show'));
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    fireEvent.press(u.getByText('Record no-show'));
+    const button = noShowButton();
+    mockUserId = 'account-b';
+    u.rerender(screen('A'));
+    await u.findByText('Not a participant');
+    mockUserId = 'proposer-111';
+    u.rerender(screen('A'));
+    await u.findByText('Partner A');
+    await act(async () => button.onPress());
+    expect(mockApiPost).not.toHaveBeenCalled();
+  });
+
+  it('CONTROL an old confirmation dialog sends nothing after route A -> B', async () => {
+    mockApiGet.mockResolvedValueOnce(book('A', 'confirmed')).mockResolvedValueOnce(book('B', 'confirmed'));
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    fireEvent.press(u.getByText('Record no-show'));
+    const button = noShowButton();
+    u.rerender(screen('B'));
+    await u.findByText('Partner B');
+    await act(async () => button.onPress());
+    expect(mockApiPost).not.toHaveBeenCalled();
+  });
+
+  it('a confirmation dialog sends nothing after unmount', async () => {
+    mockApiGet.mockResolvedValueOnce(book('A', 'confirmed'));
+    mockApiPost.mockResolvedValue(book('A', 'no_show'));
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    fireEvent.press(u.getByText('Record no-show'));
+    const button = noShowButton();
+    u.unmount();
+    await act(async () => button.onPress());
+    expect(mockApiPost).not.toHaveBeenCalled();
+  });
+
+  it('a confirmed no-show in the current epoch posts once to the shown booking', async () => {
+    mockApiGet.mockResolvedValueOnce(book('A', 'confirmed'));
+    mockApiPost.mockReturnValueOnce(new Promise(() => {}));
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    fireEvent.press(u.getByText('Record no-show'));
+    const button = noShowButton();
+    await act(async () => {
+      button.onPress();
+      button.onPress();
+    });
+    expect(mockApiPost.mock.calls).toEqual([['/bookings/A/no-show', {}]]);
+  });
+
+  it('after A -> B -> A the old transition neither blocks nor releases the new one', async () => {
+    const oldCancel = deferred<any>();
+    const newCancel = deferred<any>();
+    mockApiGet
+      .mockResolvedValueOnce(book('A'))
+      .mockResolvedValueOnce(book('B'))
+      .mockResolvedValueOnce(book('A'));
+    mockApiPost.mockReturnValueOnce(oldCancel.promise).mockReturnValueOnce(newCancel.promise);
+    const u = render(screen('A'));
+    await u.findByText('Partner A');
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    u.rerender(screen('B'));
+    await u.findByText('Partner B');
+    u.rerender(screen('A'));
+    await u.findByText('Partner A');
+    await act(async () => {
+      fireEvent.press(u.getByText('Cancel'));
+    });
+    expect(mockApiPost.mock.calls.map((c) => c[0])).toEqual(['/bookings/A/cancel', '/bookings/A/cancel']);
+    await act(async () => oldCancel.reject(new Error('old failure')));
+    // Still the new transition's turn: no buttons to tap twice, no alert.
+    expect(u.queryByText('Cancel')).toBeNull();
+    expect(alertSpy).not.toHaveBeenCalled();
+    await act(async () => newCancel.resolve(book('A', 'cancelled')));
+    expect(u.getByText('Cancelled')).toBeTruthy();
+  });
+});

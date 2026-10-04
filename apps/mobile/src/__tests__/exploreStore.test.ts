@@ -10,7 +10,7 @@
 import * as SecureStore from 'expo-secure-store';
 
 import { api } from '../lib/api';
-import { feedKey, findFeedCard, focusStorageKey, useExploreStore } from '../stores/explore';
+import { feedKey, findFeedCard, focusStorageKey, useExploreStore, type FeedCard } from '../stores/explore';
 
 jest.mock('../lib/api', () => ({
   api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), patch: jest.fn(), delete: jest.fn() },
@@ -396,5 +396,128 @@ describe('blockPartner (review R4)', () => {
     mockPost.mockResolvedValueOnce({ id: 'k1' });
     await store().blockPartner('a');
     expect(ids()).toEqual(['g']);
+  });
+});
+
+// ─── Owner epochs and action ownership (review Q05) ─────────────────────────
+// Reviewer probes (codex-overnight-store) kept as permanent regressions.
+
+describe('owner epochs and action ownership (review Q05)', () => {
+  const ids = () => store().feed.items.map((c) => c.userId);
+  // A card held by a screen (the fixture is looser than PartnerCard).
+  const target = () => ({ ...card('target'), feedSport: 'running' }) as unknown as FeedCard;
+
+  it('a block from the previous owner epoch returns stale after A -> B -> A', async () => {
+    await store().hydrateFocus('a');
+    mockGet.mockResolvedValueOnce(page([card('target')]));
+    await store().loadFeed();
+    const blocked = deferred<unknown>();
+    mockPost.mockReturnValueOnce(blocked.promise);
+    const action = store().blockPartner('target');
+    await store().hydrateFocus('b');
+    await store().hydrateFocus('a');
+    mockGet.mockResolvedValueOnce(page([card('target')]));
+    await store().loadFeed();
+    blocked.resolve({});
+    expect(await action).toBe(false);
+    // The returned owner's freshly loaded feed is left alone.
+    expect(ids()).toEqual(['target']);
+    expect(store().actingOn).toBeNull();
+  });
+
+  it('an old action’s finally cannot release a newer same-target block guard', async () => {
+    await store().hydrateFocus('a');
+    const old = deferred<unknown>();
+    const fresh = deferred<unknown>();
+    mockPost.mockReturnValueOnce(old.promise).mockReturnValueOnce(fresh.promise);
+    const oldAction = store().blockPartner('target');
+    await store().hydrateFocus('b');
+    await store().hydrateFocus('a');
+    const newAction = store().blockPartner('target');
+    old.resolve({});
+    expect(await oldAction).toBe(false);
+    expect(store().actingOn).toBe('target');
+    // Still guarded: a repeated tap sends nothing.
+    expect(await store().blockPartner('target')).toBe(false);
+    expect(mockPost).toHaveBeenCalledTimes(2);
+    fresh.resolve({});
+    expect(await newAction).toBe(true);
+    expect(store().actingOn).toBeNull();
+  });
+
+  it('a like from the previous owner epoch resolves null after A -> B -> A', async () => {
+    await store().hydrateFocus('a');
+    const held = deferred<unknown>();
+    mockPost.mockReturnValueOnce(held.promise);
+    const liking = store().recordAction(target(), 'like');
+    await store().hydrateFocus('b');
+    await store().hydrateFocus('a');
+    held.resolve({ matchCreated: true, matchId: 'old-match' });
+    expect(await liking).toBeNull();
+  });
+
+  it.each([
+    ['an old like, then a new block', 'like', 'block'],
+    ['an old block, then a new like', 'block', 'like'],
+  ] as const)('%s on the same target: only the new action releases the guard', async (_name, first, second) => {
+    await store().hydrateFocus('a');
+    const old = deferred<unknown>();
+    const fresh = deferred<unknown>();
+    mockPost.mockReturnValueOnce(old.promise).mockReturnValueOnce(fresh.promise);
+    const run = (kind: 'like' | 'block') =>
+      kind === 'like' ? store().recordAction(target(), 'like') : store().blockPartner('target');
+    const oldAction = run(first);
+    await store().hydrateFocus('b');
+    await store().hydrateFocus('a');
+    const newAction = run(second);
+    old.reject(new Error('late failure'));
+    await expect(oldAction).rejects.toThrow('late failure');
+    expect(store().actingOn).toBe('target');
+    expect(await store().recordAction(target(), 'pass')).toBeNull();
+    expect(mockPost).toHaveBeenCalledTimes(2);
+    fresh.resolve({ action: 'like', matchCreated: false });
+    expect(await newAction).toBeTruthy();
+    expect(store().actingOn).toBeNull();
+  });
+
+  it('an action from before logout cannot release or report after it', async () => {
+    await store().hydrateFocus('a');
+    const held = deferred<unknown>();
+    mockPost.mockReturnValueOnce(held.promise);
+    const block = store().blockPartner('target');
+    store().reset();
+    await store().hydrateFocus('a');
+    mockPost.mockResolvedValueOnce({ action: 'pass', matchCreated: false });
+    expect(await store().recordAction(target(), 'pass')).toEqual({ action: 'pass', matchCreated: false });
+    held.resolve({});
+    expect(await block).toBe(false);
+    expect(store().actingOn).toBeNull();
+  });
+
+  it('a focus read from an earlier epoch of the same account is not applied', async () => {
+    const first = deferred<string | null>();
+    mockGetItem.mockReturnValueOnce(first.promise);
+    const hydrating = store().hydrateFocus('a', 'running');
+    await store().hydrateFocus('b', 'running');
+    mockGetItem.mockResolvedValueOnce(null);
+    await store().hydrateFocus('a', 'running');
+    expect(store().focusSport).toBe('running');
+    first.resolve('golf');
+    await hydrating;
+    expect(store().focusSport).toBe('running');
+  });
+
+  it('CONTROL a block with a held next page cannot resurrect the blocked person', async () => {
+    await store().hydrateFocus('a');
+    mockGet.mockResolvedValueOnce(page([card('target')], 'cursor'));
+    await store().loadFeed();
+    const more = deferred<unknown>();
+    mockGet.mockReturnValueOnce(more.promise);
+    const paging = store().fetchMore();
+    mockPost.mockResolvedValueOnce({});
+    expect(await store().blockPartner('target')).toBe(true);
+    more.resolve(page([card('target')]));
+    await paging;
+    expect(store().feed.items).toEqual([]);
   });
 });

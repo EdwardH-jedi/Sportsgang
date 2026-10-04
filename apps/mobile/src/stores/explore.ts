@@ -27,6 +27,10 @@
  *   or reports nothing. A successful block bumps the generation, so a first
  *   or next page requested before it can never bring the person back, and
  *   drops the card. The server stays the authority (CONTRACTS.md §8).
+ * - Owner epochs (review Q05): every owner change (account switch, logout)
+ *   starts a new epoch. An action belongs to the epoch it started in and is
+ *   stale in any other, even when the same account comes back (A → B → A).
+ *   Only the action that took the `actingOn` guard may release it.
  */
 
 import { create } from 'zustand';
@@ -93,14 +97,15 @@ interface ExploreState {
   fetchMore: () => Promise<void>;
   /**
    * Like/pass. Resolves null without a request when another action is in
-   * flight, and null when the account changed before the response (the
-   * caller must not act on it). Rejects when the request fails.
+   * flight, and null when the owner epoch changed before the response, even
+   * if the same account is back (the caller must not act on it). Rejects
+   * when the request fails.
    */
   recordAction: (card: FeedCard, action: DiscoveryAction) => Promise<RecordActionResponse | null>;
   /**
    * Block (review R4). False without a request when another action is in
-   * flight, or when the account changed before the response. On success every
-   * in-flight feed page is invalidated and the person leaves the feed.
+   * flight, or when the owner epoch changed before the response. On success
+   * every in-flight feed page is invalidated and the person leaves the feed.
    * Rejects when the request fails (the card stays).
    */
   blockPartner: (userId: string) => Promise<boolean>;
@@ -127,6 +132,20 @@ const DEFAULT_SPORT: FocusSport = 'running';
 // Module-level so it survives store resets: any in-flight response from
 // before a reset/switch can never match the current generation again.
 let feedGeneration = 0;
+
+// Same reasoning: bumped on every owner change, never reused, so work begun
+// for an earlier owner stays stale after A → B → A.
+let ownerEpoch = 0;
+
+// The like/pass/block holding `actingOn` (0: none). Each action takes a new
+// token, so an action from an earlier epoch can never release a newer one.
+let actionToken = 0;
+let actionHolder = 0;
+
+/** The current owner epoch; screens snapshot it with the cards they show. */
+export function currentOwnerEpoch(): number {
+  return ownerEpoch;
+}
 
 export function focusStorageKey(userId: string): string {
   return `sportsgang.focus.${userId}`;
@@ -224,15 +243,18 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
     if (ownerId !== userId) {
       // Account switch without a logout in between: never carry over state.
       feedGeneration += 1;
+      ownerEpoch += 1;
+      actionHolder = 0;
       set({ ownerId: userId, focusHydrated: false, view: 'sessions', strictPace: false, feed: EMPTY_FEED, actingOn: null });
     }
+    const epoch = ownerEpoch;
     let stored: string | null = null;
     try {
       stored = await SecureStore.getItemAsync(focusStorageKey(userId));
     } catch {
       stored = null;
     }
-    if (get().ownerId !== userId) return; // logged out / switched meanwhile
+    if (ownerEpoch !== epoch) return; // logged out / switched meanwhile
     set({
       focusSport: isFocusSport(stored) ? stored : (fallback ?? DEFAULT_SPORT),
       focusHydrated: true,
@@ -334,7 +356,9 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
 
   recordAction: async (card, action) => {
     if (get().actingOn !== null) return null;
-    const owner = get().ownerId;
+    const epoch = ownerEpoch;
+    const token = ++actionToken;
+    actionHolder = token;
     set({ actingOn: card.userId });
     try {
       // Always the sport this card was loaded for — a card left on screen
@@ -344,24 +368,29 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
         action,
         sport: card.feedSport,
       });
-      if (get().ownerId !== owner) return null;
+      if (ownerEpoch !== epoch) return null;
       const { feed } = get();
       if (feed.sport === card.feedSport) {
         set({ feed: { ...feed, items: feed.items.filter((c) => c.userId !== card.userId) } });
       }
       return result;
     } finally {
-      if (get().actingOn === card.userId) set({ actingOn: null });
+      if (actionHolder === token) {
+        actionHolder = 0;
+        set({ actingOn: null });
+      }
     }
   },
 
   blockPartner: async (userId) => {
     if (get().actingOn !== null) return false;
-    const owner = get().ownerId;
+    const epoch = ownerEpoch;
+    const token = ++actionToken;
+    actionHolder = token;
     set({ actingOn: userId });
     try {
       await blockUser(userId);
-      if (get().ownerId !== owner) return false;
+      if (ownerEpoch !== epoch) return false;
       // Any page requested before the block may still list this person:
       // invalidate them all, then drop the card from what is loaded. A first
       // page that was interrupted is asked for again (the server now
@@ -374,12 +403,17 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       if (feed.status === 'loading') void get().loadFeed({ force: true });
       return true;
     } finally {
-      if (get().actingOn === userId) set({ actingOn: null });
+      if (actionHolder === token) {
+        actionHolder = 0;
+        set({ actingOn: null });
+      }
     }
   },
 
   reset: () => {
     feedGeneration += 1;
+    ownerEpoch += 1;
+    actionHolder = 0;
     set({
       ownerId: null,
       focusSport: DEFAULT_SPORT,

@@ -15,7 +15,7 @@ import {
   paceText,
   TIME_OPTIONS,
 } from '../../lib/sportPreferences';
-import { findFeedCard, useExploreStore } from '../../stores/explore';
+import { currentOwnerEpoch, findFeedCard, useExploreStore } from '../../stores/explore';
 import { colors, spacing, typography } from '../../theme';
 import type { PartnerDetailScreenProps } from '../../navigation/types';
 import { Avatar, TIER_LABEL, sportSummaryFor } from './PartnerCardView';
@@ -56,14 +56,19 @@ function detailRows(sport: 'running' | 'golf', s: PartnerSportSummary): { label:
  */
 export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenProps) {
   const { userId, sport } = route.params;
-  // Snapshot at mount: acting removes the card from the feed list.
+  // Snapshot at mount: acting removes the card from the feed list. The card
+  // belongs to the owner epoch it was loaded in (review Q06).
   const [card] = useState(() => findFeedCard(userId, sport));
+  const [ownerEpoch] = useState(currentOwnerEpoch);
   const recordAction = useExploreStore((s) => s.recordAction);
   const blockPartner = useExploreStore((s) => s.blockPartner);
   const actingOn = useExploreStore((s) => s.actingOn);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<'like' | 'pass' | 'block' | null>(null);
   const mounted = useRef(true);
+  // The open block confirmation. Losing focus, a route change and unmount
+  // each move it on, so an earlier dialog's Block can never send anything.
+  const confirmation = useRef(0);
 
   useEffect(() => {
     mounted.current = true;
@@ -71,6 +76,21 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
       mounted.current = false;
     };
   }, []);
+
+  useEffect(
+    () =>
+      navigation.addListener('blur', () => {
+        confirmation.current += 1;
+      }),
+    [navigation]
+  );
+
+  useEffect(
+    () => () => {
+      confirmation.current += 1;
+    },
+    [userId, sport]
+  );
 
   if (!card) {
     return (
@@ -93,9 +113,12 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
   // Navigate only from this screen while it is still the one on top; the
   // store returns null/false when the account changed meanwhile.
   const canNavigate = () => mounted.current && navigation.isFocused();
+  // Checked before anything is sent: a card loaded for an earlier owner
+  // epoch is never acted on, even if the same account is back (review Q06).
+  const ownerCurrent = () => currentOwnerEpoch() === ownerEpoch;
 
   async function act(action: 'like' | 'pass') {
-    if (!card || busy) return;
+    if (!card || busy || !ownerCurrent()) return;
     setError(null);
     setPending(action);
     try {
@@ -134,10 +157,18 @@ export function PartnerDetailScreen({ navigation, route }: PartnerDetailScreenPr
   }
 
   function confirmBlock() {
-    if (!card || busy) return;
+    if (!card || busy || !ownerCurrent()) return;
+    const opened = ++confirmation.current;
+    // Confirming only counts for the screen state the dialog was opened in:
+    // same owner epoch, same route, still mounted and on top.
+    const confirm = () => {
+      if (opened !== confirmation.current || !canNavigate() || !ownerCurrent()) return;
+      confirmation.current += 1;
+      void block();
+    };
     Alert.alert(`Block ${card.displayName}?`, "You won't see each other in Explore and they can't message you.", [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Block', style: 'destructive', onPress: () => void block() },
+      { text: 'Block', style: 'destructive', onPress: confirm },
     ]);
   }
 

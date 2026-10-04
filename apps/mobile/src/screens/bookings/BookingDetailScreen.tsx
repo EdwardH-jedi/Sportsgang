@@ -78,19 +78,22 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
   const { bookingId } = route.params;
   const { user } = useAuthStore();
   // Everything shown or acted on belongs to one binding: this account and
-  // this route's booking (review R3). Results are tagged with the binding
-  // they were requested for and only render while it is still current, so a
-  // late response for another booking or account can never show — or be
-  // acted on — after the route or account changed.
+  // this route's booking (review R3). Each binding gets a new epoch, and the
+  // epoch, not the account/booking string, is what results are tagged with
+  // (review Q04): leaving a binding expires its fetches, transitions and
+  // dialogs for good, even when the same account and booking come back
+  // (A → B → A). A late response for another binding can never show — or
+  // be acted on — after the route or account changed.
   const binding = user?.id ? `${user.id}|${bookingId}` : null;
-  const bindingRef = useRef(binding);
-  bindingRef.current = binding;
+  const bound = useRef({ binding, epoch: 0 });
+  if (bound.current.binding !== binding) bound.current = { binding, epoch: bound.current.epoch + 1 };
+  const epoch = bound.current.epoch;
   const generation = useRef(0);
-  const actingOn = useRef<string | null>(null);
+  const actingOn = useRef<number | null>(null);
   const mounted = useRef(true);
-  const [loaded, setLoaded] = useState<{ binding: string; booking: BookingDetail } | null>(null);
-  const [failure, setFailure] = useState<{ binding: string; message: string } | null>(null);
-  const [actingBinding, setActingBinding] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState<{ epoch: number; booking: BookingDetail } | null>(null);
+  const [failure, setFailure] = useState<{ epoch: number; message: string } | null>(null);
+  const [actingEpoch, setActingEpoch] = useState<number | null>(null);
 
   useEffect(() => {
     mounted.current = true;
@@ -99,29 +102,29 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
     };
   }, []);
 
-  const booking = loaded && loaded.binding === binding ? loaded.booking : null;
-  const error = failure && failure.binding === binding ? failure.message : null;
+  const booking = loaded && loaded.epoch === epoch ? loaded.booking : null;
+  const error = failure && failure.epoch === epoch ? failure.message : null;
   const isLoading = !booking && !error;
-  const isActing = actingBinding !== null && actingBinding === binding;
+  const isActing = actingEpoch === epoch;
 
   const fetchBooking = useCallback(async () => {
     if (!binding) return;
     const gen = ++generation.current;
-    const current = () => mounted.current && gen === generation.current && bindingRef.current === binding;
+    const current = () => mounted.current && gen === generation.current && bound.current.epoch === epoch;
     setFailure(null);
     try {
       const data = await api.get<BookingDetail>(`/bookings/${bookingId}`);
       if (!current()) return;
       if (data?.id !== bookingId) {
-        setFailure({ binding, message: 'Booking not found.' });
+        setFailure({ epoch, message: 'Booking not found.' });
         return;
       }
-      setLoaded({ binding, booking: data });
+      setLoaded({ epoch, booking: data });
     } catch (err) {
       if (!current()) return;
-      setFailure({ binding, message: err instanceof Error ? err.message : 'Failed to load booking.' });
+      setFailure({ epoch, message: err instanceof Error ? err.message : 'Failed to load booking.' });
     }
-  }, [binding, bookingId]);
+  }, [binding, bookingId, epoch]);
 
   useEffect(() => {
     void fetchBooking();
@@ -129,27 +132,29 @@ export function BookingDetailScreen({ route, navigation }: BookingDetailScreenPr
 
   const performTransition = useCallback(
     async (action: string) => {
-      // The booking being shown is the one acted on, for this binding only
-      // (a confirmation dialog opened for an earlier binding is dropped).
-      if (!booking || !binding || bindingRef.current !== binding || actingOn.current === binding) return;
+      // The booking being shown is the one acted on, for this epoch only and
+      // only while mounted: a confirmation dialog opened for an earlier
+      // epoch, or answered after unmount, sends nothing. One at a time.
+      const current = () => mounted.current && bound.current.epoch === epoch;
+      if (!booking || !binding || !current() || actingOn.current === epoch) return;
       const target = booking.id;
-      actingOn.current = binding;
-      setActingBinding(binding);
-      const current = () => mounted.current && bindingRef.current === binding;
+      actingOn.current = epoch;
+      setActingEpoch(epoch);
       try {
         const updated = await api.post<BookingDetail>(`/bookings/${target}/${action}`, {});
         if (!current() || updated?.id !== target) return;
         generation.current += 1; // an older in-flight fetch must not undo this
-        setLoaded({ binding, booking: updated });
+        setLoaded({ epoch, booking: updated });
       } catch (err) {
         if (!current()) return;
         Alert.alert('Error', err instanceof Error ? err.message : 'Action failed.');
       } finally {
-        if (actingOn.current === binding) actingOn.current = null;
-        if (mounted.current) setActingBinding((b) => (b === binding ? null : b));
+        // Epochs only grow, so only this transition can hold this one.
+        if (actingOn.current === epoch) actingOn.current = null;
+        if (mounted.current) setActingEpoch((e) => (e === epoch ? null : e));
       }
     },
-    [booking, binding]
+    [booking, binding, epoch]
   );
 
   // No-show is the only transition the FSM lets either party trigger, so we

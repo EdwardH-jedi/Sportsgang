@@ -66,7 +66,13 @@ const golfer = {
   },
 };
 
-const navigation = { navigate: jest.fn(), goBack: jest.fn(), replace: jest.fn(), isFocused: jest.fn(() => true) };
+const navigation = {
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+  replace: jest.fn(),
+  isFocused: jest.fn(() => true),
+  addListener: jest.fn((_event: string, _listener: () => void) => jest.fn()),
+};
 
 async function loadGolfFeed() {
   useExploreStore.getState().reset();
@@ -319,5 +325,181 @@ describe('block races (review R4)', () => {
     await act(async () => liking.resolve({ action: 'like', matchCreated: true, matchId: 'm9' }));
     expect(navigation.replace).not.toHaveBeenCalled();
     expect(navigation.goBack).not.toHaveBeenCalled();
+  });
+});
+
+// ─── Block confirmation expiry (review Q06) ─────────────────────────────────
+// Reviewer probes (codex-overnight-partner) kept as permanent regressions.
+// The account-replacement cases drive a retained screen directly; normal
+// logout resets the navigation stack and unmounts this screen instead.
+
+describe('block confirmation expiry (review Q06)', () => {
+  const blockButton = () => (Alert.alert as jest.Mock).mock.calls[0][2].find((b: { text: string }) => b.text === 'Block');
+  const golfFeed = { items: [golfer], total: 1, limit: 20, offset: 0, nextCursor: null };
+  function detail(userId = 'g1') {
+    return (
+      <PartnerDetailScreen
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        navigation={navigation as any}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        route={{ key: 'PartnerDetail', name: 'PartnerDetail', params: { userId, sport: 'golf' } } as any}
+      />
+    );
+  }
+  async function loadFor(owner: string) {
+    await useExploreStore.getState().hydrateFocus(owner);
+    useExploreStore.getState().setFocusSport('golf');
+    mockGet.mockResolvedValueOnce(golfFeed);
+    await useExploreStore.getState().loadFeed();
+  }
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    mockGet.mockReset();
+    mockPost.mockReset();
+    navigation.isFocused.mockReturnValue(true);
+    navigation.addListener.mockImplementation(() => jest.fn());
+    await loadGolfFeed();
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it('a block dialog opened for owner A cannot execute for owner B', async () => {
+    await loadFor('a');
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    await act(async () => useExploreStore.getState().hydrateFocus('b'));
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('a block dialog opened for owner A cannot execute after A -> B -> A', async () => {
+    await loadFor('a');
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    await act(async () => useExploreStore.getState().hydrateFocus('b'));
+    await act(async () => loadFor('a'));
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+    expect(useExploreStore.getState().actingOn).toBeNull();
+  });
+
+  it('Show interest on a card loaded for an earlier owner epoch sends nothing', async () => {
+    await loadFor('a');
+    const u = renderDetail();
+    await act(async () => useExploreStore.getState().hydrateFocus('b'));
+    await act(async () => loadFor('a'));
+    mockPost.mockResolvedValue({ action: 'like', matchCreated: true, matchId: 'm9' });
+    await act(async () => {
+      fireEvent.press(u.getByLabelText('Show interest'));
+    });
+    expect(mockPost).not.toHaveBeenCalled();
+    expect(navigation.replace).not.toHaveBeenCalled();
+  });
+
+  it('a block dialog sends nothing after the screen unmounts', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    u.unmount();
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('a block dialog stays expired once the screen lost focus, even after focus returns', async () => {
+    const listeners: Record<string, () => void> = {};
+    navigation.addListener.mockImplementation((event: string, listener: () => void) => {
+      listeners[event] = listener;
+      return jest.fn();
+    });
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    act(() => listeners.blur());
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+    expect(u.getByText('Morgan')).toBeTruthy();
+  });
+
+  it('a block dialog sends nothing while another screen is on top', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    navigation.isFocused.mockReturnValue(false);
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('a block dialog sends nothing after the route moves to another person', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = render(detail('g1'));
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    u.rerender(detail('g2'));
+    mockPost.mockResolvedValue({});
+    await act(async () => button.onPress());
+    expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('one confirmation sends one block however often it fires', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    const button = blockButton();
+    mockPost.mockResolvedValue({ id: 'b1' });
+    await act(async () => {
+      button.onPress();
+      button.onPress();
+    });
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/blocks/g1']);
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('a failed block can be retried from a new confirmation', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _b, buttons) => {
+      buttons?.find((b) => b.text === 'Block')?.onPress?.();
+    });
+    mockPost.mockRejectedValueOnce(new Error('Network request failed')).mockResolvedValueOnce({ id: 'b1' });
+    const u = renderDetail();
+    await act(async () => {
+      fireEvent.press(u.getByTestId('partner-block'));
+    });
+    await waitFor(() => u.getByText('Network request failed'));
+    expect(navigation.goBack).not.toHaveBeenCalled();
+    await act(async () => {
+      fireEvent.press(u.getByTestId('partner-block'));
+    });
+    expect(mockPost.mock.calls.map((c) => c[0])).toEqual(['/blocks/g1', '/blocks/g1']);
+    expect(useExploreStore.getState().feed.items.map((c) => c.userId)).not.toContain('g1');
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('CONTROL a block completed after focus loss does not navigate', async () => {
+    let resolve!: (v: unknown) => void;
+    mockPost.mockReturnValueOnce(
+      new Promise((a) => {
+        resolve = a;
+      })
+    );
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _b, buttons) => {
+      buttons?.find((b) => b.text === 'Block')?.onPress?.();
+    });
+    const u = renderDetail();
+    fireEvent.press(u.getByText('Block'));
+    navigation.isFocused.mockReturnValue(false);
+    await act(async () => resolve({}));
+    expect(navigation.goBack).not.toHaveBeenCalled();
+    expect(navigation.replace).not.toHaveBeenCalled();
   });
 });

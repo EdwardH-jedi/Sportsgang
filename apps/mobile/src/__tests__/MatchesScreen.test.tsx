@@ -9,6 +9,7 @@
  */
 
 import React from 'react';
+import { RefreshControl } from 'react-native';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 
 import { MatchesScreen } from '../screens/matches/MatchesScreen';
@@ -408,5 +409,165 @@ describe('MatchesScreen focus refresh', () => {
       mockFocus.current?.();
     });
     expect(queryByText('Jordan Lee')).toBeTruthy();
+  });
+});
+
+// ─── One owner/generation-aware request path (review Q07) ───────────────────
+// Reviewer probes (codex-overnight-matches) kept as permanent regressions.
+//
+// Reachability: Main's tabs stay mounted while blurred, so overlapping focus
+// and pull responses are reachable through ordinary chat → back navigation.
+// The owner-replacement cases are different: they drive a *retained* screen
+// whose account changes underneath it. Normal logout does not do that —
+// ProfileScreen's logout and RootNavigator's auth safety net both reset the
+// root stack to AuthEntry, which unmounts Main (and this screen) — so these
+// cases pin the screen's own guarantee; they are not evidence of a leak on
+// the normal logout path.
+
+describe('MatchesScreen request ordering and owner (review Q07)', () => {
+  const response = { items: [makeMatch()], total: 1, limit: 50, offset: 0 };
+  const both = { items: twoMatches, total: 2, limit: 50, offset: 0 };
+  const jordanOnly = { items: [twoMatches[0]], total: 1, limit: 50, offset: 0 };
+  function deferred<T>() {
+    let resolve!: (v: T) => void;
+    let reject!: (e: Error) => void;
+    const promise = new Promise<T>((a, b) => {
+      resolve = a;
+      reject = b;
+    });
+    return { promise, resolve, reject };
+  }
+  const focus = () =>
+    act(async () => {
+      mockFocus.current?.();
+    });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockApiGet.mockReset();
+    mockCurrentUserId = 'me-user-id';
+  });
+
+  it('an old focus response cannot restore a blocked chat after a newer empty list', async () => {
+    const old = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(response).mockReturnValueOnce(old.promise).mockResolvedValueOnce(emptyResponse);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Jordan Lee');
+    await focus();
+    await focus();
+    await u.findByText('No chats yet');
+    await act(async () => old.resolve(response));
+    expect(u.queryByText('Jordan Lee')).toBeNull();
+    expect(u.getByText('No chats yet')).toBeTruthy();
+  });
+
+  it('a retained screen clears matches immediately on owner replacement', async () => {
+    mockApiGet.mockResolvedValueOnce(response).mockResolvedValueOnce(emptyResponse);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Jordan Lee');
+    mockCurrentUserId = 'account-b';
+    u.rerender(<MatchesScreen />);
+    expect(u.queryByText('Jordan Lee')).toBeNull();
+    // The new account gets its own first load.
+    await u.findByText('No chats yet');
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
+  });
+
+  it('after owner A -> B -> A, neither B’s late list nor A’s earlier list is shown', async () => {
+    const forB = deferred<any>();
+    const forA = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(response).mockReturnValueOnce(forB.promise).mockReturnValueOnce(forA.promise);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Jordan Lee');
+    mockCurrentUserId = 'account-b';
+    u.rerender(<MatchesScreen />);
+    mockCurrentUserId = 'me-user-id';
+    u.rerender(<MatchesScreen />);
+    expect(u.queryByText('Jordan Lee')).toBeNull();
+    await act(async () => forB.resolve({ items: [twoMatches[1]], total: 1, limit: 50, offset: 0 }));
+    expect(u.queryByText('Alex Kim')).toBeNull();
+    expect(u.getByLabelText('Loading chats')).toBeTruthy();
+    await act(async () => forA.resolve(emptyResponse));
+    expect(u.getByText('No chats yet')).toBeTruthy();
+    expect(mockApiGet).toHaveBeenCalledTimes(3);
+  });
+
+  it('a successful focus refresh recovers from an initial fetch failure', async () => {
+    mockApiGet.mockRejectedValueOnce(new Error('initial offline')).mockResolvedValueOnce(response);
+    const u = render(<MatchesScreen />);
+    await u.findByText('initial offline');
+    await focus();
+    expect(u.queryByText('initial offline')).toBeNull();
+    expect(u.getByText('Jordan Lee')).toBeTruthy();
+  });
+
+  it('an older focus response cannot undo a newer pull refresh', async () => {
+    const oldFocus = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(both).mockReturnValueOnce(oldFocus.promise).mockResolvedValueOnce(jordanOnly);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Alex Kim');
+    await focus();
+    await act(async () => {
+      u.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(u.queryByText('Alex Kim')).toBeNull();
+    expect(u.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
+    await act(async () => oldFocus.resolve(both));
+    expect(u.queryByText('Alex Kim')).toBeNull();
+    expect(u.getByText('Jordan Lee')).toBeTruthy();
+  });
+
+  it('a pull superseded by a newer focus refresh cannot land, and its spinner still ends', async () => {
+    const pull = deferred<any>();
+    mockApiGet.mockResolvedValueOnce(both).mockReturnValueOnce(pull.promise).mockResolvedValueOnce(jordanOnly);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Alex Kim');
+    await act(async () => {
+      u.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(u.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(true);
+    await focus();
+    expect(u.queryByText('Alex Kim')).toBeNull();
+    expect(u.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
+    await act(async () => pull.resolve(both));
+    expect(u.queryByText('Alex Kim')).toBeNull();
+  });
+
+  it('a failed pull refresh still reports its error, and Try again recovers', async () => {
+    mockApiGet
+      .mockResolvedValueOnce(response)
+      .mockRejectedValueOnce(new Error('pull offline'))
+      .mockResolvedValueOnce(emptyResponse);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Jordan Lee');
+    await act(async () => {
+      u.UNSAFE_getByType(RefreshControl).props.onRefresh();
+    });
+    expect(u.getByText('pull offline')).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(u.getByText('Try again'));
+    });
+    expect(u.queryByText('pull offline')).toBeNull();
+    expect(u.getByText('No chats yet')).toBeTruthy();
+  });
+
+  it('a focus refresh that replaced a pending first load reports its failure instead of spinning', async () => {
+    const first = deferred<any>();
+    mockApiGet.mockReturnValueOnce(first.promise).mockRejectedValueOnce(new Error('focus offline'));
+    const u = render(<MatchesScreen />);
+    await focus();
+    expect(u.getByText('focus offline')).toBeTruthy();
+    await act(async () => first.resolve(response));
+    expect(u.queryByText('Jordan Lee')).toBeNull();
+  });
+
+  it('CONTROL the first focus fetches once and the next focus removes a blocked chat', async () => {
+    mockApiGet.mockResolvedValueOnce(response).mockResolvedValueOnce(emptyResponse);
+    const u = render(<MatchesScreen />);
+    await u.findByText('Jordan Lee');
+    expect(mockApiGet).toHaveBeenCalledTimes(1);
+    await focus();
+    expect(u.getByText('No chats yet')).toBeTruthy();
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
   });
 });

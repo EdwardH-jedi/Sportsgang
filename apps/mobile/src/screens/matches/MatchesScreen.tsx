@@ -125,41 +125,71 @@ function MatchCard({ match, currentUserId }: { match: Match; currentUserId: stri
 
 export function MatchesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
-
-  const fetchMatches = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.get<MatchListResponse>('/matches?limit=50');
-      setMatches(data.items);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load matches.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    setError(null);
-    try {
-      const data = await api.get<MatchListResponse>('/matches?limit=50');
-      setMatches(data.items);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load matches.');
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, []);
+  // What the list shows belongs to the account it was loaded for (review
+  // Q07). Each account change starts a new epoch, so another account's
+  // chats are never shown, not even for one render.
+  const owner = useRef({ userId: currentUserId, epoch: 0 });
+  if (owner.current.userId !== currentUserId) {
+    owner.current = { userId: currentUserId, epoch: owner.current.epoch + 1 };
+  }
+  const epoch = owner.current.epoch;
+  const [shown, setShown] = useState<{ epoch: number; matches: Match[] | null; error: string | null } | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const generation = useRef(0);
+  const mounted = useRef(true);
 
   useEffect(() => {
-    fetchMatches();
-  }, [fetchMatches]);
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  // Nothing yet for this account (no list, no error) shows the spinner.
+  const current = shown && shown.epoch === epoch ? shown : null;
+  const matches = current?.matches ?? null;
+  const error = current?.error ?? null;
+
+  // The one request path for the first load (and Try again), pull-to-refresh
+  // and focus refresh. Each request supersedes every earlier one, so only
+  // the newest response for this account lands: a slow older response can
+  // never bring back a chat a newer one no longer lists. Any success clears
+  // an earlier error. Stable on purpose: useFocusEffect re-runs a changed
+  // callback, which would send a duplicate request.
+  const load = useCallback(async (mode: 'load' | 'pull' | 'focus') => {
+    const loadEpoch = owner.current.epoch;
+    const gen = ++generation.current;
+    const isCurrent = () => mounted.current && gen === generation.current && owner.current.epoch === loadEpoch;
+    if (mode === 'load') setShown((s) => (s && s.epoch === loadEpoch ? { ...s, error: null } : s));
+    if (mode === 'pull') setIsRefreshing(true);
+    try {
+      const data = await api.get<MatchListResponse>('/matches?limit=50');
+      if (!isCurrent()) return;
+      setShown({ epoch: loadEpoch, matches: data.items, error: null });
+    } catch (err) {
+      if (!isCurrent()) return;
+      const message = err instanceof Error ? err.message : 'Failed to load matches.';
+      setShown((s) => {
+        const kept = s && s.epoch === loadEpoch ? s.matches : null;
+        // A focus refresh is quiet and keeps a list already shown;
+        // the first load and pull-to-refresh report errors.
+        if (mode === 'focus' && kept) return s;
+        return { epoch: loadEpoch, matches: kept, error: message };
+      });
+    } finally {
+      // Whichever request is newest ends the pull spinner.
+      if (isCurrent()) setIsRefreshing(false);
+    }
+  }, []);
+
+  const retry = useCallback(() => void load('load'), [load]);
+  const handleRefresh = useCallback(() => void load('pull'), [load]);
+
+  // First load, and again for a different account on a retained screen.
+  useEffect(() => {
+    void load('load');
+  }, [load, currentUserId]);
 
   // Refresh on tab focus so the preview line stays in sync after the user
   // returns from a chat — and a chat that was just blocked leaves the list
@@ -168,7 +198,7 @@ export function MatchesScreen() {
   // pull-to-refresh contract — the preview is at most one round-trip stale.
   // Quiet: no full-screen spinner, and a failed focus refresh keeps the list
   // (pull-to-refresh reports errors). The first focus is skipped because the
-  // effect above already fetches; a ref, not `isLoading`, which this callback
+  // effect above already fetches; a ref, not the loading flag this callback
   // used to capture once and so never refreshed.
   const focusedOnce = useRef(false);
   useFocusEffect(
@@ -177,11 +207,8 @@ export function MatchesScreen() {
         focusedOnce.current = true;
         return;
       }
-      api
-        .get<MatchListResponse>('/matches?limit=50')
-        .then((data) => setMatches(data.items))
-        .catch(() => {});
-    }, [])
+      void load('focus');
+    }, [load])
   );
 
   return (
@@ -190,13 +217,13 @@ export function MatchesScreen() {
         <ScreenHeader eyebrow="Mutual interest" title="Chats" />
       </View>
 
-      {isLoading ? (
+      {error ? (
+        <View style={styles.centred}>
+          <ErrorState title="Could not load your chats" body={error} onAction={retry} />
+        </View>
+      ) : !matches ? (
         <View style={styles.centred}>
           <ActivityIndicator size="large" color={colors.accent} accessibilityLabel="Loading chats" />
-        </View>
-      ) : error ? (
-        <View style={styles.centred}>
-          <ErrorState title="Could not load your chats" body={error} onAction={fetchMatches} />
         </View>
       ) : matches.length === 0 ? (
         <View style={styles.centred}>
