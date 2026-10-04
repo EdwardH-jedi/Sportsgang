@@ -40,13 +40,16 @@ Statuses: TODO · IN_PROGRESS · PASS · NOT_RUN (with reason) · BLOCKED.
 | ID | Implementation | Regression tests | Verification evidence | Limitations |
 |---|---|---|---|---|
 | Q08 QA launcher TZ-invariant legacy start | PASS — legacy start compared as a UTC epoch: `proc_start_utc` asks `ps` with `TZ=UTC` and parses with `calendar.timegm`; naive `started_at` read as UTC; identity `lstart` strings unchanged (system zone), all other checks unchanged (`scripts/qa/qa.py`) | PASS — `test_legacy_start_time_check_ignores_the_callers_time_zone` (UTC, Sydney, Kiritimati, Los Angeles: adopt exact, refuse 1 h off and wrong pid); existing legacy test records start TZ-independently | PASS — Docker-free 14 pass/7 skip (host and `TZ=UTC`); Docker 21/21 host zone and 21/21 `TZ=UTC`; new test fails on base launcher; real pre-repair launcher API/Metro adopted with unchanged PIDs under `TZ=UTC` | Real adoption run's first `down` left the API running because Metro exited after the grace period (designed fail-closed); second `down` stopped it |
-| Q09 composer time-picker header at max text size | TODO | TODO | TODO | Native proof needs a dedicated simulator |
+| Q09 composer time-picker header at max text size | PASS — picker header wraps (`flexWrap`, title `flexShrink: 1`), Done keeps its whole label with `minHeight/minWidth 44` and right-aligns on its own row; sheet cap 70%→90% and centred, padded hint so the scaled footer stays on screen; no font cap added (`BookingComposerScreen.tsx`) | PASS — `BookingComposerScreen.test.tsx` style-contract test (layout proof is native) | PASS — new iPhone 16e simulator (390×844, iOS 26.3): at `accessibility-extra-extra-extra-large` Done x=215 w=151 (right edge 366) h=79.7 for start and end pickers; default size x=310.7 w=55.3 h=44; 15→30 and 45→30 settle on :30 at both sizes; swipe settles on a row; close/reopen keeps the time; form 11:30–12:30 = HTTP `00:30Z`–`01:30Z` = PostgreSQL `00:30+00`/`01:30+00` | Simulator, not a physical device; VoiceOver not run; the composer's own screen title breaks mid-word at max text size (outside the picker; not changed) |
 
 ## R6 / C01 — deployment gate (separate from Q01–Q09)
 
-- [ ] Reproduce the overlap inputs 2026-04-04T15:30Z / 16:30Z on isolated PostgreSQL.
-- [ ] Read-only production provenance procedure (prepared, not run: no production access).
-- [ ] Proposal for exact future UTC audit instants; label legacy ambiguity. No row rewrite,
+- [x] Reproduce the overlap inputs 2026-04-04T15:30Z / 16:30Z on isolated PostgreSQL — PASS
+      (UTC exact; Sydney collapses 16:30Z onto 15:30Z; PostgreSQL resolves the ambiguous wall
+      time to the later instant, the API to the earlier) — `R6_C01_DEPLOYMENT_GATE.md` §2.
+- [x] Read-only production provenance procedure — prepared (§3); **NOT_RUN** (no production access).
+- [x] Proposal for exact future UTC audit instants (§4: keep UTC; or a reviewed `timestamptz`
+      migration with an explicit ambiguity policy); legacy ambiguity labelled. No row rewrite,
       no deployment-config change.
 
 ## Broad verification
