@@ -1,0 +1,13 @@
+{
+  "name": "mobile-lint",
+  "exit": 0,
+  "seconds": 4.09,
+  "command": [
+    "npm",
+    "run",
+    "lint",
+    "-w",
+    "@protin/mobile"
+  ],
+  "cwd": "."
+}

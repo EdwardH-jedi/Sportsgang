@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/web_review.py", line 49, in <module>
+    navigate('http://127.0.0.1:5291/'+name);results['no_js'].append(js("({url:location.pathname,title:document.title,text:document.body.innerText.slice(0,300),width:document.documentElement.scrollWidth})"));shot('no-js-'+(name or 'home'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/web_review.py", line 28, in navigate
+    js("new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))")
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/web_review.py", line 23, in js
+    r=call('Runtime.evaluate',{'expression':expression,'returnByValue':True,'awaitPromise':True})
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/web_review.py", line 18, in call
+    r=json.loads(ws.recv(timeout=15))
+                 ^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/websockets/sync/connection.py", line 319, in recv
+    return self.recv_messages.get(timeout, decode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/websockets/sync/messages.py", line 169, in get
+    frame = self.get_next_frame(deadline.timeout(raise_if_elapsed=False))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/websockets/sync/messages.py", line 89, in get_next_frame
+    raise TimeoutError(f"timed out in {timeout:.1f}s") from None
+TimeoutError: timed out in 15.0s

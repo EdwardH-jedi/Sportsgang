@@ -1,0 +1,6 @@
+{
+  "synthetic_private_values_checked": 4,
+  "exact_value_leak_files": [],
+  "synthetic_short_canary_intentionally_present": true,
+  "scope": "all evidence except binary PNG/PDF; native screenshots visually checked"
+}

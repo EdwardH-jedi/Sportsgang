@@ -1,0 +1,1 @@
+{"exit": 1, "seconds": 1.048544291057624, "command": [".venv/bin/python", "-m", "pytest", "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py", "-q", "-rs"]}

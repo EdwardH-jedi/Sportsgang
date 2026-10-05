@@ -1,0 +1,47 @@
+{
+  "reviewed_delivery_sha": "59013601ae97b70a035f3abaae00c74edfa52e99",
+  "reviewed_final_source_sha": "a9b92c2430456e1b0055436824c6ad6dfcd7c6e4",
+  "base_delivery_sha": "8d891ddb862de5345e85895a20fa65649ba1f46e",
+  "base_source_sha": "a515b0073cb0f32dad97f88430a203e3427444fe",
+  "code_acceptance": "NEEDS_FIXES",
+  "finding_counts": {
+    "P1": 0,
+    "P2": 6,
+    "P3": 1
+  },
+  "finding_ids": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07"
+  ],
+  "manual_qa_readiness": "TARGETED_RETEST_ONLY_NOT_ACCEPTED",
+  "production_release": "NO_GO_NOT_VERIFIED",
+  "product_code_changes": 0,
+  "source_and_original_evidence_preserved": true,
+  "report": "REVIEW.md",
+  "repair_handoff": "REPAIR_HANDOFF.md",
+  "evidence_manifest": "MANIFEST.sha256",
+  "fresh_checks": {
+    "api_unit_passed": 773,
+    "integration_utc_passed": 64,
+    "integration_sydney_passed": 64,
+    "r1_passed": 94,
+    "mobile_each_tz_passed": 989,
+    "mobile_each_tz_suites": 65,
+    "web_routes_passed": 28,
+    "qa_launcher_docker_passed": 21,
+    "preflight_unit_passed": 17,
+    "independent_mobile_failed": 5,
+    "independent_mobile_controls_passed": 2,
+    "original_reviewer_passed": 11,
+    "original_reviewer_obsolete_failures": 2,
+    "independent_cancellation_failed": 1,
+    "independent_crash_passed": 1
+  },
+  "external_gates": "OPEN / NOT_RUN",
+  "created_at_utc": "2026-10-05T03:22:28.692859+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "ruff-format",
+  "exit": 0,
+  "seconds": 0.03,
+  "command": [
+    ".venv/bin/ruff",
+    "format",
+    "--check",
+    "."
+  ],
+  "cwd": "apps/api"
+}

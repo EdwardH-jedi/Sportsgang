@@ -1,0 +1,13 @@
+{
+  "name": "mobile-typecheck",
+  "exit": 0,
+  "seconds": 3.76,
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "-w",
+    "@protin/mobile"
+  ],
+  "cwd": "."
+}

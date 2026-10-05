@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "tool": "scripts/release/preflight.py",
+  "read_only": true,
+  "public_urls": {
+    "variables": {
+      "EXPO_PUBLIC_PRIVACY_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:21"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:76",
+            "value": "https://sportgang.netlify.app/privacy/"
+          },
+          {
+            "source": "apps/mobile/.env.example:67",
+            "value": "https://sportgang.netlify.app/privacy/"
+          },
+          {
+            "source": "apps/mobile/.env.staging.example:23",
+            "value": "https://sportgang.netlify.app/privacy/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:216",
+            "value": "https://sportgang.netlify.app/privacy/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:17",
+            "value": "https://sportgang.netlify.app/privacy/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_TERMS_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:24"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:77",
+            "value": "https://sportgang.netlify.app/terms/"
+          },
+          {
+            "source": "apps/mobile/.env.example:68",
+            "value": "https://sportgang.netlify.app/terms/"
+          },
+          {
+            "source": "apps/mobile/.env.staging.example:24",
+            "value": "https://sportgang.netlify.app/terms/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:217",
+            "value": "https://sportgang.netlify.app/terms/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:18",
+            "value": "https://sportgang.netlify.app/terms/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_SUPPORT_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:27"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:78",
+            "value": "https://sportgang.netlify.app/support/"
+          },
+          {
+            "source": "apps/mobile/.env.example:69",
+            "value": "https://sportgang.netlify.app/support/"
+          },
+          {
+            "source": "apps/mobile/.env.staging.example:25",
+            "value": "https://sportgang.netlify.app/support/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:218",
+            "value": "https://sportgang.netlify.app/support/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:19",
+            "value": "https://sportgang.netlify.app/support/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_API_URL": {
+        "read_at": [
+          "apps/mobile/app.config.js:19",
+          "apps/mobile/src/lib/api.ts:8"
+        ],
+        "in_app_config_js": true,
+        "in_eas_build_profiles": {
+          "development": true,
+          "preview": true,
+          "production": true
+        },
+        "process_env": "unset",
+        "store_profile_https": {
+          "preview": true,
+          "production": true
+        }
+      }
+    },
+    "other_public_env_names_read": {
+      "EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_API_KEY": [
+        "apps/mobile/app.config.js:144"
+      ],
+      "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": [
+        "apps/mobile/app.config.js:145"
+      ],
+      "EXPO_PUBLIC_GOOGLE_MAPS_IOS_API_KEY": [
+        "apps/mobile/app.config.js:143"
+      ],
+      "EXPO_PUBLIC_GOOGLE_REDIRECT_URI": [
+        "apps/mobile/app.config.js:256"
+      ],
+      "EXPO_PUBLIC_SENTRY_DSN": [
+        "apps/mobile/App.tsx:10"
+      ]
+    },
+    "local_dotenv_files": [],
+    "local_dotenv_note": "Expo CLI auto-loads apps/mobile/.env* during start/export; names are listed, contents are never read",
+    "unset_fallback": {
+      "file": "apps/mobile/src/lib/legal.ts",
+      "present": true,
+      "reads": {
+        "EXPO_PUBLIC_PRIVACY_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:21",
+          "unset_reads_as_null": true
+        },
+        "EXPO_PUBLIC_TERMS_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:24",
+          "unset_reads_as_null": true
+        },
+        "EXPO_PUBLIC_SUPPORT_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:27",
+          "unset_reads_as_null": true
+        }
+      },
+      "alert_lines": [
+        "apps/mobile/src/lib/legal.ts:46: `${label} not available`,",
+        "apps/mobile/src/lib/legal.ts:47: 'This link is not available yet. Please contact support.'",
+        "apps/mobile/src/lib/legal.ts:53: `${label} not available`,",
+        "apps/mobile/src/lib/legal.ts:54: 'This link is not available yet. Please contact support.'"
+      ],
+      "behaviour": "unset or non-http URL -> openLegal() shows the Alert below instead of opening a link; no hard-coded fallback URL. LEGAL_LINKS_CONFIGURED is true only when privacy and terms are both set."
+    }
+  },
+  "app_identity": {
+    "source": "apps/mobile/app.config.js",
+    "present": true,
+    "name": "SportsGang",
+    "slug": "protin",
+    "version": "1.0.0",
+    "ios_bundle_identifier": "com.edh1223.protin",
+    "ios_build_number": "1",
+    "android_package": "com.edh1223.protin",
+    "runtime_version": null,
+    "owner": null,
+    "eas_project_id": "b36f95b3-3757-4f7e-ab29-08da31cbb00f",
+    "has_updates_block": false,
+    "app_json_static_keys": [],
+    "eas": {
+      "cli_version": ">= 12.0.0",
+      "app_version_source": "remote",
+      "production_auto_increment": true,
+      "submit_production_ios_asc_app_id": "6767027447",
+      "submit_production_ios_apple_team_id": "37C8A2733Y",
+      "build_profiles": [
+        "development",
+        "preview",
+        "production"
+      ]
+    },
+    "documented": {
+      "bundle_identifier": {
+        "source": "docs/release/APP_STORE_METADATA.md",
+        "value": "com.edh1223.protin"
+      },
+      "app_store_url_id": {
+        "source": "apps/web/src/lib/links.ts",
+        "value": "6767027447"
+      }
+    }
+  },
+  "locked_build": {
+    "npm": {
+      "command": "npm ci   (repository root; workspaces apps/* and packages/*)",
+      "lockfile": "package-lock.json",
+      "lockfile_sha256": "ce1eef03271dfd0ff02ef6ce9f666d328744065f4c0ebee83ef46f6da8ec7a23",
+      "lockfile_version": 3,
+      "locked_expo": "54.0.34",
+      "locked_react_native": "0.81.5",
+      "locked_react": "19.1.0",
+      "react_native_engines_node": ">= 20.19.4",
+      "mobile_declared_expo": "^54.0.34",
+      "expo_sdk": 54,
+      "ci_node_versions": [
+        "20"
+      ],
+      "node_on_path": "v26.7.0",
+      "node_note": "informational: the declared engine/CI version is what counts, not the PATH default"
+    },
+    "uv": {
+      "command": "uv sync --frozen   (apps/api; CI adds --dev, the Dockerfile uses --no-dev --no-install-project)",
+      "lockfile": "apps/api/uv.lock",
+      "lockfile_sha256": "5527d8521f09c8ffc2bdd734a3da8be0c989f2c6371d2600f121a9387feb71c4",
+      "requires_python": ">=3.12",
+      "python_version_file": "3.12",
+      "lock_requires_python": ">=3.12"
+    },
+    "ios_export_command": "cd apps/mobile && CI=1 EXPO_OFFLINE=1 EXPO_NO_TELEMETRY=1 npx --no-install expo export --platform ios --output-dir <dir>"
+  },
+  "source": {
+    "head": "59013601ae97b70a035f3abaae00c74edfa52e99",
+    "branch": "HEAD",
+    "worktree_clean": false,
+    "dirty_paths": [
+      {
+        "status": "??",
+        "path": "docs/run-golf-v2/independent-review-2026-10-05/",
+        "sha256": null
+      }
+    ],
+    "dirty_count": 1,
+    "last_source_commit": "a9b92c2430456e1b0055436824c6ad6dfcd7c6e4",
+    "last_source_commit_definition": "last commit touching apps/, scripts/, packages/ or .github/"
+  },
+  "export": {
+    "dir": "<export-dir>",
+    "present": true,
+    "file_count": 8,
+    "fingerprint_sha256": "112f60827f35f6627b5175107946c8b4498bdba33ac1338f42ba946ab4f4499f",
+    "fingerprint_definition": "sha256 over sorted lines '<sha256>  <relative path>'",
+    "bundles": [
+      {
+        "path": "_expo/static/js/ios/index-ed18c160be2847f21416b9235d6550eb.hbc",
+        "bytes": 4426074,
+        "sha256": "aff5a98117b4a0ac2fb7a6c02f5158b8e81b07a8ee308c2d2a5c45fd25b434a0"
+      }
+    ],
+    "metadata_json": {
+      "version": 0,
+      "bundler": "metro",
+      "fileMetadata": {
+        "ios": {
+          "bundle": "_expo/static/js/ios/index-ed18c160be2847f21416b9235d6550eb.hbc",
+          "assets": [
+            {
+              "path": "assets/7d40544b395c5949f4646f5e150fe020",
+              "ext": "png"
+            },
+            {
+              "path": "assets/cdd04e13d4ec83ff0cd13ec8dabdc341",
+              "ext": "png"
+            },
+            {
+              "path": "assets/a132ecc4ba5c1517ff83c0fb321bc7fc",
+              "ext": "png"
+            },
+            {
+              "path": "assets/0ea69b5077e7c4696db85dbcba75b0e1",
+              "ext": "png"
+            },
+            {
+              "path": "assets/f5b790e2ac193b3d41015edb3551f9b8",
+              "ext": "png"
+            },
+            {
+              "path": "assets/5223c8d9b0d08b82a5670fb5f71faf78",
+              "ext": "png"
+            }
+          ]
+        }
+      }
+    },
+    "documented_legal_urls_embedded_in_bundle": {
+      "EXPO_PUBLIC_PRIVACY_URL": {
+        "https://sportgang.netlify.app/privacy/": false
+      },
+      "EXPO_PUBLIC_TERMS_URL": {
+        "https://sportgang.netlify.app/terms/": false
+      },
+      "EXPO_PUBLIC_SUPPORT_URL": {
+        "https://sportgang.netlify.app/support/": false
+      }
+    },
+    "files": [
+      {
+        "path": "_expo/static/js/ios/index-ed18c160be2847f21416b9235d6550eb.hbc",
+        "bytes": 4426074,
+        "sha256": "aff5a98117b4a0ac2fb7a6c02f5158b8e81b07a8ee308c2d2a5c45fd25b434a0"
+      },
+      {
+        "path": "assets/0ea69b5077e7c4696db85dbcba75b0e1",
+        "bytes": 761,
+        "sha256": "3ddd0773ed27e23d25789f301731b3ac455ad8be5aa27a0a1b838f89c6d27225"
+      },
+      {
+        "path": "assets/5223c8d9b0d08b82a5670fb5f71faf78",
+        "bytes": 913,
+        "sha256": "2c95e8c2675e799335fd0046bb07dbda06cb7ecff51ed37922c6309d619cc4d3"
+      },
+      {
+        "path": "assets/7d40544b395c5949f4646f5e150fe020",
+        "bytes": 290,
+        "sha256": "2cdfeb8e5ccde7976f7012fb8cce73af2229029ee21d4f1509fed114871c6cd8"
+      },
+      {
+        "path": "assets/a132ecc4ba5c1517ff83c0fb321bc7fc",
+        "bytes": 405,
+        "sha256": "2b7443a9a58e92ca11a575bdc11598615a57dde305cd8ce70d602606b302cd98"
+      },
+      {
+        "path": "assets/cdd04e13d4ec83ff0cd13ec8dabdc341",
+        "bytes": 373,
+        "sha256": "8ab1e38b4d4b3c8f60883631b49a3d6d33c76841f3b9470231395be319fdd0ab"
+      },
+      {
+        "path": "assets/f5b790e2ac193b3d41015edb3551f9b8",
+        "bytes": 812,
+        "sha256": "bc27c8b2ced22d82add40022d21c63b2038c10371e2c907a6568d07fa8135389"
+      },
+      {
+        "path": "metadata.json",
+        "bytes": 519,
+        "sha256": "ffbb253b2aec76b9bb27f737eba0fdd1b8816e636047796a6a9aeceedbe56aa9"
+      }
+    ]
+  },
+  "notes": [
+    "eas.json cli.appVersionSource is 'remote' (production autoIncrement=True): the store build number is kept by EAS, so ios.buildNumber='1' in app.config.js is not what a store build carries \u2014 not verifiable locally",
+    "no runtimeVersion / updates block committed (no OTA channel configured)",
+    "app.config.js has no 'owner'; the EAS project is identified only by extra.eas.projectId",
+    "the @sentry/react-native/expo plugin has no organization/project committed (Expo warns and falls back to build-environment variables); not documented as a required release input"
+  ],
+  "missing_release_inputs": [
+    "EXPO_PUBLIC_PRIVACY_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "EXPO_PUBLIC_TERMS_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "EXPO_PUBLIC_SUPPORT_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "iOS signing certificate / provisioning profile and APNs key: EAS-managed (no credentials.json committed) \u2014 not verifiable locally",
+    "store build number: kept remotely by EAS (appVersionSource=remote) \u2014 not verifiable locally"
+  ],
+  "gates_not_satisfiable_locally": [
+    {
+      "id": "physical-device",
+      "gate": "Physical iPhone (and Android) test of the release build, incl. VoiceOver",
+      "status": "NOT_RUN",
+      "why_not_local": "needs a device; simulators and Expo Go are not the release binary"
+    },
+    {
+      "id": "signed-store-build",
+      "gate": "Signed store build (EAS) and TestFlight / App Store submission",
+      "status": "NOT_RUN",
+      "why_not_local": "signing credentials are EAS-managed; a store build runs on EAS, not locally"
+    },
+    {
+      "id": "push-provider",
+      "gate": "Real Expo push service / APNs delivery to a device",
+      "status": "NOT_RUN",
+      "why_not_local": "needs the real provider, APNs capability and a device push token"
+    },
+    {
+      "id": "r6-provenance",
+      "gate": "Production audit-timestamp provenance (R6)",
+      "status": "OPEN / NOT_RUN",
+      "why_not_local": "production database, authorised operator only: docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md \u00a73"
+    },
+    {
+      "id": "ws-topology",
+      "gate": "Deployed API is exactly one process/machine serving WebSockets",
+      "status": "PENDING / NOT_RUN",
+      "why_not_local": "live Fly topology, authorised operator only: docs/run-golf-v2/overnight-2026-10-05/release-preflight/TOPOLOGY_OPERATOR_CHECK.md"
+    }
+  ],
+  "inconsistencies": [],
+  "result": "CONSISTENT_WITH_MISSING_INPUTS"
+}

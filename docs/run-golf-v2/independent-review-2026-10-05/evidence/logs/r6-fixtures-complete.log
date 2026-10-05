@@ -1,0 +1,62 @@
+procedure block sha256 06e0a42f10cba14a0b3ec2841d2d91dbcac9198befa97b0f561d247d369f24cd
+
+[a] history written entirely with session TimeZone UTC  (rows 116, truth zones ['UTC'])
+  original table rows matched: ['none']
+  original/all_rows: NO_DECISION (rule gap)  correct=0, wrong=0, inconclusive=0, no_decision=116, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: NO_DECISION (rule gap)  correct=0, wrong=0, inconclusive=0, no_decision=116, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: UTC -> CORRECT  correct=116, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[b] history written consistently with Australia/Sydney  (rows 121, truth zones ['Australia/Sydney'])
+  original table rows matched: ['R2 (one non-UTC zone; offsets 10,11)']
+  original/all_rows: CORRECT  correct=121, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: CORRECT  correct=121, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: Australia/Sydney -> CORRECT  correct=121, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[c1] mixed: UTC until 2026-06-15T00:00Z, then Australia/Sydney  (rows 112, truth zones ['Australia/Sydney', 'UTC'])
+  original table rows matched: ["R3 (mixed zones: months ['2026-06'])"]
+  original/all_rows: INCONCLUSIVE for some rows  correct=98, wrong=0, inconclusive=14, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: INCONCLUSIVE for some rows  correct=98, wrong=0, inconclusive=14, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: MIXED (1 switch(es)) -> INCONCLUSIVE for some rows  correct=101, wrong=0, inconclusive=11, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[c2] mixed: Australia/Sydney until 2026-07-01T00:00Z (a month boundary), then UTC  (rows 114, truth zones ['Australia/Sydney', 'UTC'])
+  original table rows matched: ["R3 (mixed zones: months ['2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'])"]
+  original/all_rows: OVERCONFIDENT  correct=113, wrong=1, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: OVERCONFIDENT  correct=113, wrong=1, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: MIXED (1 switch(es)) -> INCONCLUSIVE for some rows  correct=102, wrong=0, inconclusive=12, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[d] Australia/Sydney history with rows inside the 2026-04-05 repeated hour  (rows 133, truth zones ['Australia/Sydney'])
+  original table rows matched: ['R2 (one non-UTC zone; offsets 10,11)', 'R4 (step 4 non-zero under a Sydney history: 4 rows)']
+  original/all_rows: OVERCONFIDENT  correct=114, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=4, repeated_hour_unflagged=15
+  original/first_match: OVERCONFIDENT  correct=114, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=4, repeated_hour_unflagged=15
+  proposed: Australia/Sydney -> CORRECT  correct=114, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=19, repeated_hour_unflagged=0
+
+[e1] current default differs: UTC history, database default later set to Australia/Sydney  (rows 112, truth zones ['UTC'])
+  original table rows matched: ['none']
+  original/all_rows: NO_DECISION (rule gap)  correct=0, wrong=0, inconclusive=0, no_decision=112, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: NO_DECISION (rule gap)  correct=0, wrong=0, inconclusive=0, no_decision=112, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: UTC -> CORRECT  correct=112, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[e2] current default differs: Sydney history via a role override that was later removed  (rows 112, truth zones ['Australia/Sydney'])
+  original table rows matched: ['R2 (one non-UTC zone; offsets 10,11)']
+  original/all_rows: CORRECT  correct=112, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: CORRECT  correct=112, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: Australia/Sydney -> CORRECT  correct=112, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[f1] single correlated sample agrees with UTC by coincidence  (rows 59, truth zones ['Australia/Sydney', 'UTC'])
+  original table rows matched: ['R3 (period without evidence: 7 month(s) 2026-02..2026-09)']
+  original/all_rows: OVERCONFIDENT  correct=3, wrong=7, inconclusive=49, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: OVERCONFIDENT  correct=3, wrong=7, inconclusive=49, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: INCONCLUSIVE (no period has enough samples) -> INCONCLUSIVE for some rows  correct=0, wrong=0, inconclusive=59, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[f2] single correlated sample in an AEST month (Sydney and fixed +10 indistinguishable)  (rows 66, truth zones ['Australia/Sydney'])
+  original table rows matched: ['R2 (one non-UTC zone; offsets 10)', 'R3 (period without evidence: 8 month(s) 2026-01..2026-09)']
+  original/all_rows: INCONCLUSIVE for some rows  correct=10, wrong=0, inconclusive=56, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match_Z=Sydney: CORRECT  correct=66, wrong=0, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match_Z=fixed+10: OVERCONFIDENT  correct=44, wrong=22, inconclusive=0, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: INCONCLUSIVE (no period has enough samples) -> INCONCLUSIVE for some rows  correct=0, wrong=0, inconclusive=66, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+
+[g] no correlated sample at all  (rows 56, truth zones ['Australia/Sydney'])
+  original table rows matched: ['R3 (period without evidence: 8 month(s) 2026-02..2026-09)']
+  original/all_rows: INCONCLUSIVE for some rows  correct=0, wrong=0, inconclusive=56, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  original/first_match: INCONCLUSIVE for some rows  correct=0, wrong=0, inconclusive=56, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0
+  proposed: INCONCLUSIVE (no period has enough samples) -> INCONCLUSIVE for some rows  correct=0, wrong=0, inconclusive=56, no_decision=0, repeated_hour_flagged=0, repeated_hour_unflagged=0

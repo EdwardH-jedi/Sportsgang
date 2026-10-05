@@ -1,0 +1,45 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_second_cancellation_cannot_release_authority_before_send_cleanup _
+
+fixturedef = <FixtureDef argname='setup' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py'>
+request = <SubRequest 'setup' for <Function test_second_cancellation_cannot_release_authority_before_send_cleanup>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_second_cancellation_cannot_release_authority_before_send_cleanup' requested an async fixture 'setup' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+_ ERROR at setup of test_terminated_owner_before_provider_is_unconfirmed_and_not_retried _
+
+fixturedef = <FixtureDef argname='setup' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py'>
+request = <SubRequest 'setup' for <Function test_terminated_owner_before_provider_is_unconfirmed_and_not_retried>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_terminated_owner_before_provider_is_unconfirmed_and_not_retried' requested an async fixture 'setup' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 warning, 2 errors in 0.55s

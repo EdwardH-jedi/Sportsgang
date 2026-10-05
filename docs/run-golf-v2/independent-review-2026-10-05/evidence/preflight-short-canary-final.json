@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "text",
+    "exit": 0,
+    "non_allowlisted_canary_leaked": true
+  },
+  {
+    "mode": "json",
+    "exit": 0,
+    "non_allowlisted_canary_leaked": true
+  }
+]

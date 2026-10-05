@@ -1,0 +1,42 @@
+{
+  "a": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "b": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "c1": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "c2": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "d": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "e1": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "e2": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "f1": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "f2": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  },
+  "g": {
+    "original_scores_equal": true,
+    "proposed_score_equal": true
+  }
+}

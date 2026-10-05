@@ -1,0 +1,139 @@
+{
+  "browser": "Chrome/154.0.8037.97",
+  "layouts": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "details": 10,
+      "buttons": [
+        {
+          "label": "Open menu",
+          "expanded": "false"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "details": 10,
+      "buttons": [
+        {
+          "label": "Open menu",
+          "expanded": "false"
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "details": 10,
+      "buttons": [
+        {
+          "label": "Open menu",
+          "expanded": "false"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "details": 10,
+      "buttons": [
+        {
+          "label": "Open menu",
+          "expanded": "false"
+        }
+      ]
+    }
+  ],
+  "reduced_motion": {
+    "matches": true,
+    "animated": []
+  },
+  "faq_before": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "faq_after": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "faq_mixed_before": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "faq_during": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "faq_mixed_after": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "no_js": [
+    {
+      "url": "/",
+      "title": "SportsGang \u2014 Running and golf partners in Sydney, in the next update",
+      "text": "SportsGang \u2014 running and golf partners in Sydney\n\nFor iPhone. The running and golf experience described here arrives with the next SportsGang update.\n\nThis page needs JavaScript to show its full content.\n\nSportsGang on the App Store \u00b7 Privacy \u00b7 Terms \u00b7 Support",
+      "width": 1440
+    },
+    {
+      "url": "/privacy/",
+      "title": "Privacy Policy \u2014 SportGang",
+      "text": "SG\nSPORTGANG\nHome\nPrivacy\nTerms\nSupport\nLEGAL \u00b7 PRIVACY\nPrivacy Policy.\n\nHow SportGang handles your information. Plain language, only what's actually true of the app today.\n\nLAST UPDATED MAY 2026\nON THIS PAGE\nIntroduction\nInformation we collect\nHow we use information\nProfile and sports matching\nChat",
+      "width": 1440
+    },
+    {
+      "url": "/terms/",
+      "title": "Terms of Service \u2014 SportGang",
+      "text": "SG\nSPORTGANG\nHome\nPrivacy\nTerms\nSupport\nLEGAL \u00b7 TERMS\nTerms of Service.\n\nThe agreement between you and SportGang when you use the app or this site. Plain language.\n\nLAST UPDATED MAY 2026\nON THIS PAGE\nIntroduction\nEligibility\nAccount responsibilities\nAcceptable use\nSports activity and real-world meet",
+      "width": 1440
+    },
+    {
+      "url": "/support/",
+      "title": "Support \u2014 SportGang",
+      "text": "SG\nSPORTGANG\nHome\nPrivacy\nTerms\nSupport\nHELP \u00b7 SUPPORT\nSupport & help.\n\nHow to reach us, how to use the in-app safety tools, and answers to the questions we hear most. If you can't find what you need below, send us a message.\n\nREPLY WE AIM TO RESPOND AS QUICKLY AS WE CAN\nON THIS PAGE\nContact support",
+      "width": 1440
+    }
+  ]
+}

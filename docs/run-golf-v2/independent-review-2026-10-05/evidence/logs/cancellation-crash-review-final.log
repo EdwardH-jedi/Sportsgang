@@ -1,0 +1,55 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_second_cancellation_cannot_release_authority_before_send_cleanup _____
+
+    async def test_second_cancellation_cannot_release_authority_before_send_cleanup():
+     entered, cleaning, release=asyncio.Event(),asyncio.Event(),asyncio.Event()
+     running=0
+     class Socket:
+      async def send_json(self,data):
+       nonlocal running
+       running+=1;entered.set()
+       try:await asyncio.Event().wait()
+       finally:
+        cleaning.set();await release.wait();running-=1
+      async def close(self,code):pass
+     async with AsyncClient(transport=ASGITransport(app=app),base_url='http://test') as c:
+      a,ai,_=await _register(c,'double-cancel-a');b,bi,_=await _register(c,'double-cancel-b')
+      mid=await _match(c,a,ai,b,bi);chat.connections._rooms[mid]=[Socket()]
+      async with AsyncSessionLocal() as db:
+       msg=await chat.send_message(db,UUID(mid),UUID(ai),'cleanup boundary')
+       at_release=[];original=db.rollback
+       async def rollback():at_release.append(running);await original()
+       with patch.object(db,'rollback',rollback):
+        job=asyncio.create_task(chat.deliver_message(db,msg))
+        try:
+         await asyncio.wait_for(entered.wait(),5);job.cancel();await asyncio.wait_for(cleaning.wait(),5)
+         job.cancel()
+         with pytest.raises(asyncio.CancelledError):await job
+         block=await asyncio.wait_for(c.post(f'/blocks/{bi}',headers=a),3)
+         (E/'double-cancel.json').write_text(json.dumps({'sends_running_at_authority_release':at_release,'sends_running_when_block_committed':running,'block_status':block.status_code})+'\n')
+        finally:
+         release.set();await asyncio.sleep(.1)
+>      assert at_release==[0],f'Authority released with {at_release} unfinished send(s)'
+E      AssertionError: Authority released with [1] unfinished send(s)
+E      assert [1] == [0]
+E        
+E        At index 0 diff: 1 != 0
+E        Use -v to get more diff
+
+../../docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py:49: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py::test_terminated_owner_before_provider_is_unconfirmed_and_not_retried
+  /private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_cancellation_review.py::test_terminated_owner_before_provider_is_unconfirmed_and_not_retried
+  /private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 failed, 1 passed, 3 warnings in 8.60s

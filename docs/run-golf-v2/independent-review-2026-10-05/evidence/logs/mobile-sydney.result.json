@@ -1,0 +1,16 @@
+{
+  "name": "mobile-sydney",
+  "exit": 0,
+  "seconds": 34.75,
+  "command": [
+    "npm",
+    "run",
+    "test:ci",
+    "-w",
+    "@protin/mobile",
+    "--",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "."
+}

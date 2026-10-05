@@ -1,0 +1,16 @@
+{
+  "name": "mobile-utc",
+  "exit": 0,
+  "seconds": 48.41,
+  "command": [
+    "npm",
+    "run",
+    "test:ci",
+    "-w",
+    "@protin/mobile",
+    "--",
+    "--runInBand",
+    "--watchman=false"
+  ],
+  "cwd": "."
+}

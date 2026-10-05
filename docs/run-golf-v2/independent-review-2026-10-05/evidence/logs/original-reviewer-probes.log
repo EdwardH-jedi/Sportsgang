@@ -1,0 +1,234 @@
+EEEEEEEEEEEEF                                                            [100%]
+==================================== ERRORS ====================================
+__________ ERROR at setup of test_event_times_follow_one_clock[-120] ___________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_event_times_follow_one_clock[-120]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_event_times_follow_one_clock[-120]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+___________ ERROR at setup of test_event_times_follow_one_clock[120] ___________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_event_times_follow_one_clock[120]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_event_times_follow_one_clock[120]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+__ ERROR at setup of test_concurrent_processors_claim_event_once[two-workers] __
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_concurrent_processors_claim_event_once[two-workers]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_concurrent_processors_claim_event_once[two-workers]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+_ ERROR at setup of test_concurrent_processors_claim_event_once[worker-internal-endpoint] _
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_concurrent_processors_claim_event_once[worker-internal-endpoint]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_concurrent_processors_claim_event_once[worker-internal-endpoint]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+_____ ERROR at setup of test_provider_success_commit_failure_is_ambiguous ______
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_provider_success_commit_failure_is_ambiguous>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_provider_success_commit_failure_is_ambiguous' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+____ ERROR at setup of test_broadcast_total_bound_does_not_scale_per_socket ____
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_broadcast_total_bound_does_not_scale_per_socket>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_broadcast_total_bound_does_not_scale_per_socket' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+___ ERROR at setup of test_stuck_close_does_not_prevent_other_socket_closure ___
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_stuck_close_does_not_prevent_other_socket_closure>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_stuck_close_does_not_prevent_other_socket_closure' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+_____________ ERROR at setup of test_delivery_lock_cleanup[cancel] _____________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_delivery_lock_cleanup[cancel]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_delivery_lock_cleanup[cancel]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+___________ ERROR at setup of test_delivery_lock_cleanup[exception] ____________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_delivery_lock_cleanup[exception]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_delivery_lock_cleanup[exception]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+___________ ERROR at setup of test_notification_lock_cleanup[cancel] ___________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_notification_lock_cleanup[cancel]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_notification_lock_cleanup[cancel]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+_________ ERROR at setup of test_notification_lock_cleanup[exception] __________
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_notification_lock_cleanup[exception]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_notification_lock_cleanup[exception]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+______ ERROR at setup of test_notification_lock_cleanup[provider-timeout] ______
+
+fixturedef = <FixtureDef argname='isolated' scope='function' baseid='docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/test_independent_followups.py'>
+request = <SubRequest 'isolated' for <Function test_notification_lock_cleanup[provider-timeout]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+>               return (yield)
+                        ^^^^^
+E               pytest.PytestRemovedIn9Warning: 'test_notification_lock_cleanup[provider-timeout]' requested an async fixture 'isolated' with autouse=True, with no plugin or hook that handled it. This is usually an error, as pytest does not natively support it. This will turn into an error in pytest 9.
+E               See: https://docs.pytest.org/en/stable/deprecations.html#sync-test-depending-on-async-fixture
+
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:728: PytestRemovedIn9Warning
+=================================== FAILURES ===================================
+_ test_real_disconnect_releases_admission_lock_and_block_first_drops_stored_effect _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /private/tmp/sportsgang-independent-review-20261005/apps/api/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 failed, 1 warning, 12 errors in 0.79s

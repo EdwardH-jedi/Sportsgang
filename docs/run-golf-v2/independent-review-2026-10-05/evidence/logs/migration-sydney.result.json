@@ -1,0 +1,11 @@
+{
+  "name": "migration-sydney",
+  "exit": 0,
+  "seconds": 1.24,
+  "command": [
+    ".venv/bin/alembic",
+    "upgrade",
+    "head"
+  ],
+  "cwd": "apps/api"
+}

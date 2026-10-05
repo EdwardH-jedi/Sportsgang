@@ -1,0 +1,41 @@
+[
+  {
+    "name": "/sg-codex-review-20261005-pg",
+    "id": "252ffbb46f1d97a963fa68b2a77bbc46a34a57944cf56cfdab6acfdc09f5450b",
+    "image": "postgres:16-alpine",
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "55781"
+        }
+      ]
+    }
+  },
+  {
+    "name": "/sg-codex-review-20261005-redis",
+    "id": "86f79bb2062b8ae2fb6469c39e1d5f77447bf6849057e3434db735ad6a9f0b69",
+    "image": "redis:7-alpine",
+    "ports": {
+      "6379/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "56781"
+        }
+      ]
+    }
+  },
+  {
+    "name": "/sg-codex-review-20261005-r6",
+    "id": "b14e990c37ee3419933b335efce977072f97c5621d816f8d06238f805f7545a4",
+    "image": "postgres:16-alpine",
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "55783"
+        }
+      ]
+    }
+  }
+]

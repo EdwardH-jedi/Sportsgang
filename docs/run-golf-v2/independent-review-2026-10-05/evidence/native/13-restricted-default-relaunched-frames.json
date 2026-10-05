@@ -1,0 +1,24 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "x": 16,
+      "height": 44,
+      "width": 44,
+      "y": 83
+    },
+    "inside_width": true
+  },
+  {
+    "label": "More options",
+    "type": "Button",
+    "frame": {
+      "x": 330,
+      "height": 44,
+      "width": 44,
+      "y": 83
+    },
+    "inside_width": true
+  }
+]

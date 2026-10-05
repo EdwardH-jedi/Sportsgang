@@ -1,0 +1,13 @@
+{
+  "name": "web-typecheck",
+  "exit": 0,
+  "seconds": 1.01,
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "-w",
+    "@protin/web"
+  ],
+  "cwd": "."
+}

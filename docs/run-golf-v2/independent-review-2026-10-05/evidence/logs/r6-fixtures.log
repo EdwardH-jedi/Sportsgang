@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 827, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 731, in main
+    block, block_sha = procedure_block()
+                       ^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 98, in procedure_block
+    text = GATE_DOC.read_text(encoding="utf-8")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/sportsgang-independent-review-20261005/docs/docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md'

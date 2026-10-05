@@ -1,0 +1,68 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "y": 93.66666793823242,
+      "height": 44.00000762939453,
+      "x": 16,
+      "width": 44
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Propose a session",
+    "type": "Button",
+    "frame": {
+      "y": 100.33333444595337,
+      "height": 30.666664123535156,
+      "width": 125.66667175292969,
+      "x": 200.3333282470703
+    },
+    "inside_width": true
+  },
+  {
+    "label": "More options",
+    "type": "Button",
+    "frame": {
+      "height": 44.00000762939453,
+      "y": 93.66666793823242,
+      "x": 330,
+      "width": 44
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Find a meeting spot",
+    "type": "Button",
+    "frame": {
+      "y": 216.33333206176758,
+      "height": 44.00001525878906,
+      "x": 166.3333282470703,
+      "width": 207.6666717529297
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Message\u2026",
+    "type": "TextArea",
+    "frame": {
+      "y": 631.6666564941406,
+      "height": 113.33331298828125,
+      "width": 356,
+      "x": 17
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Send",
+    "type": "Button",
+    "frame": {
+      "y": 753.9999847412109,
+      "height": 48,
+      "width": 84.33334350585938,
+      "x": 289.6666564941406
+    },
+    "inside_width": true
+  }
+]

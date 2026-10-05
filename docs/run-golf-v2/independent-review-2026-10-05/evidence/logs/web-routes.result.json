@@ -1,0 +1,13 @@
+{
+  "name": "web-routes",
+  "exit": 0,
+  "seconds": 0.34,
+  "command": [
+    "npm",
+    "run",
+    "check:routes",
+    "-w",
+    "@protin/web"
+  ],
+  "cwd": "."
+}

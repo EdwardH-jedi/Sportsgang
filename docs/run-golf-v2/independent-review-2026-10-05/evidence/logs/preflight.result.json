@@ -1,0 +1,10 @@
+{
+  "name": "preflight",
+  "exit": 0,
+  "seconds": 0.12,
+  "command": [
+    "python3",
+    "scripts/release/preflight.py"
+  ],
+  "cwd": "."
+}

@@ -1,0 +1,57 @@
+{
+  "question_count": 10,
+  "checks": [
+    {
+      "question": "Where can I get SportsGang?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Is the running and golf experience already in the app?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Do I have to share my pace or my handicap?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Are handicaps verified?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Will beginners be matched with experienced golfers?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Can anyone message me?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Does SportsGang book tee times, track runs or offer coaching?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "What if someone makes me uncomfortable?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Is this a dating app?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    },
+    {
+      "question": "Where are the privacy policy, terms and support?",
+      "question_in_pdf": true,
+      "answer_phrase_in_pdf": true
+    }
+  ],
+  "all_present": true,
+  "normalization": "whitespace removed; Unicode PDF apostrophe substitutions normalized; rendered pages separately checked"
+}

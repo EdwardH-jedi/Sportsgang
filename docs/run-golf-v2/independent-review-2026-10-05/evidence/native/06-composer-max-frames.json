@@ -1,0 +1,101 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "y": 79,
+      "width": 36.33333206176758,
+      "height": 44.666664123535156,
+      "x": 16
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Propose a session",
+    "type": "Heading",
+    "frame": {
+      "x": 90,
+      "width": 214.33334350585938,
+      "height": 36.666664123535156,
+      "y": 83
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Propose a session",
+    "type": "Heading",
+    "frame": {
+      "y": 83,
+      "width": 214.33334350585938,
+      "height": 36.666664123535156,
+      "x": 90
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Choose date",
+    "type": "Button",
+    "frame": {
+      "y": 225.99999618530273,
+      "width": 342,
+      "height": 191.33334350585938,
+      "x": 24
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Choose start time",
+    "type": "Button",
+    "frame": {
+      "x": 24,
+      "width": 342,
+      "height": 128.00003051757812,
+      "y": 502.66665267944336
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Choose end time",
+    "type": "Button",
+    "frame": {
+      "x": 24,
+      "width": 342,
+      "height": 128,
+      "y": 715.9999961853027
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Choose a court or venue",
+    "type": "Button",
+    "frame": {
+      "height": 248.333251953125,
+      "y": 1211.3333129882812,
+      "x": 24,
+      "width": 342
+    },
+    "inside_width": true
+  },
+  {
+    "label": null,
+    "type": "TextField",
+    "frame": {
+      "height": 94.666748046875,
+      "y": 1472.666633605957,
+      "x": 25,
+      "width": 340
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Send proposal",
+    "type": "Button",
+    "frame": {
+      "y": 2075.0000381469727,
+      "height": 175,
+      "x": 24,
+      "width": 342
+    },
+    "inside_width": true
+  }
+]

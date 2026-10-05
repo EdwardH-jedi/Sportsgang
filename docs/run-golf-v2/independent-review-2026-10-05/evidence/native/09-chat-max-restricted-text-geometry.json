@@ -1,0 +1,62 @@
+[
+  {
+    "label": "You can't contact this person.",
+    "frame": {
+      "width": 390,
+      "height": 371.6666564941406,
+      "y": 2.3333282470703125,
+      "x": 0
+    },
+    "type": "StaticText"
+  },
+  {
+    "label": "You can't contact this person.",
+    "frame": {
+      "y": 2.3333282470703125,
+      "width": 390,
+      "height": 371.6666564941406,
+      "x": 0
+    },
+    "type": "StaticText"
+  },
+  {
+    "label": "Back",
+    "frame": {
+      "y": 93.66666793823242,
+      "height": 44.00000762939453,
+      "width": 44,
+      "x": 16
+    },
+    "type": "Button"
+  },
+  {
+    "label": "More options",
+    "frame": {
+      "y": 93.66666793823242,
+      "width": 44,
+      "height": 44.00000762939453,
+      "x": 330
+    },
+    "type": "Button"
+  },
+  {
+    "label": "Messages are hidden while contact is restricted. Sessions you already arranged stay in My Plans.",
+    "frame": {
+      "width": 390,
+      "height": 628.6666870117188,
+      "y": 382,
+      "x": 0
+    },
+    "type": "StaticText"
+  },
+  {
+    "label": "Messages are hidden while contact is restricted. Sessions you already arranged stay in My Plans.",
+    "frame": {
+      "width": 390,
+      "height": 628.6666870117188,
+      "y": 382,
+      "x": 0
+    },
+    "type": "StaticText"
+  }
+]

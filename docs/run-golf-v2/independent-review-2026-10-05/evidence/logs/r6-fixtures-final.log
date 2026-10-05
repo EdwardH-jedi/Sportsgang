@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 827, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 756, in main
+    psql(db, script, mode="quiet")
+  File "/private/tmp/sportsgang-independent-review-20261005/docs/run-golf-v2/independent-review-2026-10-05/evidence/probes/r6/run_r6_fixtures.py", line 86, in psql
+    raise RuntimeError(f"psql failed on {db}: {r.stderr.strip()}")
+RuntimeError: psql failed on r6_e2: \connect: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist

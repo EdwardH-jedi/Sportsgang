@@ -1,0 +1,12 @@
+{
+  "name": "launcher-unit",
+  "exit": 0,
+  "seconds": 16.75,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "scripts/qa/test_qa.py"
+  ],
+  "cwd": "."
+}

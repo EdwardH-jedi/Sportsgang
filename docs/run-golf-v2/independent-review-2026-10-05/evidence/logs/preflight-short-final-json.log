@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "tool": "scripts/release/preflight.py",
+  "read_only": true,
+  "public_urls": {
+    "variables": {
+      "EXPO_PUBLIC_PRIVACY_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:3"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:3",
+            "value": "https://example.test/privacy/"
+          },
+          {
+            "source": "apps/mobile/.env.example:3",
+            "value": "https://example.test/privacy/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:14",
+            "value": "https://example.test/privacy/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:3",
+            "value": "https://example.test/privacy/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_TERMS_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:5"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:4",
+            "value": "https://example.test/terms/"
+          },
+          {
+            "source": "apps/mobile/.env.example:4",
+            "value": "https://example.test/terms/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:15",
+            "value": "https://example.test/terms/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:4",
+            "value": "https://example.test/terms/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_SUPPORT_URL": {
+        "read_at": [
+          "apps/mobile/src/lib/legal.ts:7"
+        ],
+        "in_app_config_js": false,
+        "in_eas_build_profiles": {
+          "development": false,
+          "preview": false,
+          "production": false
+        },
+        "process_env": "unset",
+        "documented": [
+          {
+            "source": ".env.example:5",
+            "value": "https://example.test/support/"
+          },
+          {
+            "source": "apps/mobile/.env.example:5",
+            "value": "https://example.test/support/"
+          },
+          {
+            "source": "docs/release/APP_STORE_METADATA.md:16",
+            "value": "https://example.test/support/"
+          },
+          {
+            "source": "apps/web/src/lib/links.ts:5",
+            "value": "https://example.test/support/"
+          }
+        ],
+        "documented_values_agree": true,
+        "process_env_value": null
+      },
+      "EXPO_PUBLIC_API_URL": {
+        "read_at": [
+          "apps/mobile/app.config.js:13"
+        ],
+        "in_app_config_js": true,
+        "in_eas_build_profiles": {
+          "development": true,
+          "preview": true,
+          "production": true
+        },
+        "process_env": "unset",
+        "store_profile_https": {
+          "preview": true,
+          "production": true
+        }
+      }
+    },
+    "other_public_env_names_read": {},
+    "local_dotenv_files": [],
+    "local_dotenv_note": "Expo CLI auto-loads apps/mobile/.env* during start/export; names are listed, contents are never read",
+    "unset_fallback": {
+      "file": "apps/mobile/src/lib/legal.ts",
+      "present": true,
+      "reads": {
+        "EXPO_PUBLIC_PRIVACY_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:3",
+          "unset_reads_as_null": true
+        },
+        "EXPO_PUBLIC_TERMS_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:5",
+          "unset_reads_as_null": true
+        },
+        "EXPO_PUBLIC_SUPPORT_URL": {
+          "line": "apps/mobile/src/lib/legal.ts:7",
+          "unset_reads_as_null": true
+        }
+      },
+      "alert_lines": [
+        "apps/mobile/src/lib/legal.ts:11: `${label} not available`,",
+        "apps/mobile/src/lib/legal.ts:12: 'This link is not available yet. Please contact support.'"
+      ],
+      "behaviour": "unset or non-http URL -> openLegal() shows the Alert below instead of opening a link; no hard-coded fallback URL. LEGAL_LINKS_CONFIGURED is true only when privacy and terms are both set."
+    }
+  },
+  "app_identity": {
+    "source": "apps/mobile/app.config.js",
+    "present": true,
+    "name": "FixtureApp",
+    "slug": "fixture",
+    "version": "2.3.4",
+    "ios_bundle_identifier": "test.fixture.app",
+    "ios_build_number": "7",
+    "android_package": "test.fixture.app",
+    "runtime_version": null,
+    "owner": null,
+    "eas_project_id": "00000000-0000-4000-8000-000000000000",
+    "has_updates_block": false,
+    "app_json_static_keys": [],
+    "eas": {
+      "cli_version": ">= 12.0.0",
+      "app_version_source": "remote",
+      "production_auto_increment": true,
+      "submit_production_ios_asc_app_id": "123456789",
+      "submit_production_ios_apple_team_id": "TEAMID0000",
+      "build_profiles": [
+        "development",
+        "preview",
+        "production"
+      ]
+    },
+    "documented": {
+      "bundle_identifier": {
+        "source": "docs/release/APP_STORE_METADATA.md",
+        "value": "test.fixture.app"
+      },
+      "app_store_url_id": {
+        "source": "apps/web/src/lib/links.ts",
+        "value": "123456789"
+      }
+    }
+  },
+  "locked_build": {
+    "npm": {
+      "command": "npm ci   (repository root; workspaces apps/* and packages/*)",
+      "lockfile": "package-lock.json",
+      "lockfile_sha256": "e988d165ed446b4c8ea31ec5eb8363e362dabcbb193837e5889e26a125d778ea",
+      "lockfile_version": 3,
+      "locked_expo": "54.0.34",
+      "locked_react_native": "0.81.5",
+      "locked_react": "19.1.0",
+      "react_native_engines_node": ">= 20.19.4",
+      "mobile_declared_expo": "^54.0.34",
+      "expo_sdk": 54,
+      "ci_node_versions": [
+        "20"
+      ],
+      "node_on_path": "v26.7.0",
+      "node_note": "informational: the declared engine/CI version is what counts, not the PATH default"
+    },
+    "uv": {
+      "command": "uv sync --frozen   (apps/api; CI adds --dev, the Dockerfile uses --no-dev --no-install-project)",
+      "lockfile": "apps/api/uv.lock",
+      "lockfile_sha256": "36676ffeed4b9c70a4735cc427984f783c21d94a683b6f6e98e0b195480dbb32",
+      "requires_python": ">=3.12",
+      "python_version_file": "3.12",
+      "lock_requires_python": ">=3.12"
+    },
+    "ios_export_command": "cd apps/mobile && CI=1 EXPO_OFFLINE=1 EXPO_NO_TELEMETRY=1 npx --no-install expo export --platform ios --output-dir <dir>"
+  },
+  "source": {
+    "head": "6b8350d55db0c0c14c51a64efe8466db0c9c73d8",
+    "branch": "main",
+    "worktree_clean": false,
+    "dirty_paths": [
+      {
+        "status": "??",
+        "path": "sgShort9K2.txt",
+        "sha256": "a46f4aeb76b19b9e49741d0bdec2704c3de3e3d116187d3377350a24ffdbe452"
+      }
+    ],
+    "dirty_count": 1,
+    "last_source_commit": "6b8350d55db0c0c14c51a64efe8466db0c9c73d8",
+    "last_source_commit_definition": "last commit touching apps/, scripts/, packages/ or .github/"
+  },
+  "notes": [
+    "eas.json cli.appVersionSource is 'remote' (production autoIncrement=True): the store build number is kept by EAS, so ios.buildNumber='7' in app.config.js is not what a store build carries \u2014 not verifiable locally",
+    "no runtimeVersion / updates block committed (no OTA channel configured)",
+    "app.config.js has no 'owner'; the EAS project is identified only by extra.eas.projectId"
+  ],
+  "missing_release_inputs": [
+    "EXPO_PUBLIC_PRIVACY_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "EXPO_PUBLIC_TERMS_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "EXPO_PUBLIC_SUPPORT_URL: not recorded in committed build config (eas.json build profiles ['preview', 'production']); a store build gets it only from EAS remote environment variables or the build machine \u2014 not verifiable locally",
+    "iOS signing certificate / provisioning profile and APNs key: EAS-managed (no credentials.json committed) \u2014 not verifiable locally",
+    "store build number: kept remotely by EAS (appVersionSource=remote) \u2014 not verifiable locally"
+  ],
+  "gates_not_satisfiable_locally": [
+    {
+      "id": "physical-device",
+      "gate": "Physical iPhone (and Android) test of the release build, incl. VoiceOver",
+      "status": "NOT_RUN",
+      "why_not_local": "needs a device; simulators and Expo Go are not the release binary"
+    },
+    {
+      "id": "signed-store-build",
+      "gate": "Signed store build (EAS) and TestFlight / App Store submission",
+      "status": "NOT_RUN",
+      "why_not_local": "signing credentials are EAS-managed; a store build runs on EAS, not locally"
+    },
+    {
+      "id": "push-provider",
+      "gate": "Real Expo push service / APNs delivery to a device",
+      "status": "NOT_RUN",
+      "why_not_local": "needs the real provider, APNs capability and a device push token"
+    },
+    {
+      "id": "r6-provenance",
+      "gate": "Production audit-timestamp provenance (R6)",
+      "status": "OPEN / NOT_RUN",
+      "why_not_local": "production database, authorised operator only: docs/run-golf-v2/morning-fixes/R6_C01_DEPLOYMENT_GATE.md \u00a73"
+    },
+    {
+      "id": "ws-topology",
+      "gate": "Deployed API is exactly one process/machine serving WebSockets",
+      "status": "PENDING / NOT_RUN",
+      "why_not_local": "live Fly topology, authorised operator only: docs/run-golf-v2/overnight-2026-10-05/release-preflight/TOPOLOGY_OPERATOR_CHECK.md"
+    }
+  ],
+  "inconsistencies": [],
+  "result": "CONSISTENT_WITH_MISSING_INPUTS"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "web-build",
+  "exit": 0,
+  "seconds": 2.14,
+  "command": [
+    "npm",
+    "run",
+    "build",
+    "-w",
+    "@protin/web"
+  ],
+  "cwd": "."
+}

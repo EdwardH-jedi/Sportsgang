@@ -1,0 +1,46 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "width": 44,
+      "x": 16,
+      "height": 44,
+      "y": 83
+    },
+    "inside_width": true
+  },
+  {
+    "label": "More options",
+    "type": "Button",
+    "frame": {
+      "width": 44,
+      "x": 330,
+      "height": 44,
+      "y": 83
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Report",
+    "type": "Button",
+    "frame": {
+      "height": 48,
+      "width": 208,
+      "x": 91,
+      "y": 370
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Block",
+    "type": "Button",
+    "frame": {
+      "height": 48,
+      "width": 208,
+      "x": 91,
+      "y": 426
+    },
+    "inside_width": true
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "preflight-unit",
+  "exit": 0,
+  "seconds": 0.72,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "scripts/release/test_preflight.py"
+  ],
+  "cwd": "."
+}

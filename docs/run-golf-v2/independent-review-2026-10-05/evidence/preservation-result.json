@@ -1,0 +1,14 @@
+{
+  "protected_changes": [],
+  "protected_worktree_count": 12,
+  "source_and_original_evidence_hashes_unchanged": true,
+  "stash_unchanged": true,
+  "review_worktree_changes": "new independent-review directory only",
+  "owned_services_removed": [
+    "sg-codex-review-20261005-pg",
+    "sg-codex-review-20261005-redis",
+    "sg-codex-review-20261005-r6"
+  ],
+  "owned_simulator": "retained, shutdown",
+  "owned_service_ports_closed": true
+}

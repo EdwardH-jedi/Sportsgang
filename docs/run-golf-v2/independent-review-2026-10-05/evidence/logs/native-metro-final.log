@@ -1,0 +1,22 @@
+Starting project at /private/tmp/sportsgang-independent-review-20261005/apps/mobile
+[33m› [1m[@sentry/react-native/expo][22m Missing config for [1morganization, project[22m. Environment variables will be used as a fallback during the build. https://docs.sentry.io/platforms/react-native/manual-setup/[0m
+Metro is running in CI mode, reloads are disabled. Remove CI=true to enable watch mode.
+Starting Metro Bundler
+Skipping dependency validation in offline mode
+Waiting on http://localhost:8281
+Logs for your project will appear below.
+iOS apps/mobile/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+iOS Bundled 1370ms apps/mobile/index.js (1527 modules)
+ WARN  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.
+ WARN  `expo-notifications` functionality is not fully supported in Expo Go:
+We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.
+iOS apps/mobile/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+iOS Bundled 90ms apps/mobile/index.js (1 module)
+ WARN  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.
+ WARN  `expo-notifications` functionality is not fully supported in Expo Go:
+We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.
+iOS apps/mobile/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+iOS Bundled 105ms apps/mobile/index.js (1 module)
+ WARN  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.
+ WARN  `expo-notifications` functionality is not fully supported in Expo Go:
+We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.

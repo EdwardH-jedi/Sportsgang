@@ -1,0 +1,508 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "height": 44.00000762939453,
+      "x": 16,
+      "y": 93.66666793823242,
+      "width": 44
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Propose a session",
+    "type": "Button",
+    "frame": {
+      "height": 30.666664123535156,
+      "x": 200.3333282470703,
+      "y": 100.33333444595337,
+      "width": 125.66667175292969
+    },
+    "inside_width": true
+  },
+  {
+    "label": "More options",
+    "type": "Button",
+    "frame": {
+      "height": 44.00000762939453,
+      "x": 330,
+      "y": 93.66666793823242,
+      "width": 44
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Message\u2026",
+    "type": "TextArea",
+    "frame": {
+      "height": 113.33331298828125,
+      "x": 17,
+      "y": 330.6666717529297,
+      "width": 356
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Send",
+    "type": "Button",
+    "frame": {
+      "height": 48,
+      "y": 453,
+      "x": 289.6666564941406,
+      "width": 84.33334350585938
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Left",
+    "type": "Button",
+    "frame": {
+      "height": 0,
+      "x": 0,
+      "y": 553,
+      "width": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Right",
+    "type": "Button",
+    "frame": {
+      "width": 0,
+      "x": 0,
+      "y": 553,
+      "height": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Left",
+    "type": "Button",
+    "frame": {
+      "width": 0,
+      "y": 553,
+      "x": 0,
+      "height": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Right",
+    "type": "Button",
+    "frame": {
+      "width": 0,
+      "x": 0,
+      "y": 553,
+      "height": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Left",
+    "type": "Button",
+    "frame": {
+      "width": 0,
+      "x": 0,
+      "y": 553,
+      "height": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Padding-Right",
+    "type": "Button",
+    "frame": {
+      "width": 0,
+      "y": 553,
+      "x": 0,
+      "height": 0
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Q",
+    "type": "Button",
+    "frame": {
+      "width": 38,
+      "y": 560,
+      "x": 4.666666666666657,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "W",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 42.66666666666666,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "E",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333333,
+      "x": 80.99999999999999,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "R",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333333,
+      "y": 560,
+      "x": 119.3333333333333,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "T",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 157.66666666666666,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Y",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 196,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "U",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "y": 560,
+      "x": 234.33333333333334,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "I",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 272.66666666666663,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "O",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "y": 560,
+      "x": 311,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "P",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 349.33333333333326,
+      "y": 560,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "A",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 23.66666666666666,
+      "y": 614,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "S",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333333,
+      "y": 614,
+      "x": 61.999999999999986,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "D",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "y": 614,
+      "x": 100.33333333333331,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "F",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "y": 614,
+      "x": 138.66666666666666,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "G",
+    "type": "Button",
+    "frame": {
+      "width": 38,
+      "y": 614,
+      "x": 177,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "H",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 215,
+      "y": 614,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "J",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 253.33333333333337,
+      "y": 614,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "K",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 291.66666666666663,
+      "y": 614,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "L",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "y": 614,
+      "x": 330,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "shift",
+    "type": "Button",
+    "frame": {
+      "width": 49.666666666666664,
+      "x": 4.666666666666657,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Z",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333333,
+      "y": 668,
+      "x": 61.999999999999986,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "X",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 100.33333333333331,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "C",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "x": 138.66666666666666,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "V",
+    "type": "Button",
+    "frame": {
+      "width": 38,
+      "x": 177,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "B",
+    "type": "Button",
+    "frame": {
+      "width": 38.33333333333334,
+      "y": 668,
+      "x": 215,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "N",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 253.33333333333337,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "M",
+    "type": "Button",
+    "frame": {
+      "width": 38.333333333333314,
+      "x": 291.66666666666663,
+      "y": 668,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "delete",
+    "type": "Button",
+    "frame": {
+      "x": 337.66666666666663,
+      "y": 668,
+      "width": 50,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "numbers",
+    "type": "Button",
+    "frame": {
+      "x": 4.666666666666657,
+      "y": 722,
+      "width": 47.666666666666664,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Emoji",
+    "type": "Button",
+    "frame": {
+      "x": 52.33333333333333,
+      "y": 722,
+      "width": 48,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": " ",
+    "type": "Button",
+    "frame": {
+      "x": 100.3333333333333,
+      "width": 191.33333333333331,
+      "y": 722,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "send",
+    "type": "Button",
+    "frame": {
+      "x": 291.66666666666663,
+      "width": 96,
+      "y": 722,
+      "height": 54
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Next keyboard",
+    "type": "Button",
+    "frame": {
+      "x": 8.47726568115926,
+      "y": 775.6989567998571,
+      "width": 68.0852958475086,
+      "height": 68.73516393505099
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Dictate",
+    "type": "Button",
+    "frame": {
+      "x": 313.43743847133214,
+      "width": 68.08529584750863,
+      "y": 775.3656234665239,
+      "height": 68.73516393505099
+    },
+    "inside_width": true
+  },
+  {
+    "label": "Dictate",
+    "type": "Button",
+    "frame": {
+      "x": 313.43743847133214,
+      "y": 775.3656234665239,
+      "width": 68.08529584750863,
+      "height": 68.73516393505099
+    },
+    "inside_width": true
+  }
+]

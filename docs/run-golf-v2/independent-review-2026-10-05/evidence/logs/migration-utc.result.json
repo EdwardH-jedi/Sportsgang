@@ -1,0 +1,11 @@
+{
+  "name": "migration-utc",
+  "exit": 0,
+  "seconds": 6.12,
+  "command": [
+    ".venv/bin/alembic",
+    "upgrade",
+    "head"
+  ],
+  "cwd": "apps/api"
+}

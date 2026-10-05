@@ -1,0 +1,11 @@
+{
+  "name": "api-unit",
+  "exit": 0,
+  "seconds": 151.4,
+  "command": [
+    ".venv/bin/pytest",
+    "-q",
+    "tests"
+  ],
+  "cwd": "apps/api"
+}

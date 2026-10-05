@@ -1,0 +1,9 @@
+{
+  "match": "aba3de47-6d75-405f-b006-65a1134da868",
+  "alice": "ae05fa22-753e-4ba9-8bad-ab6c290c4bd7",
+  "bob": "067a3e6e-e545-42d1-af8f-23bf556f49e5",
+  "partner_name": "Alexandria Long Partner Name For Review Case",
+  "database": "sg_review_native",
+  "api_port": 8181,
+  "metro_port": 8281
+}

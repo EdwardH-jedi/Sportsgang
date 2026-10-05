@@ -1,0 +1,11 @@
+{
+  "name": "ruff-check",
+  "exit": 0,
+  "seconds": 0.66,
+  "command": [
+    ".venv/bin/ruff",
+    "check",
+    "."
+  ],
+  "cwd": "apps/api"
+}

@@ -1,0 +1,17 @@
+{
+  "pages": 10,
+  "faq_questions": {
+    "Where can I get SportsGang?": true,
+    "Do I have to share my pace": true,
+    "Are handicaps verified?": true,
+    "Will beginners": true,
+    "Can anyone message me?": true,
+    "Does SportsGang book": true,
+    "What if someone makes me": true,
+    "Is this a dating app?": true,
+    "Where are the privacy": true
+  },
+  "faq_pages": [
+    8
+  ]
+}

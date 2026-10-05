@@ -1,0 +1,10 @@
+{
+  "name": "r1-adapted",
+  "exit": 0,
+  "seconds": 11.56,
+  "command": [
+    ".venv/bin/python",
+    "../../docs/run-golf-v2/morning-fixes/evidence/probe_r1_adapted.py"
+  ],
+  "cwd": "apps/api"
+}

@@ -1,0 +1,95 @@
+d0:block PASS 201
+d0:a:get:/matches/e66f4454-b957-4a40-84b2-07eaeae80574/messages: PASS 403
+d0:a:post:/matches/e66f4454-b957-4a40-84b2-07eaeae80574/messages: PASS 403
+d0:a:post:/bookings: PASS 403
+d0:a:post:/challenges: PASS 403
+d0:a:post:/discovery/actions:like PASS 403
+d0:a:post:/discovery/actions:pass PASS 403
+d0:a:post:/discovery/actions:save PASS 403
+d0:a:match-total PASS 0
+d0:a:booking-detail PASS 200
+d0:a:booking-list PASS 200
+d0:a:report PASS 201
+d0:b:get:/matches/e66f4454-b957-4a40-84b2-07eaeae80574/messages: PASS 403
+d0:b:post:/matches/e66f4454-b957-4a40-84b2-07eaeae80574/messages: PASS 403
+d0:b:post:/bookings: PASS 403
+d0:b:post:/challenges: PASS 403
+d0:b:post:/discovery/actions:like PASS 403
+d0:b:post:/discovery/actions:pass PASS 403
+d0:b:post:/discovery/actions:save PASS 403
+d0:b:match-total PASS 0
+d0:b:booking-detail PASS 200
+d0:b:booking-list PASS 200
+d0:b:report PASS 201
+d0:confirm PASS 403
+d0:challenge-accept PASS 403
+d0:decline PASS 200
+d0:complete PASS 200
+d0:cancel-confirmed PASS 200
+d0:no-show PASS 200
+d0:retained-message-row PASS 1
+d0:unblock PASS 204
+d0:restored-history PASS 1
+d1:block PASS 201
+d1:a:get:/matches/2e8b9e18-86a1-4d3f-b91d-025110d5da28/messages: PASS 403
+d1:a:post:/matches/2e8b9e18-86a1-4d3f-b91d-025110d5da28/messages: PASS 403
+d1:a:post:/bookings: PASS 403
+d1:a:post:/challenges: PASS 403
+d1:a:post:/discovery/actions:like PASS 403
+d1:a:post:/discovery/actions:pass PASS 403
+d1:a:post:/discovery/actions:save PASS 403
+d1:a:match-total PASS 0
+d1:a:booking-detail PASS 200
+d1:a:booking-list PASS 200
+d1:a:report PASS 201
+d1:b:get:/matches/2e8b9e18-86a1-4d3f-b91d-025110d5da28/messages: PASS 403
+d1:b:post:/matches/2e8b9e18-86a1-4d3f-b91d-025110d5da28/messages: PASS 403
+d1:b:post:/bookings: PASS 403
+d1:b:post:/challenges: PASS 403
+d1:b:post:/discovery/actions:like PASS 403
+d1:b:post:/discovery/actions:pass PASS 403
+d1:b:post:/discovery/actions:save PASS 403
+d1:b:match-total PASS 0
+d1:b:booking-detail PASS 200
+d1:b:booking-list PASS 200
+d1:b:report PASS 201
+d1:confirm PASS 403
+d1:challenge-accept PASS 403
+d1:decline PASS 200
+d1:complete PASS 200
+d1:cancel-confirmed PASS 200
+d1:no-show PASS 200
+d1:retained-message-row PASS 1
+d1:unblock PASS 204
+d1:restored-history PASS 1
+blocked account deletion PASS 204
+deleted token auth PASS 401
+deletion cascades retained message PASS 0
+admission held after check -> block waits on pair lock PASS True
+block after admission completes PASS 201
+admission-check -> (block waits) -> registration -> closure PASS closed 4003
+admission + delivery held -> block waits on pair lock PASS True
+block after delivery completes PASS 201
+wire: pre-commit frame, then closure PASS ['stored before block', 'closed 4003']
+order: registration, frame, then block closure PASS ['registered', 'frame sent', 'block closure']
+block first: block commits while dispatcher waits before the lock PASS 201
+block first: proposal push invocations PASS []
+existing commitment cancellation notification PASS ['booking_cancelled']
+dispatch first: block waits on pair lock during token lookup PASS True
+dispatch first: proposal pushed before the block commits PASS ['proposal_received']
+dispatch first: block then completes (no deadlock) PASS 201
+fresh actor state after pair lock:send PASS 403
+inactive actor prohibited persisted rows:send PASS 0
+deactivated actor next HTTP auth:send PASS 401
+fresh actor state after pair lock:like PASS 403
+inactive actor prohibited persisted rows:like PASS 0
+deactivated actor next HTTP auth:like PASS 401
+fresh actor state after pair lock:proposal PASS 403
+inactive actor prohibited persisted rows:proposal PASS 0
+deactivated actor next HTTP auth:proposal PASS 401
+worker before lock: API block commits PASS 201
+separate worker, block first: provider invocations PASS []
+worker after lock: API block waits on pair lock PASS True
+separate worker, dispatch first: provider invoked before block commit PASS ['proposal_received']
+separate worker, dispatch first: block completes (no deadlock) PASS 201
+RESULTS {'PASS': 94, 'FAIL': 0, 'HARNESS_ERROR': 0}

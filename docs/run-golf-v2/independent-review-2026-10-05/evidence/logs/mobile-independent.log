@@ -1,0 +1,275 @@
+
+> @protin/mobile@0.1.0 test:ci
+> jest --passWithNoTests --ci --runInBand --watchman=false ChatScreen.review.test.tsx
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+  console.error
+    An update to VirtualizedList inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at ../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11801:19
+      at runWithFiberInDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at warnIfUpdatesNotWrappedWithActDEV (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11800:9)
+      at scheduleUpdateOnFiber (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10326:9)
+      at Object.enqueueSetState (../../node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14179:14)
+      at VirtualizedList.Object.<anonymous>.process.env.NODE_ENV.Component.setState (../../node_modules/react/cjs/react.development.js:632:20)
+      at ../../node_modules/@babel/runtime/helpers/superPropGet.js:6:14
+      at VirtualizedList.setState (../../node_modules/@react-native/virtualized-lists/Lists/StateSafePureComponent.js:39:7)
+      at VirtualizedList.setState [as _updateCellsToRender] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1907:10)
+      at Timeout._updateCellsToRender [as _onTimeout] (../../node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1804:16)
+
+FAIL src/__tests__/ChatScreen.review.test.tsx
+  ✕ review: focus after a disconnected peer block rechecks message authority (692 ms)
+  ✕ review: a token replacement that opens a new socket clears the paused status (476 ms)
+  ✕ review: block success dialog acknowledgement expires on blur (11 ms)
+  ✕ review: block finishing after blur does not alert over a different screen (11 ms)
+  ✕ review: an older action response cannot undo a newer completed proposal refresh (64 ms)
+  ✓ review control: a refocus never restores hidden history while still restricted (56 ms)
+  ✓ review control: token replacement ignores a saved old socket close (13 ms)
+
+  ● review: focus after a disconnected peer block rechecks message authority
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": [FiberNode], "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 4, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 262144, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      216 |   routeGets({ '/matches/match-A/messages': () => Promise.reject(new Error(CONTACT_UNAVAILABLE)) });
+      217 |   refocus(); await settle();
+    > 218 |   expect(u.queryByText('private old history')).toBeNull();
+          |                                                ^
+      219 |   expect(u.queryByPlaceholderText('Message…')).toBeNull();
+      220 |   expect(u.getByText(CONTACT_UNAVAILABLE)).toBeTruthy();
+      221 | });
+
+      at Object.toBeNull (src/__tests__/ChatScreen.review.test.tsx:218:48)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● review: a token replacement that opens a new socket clears the paused status
+
+    expect(received).toBeNull()
+
+    Received: {"_fiber": {"_debugHookTypes": null, "_debugInfo": null, "_debugNeedsRemount": false, "_debugOwner": [FiberNode], "_debugStack": [Error: react-stack-top-frame], "_debugTask": null, "actualDuration": -0, "actualStartTime": undefined, "alternate": [FiberNode], "child": [FiberNode], "childLanes": 0, "deletions": null, "dependencies": null, "elementType": "Text", "flags": 0, "index": 0, "key": null, "lanes": 0, "memoizedProps": [Object], "memoizedState": null, "mode": 3, "pendingProps": [Object], "ref": null, "refCleanup": null, "return": [FiberNode], "selfBaseDuration": -0, "sibling": null, "stateNode": [Object], "subtreeFlags": 0, "tag": 5, "treeBaseDuration": -0, "type": "Text", "updateQueue": null}}
+
+      227 |   expect(sockets[sockets.length-1].url).toContain(mockToken);
+      228 |   act(() => sockets[sockets.length-1].onopen?.()); await settle();
+    > 229 |   expect(u.queryByText('Live updates paused.')).toBeNull();
+          |                                                 ^
+      230 | });
+      231 | it('review: block success dialog acknowledgement expires on blur', async () => {
+      232 |   routeGets({});mockApiPost.mockResolvedValue({});const navigation=makeNavigation();
+
+      at Object.toBeNull (src/__tests__/ChatScreen.review.test.tsx:229:49)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● review: block success dialog acknowledgement expires on blur
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: called with 0 arguments
+
+      236 |   expect(alertSpy.mock.calls.at(-1)?.[0]).toBe('User blocked');
+      237 |   const ok=alertButton('OK');act(() => navigation.emit('blur'));
+    > 238 |   act(() => ok?.onPress?.());expect(navigation.goBack).not.toHaveBeenCalled();
+          |                                                            ^
+      239 | });
+      240 | it('review: block finishing after blur does not alert over a different screen', async () => {
+      241 |   routeGets({});const done=deferred<unknown>();mockApiPost.mockImplementation(() => done.promise);
+
+      at Object.toHaveBeenCalled (src/__tests__/ChatScreen.review.test.tsx:238:60)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● review: block finishing after blur does not alert over a different screen
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: "User blocked", "You won't be matched or contacted by this user.", [{"onPress": [Function onPress], "text": "OK"}]
+
+      244 |   act(() => alertButton('Block')?.onPress?.());act(() => navigation.emit('blur'));
+      245 |   alertSpy.mockClear();await act(async () => done.resolve({}));await settle();
+    > 246 |   expect(alertSpy).not.toHaveBeenCalled();
+          |                        ^
+      247 | });
+      248 | it('review: an older action response cannot undo a newer completed proposal refresh', async () => {
+      249 |   routeGets({ '/bookings?match_id=match-A': () => Promise.resolve(list([proposal()])) });
+
+      at Object.toHaveBeenCalled (src/__tests__/ChatScreen.review.test.tsx:246:24)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+  ● review: an older action response cannot undo a newer completed proposal refresh
+
+    Unable to find an element with text: Session completed
+
+    [36m<View>[39m
+      [36m<View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Back"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0m←[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<Text[39m
+            [33maccessibilityRole[39m=[32m"header"[39m
+          [36m>[39m
+            [0mAva[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Propose a session"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m+ Session[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"More options"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0m⋯[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<View>[39m
+          [36m<Text>[39m
+            [0mPlan a session[0m
+          [36m</Text>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+            [0m and propose a time.[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+        [36m<View[39m
+          [33maccessibilityLabel[39m=[32m"Find a meeting spot"[39m
+          [33maccessibilityRole[39m=[32m"button"[39m
+          [33maccessible[39m=[32m{true}[39m
+        [36m>[39m
+          [36m<Text>[39m
+            [0mFind a [0m
+            [0mmeeting spot[0m
+          [36m</Text>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+      [36m<View>[39m
+        [36m<RCTScrollView>[39m
+          [36m<View>[39m
+            [36m<View>[39m
+              [36m<View>[39m
+                [36m<View[39m
+                  [33maccessibilityLabel[39m=[32m"Open session"[39m
+                  [33maccessibilityRole[39m=[32m"button"[39m
+                  [33maccessible[39m=[32m{true}[39m
+                [36m>[39m
+                  [36m<Text>[39m
+                    [0mSession[0m
+                  [36m</Text>[39m
+                  [36m<View>[39m
+                    [36m<Text>[39m
+                      [0mRunning[0m
+                    [36m</Text>[39m
+                    [36m<Text>[39m
+                      [0mTue 6 Oct · 11:30 am – 12:30 pm[0m
+                    [36m</Text>[39m
+                  [36m</View>[39m
+                [36m</View>[39m
+              [36m</View>[39m
+            [36m</View>[39m
+          [36m</View>[39m
+        [36m</RCTScrollView>[39m
+        [36m<View>[39m
+          [36m<TextInput[39m
+            [33mplaceholder[39m=[32m"Message…"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<View[39m
+            [33maccessibilityLabel[39m=[32m"Send"[39m
+            [33maccessibilityRole[39m=[32m"button"[39m
+            [33maccessibilityState[39m=[32m{
+              {
+                "disabled": true,
+              }
+            }[39m
+            [33maccessible[39m=[32m{true}[39m
+          [36m>[39m
+            [36m<Text>[39m
+              [0mSend[0m
+            [36m</Text>[39m
+          [36m</View>[39m
+        [36m</View>[39m
+      [36m</View>[39m
+    [36m</View>[39m
+
+      252 |   act(() => fireEvent.press(u.getByLabelText('Accept session proposal')));
+      253 |   routeGets({ '/bookings?match_id=match-A': () => Promise.resolve(list([proposal({status:'completed',updatedAt:'2026-10-04T10:00:00Z'})])) });
+    > 254 |   refocus();await settle();expect(u.getByText('Session completed')).toBeTruthy();
+          |                                     ^
+      255 |   await act(async () => done.resolve(proposal({status:'confirmed',updatedAt:'2026-10-04T09:00:00Z'})));await settle();
+      256 |   expect(u.getByText('Session completed')).toBeTruthy();
+      257 | });
+
+      at Object.getByText (src/__tests__/ChatScreen.review.test.tsx:254:37)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       5 failed, 2 passed, 7 total
+Snapshots:   0 total
+Time:        2.214 s
+Ran all test suites matching /ChatScreen.review.test.tsx/i.
+npm error Lifecycle script `test:ci` failed with error:
+npm error code 1
+npm error path /private/tmp/sportsgang-independent-review-20261005/apps/mobile
+npm error workspace @protin/mobile@0.1.0
+npm error location /private/tmp/sportsgang-independent-review-20261005/apps/mobile
+npm error command failed
+npm error command sh -c jest --passWithNoTests --ci --runInBand --watchman=false ChatScreen.review.test.tsx

@@ -1,0 +1,7 @@
+{
+  "configured_deadline_seconds": 0.02,
+  "still_waiting_after_send_ignored_cancellation": true,
+  "extra_wait_seconds": 0.1,
+  "real_network_or_provider_used": false,
+  "completed_after_cooperative_release": true
+}

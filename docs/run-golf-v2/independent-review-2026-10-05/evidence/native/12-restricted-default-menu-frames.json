@@ -1,0 +1,24 @@
+[
+  {
+    "label": "Back",
+    "type": "Button",
+    "frame": {
+      "y": 93.66666793823242,
+      "width": 44,
+      "height": 44.00000762939453,
+      "x": 16
+    },
+    "inside_width": true
+  },
+  {
+    "label": "More options",
+    "type": "Button",
+    "frame": {
+      "y": 93.66666793823242,
+      "width": 44,
+      "height": 44.00000762939453,
+      "x": 330
+    },
+    "inside_width": true
+  }
+]
