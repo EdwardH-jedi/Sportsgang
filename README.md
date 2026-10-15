@@ -4,19 +4,7 @@ SportsGang helps people in Sydney find partners for gym, golf, tennis, and runni
 
 [App Store listing](https://apps.apple.com/us/app/sportsgang/id6767027447) · [Local setup](#local-setup) · [Release evidence](docs/PORTFOLIO_FACTS.md) · [CI](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml)
 
-## Status and preview
-
-SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [release history](docs/PORTFOLIO_FACTS.md). The listing and recorded screenshots are release evidence; they do not guarantee current backend availability. An always-on public backend demo is not provided here, and this repository does not establish download or active-user metrics.
-
-**SportsGang is the public product name.** `Protin`, `protin-api`, and `@protin/*` remain internal project, package, and infrastructure names. Older web design material also contains earlier branding.
-
-Recorded iOS release screens:
-
-<p>
-  <img src="docs/release/screenshots/ios/01-discovery-gym-partners.png" width="230" alt="SportsGang partner discovery screen">
-  <img src="docs/release/screenshots/ios/03-chat-confirmed-session.png" width="230" alt="Chat showing a confirmed sports session">
-  <img src="docs/release/screenshots/ios/05-propose-session-form.png" width="230" alt="Form for proposing a sports session">
-</p>
+**SportsGang is the public product name.** `Protin`, `protin-api`, and `@protin/*` remain internal project, package, and infrastructure names.
 
 ## Implemented features
 
@@ -28,7 +16,17 @@ Recorded iOS release screens:
 - **Accounts and safety:** email/password and Sign in with Apple paths, profile photos, reporting, blocking, and moderation
 - **Optional integrations:** Google Calendar sync and Expo push notifications, with provider configuration and separate delivery verification required
 
-Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment. Tournament list/join/leave endpoints are feature-flagged; brackets, result verification, and tournament rank integration are unfinished. The flag defaults on locally and off in staging/production.
+Recorded iOS release screens:
+
+<p>
+  <img src="docs/release/screenshots/ios/01-discovery-gym-partners.png" width="230" alt="SportsGang partner discovery screen">
+  <img src="docs/release/screenshots/ios/03-chat-confirmed-session.png" width="230" alt="Chat showing a confirmed sports session">
+  <img src="docs/release/screenshots/ios/05-propose-session-form.png" width="230" alt="Form for proposing a sports session">
+</p>
+
+## Release status
+
+SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [release history](docs/PORTFOLIO_FACTS.md). See [Limitations](#limitations) for what the listing and screenshots do not establish.
 
 ## Stack and architecture
 
@@ -38,12 +36,9 @@ Bookings coordinate sessions between participants. They do not reserve a facilit
 | API | Python 3.12, FastAPI, Pydantic 2, async SQLAlchemy 2, asyncpg, Alembic |
 | Data | PostgreSQL 16 and Redis 7 |
 | Shared contracts | `@protin/shared-types` TypeScript package |
-| Web prototype | Vite, React, Tailwind CSS, anime.js |
 | Tooling and deployment | npm workspaces, uv, Docker Compose, nginx, Fly.io configuration, GitHub Actions |
 
 The mobile app uses an HTTP/JWT API and match-specific WebSockets. The API stores application data in PostgreSQL and uses Redis; a separate worker processes notification delivery. Alembic manages schema changes. Apple, Google, and Expo integrations sit outside the local test boundary.
-
-`apps/web` is a separate marketing prototype, not the mobile application. Its waitlist is browser-local storage only, with no subscription backend or notification delivery. Its draft policies, placeholder contacts, and legacy branding still need review. See the [web workspace notes](apps/web/README.md).
 
 ## Local setup
 
@@ -121,16 +116,6 @@ Use `i` for the iOS simulator or `a` for an Android emulator. Set `EXPO_PUBLIC_A
 
 Restart Expo after changing its environment. Native integrations need appropriate device/build configuration; push delivery requires a physical-device check. Create at least two test accounts with profiles to exercise discovery, mutual matching, and session proposals.
 
-### Optional web prototype
-
-After the root `npm ci`, run:
-
-```bash
-npm run dev --workspace @protin/web
-```
-
-Follow the printed local URL. This runs the marketing prototype; it does not run the mobile app or connect a real waitlist service.
-
 ## Tests and verification
 
 From the repository root:
@@ -158,14 +143,12 @@ uv run alembic upgrade head
 uv run pytest tests_integration -q
 ```
 
-The integration test writes accounts and bookings. Never point it at production. See [verification scope](docs/VERIFICATION.md) and the [workflow](.github/workflows/ci.yml) for the exact checks. A green run does not verify external Apple/Google/Expo services, browser behavior in the web prototype, production load, or every concurrency/recovery scenario.
+The integration test writes accounts and bookings. Never point it at production. See [verification scope](docs/VERIFICATION.md) and the [workflow](.github/workflows/ci.yml) for the exact checks. A green run does not verify external Apple/Google/Expo services, production load, or every concurrency/recovery scenario.
 
-## Operational notes and current limits
+## Operational notes
 
-- Chat history pagination/reconnection, failure-safe photo replacement, and concurrent booking transitions still need hardening. Existing checks should not be read as guarantees for these cases.
 - Photos currently use local filesystem storage. Deployment needs a deliberate persistence and backup plan.
 - Staging/production startup requires a non-default signing key, `FIELD_ENCRYPTION_KEY`, and `INTERNAL_API_TOKEN`. Local mode permits plaintext OAuth token fallback when no encryption key is configured. Review [environment configuration](docs/staging/ENV_VARS.md), [security notes](docs/security/SECURITY_AUDIT.md), and the [release runbook](docs/deployment/RELEASE_RUNBOOK.md) before deploying.
-- The web prototype has no real waitlist delivery; tournaments and provider-dependent integrations have the limits described above. Older staging notes are historical records, not a current availability report.
 
 ### Stop, troubleshoot, or reset
 
@@ -184,12 +167,21 @@ For port conflicts, change `POSTGRES_PORT`/`REDIS_PORT` in the root `.env`, upda
 | --- | --- |
 | [`apps/api/`](apps/api/) | API, domain services, Alembic migrations, unit and integration tests |
 | [`apps/mobile/`](apps/mobile/) | Mobile screens, navigation, API client, state, and theme |
-| [`apps/web/`](apps/web/) | Marketing prototype and earlier design/static-site material |
 | [`packages/shared-types/`](packages/shared-types/) | Shared TypeScript contracts |
 | [`infra/`](infra/) | nginx and deployment, backup, and health-check scripts |
 | [`docs/`](docs/) | Release, security, staging, workflow, and contract documentation |
 
 Start with [Portfolio Facts](docs/PORTFOLIO_FACTS.md) for release history, [Verification](docs/VERIFICATION.md) for test boundaries, [Staging Setup](docs/staging/SETUP.md) and [Runbook](docs/staging/RUNBOOK.md) for operator instructions, and the [Venue Runbook](docs/runbooks/venues.md) for provider setup.
+
+## Limitations
+
+- The App Store listing and recorded screenshots are release evidence; they do not guarantee current backend availability. No always-on public backend demo is provided.
+- This repository does not establish download or active-user metrics.
+- Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment.
+- Tournament list/join/leave endpoints are feature-flagged (on by default locally, off in staging/production); brackets, result verification, and tournament rank integration are unfinished.
+- Chat history pagination/reconnection, failure-safe photo replacement, and concurrent booking transitions still need hardening. Existing checks should not be read as guarantees for these cases.
+- Optional integrations (Google Calendar, Expo push, Google Places) need provider configuration and separate delivery verification.
+- Older staging notes are historical records, not a current availability report.
 
 ## License
 
