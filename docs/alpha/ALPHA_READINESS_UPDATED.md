@@ -84,8 +84,8 @@ distribution. **PASS** across the board.
 | NEW-001 | Medium | Sport scope drift: tennis/running shipped in onboarding/discovery but `ProfileScreen.tsx` only labels gym/golf and CLAUDE.md restricts scope to gym+golf. Either gate behind a flag or finish the UI before alpha. |
 | NEW-002 | Low | `KNOWN_ISSUES.md` NB-004 ("Chat does not auto-refresh") is now incorrect — WebSocket is wired. Update or delete. |
 | NEW-003 | Low | `ALPHA_READINESS.md` "Wave 7 improvements summary" is frozen at Wave 7; Waves 8–17 changes (WebSocket, matching algorithm, CI, ESLint, nginx HTTP-only) are unrecorded. |
-| NEW-004 | Low (pre-prod) | `models/google_calendar.py` stores tokens in plaintext (per `PROJECT_STATUS.md`); acceptable for alpha but must be encrypted before production. |
-| NEW-005 | Low | `apps/mobile/src/lib/api.ts` debug logs noted in `PROJECT_STATUS.md`; verify removed before broader alpha distribution. |
+| NEW-004 | Low (pre-prod) | `models/google_calendar.py` stores tokens in plaintext (per `docs/planning/PROJECT_STATUS.md`); acceptable for alpha but must be encrypted before production. |
+| NEW-005 | Low | `apps/mobile/src/lib/api.ts` debug logs noted in `docs/planning/PROJECT_STATUS.md`; verify removed before broader alpha distribution. |
 
 ## 8. Go / no-go summary
 
