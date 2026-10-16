@@ -40,7 +40,7 @@ async def oauth_callback(
     <html>
       <body style="font-family:sans-serif;text-align:center;padding-top:80px">
         <h2>Google Calendar connected.</h2>
-        <p>You can close this window and return to Protin.</p>
+        <p>You can close this window and return to SportsGang.</p>
       </body>
     </html>
     """

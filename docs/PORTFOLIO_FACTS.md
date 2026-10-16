@@ -1,4 +1,4 @@
-# Protin — Portfolio Facts
+# SportsGang — Portfolio Facts
 
 Grounded reference for talking about this project. Repository claims below are
 verifiable from code, tests, migrations, CI, deploy configuration, and the recorded
@@ -33,7 +33,7 @@ repository, so no adoption numbers are claimed here.
 ## Problem / purpose
 
 Finding a workout or sports partner at your level, at a time and venue that works, is
-mostly ad-hoc (group chats, notice boards). Protin makes it a first-class product flow:
+mostly ad-hoc (group chats, notice boards). SportsGang makes it a first-class product flow:
 discover a compatible partner for a specific sport, challenge them, book a venue for
 the session, and build a track record through results, rank, and honour.
 
@@ -131,7 +131,7 @@ defined in the shared-types package.
 
 ## 30-second version
 
-"Protin is a peer sports matchmaking app I built end-to-end: an Expo/React Native
+"SportsGang is a peer sports matchmaking app I built end-to-end: an Expo/React Native
 TypeScript app on top of an async FastAPI backend with PostgreSQL and Redis. You can
 discover opponents by sport, challenge them, book nearby venues, chat, and track
 results through a ranking and honour system. I took the iOS release through Apple App
@@ -143,7 +143,7 @@ a Docker build."
 
 ## 2-minute technical version
 
-"Protin is a monorepo with three workspaces: an Expo React Native app, a FastAPI
+"SportsGang is a monorepo with three workspaces: an Expo React Native app, a FastAPI
 service, and a shared TypeScript types package that acts as the API contract.
 
 The backend is fully async — SQLAlchemy 2 async sessions over asyncpg, async Redis —

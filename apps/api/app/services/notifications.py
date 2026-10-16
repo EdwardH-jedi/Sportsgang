@@ -111,7 +111,7 @@ async def schedule_booking_notification(
     partner_name: str,
 ) -> None:
     """Enqueue a notification event for immediate or future delivery."""
-    title_tpl, body_tpl = _NOTIFICATION_COPY.get(notification_type, ("Protin update", "You have a new update."))
+    title_tpl, body_tpl = _NOTIFICATION_COPY.get(notification_type, ("SportsGang update", "You have a new update."))
     title = _render(title_tpl, partner=partner_name, sport=booking.sport)
     body = _render(body_tpl, partner=partner_name, sport=booking.sport)
     push_token = await _get_latest_push_token(db, recipient_id)

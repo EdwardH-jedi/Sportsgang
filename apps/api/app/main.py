@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Protin API",
+    title="SportsGang API",
     version=VERSION,
     lifespan=lifespan,
 )

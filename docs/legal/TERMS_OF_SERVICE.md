@@ -1,4 +1,4 @@
-# Protin — Terms of Service
+# SportsGang — Terms of Service
 
 **Last updated:** 2026-04-16
 **Effective:** [INSERT LAUNCH DATE]
@@ -10,7 +10,7 @@
 ## 1. Agreement
 
 These Terms of Service ("**Terms**") are a binding agreement between you and
-[INSERT LEGAL ENTITY NAME] ("**Protin**", "**we**", "**us**"). By creating
+[INSERT LEGAL ENTITY NAME] ("**SportsGang**", "**we**", "**us**"). By creating
 an account you accept these Terms and our [Privacy Policy](PRIVACY_POLICY.md).
 
 If you do not agree, do not use the app.
@@ -28,13 +28,13 @@ If you do not agree, do not use the app.
 - One account per person. Do not share your account or impersonate anyone.
 - Notify us at [support@protin.app] if you suspect unauthorised access.
 
-## 4. How Protin works
+## 4. How SportsGang works
 
-Protin helps you find and coordinate workout partners for gym, golf, tennis, and running.
+SportsGang helps you find and coordinate workout partners for gym, golf, tennis, and running.
 
 - **Discovery, like, pass, save, match** — you may only contact someone after you both mutually like each other.
 - **Chat** — you can message matched partners in-app.
-- **Bookings** — either matched user can propose a session; the other can confirm, decline, cancel, mark complete, or mark no-show. Bookings are scheduling records only; Protin is not a party to the session.
+- **Bookings** — either matched user can propose a session; the other can confirm, decline, cancel, mark complete, or mark no-show. Bookings are scheduling records only; SportsGang is not a party to the session.
 - **Google Calendar (optional)** — if you connect it, confirmed bookings are added to your calendar.
 - **Reports and blocks** — you can report or block any user. Blocks are bidirectional and immediate.
 
@@ -51,7 +51,7 @@ You agree **not** to:
 - Use the app to arrange any meeting that violates the law.
 - Upload viruses, malware, or disrupt the service's infrastructure.
 
-Protin is a tool for connecting people. **We are not responsible for the conduct of users online or in person.** Use common sense: meet in public places, verify identity, and tell someone where you are going.
+SportsGang is a tool for connecting people. **We are not responsible for the conduct of users online or in person.** Use common sense: meet in public places, verify identity, and tell someone where you are going.
 
 ## 6. Content you post
 
@@ -61,11 +61,11 @@ We may remove content that we reasonably believe violates these Terms or the law
 
 ## 7. Safety disclaimer
 
-Protin does **not** perform background checks on users. You are solely responsible for deciding whether, when, and how to meet another user. You use the app and meet other users entirely at your own risk.
+SportsGang does **not** perform background checks on users. You are solely responsible for deciding whether, when, and how to meet another user. You use the app and meet other users entirely at your own risk.
 
 ## 8. Subscriptions and payments
 
-Protin is free at launch. If we introduce paid features, the terms of those features will be presented to you at the point of purchase through the Apple App Store or other official channel.
+SportsGang is free at launch. If we introduce paid features, the terms of those features will be presented to you at the point of purchase through the Apple App Store or other official channel.
 
 ## 9. Service changes and availability
 
@@ -89,7 +89,7 @@ excluded under the Australian Consumer Law or other applicable law.
 
 ## 12. Limitation of liability
 
-To the fullest extent permitted by law, Protin's aggregate liability to you
+To the fullest extent permitted by law, SportsGang's aggregate liability to you
 for any claim arising out of or relating to the service is limited to the
 greater of (a) AUD $50 or (b) the total amount you have paid us in the 12
 months before the claim.
@@ -114,7 +114,7 @@ of your country grants you the right to bring a claim in another forum.
 If you downloaded the app from the Apple App Store, these additional terms
 apply:
 
-- These Terms are between you and Protin, not Apple. Apple is not responsible for the service or its content.
+- These Terms are between you and SportsGang, not Apple. Apple is not responsible for the service or its content.
 - Apple has no obligation to furnish maintenance or support.
 - If the app fails to conform to any applicable warranty, you may notify Apple for a refund of the purchase price (if any); Apple has no further warranty obligation.
 - Apple is not responsible for claims that the app or your use of it infringes a third party's intellectual property rights.
