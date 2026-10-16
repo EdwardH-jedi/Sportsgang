@@ -1,4 +1,4 @@
-# Protin — Stop-hook Quality Gate Plan
+# SportsGang — Stop-hook Quality Gate Plan
 
 ## Purpose
 Make Claude's implementation loop self-gating. Before Claude is allowed to

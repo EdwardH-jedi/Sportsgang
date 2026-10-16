@@ -1,4 +1,4 @@
-# Protin — Privacy Policy
+# SportsGang — Privacy Policy
 
 **Last updated:** 2026-04-16
 **Effective:** [INSERT LAUNCH DATE]
@@ -10,7 +10,7 @@
 
 ## 1. Who we are
 
-Protin ("**we**", "**us**", "**our**") is an app that helps people find
+SportsGang ("**we**", "**us**", "**our**") is an app that helps people find
 workout partners for gym and golf sessions (with tennis and running
 supported). This Privacy Policy explains what personal information we
 collect, how we use it, and the choices you have.
@@ -105,7 +105,7 @@ You can, at any time:
 
 ## 7. Children
 
-Protin is for users aged **18 and over**. You confirm you are 18+ when you register. If we learn an account belongs to someone under 18, we will delete it.
+SportsGang is for users aged **18 and over**. You confirm you are 18+ when you register. If we learn an account belongs to someone under 18, we will delete it.
 
 ## 8. Security
 
