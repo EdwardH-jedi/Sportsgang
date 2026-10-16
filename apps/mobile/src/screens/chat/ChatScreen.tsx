@@ -7,6 +7,8 @@ import {
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Platform,
   Pressable,
   StyleSheet,
@@ -22,28 +24,15 @@ import {
   SessionProposalCard,
   type SessionProposalCardData,
 } from '../../components/SessionProposalCard';
-import { api, BASE_URL } from '../../lib/api';
-import { dedupeMessagesById } from '../../lib/messages';
+import type { Message } from '@protin/shared-types';
+
+import { useChatMessages } from '../../hooks/useChatMessages';
+import { api } from '../../lib/api';
 import { useAuthStore } from '../../stores/auth';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { ChatScreenProps } from '../../navigation/types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Message {
-  id: string;
-  matchId: string;
-  senderId: string;
-  body: string;
-  createdAt: string;
-}
-
-interface MessageListResponse {
-  items: Message[];
-  total: number;
-  limit: number;
-  offset: number;
-}
 
 // Booking shape returned by GET /bookings (camelCased by lib/api). Only the
 // fields the in-chat proposal card needs are listed; the BookingDetail
@@ -71,6 +60,8 @@ type TimelineEntry =
   | { kind: 'proposal'; createdAt: string; proposal: BookingItem };
 
 const PROPOSAL_FETCH_STATUSES = 'proposed,confirmed,declined';
+// How close (px) to the bottom still counts as "following the conversation".
+const NEAR_BOTTOM_PX = 80;
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -84,7 +75,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   const normalizedRoutePartnerId =
     routePartnerId && routePartnerId.trim().length > 0 ? routePartnerId : null;
   const insets = useSafeAreaInsets();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const chat = useChatMessages(matchId, token);
+  const { messages, catchUp, loadLatest } = chat;
   const [proposals, setProposals] = useState<BookingItem[]>([]);
   // Tracks which booking id is currently mid-accept / mid-decline so its
   // card can show a spinner without freezing every other card on the screen.
@@ -101,7 +93,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   // on adjustResize and keeps inset = 0.
   const [keyboardInset, setKeyboardInset] = useState(0);
   const listRef = useRef<FlatList>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+  // Auto-scroll only while the user is at the bottom, or when a new newest
+  // message lands. Otherwise prepending an older page would yank the list
+  // away from what the user is reading.
+  const nearBottomRef = useRef(true);
+  const lastNewestIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
@@ -227,27 +223,22 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   }, [matchId]);
 
   const fetchMessages = useCallback(async () => {
+    // Retry path too: clear the previous failure so a successful attempt
+    // reveals the conversation instead of leaving the error card up.
+    setFetchError(null);
+    setIsLoading(true);
     try {
       // Run both fetches in parallel so a slow /bookings doesn't delay the
       // text history (and vice-versa). Either failing surfaces a single
-      // friendly error.
-      const [msgRes] = await Promise.all([
-        api.get<MessageListResponse>(`/matches/${matchId}/messages?limit=100`),
-        fetchProposals(),
-      ]);
-      // Merge instead of replace: a WS-received message could have landed in
-      // state while this fetch was in-flight (slow network, partner sent
-      // mid-load). dedupeMessagesById keeps the FIRST occurrence so the
-      // canonical history from data.items wins on overlap, and any tail-end
-      // WS messages survive at the end. Defensive against duplicate rows in
-      // the response too.
-      setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
+      // friendly error. Messages merge into whatever the WebSocket already
+      // delivered (see useChatMessages), so a retry never drops messages.
+      await Promise.all([loadLatest(), fetchProposals()]);
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
       setIsLoading(false);
     }
-  }, [matchId, fetchProposals]);
+  }, [loadLatest, fetchProposals]);
 
   useEffect(() => {
     fetchMessages();
@@ -255,7 +246,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
 
   // After the user proposes a session in BookingComposer, navigation pops
   // back into the chat — refetch proposals on focus so the new card shows
-  // up without forcing a manual pull-to-refresh. Skip the very first focus
+  // up without forcing a manual pull-to-refresh, and catch up on messages
+  // that arrived while another screen was on top. Skip the very first focus
   // so the initial mount fetch above isn't doubled.
   const didMountRef = useRef(false);
   useFocusEffect(
@@ -265,7 +257,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         return;
       }
       void fetchProposals();
-    }, [fetchProposals])
+      void catchUp();
+    }, [fetchProposals, catchUp])
   );
 
   const performBookingAction = useCallback(
@@ -296,32 +289,6 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     [actingBookingId]
   );
 
-  // ── Real-time WebSocket connection ──────────────────────────────────────────
-  useEffect(() => {
-    if (!token) return;
-    const wsBase = BASE_URL.replace(/^http/, 'ws');
-    const ws = new WebSocket(`${wsBase}/matches/${matchId}/ws?token=${token}`);
-    wsRef.current = ws;
-
-    ws.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data as string) as Message;
-        // Use the shared dedupe helper so this path matches sendMessage and
-        // fetchMessages — a single source of truth means a race between the
-        // POST response and a WS echo of the same id can never duplicate.
-        setMessages((prev) => dedupeMessagesById([...prev, incoming]));
-        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
-      } catch {
-        // ignore malformed frames
-      }
-    };
-
-    return () => {
-      ws.close();
-      wsRef.current = null;
-    };
-  }, [matchId, token]);
-
   // Merged chronological timeline. Proposal cards land between the text
   // bubbles surrounding their createdAt, so the chat reads as a single
   // story. Stable: messages and proposals are dropped in by createdAt
@@ -340,8 +307,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         proposal: p,
       })),
     ];
+    // Messages arrive pre-sorted by (createdAt, id); Array.sort is stable,
+    // so equal-timestamp messages keep that order.
     entries.sort((a, b) => {
       if (a.createdAt === b.createdAt) {
+        if (a.kind === b.kind) return 0;
         return a.kind === 'message' ? -1 : 1;
       }
       return a.createdAt < b.createdAt ? -1 : 1;
@@ -357,11 +327,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     setIsSending(true);
     try {
       const msg = await api.post<Message>(`/matches/${matchId}/messages`, { body });
-      // Dedupe-on-append: the WebSocket may have already broadcast this same
+      // Dedupe-on-merge: the WebSocket may have already broadcast this same
       // id back to us before the POST response resolved. Without this, both
       // paths would each push the message and React would warn:
       //   "Encountered two children with the same key: <id>"
-      setMessages((prev) => dedupeMessagesById([...prev, msg]));
+      chat.addMessage(msg);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
     } catch (err) {
       // Send failed — restore the draft so the user doesn't lose their typing,
@@ -376,7 +346,22 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     } finally {
       setIsSending(false);
     }
-  }, [draft, isSending, matchId]);
+  }, [draft, isSending, matchId, chat]);
+
+  const onListScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+    nearBottomRef.current =
+      contentSize.height - (contentOffset.y + layoutMeasurement.height) < NEAR_BOTTOM_PX;
+  }, []);
+
+  const onListContentSizeChange = useCallback(() => {
+    const newestId = messages[messages.length - 1]?.id;
+    const newestChanged = newestId !== lastNewestIdRef.current;
+    lastNewestIdRef.current = newestId;
+    if (nearBottomRef.current || newestChanged) {
+      listRef.current?.scrollToEnd({ animated: false });
+    }
+  }, [messages]);
 
   return (
     <Screen padded={false}>
@@ -421,6 +406,25 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       {/* Session-planning banner — also kept outside the KAV. The banner
           must not move when the keyboard opens; only the list+composer
           should shift. */}
+      {!isLoading && !fetchError && chat.connection === 'reconnecting' ? (
+        <View style={styles.connectionBar} accessibilityLiveRegion="polite">
+          <Text style={styles.connectionText}>Reconnecting…</Text>
+        </View>
+      ) : null}
+      {!isLoading && !fetchError && chat.connection === 'offline' ? (
+        <View style={styles.connectionBar} accessibilityLiveRegion="polite">
+          <Text style={styles.connectionText}>Offline. New messages may be delayed.</Text>
+          <Pressable
+            onPress={chat.reconnect}
+            accessibilityRole="button"
+            accessibilityLabel="Reconnect chat"
+            style={({ pressed }) => pressed && styles.pressed}
+          >
+            <Text style={styles.connectionAction}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
       <View style={styles.planBanner}>
         <View style={styles.planBannerText}>
           <Text style={styles.planBannerTitle}>Plan a session</Text>
@@ -511,7 +515,31 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             style={styles.flex}
             contentContainerStyle={styles.messageList}
             showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
+            onContentSizeChange={onListContentSizeChange}
+            onScroll={onListScroll}
+            scrollEventThrottle={100}
+            maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+            ListHeaderComponent={
+              chat.hasOlder && messages.length > 0 ? (
+                <Pressable
+                  style={({ pressed }) => [styles.loadOlder, pressed && styles.pressed]}
+                  onPress={chat.loadOlder}
+                  disabled={chat.isLoadingOlder}
+                  accessibilityRole="button"
+                  accessibilityLabel="Load earlier messages"
+                >
+                  {chat.isLoadingOlder ? (
+                    <ActivityIndicator size="small" color={colors.textSecondary} />
+                  ) : (
+                    <Text style={styles.loadOlderText}>
+                      {chat.olderError
+                        ? "Couldn't load earlier messages. Tap to retry."
+                        : 'Load earlier messages'}
+                    </Text>
+                  )}
+                </Pressable>
+              ) : null
+            }
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
             ListEmptyComponent={
@@ -703,6 +731,33 @@ const styles = StyleSheet.create({
     ...typography.button,
     color: colors.textInverse,
     fontSize: 14,
+  },
+  connectionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separator,
+  },
+  connectionText: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  connectionAction: {
+    ...typography.label,
+    color: colors.textPrimary,
+  },
+  loadOlder: {
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+  },
+  loadOlderText: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
   centred: {
     flex: 1,

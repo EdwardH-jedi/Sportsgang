@@ -25,3 +25,6 @@ class MessageListResponse(BaseModel):
     total: int
     limit: int
     offset: int
+    # True when another page exists in the direction being paged (older for
+    # latest/before, newer for after, later offsets for the legacy mode).
+    has_more: bool = False

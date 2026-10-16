@@ -62,8 +62,9 @@ jest.mock('../stores/auth', () => ({
 
 interface MockWS {
   url: string;
+  onopen: (() => void) | null;
   onmessage: ((e: { data: string }) => void) | null;
-  onclose: (() => void) | null;
+  onclose: ((e?: { code?: number }) => void) | null;
   onerror: (() => void) | null;
   readyState: number;
   close: jest.Mock;
@@ -73,8 +74,9 @@ let mockWsInstances: MockWS[] = [];
 
 class MockWebSocket implements MockWS {
   url: string;
+  onopen: (() => void) | null = null;
   onmessage: ((e: { data: string }) => void) | null = null;
-  onclose: (() => void) | null = null;
+  onclose: ((e?: { code?: number }) => void) | null = null;
   onerror: (() => void) | null = null;
   readyState = 1; // OPEN
   close = jest.fn(() => { this.readyState = 3; });
@@ -103,9 +105,17 @@ jest.mock('../components/Screen', () => {
 // so stub the hook to fire its callback once on mount and treat any returned
 // cleanup as the unmount handler.
 
+// The latest focus callback is kept so tests can simulate returning to the
+// screen from another route (mockRefocus).
+let mockFocusCallback: (() => void | (() => void)) | null = null;
+function mockRefocus() {
+  mockFocusCallback?.();
+}
+
 jest.mock('@react-navigation/native', () => ({
   useFocusEffect: (cb: () => void | (() => void)) => {
     const React = require('react');
+    mockFocusCallback = cb;
     React.useEffect(() => {
       const cleanup = cb();
       return typeof cleanup === 'function' ? cleanup : undefined;
@@ -240,7 +250,7 @@ describe('ChatScreen', () => {
     mockApiGet.mockResolvedValue(emptyMessageResponse);
     renderChatScreen();
     await waitFor(() => {
-      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=100');
+      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?latest=true&limit=50');
     });
   });
 
@@ -518,6 +528,29 @@ describe('ChatScreen', () => {
     // Each fetchMessages now drives two GETs in parallel (messages + bookings).
     // Initial mount = 2 calls; retry tap = 2 more = 4 total.
     expect(mockApiGet).toHaveBeenCalledTimes(4);
+  });
+
+  it('a successful retry clears the error and reveals the conversation', async () => {
+    mockApiGet
+      .mockRejectedValueOnce(new Error('Connection refused'))
+      .mockImplementation((url: string) =>
+        Promise.resolve(
+          url.startsWith('/bookings')
+            ? emptyListResponse
+            : { items: sampleMessages, total: 2, limit: 50, offset: 0, hasMore: false }
+        )
+      );
+
+    const { getByText, queryByText, findByText } = renderChatScreen();
+    await waitFor(() => getByText('Try again'));
+    await act(async () => {
+      fireEvent.press(getByText('Try again'));
+    });
+
+    await findByText('Hey! Want to train tomorrow?');
+    getByText('Absolutely, sounds great!');
+    expect(queryByText('Connection refused')).toBeNull();
+    expect(queryByText('Try again')).toBeNull();
   });
 
   // ── Send message ───────────────────────────────────────────────────────────
@@ -1224,6 +1257,392 @@ describe('ChatScreen', () => {
       expect(navigation.navigate).toHaveBeenCalledWith('BookingDetail', {
         bookingId: 'booking-1',
       });
+    });
+  });
+
+  // ── History pagination, reconnect & recovery ─────────────────────────────
+  // A small in-memory fake of GET /matches/:id/messages implementing the
+  // latest / before / after keyset contract over (createdAt, id). Tests push
+  // into `server` to simulate messages sent while the client was away.
+
+  describe('history pagination and realtime recovery', () => {
+    type Msg = { id: string; matchId: string; senderId: string; body: string; createdAt: string };
+
+    function makeMsg(i: number, overrides: Partial<Msg> = {}): Msg {
+      return {
+        id: `msg-${String(i).padStart(3, '0')}`,
+        matchId: 'match-1',
+        senderId: i % 2 ? 'partner-456' : 'me-123',
+        body: `Synthetic message ${i}`,
+        createdAt: new Date(Date.UTC(2026, 3, 8, 8, 0, i)).toISOString(),
+        ...overrides,
+      };
+    }
+
+    const byKey = (a: Msg, b: Msg) =>
+      a.createdAt === b.createdAt ? (a.id < b.id ? -1 : 1) : a.createdAt < b.createdAt ? -1 : 1;
+
+    let server: Msg[];
+    let messageCalls: string[];
+    let gate: Promise<void> | null;
+
+    function installFakeServer() {
+      messageCalls = [];
+      gate = null;
+      mockApiGet.mockImplementation(async (url: string) => {
+        if (url.startsWith('/bookings')) return emptyListResponse;
+        messageCalls.push(url);
+        // Snapshot at request time (like a real GET), then optionally hold
+        // the response until the test releases `gate`.
+        const pending = gate;
+        const q = new URLSearchParams(url.split('?')[1]);
+        const limit = Number(q.get('limit') ?? 50);
+        const sorted = [...server].sort(byKey);
+        const base = { total: sorted.length, limit, offset: 0 };
+        let page;
+        const after = q.get('after');
+        if (after) {
+          const rest = sorted.slice(sorted.findIndex((m) => m.id === after) + 1);
+          page = { ...base, items: rest.slice(0, limit), hasMore: rest.length > limit };
+        } else {
+          const before = q.get('before');
+          const end = before ? sorted.findIndex((m) => m.id === before) : sorted.length;
+          const start = Math.max(0, end - limit);
+          page = { ...base, items: sorted.slice(start, end), hasMore: start > 0 };
+        }
+        if (pending) await pending;
+        return page;
+      });
+    }
+
+    function renderedMessageIds(UNSAFE_getByType: any): string[] {
+      const { FlatList } = require('react-native');
+      return UNSAFE_getByType(FlatList)
+        .props.data.filter((e: any) => e.kind === 'message')
+        .map((e: any) => e.message.id);
+    }
+
+    function openSocket(i: number) {
+      act(() => {
+        mockWsInstances[i].onopen?.();
+      });
+    }
+
+    function dropSocket(i: number, code = 1006) {
+      act(() => {
+        mockWsInstances[i].onclose?.({ code });
+      });
+    }
+
+    let appStateHandlers: ((s: string) => void)[];
+    let appStateRemove: jest.Mock;
+
+    beforeEach(() => {
+      server = [];
+      installFakeServer();
+      appStateHandlers = [];
+      appStateRemove = jest.fn();
+      const { AppState } = require('react-native');
+      jest.spyOn(AppState, 'addEventListener').mockImplementation((...args: unknown[]) => {
+        appStateHandlers.push(args[1] as (s: string) => void);
+        return { remove: appStateRemove };
+      });
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+    });
+
+    it('loads the newest page first and pages 150+ messages back without gaps or duplicates', async () => {
+      server = Array.from({ length: 155 }, (_, i) => makeMsg(i));
+      const { getByLabelText, queryByLabelText, UNSAFE_getByType } = renderChatScreen();
+
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(50));
+      expect(messageCalls[0]).toBe('/matches/match-1/messages?latest=true&limit=50');
+      expect(renderedMessageIds(UNSAFE_getByType)).toEqual(server.slice(105).map((m) => m.id));
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      expect(messageCalls).toContain('/matches/match-1/messages?before=msg-105&limit=50');
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(100));
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(150));
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(155));
+
+      expect(renderedMessageIds(UNSAFE_getByType)).toEqual(server.map((m) => m.id));
+      expect(queryByLabelText('Load earlier messages')).toBeNull();
+    });
+
+    it('orders equal-timestamp messages by id across pages and WebSocket frames', async () => {
+      const ts = '2026-04-08T08:00:00Z';
+      server = ['msg-c', 'msg-a', 'msg-e', 'msg-b'].map((id, i) =>
+        makeMsg(i, { id, createdAt: ts })
+      );
+      const { UNSAFE_getByType } = renderChatScreen();
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(4));
+      expect(renderedMessageIds(UNSAFE_getByType)).toEqual(['msg-a', 'msg-b', 'msg-c', 'msg-e']);
+
+      act(() => {
+        mockWsInstances[0].onmessage?.({ data: JSON.stringify(makeMsg(9, { id: 'msg-d', createdAt: ts })) });
+      });
+      expect(renderedMessageIds(UNSAFE_getByType)).toEqual([
+        'msg-a', 'msg-b', 'msg-c', 'msg-d', 'msg-e',
+      ]);
+    });
+
+    it('shows the empty prompt and no Load earlier control for an empty history', async () => {
+      const { findByText, queryByLabelText } = renderChatScreen();
+      await findByText('Say hello to Jordan Lee to get things started.');
+      expect(queryByLabelText('Load earlier messages')).toBeNull();
+    });
+
+    it('fires a single request when Load earlier is tapped repeatedly mid-flight', async () => {
+      server = Array.from({ length: 120 }, (_, i) => makeMsg(i));
+      const { getByLabelText, UNSAFE_getByType } = renderChatScreen();
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(50));
+
+      let release!: () => void;
+      gate = new Promise<void>((r) => (release = r));
+      const button = getByLabelText('Load earlier messages');
+      await act(async () => {
+        fireEvent.press(button);
+        fireEvent.press(button);
+      });
+      // A WS frame for a message that is ALSO in the pending older page.
+      act(() => {
+        mockWsInstances[0].onmessage?.({ data: JSON.stringify(server[60]) });
+      });
+      await act(async () => {
+        release();
+      });
+      gate = null;
+
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(100));
+      expect(messageCalls.filter((u) => u.includes('before='))).toHaveLength(1);
+      const ids = renderedMessageIds(UNSAFE_getByType);
+      expect(new Set(ids).size).toBe(ids.length);
+      expect(ids).toEqual(server.slice(20).map((m) => m.id));
+    });
+
+    it('catches up missed messages after a disconnect and shows the reconnect state', async () => {
+      jest.useFakeTimers();
+      server = [makeMsg(1), makeMsg(2)];
+      const { getByText, queryByText, findByText } = renderChatScreen();
+      await findByText('Synthetic message 2');
+
+      openSocket(0);
+      await waitFor(() =>
+        expect(messageCalls).toContain('/matches/match-1/messages?after=msg-002&limit=100')
+      );
+
+      dropSocket(0);
+      getByText('Reconnecting…');
+      // Partner sends while we're disconnected — no WS frame will carry it.
+      server.push(makeMsg(3), makeMsg(4));
+
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(mockWsInstances).toHaveLength(2);
+      openSocket(1);
+
+      await findByText('Synthetic message 3');
+      getByText('Synthetic message 4');
+      expect(queryByText('Reconnecting…')).toBeNull();
+    });
+
+    it('restarts from the newest page when too far behind to page forward', async () => {
+      server = [makeMsg(0), makeMsg(1)];
+      const { findByText, getByLabelText, UNSAFE_getByType } = renderChatScreen();
+      await findByText('Synthetic message 1');
+
+      // 600 missed messages: more than the bounded forward catch-up covers.
+      for (let i = 2; i < 602; i++) server.push(makeMsg(i));
+      openSocket(0);
+
+      await waitFor(() =>
+        expect(renderedMessageIds(UNSAFE_getByType)).toEqual(server.slice(552).map((m) => m.id))
+      );
+      expect(messageCalls.filter((u) => u.includes('after='))).toHaveLength(5);
+      // History stays contiguous: the gap is reachable via Load earlier.
+      getByLabelText('Load earlier messages');
+    });
+
+    it('does not duplicate when catch-up and a WebSocket echo deliver the same message', async () => {
+      server = [makeMsg(1)];
+      const { getAllByText, findByText, queryByText } = renderChatScreen();
+      await findByText('Synthetic message 1');
+      expect(queryByText('Synthetic message 2')).toBeNull();
+
+      server.push(makeMsg(2));
+      let release!: () => void;
+      gate = new Promise<void>((r) => (release = r));
+      openSocket(0); // catch-up GET is now pending
+      act(() => {
+        mockWsInstances[0].onmessage?.({ data: JSON.stringify(makeMsg(2)) });
+      });
+      await act(async () => {
+        release();
+      });
+      gate = null;
+
+      await findByText('Synthetic message 2');
+      expect(getAllByText('Synthetic message 2')).toHaveLength(1);
+    });
+
+    it('runs catch-up after the initial load when the socket opened first', async () => {
+      let release!: () => void;
+      gate = new Promise<void>((r) => (release = r));
+      server = [makeMsg(1)];
+      const { findByText } = renderChatScreen();
+
+      await waitFor(() => expect(mockWsInstances).toHaveLength(1));
+      openSocket(0); // opens while the latest-page GET is still pending
+      server.push(makeMsg(2)); // lands after the GET snapshot, before WS was live
+      await act(async () => {
+        release();
+      });
+      gate = null;
+
+      await waitFor(() =>
+        expect(messageCalls).toContain('/matches/match-1/messages?after=msg-001&limit=100')
+      );
+      await findByText('Synthetic message 2');
+    });
+
+    it('backs off exponentially, stops after a bounded number of attempts, then offers Retry', async () => {
+      jest.useFakeTimers();
+      const { findByText, getByText, getByLabelText } = renderChatScreen();
+      await findByText('Say hello to Jordan Lee to get things started.');
+
+      const delays = [1000, 2000, 4000, 8000, 16000, 30000];
+      dropSocket(0);
+      for (let i = 0; i < delays.length; i++) {
+        act(() => {
+          jest.advanceTimersByTime(delays[i] - 1);
+        });
+        expect(mockWsInstances).toHaveLength(i + 1);
+        act(() => {
+          jest.advanceTimersByTime(1);
+        });
+        expect(mockWsInstances).toHaveLength(i + 2);
+        dropSocket(i + 1);
+      }
+
+      getByText('Offline. New messages may be delayed.');
+      act(() => {
+        jest.advanceTimersByTime(120000);
+      });
+      expect(mockWsInstances).toHaveLength(delays.length + 1);
+
+      act(() => {
+        fireEvent.press(getByLabelText('Reconnect chat'));
+      });
+      expect(mockWsInstances).toHaveLength(delays.length + 2);
+    });
+
+    it('does not retry when the server rejects the socket as unauthorized', async () => {
+      jest.useFakeTimers();
+      const { findByText, getByText } = renderChatScreen();
+      await findByText('Say hello to Jordan Lee to get things started.');
+
+      dropSocket(0, 4003);
+      getByText('Offline. New messages may be delayed.');
+      act(() => {
+        jest.advanceTimersByTime(60000);
+      });
+      expect(mockWsInstances).toHaveLength(1);
+    });
+
+    it('catches up on foreground return and on screen re-focus', async () => {
+      server = [makeMsg(1)];
+      const { findByText } = renderChatScreen();
+      await findByText('Synthetic message 1');
+      openSocket(0);
+      await waitFor(() => expect(messageCalls.filter((u) => u.includes('after='))).toHaveLength(1));
+
+      server.push(makeMsg(2));
+      await act(async () => {
+        appStateHandlers.forEach((h) => h('active'));
+      });
+      await findByText('Synthetic message 2');
+
+      server.push(makeMsg(3));
+      await act(async () => {
+        mockRefocus();
+      });
+      await findByText('Synthetic message 3');
+      expect(mockWsInstances).toHaveLength(1);
+    });
+
+    it('reconnects immediately on foreground when the socket died in the background', async () => {
+      jest.useFakeTimers();
+      const { findByText } = renderChatScreen();
+      await findByText('Say hello to Jordan Lee to get things started.');
+
+      dropSocket(0, 4003); // offline, no automatic retry
+      act(() => {
+        appStateHandlers.forEach((h) => h('active'));
+      });
+      expect(mockWsInstances).toHaveLength(2);
+    });
+
+    it('cleans up the socket, reconnect timer and AppState listener on unmount', async () => {
+      jest.useFakeTimers();
+      server = Array.from({ length: 60 }, (_, i) => makeMsg(i));
+      const { getByLabelText, unmount, UNSAFE_getByType } = renderChatScreen();
+      await waitFor(() => expect(renderedMessageIds(UNSAFE_getByType)).toHaveLength(50));
+
+      let release!: () => void;
+      gate = new Promise<void>((r) => (release = r));
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      dropSocket(0); // reconnect timer now armed
+      unmount();
+
+      expect(appStateRemove).toHaveBeenCalled();
+      act(() => {
+        jest.advanceTimersByTime(60000);
+      });
+      expect(mockWsInstances).toHaveLength(1);
+      // The in-flight older page resolving after unmount must not throw.
+      await act(async () => {
+        release();
+      });
+    });
+
+    it('closes the old socket and opens a new one when the auth token changes', async () => {
+      const authMock = require('../stores/auth') as { useAuthStore: () => unknown };
+      const original = authMock.useAuthStore;
+      try {
+        const { findByText, rerender, route, navigation } = renderChatScreen();
+        await findByText('Say hello to Jordan Lee to get things started.');
+        expect(mockWsInstances).toHaveLength(1);
+
+        authMock.useAuthStore = () => ({
+          user: { id: 'me-123', email: 'me@example.com' },
+          token: 'rotated-jwt-token',
+        });
+        rerender(<ChatScreen route={route as any} navigation={navigation as any} />);
+
+        await waitFor(() => expect(mockWsInstances).toHaveLength(2));
+        expect(mockWsInstances[0].close).toHaveBeenCalledTimes(1);
+        expect(mockWsInstances[1].url).toBe(
+          'ws://localhost:8000/matches/match-1/ws?token=rotated-jwt-token'
+        );
+      } finally {
+        authMock.useAuthStore = original;
+      }
     });
   });
 });

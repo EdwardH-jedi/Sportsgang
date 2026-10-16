@@ -33,6 +33,31 @@ export function dedupeMessagesById<T extends IdLike>(messages: T[]): T[] {
   return out;
 }
 
+interface TimelineMessage extends IdLike {
+  createdAt: string;
+}
+
+/**
+ * Chronological order matching the server's keyset `(created_at, id)`, so
+ * messages that share a timestamp render in the same order the API pages
+ * them.
+ */
+export function compareMessages(a: TimelineMessage, b: TimelineMessage): number {
+  if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? -1 : 1;
+  if (a.id === b.id) return 0;
+  return a.id < b.id ? -1 : 1;
+}
+
+/**
+ * Merge a batch (HTTP page, catch-up page, POST result, WS frame) into the
+ * current list: dedupe by id — existing rows win — then sort
+ * chronologically. Pages can arrive in any order, so position in the input
+ * says nothing about position on screen.
+ */
+export function mergeMessages<T extends TimelineMessage>(existing: T[], incoming: T[]): T[] {
+  return dedupeMessagesById([...existing, ...incoming]).sort(compareMessages);
+}
+
 // ─── Preview helpers (matches list / chat list row) ──────────────────────────
 
 /**

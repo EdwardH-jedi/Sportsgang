@@ -337,3 +337,171 @@ async def test_send_message_triggers_ws_broadcast(client: AsyncClient, monkeypat
     assert data["matchId"] == match_id
     assert "id" in data
     assert "createdAt" in data
+
+
+# ---------------------------------------------------------------------------
+# Latest-history + keyset pagination (before / after cursors)
+# ---------------------------------------------------------------------------
+
+
+async def _seed_messages(match_id: str, sender_id: str, count: int, *, same_ts: bool = False) -> list[str]:
+    """Insert synthetic rows directly with explicit created_at.
+
+    Returns ids in true chronological order — ``(created_at, id)`` ascending,
+    which is the order the keyset endpoints must reproduce.
+    """
+    from datetime import datetime, timedelta
+    from uuid import UUID
+
+    from app.models.chat import Message
+
+    base = datetime(2026, 1, 1, 9, 0, 0)
+    rows = [
+        Message(
+            match_id=UUID(match_id),
+            sender_id=UUID(sender_id),
+            body=f"synthetic {i}",
+            created_at=base if same_ts else base + timedelta(seconds=i),
+        )
+        for i in range(count)
+    ]
+    async with _TestSession() as session:
+        session.add_all(rows)
+        await session.commit()
+    return [str(r.id) for r in sorted(rows, key=lambda r: (r.created_at, str(r.id)))]
+
+
+async def _new_match(client: AsyncClient, tag: str) -> tuple[str, str, str]:
+    token_a, uid_a = await _register(client, f"chat_{tag}_a@example.com")
+    token_b, uid_b = await _register(client, f"chat_{tag}_b@example.com")
+    match_id = await _mutual_like_and_get_match_id(client, token_a, uid_a, token_b, uid_b)
+    return token_a, uid_a, match_id
+
+
+async def _walk_backwards(client: AsyncClient, token: str, match_id: str, limit: int) -> list[str]:
+    """Load latest page, then follow ``before`` until has_more is false."""
+    r = await client.get(f"/matches/{match_id}/messages?latest=true&limit={limit}", headers=_auth(token))
+    assert r.status_code == 200, r.text
+    page = r.json()
+    ids = [m["id"] for m in page["items"]]
+    guard = 0
+    while page["has_more"]:
+        guard += 1
+        assert guard < 100
+        r = await client.get(
+            f"/matches/{match_id}/messages?before={ids[0]}&limit={limit}", headers=_auth(token)
+        )
+        assert r.status_code == 200, r.text
+        page = r.json()
+        ids = [m["id"] for m in page["items"]] + ids
+    return ids
+
+
+async def test_latest_returns_newest_page_in_ascending_order(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "latest150")
+    expected = await _seed_messages(match_id, uid, 160)
+
+    r = await client.get(f"/matches/{match_id}/messages?latest=true&limit=50", headers=_auth(token))
+    assert r.status_code == 200
+    body = r.json()
+    assert [m["id"] for m in body["items"]] == expected[-50:]
+    assert body["has_more"] is True
+    assert body["total"] == 160
+
+
+async def test_before_cursor_walks_full_history_without_gaps_or_duplicates(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "walk150")
+    expected = await _seed_messages(match_id, uid, 155)
+
+    assert await _walk_backwards(client, token, match_id, limit=40) == expected
+
+
+async def test_equal_timestamps_paginate_stably(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "samets")
+    expected = await _seed_messages(match_id, uid, 37, same_ts=True)
+
+    ids = await _walk_backwards(client, token, match_id, limit=10)
+    assert ids == expected
+    assert len(set(ids)) == 37
+
+
+async def test_after_cursor_returns_only_newer_messages(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "after")
+    expected = await _seed_messages(match_id, uid, 120)
+
+    r = await client.get(f"/matches/{match_id}/messages?after={expected[99]}&limit=100", headers=_auth(token))
+    assert r.status_code == 200
+    body = r.json()
+    assert [m["id"] for m in body["items"]] == expected[100:]
+    assert body["has_more"] is False
+
+    r = await client.get(f"/matches/{match_id}/messages?after={expected[0]}&limit=50", headers=_auth(token))
+    body = r.json()
+    assert [m["id"] for m in body["items"]] == expected[1:51]
+    assert body["has_more"] is True
+
+
+async def test_after_cursor_with_equal_timestamps(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "aftersame")
+    expected = await _seed_messages(match_id, uid, 12, same_ts=True)
+
+    r = await client.get(f"/matches/{match_id}/messages?after={expected[4]}&limit=100", headers=_auth(token))
+    assert [m["id"] for m in r.json()["items"]] == expected[5:]
+
+
+async def test_latest_on_empty_history(client: AsyncClient) -> None:
+    token, _, match_id = await _new_match(client, "latestempty")
+
+    r = await client.get(f"/matches/{match_id}/messages?latest=true", headers=_auth(token))
+    assert r.status_code == 200
+    body = r.json()
+    assert body["items"] == []
+    assert body["has_more"] is False
+    assert body["total"] == 0
+
+
+async def test_cursor_from_another_match_is_rejected(client: AsyncClient) -> None:
+    token_1, uid_1, match_1 = await _new_match(client, "curs1")
+    _, uid_2, match_2 = await _new_match(client, "curs2")
+    other_ids = await _seed_messages(match_2, uid_2, 3)
+
+    for param in ("before", "after"):
+        r = await client.get(f"/matches/{match_1}/messages?{param}={other_ids[1]}", headers=_auth(token_1))
+        assert r.status_code == 404, r.text
+
+
+async def test_cursor_params_are_mutually_exclusive(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "exclusive")
+    ids = await _seed_messages(match_id, uid, 3)
+
+    r = await client.get(
+        f"/matches/{match_id}/messages?before={ids[2]}&after={ids[0]}", headers=_auth(token)
+    )
+    assert r.status_code == 422
+    r = await client.get(f"/matches/{match_id}/messages?latest=true&offset=5", headers=_auth(token))
+    assert r.status_code == 422
+
+
+async def test_cursor_requires_participant(client: AsyncClient) -> None:
+    _, uid, match_id = await _new_match(client, "cursauth")
+    ids = await _seed_messages(match_id, uid, 2)
+    outsider, _ = await _register(client, "chat_cursauth_c@example.com")
+
+    r = await client.get(f"/matches/{match_id}/messages?before={ids[1]}", headers=_auth(outsider))
+    assert r.status_code == 403
+
+
+async def test_legacy_offset_mode_unchanged_and_reports_has_more(client: AsyncClient) -> None:
+    token, uid, match_id = await _new_match(client, "legacy")
+    expected = await _seed_messages(match_id, uid, 150)
+
+    r = await client.get(f"/matches/{match_id}/messages?limit=100", headers=_auth(token))
+    body = r.json()
+    assert [m["id"] for m in body["items"]] == expected[:100]
+    assert body["offset"] == 0
+    assert body["has_more"] is True
+
+    r = await client.get(f"/matches/{match_id}/messages?limit=100&offset=100", headers=_auth(token))
+    body = r.json()
+    assert [m["id"] for m in body["items"]] == expected[100:]
+    assert body["has_more"] is False

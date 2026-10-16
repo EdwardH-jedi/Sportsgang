@@ -1,7 +1,7 @@
 from uuid import UUID
 
 import jwt
-from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,10 +52,26 @@ async def list_messages(
     match_id: UUID,
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
+    latest: bool = Query(False, description="Return the newest page instead of the oldest."),
+    before: UUID | None = Query(None, description="Message id; return messages older than it."),
+    after: UUID | None = Query(None, description="Message id; return messages newer than it."),
     current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> MessageListResponse:
-    return await chat_service.list_messages(db, match_id, current_user.id, limit, offset)
+    """List messages oldest-first within the page.
+
+    Without ``latest``/``before``/``after`` this is the original offset page
+    from the start of history. The cursor modes page by ``(created_at, id)``
+    and cannot be combined with each other or with ``offset``.
+    """
+    modes = sum([latest, before is not None, after is not None])
+    if modes == 0:
+        return await chat_service.list_messages(db, match_id, current_user.id, limit, offset)
+    if modes > 1 or offset:
+        raise HTTPException(status_code=422, detail="Use only one of latest, before, after, and no offset.")
+    return await chat_service.list_messages_keyset(
+        db, match_id, current_user.id, limit, before=before, after=after
+    )
 
 
 @router.post("/matches/{match_id}/messages", response_model=MessageResponse, status_code=201)
