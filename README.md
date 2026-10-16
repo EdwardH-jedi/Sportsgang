@@ -16,7 +16,7 @@ SportsGang helps people in Sydney find partners for gym, golf, tennis, and runni
 Three commands from a fresh clone, using the local development defaults (requires Node.js 20, Python 3.12, uv, and Docker with Compose):
 
 ```bash
-cp .env.example .env && npm ci && npm run infra:up
+cp .env.example .env && npm ci && npm run infra:up -- --wait
 cd apps/api && uv sync --frozen --dev && uv run alembic upgrade head && uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 npm run mobile:start   # in a second terminal, from the repository root
 ```
