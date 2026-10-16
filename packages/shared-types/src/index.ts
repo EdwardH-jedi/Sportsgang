@@ -148,14 +148,6 @@ export type {
 } from './honor-system';
 
 export type {
-  TournamentStatus,
-  TournamentSummary,
-  TournamentParticipantSummary,
-  TournamentDetail,
-  TournamentListResponse,
-} from './tournament';
-
-export type {
   EventMode,
   EventVisibility,
   EventStatus,

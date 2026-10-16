@@ -1,7 +1,7 @@
 # Protin — Project Status Report
 
 > **Historical snapshot (Wave 8, 2026-04-08) — out of date.** The project has since
-> grown well beyond this report (challenges, battles/events, tournaments, rank and
+> grown well beyond this report (challenges, battles/events, rank and
 > honour system, venue/Places search, Apple auth, token encryption, CI, mobile
 > tests). For the current state see [README.md](../../README.md) and
 > [docs/PORTFOLIO_FACTS.md](../PORTFOLIO_FACTS.md).

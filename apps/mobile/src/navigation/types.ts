@@ -19,8 +19,6 @@ export type RootStackParamList = {
   BookingComposer: { matchId: string; sport: string };
   BookingDetail: { bookingId: string };
   Report: { reportedUserId: string; reportedName: string };
-  Tournaments: undefined;
-  TournamentDetail: { tournamentId: string };
   Battles: undefined;
   BattleDetail: { eventId: string };
   CreateBattle: undefined;
@@ -78,9 +76,6 @@ export type ChatScreenProps = NativeStackScreenProps<RootStackParamList, 'Chat'>
 export type BookingComposerScreenProps = NativeStackScreenProps<RootStackParamList, 'BookingComposer'>;
 export type BookingDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'BookingDetail'>;
 export type ReportScreenProps = NativeStackScreenProps<RootStackParamList, 'Report'>;
-
-export type TournamentsScreenProps = NativeStackScreenProps<RootStackParamList, 'Tournaments'>;
-export type TournamentDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'TournamentDetail'>;
 
 export type BattlesScreenProps = NativeStackScreenProps<RootStackParamList, 'Battles'>;
 export type BattleDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'BattleDetail'>;

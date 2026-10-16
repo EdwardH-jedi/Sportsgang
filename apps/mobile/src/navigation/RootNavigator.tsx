@@ -24,7 +24,6 @@ import { ChatScreen } from '../screens/chat/ChatScreen';
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
 import { BookingDetailScreen } from '../screens/bookings/BookingDetailScreen';
 import { ReportScreen } from '../screens/safety/ReportScreen';
-import { TournamentDetailScreen } from '../screens/tournaments/TournamentDetailScreen';
 import { BattlesScreen } from '../screens/battles/BattlesScreen';
 import { BattleDetailScreen } from '../screens/battles/BattleDetailScreen';
 import { CreateBattleScreen } from '../screens/battles/CreateBattleScreen';
@@ -221,11 +220,6 @@ export function RootNavigator() {
           name="Report"
           component={ReportScreen}
           options={{ animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen
-          name="TournamentDetail"
-          component={TournamentDetailScreen}
-          options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name="Battles"

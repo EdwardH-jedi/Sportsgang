@@ -110,7 +110,6 @@ from app.routers import (  # noqa: E402  # noqa: E402
     notifications,
     rank,
     safety,
-    tournaments,
     users,
     venues,
 )
@@ -132,7 +131,6 @@ app.include_router(rank.honor_router)
 app.include_router(honor_system.rankings_router)
 app.include_router(honor_system.honors_router)
 app.include_router(challenges.router)
-app.include_router(tournaments.router)
 app.include_router(events.router)
 
 # Serve uploaded profile photos from local disk in dev. Production replaces

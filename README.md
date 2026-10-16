@@ -178,7 +178,6 @@ Start with [Portfolio Facts](docs/PORTFOLIO_FACTS.md) for release history, [Veri
 - The App Store listing and recorded screenshots are release evidence; they do not guarantee current backend availability. No always-on public backend demo is provided.
 - This repository does not establish download or active-user metrics.
 - Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment.
-- Tournament list/join/leave endpoints are feature-flagged (on by default locally, off in staging/production); brackets, result verification, and tournament rank integration are unfinished.
 - Chat history pagination/reconnection, failure-safe photo replacement, and concurrent booking transitions still need hardening. Existing checks should not be read as guarantees for these cases.
 - Optional integrations (Google Calendar, Expo push, Google Places) need provider configuration and separate delivery verification.
 - Older staging notes are historical records, not a current availability report.

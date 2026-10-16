@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 # is populated before autogenerate compares it against the schema.
 from app.models import user, profile, match, chat, booking  # noqa: F401
 from app.models import google_calendar, notification, safety, venue  # noqa: F401
-from app.models import rank, tournament  # noqa: F401
+from app.models import rank  # noqa: F401
 
 target_metadata = Base.metadata
 

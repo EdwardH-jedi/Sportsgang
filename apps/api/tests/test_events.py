@@ -22,7 +22,6 @@ from app.models import (  # noqa: F401  — populate Base.metadata
     profile,
     rank,
     safety,
-    tournament,
     user,
     venue,
 )

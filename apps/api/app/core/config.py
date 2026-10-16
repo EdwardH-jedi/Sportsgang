@@ -70,50 +70,12 @@ class Settings(BaseSettings):
     # not configured (local dev, CI, App Store reviewer environment).
     google_places_api_key: str = ""
 
-    # V2 Tournaments feature flag.
-    #
-    # Why it's behind a flag:
-    #   Tournaments are a V2 surface — list/join/leave is implemented but
-    #   bracket generation, result verification, and rank integration are
-    #   intentionally NOT. The flag lets V1 production hide the feature
-    #   entirely so users don't see a half-finished surface on the App
-    #   Store build.
-    #
-    # Default policy:
-    #   * APP_ENV=local        → ON by default. V2 development on this
-    #                            branch should "just work" — `make run`
-    #                            and the mobile entry card appears.
-    #                            Override with TOURNAMENTS_ENABLED=false
-    #                            to exercise the disabled-flag path.
-    #   * APP_ENV=staging      → OFF unless explicitly enabled. Flip to
-    #                            true for QA dogfooding.
-    #   * APP_ENV=production   → OFF. Keep V1 production clean. Do not
-    #                            enable until tournaments has a green
-    #                            full-suite review and product approval.
-    #
-    # Mechanism:
-    #   The persisted field stays bool with a False default so explicit
-    #   env-var overrides (TOURNAMENTS_ENABLED=true|false) work as
-    #   expected. ``model_post_init`` flips the default to True ONLY when
-    #   we're in APP_ENV=local AND the env var was not explicitly set,
-    #   so production never gets accidental local-only behaviour.
-    tournaments_enabled: bool = False
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
     )
-
-    def model_post_init(self, __context: object) -> None:
-        # ``model_fields_set`` tracks fields whose values came from the
-        # constructor or env vars rather than the class-level default.
-        # If a developer set TOURNAMENTS_ENABLED in their env (true OR
-        # false), respect it. Otherwise auto-flip to True in local dev so
-        # the V2 Tournaments surface is reachable without extra setup.
-        if self.app_env == "local" and "tournaments_enabled" not in self.model_fields_set:
-            self.tournaments_enabled = True
 
     @property
     def cors_origins_list(self) -> list[str]:
