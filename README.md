@@ -1,10 +1,27 @@
 # SportsGang
 
-SportsGang helps people in Sydney find partners for gym, golf, tennis, and running, then arrange a session through matching, chat, and participant-confirmed bookings. The main product is an Expo/React Native app backed by FastAPI, PostgreSQL, and Redis.
+SportsGang helps people in Sydney find partners for gym, golf, tennis, and running, then arrange a session through matching, chat, and participant-confirmed bookings. The main product is an Expo/React Native app backed by FastAPI, PostgreSQL, and Redis, and v1.0 is on the [App Store](https://apps.apple.com/us/app/sportsgang/id6767027447).
 
-[App Store listing](https://apps.apple.com/us/app/sportsgang/id6767027447) · [Local setup](#local-setup) · [Release evidence](docs/PORTFOLIO_FACTS.md) · [CI](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml)
+## Engineering highlights
 
-**SportsGang is the public product name.** `Protin`, `protin-api`, and `@protin/*` remain internal project, package, and infrastructure names.
+- **Async FastAPI backend:** Python 3.12, FastAPI, Pydantic 2, and async SQLAlchemy 2 over asyncpg, with JWT auth, WebSocket chat delivery, and a separate notification worker.
+- **Booking state machine:** the session lifecycle (propose → confirm/decline → cancel/complete/no-show) is one declarative transition table in [`apps/api/app/services/bookings.py`](apps/api/app/services/bookings.py), so every state change and its side effects are validated in one place.
+- **Alembic migrations:** schema changes ship as a linear chain of versioned migrations in [`apps/api/alembic/versions/`](apps/api/alembic/versions/).
+- **PostgreSQL + Redis integration CI:** alongside the fast SQLite unit suite, [GitHub Actions](https://github.com/EdwardH-jedi/Sportsgang/actions/workflows/ci.yml) starts real PostgreSQL 16 and Redis 7 services, migrates a fresh database, and runs the booking journey in [`apps/api/tests_integration/`](apps/api/tests_integration/).
+- **Expo / React Native app:** Expo 54, React Native 0.81, React 19, and TypeScript, with request/response contracts shared through the `@protin/shared-types` workspace package.
+- **App Store release, May 2026:** SportsGang v1.0 was approved for App Store distribution on 13 May 2026 after one documented App Review cycle ([release history](docs/PORTFOLIO_FACTS.md)).
+
+## Quick start
+
+Three commands from a fresh clone, using the local development defaults (requires Node.js 20, Python 3.12, uv, and Docker with Compose):
+
+```bash
+cp .env.example .env && npm ci && npm run infra:up
+cd apps/api && uv sync --frozen --dev && uv run alembic upgrade head && uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+npm run mobile:start   # in a second terminal, from the repository root
+```
+
+The API serves on `http://127.0.0.1:8000` (docs at `/docs`), and the iOS simulator reaches it on `localhost`. For per-service configuration, a generated signing key, Android/physical-device URLs, and troubleshooting, follow [Local setup](#local-setup).
 
 ## Implemented features
 
@@ -14,7 +31,7 @@ SportsGang helps people in Sydney find partners for gym, golf, tennis, and runni
 - **Venue discovery:** a local venue catalog with optional Google Places results and deduplication
 - **Group events:** host or join sports events and confirm attendance
 - **Accounts and safety:** email/password and Sign in with Apple paths, profile photos, reporting, blocking, and moderation
-- **Optional integrations:** Google Calendar sync and Expo push notifications, with provider configuration and separate delivery verification required
+- **Optional integrations:** Google Calendar sync and Expo push notifications
 
 Recorded iOS release screens:
 
@@ -26,7 +43,7 @@ Recorded iOS release screens:
 
 ## Release status
 
-SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [release history](docs/PORTFOLIO_FACTS.md). See [Limitations](#limitations) for what the listing and screenshots do not establish.
+SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [release history](docs/PORTFOLIO_FACTS.md).
 
 ## Stack and architecture
 
@@ -38,7 +55,9 @@ SportsGang v1.0 received App Store approval on 13 May 2026, as recorded in the [
 | Shared contracts | `@protin/shared-types` TypeScript package |
 | Tooling and deployment | npm workspaces, uv, Docker Compose, nginx, Fly.io configuration, GitHub Actions |
 
-The mobile app uses an HTTP/JWT API and match-specific WebSockets. The API stores application data in PostgreSQL and uses Redis; a separate worker processes notification delivery. Alembic manages schema changes. Apple, Google, and Expo integrations sit outside the local test boundary.
+The mobile app uses an HTTP/JWT API and match-specific WebSockets. The API stores application data in PostgreSQL and uses Redis; a separate worker processes notification delivery. Alembic manages schema changes.
+
+**SportsGang is the public product name.** `Protin`, `protin-api`, and `@protin/*` remain internal project, package, and infrastructure names.
 
 ## Local setup
 
@@ -143,7 +162,7 @@ uv run alembic upgrade head
 uv run pytest tests_integration -q
 ```
 
-The integration test writes accounts and bookings. Never point it at production. See [verification scope](docs/VERIFICATION.md) and the [workflow](.github/workflows/ci.yml) for the exact checks. A green run does not verify external Apple/Google/Expo services, production load, or every concurrency/recovery scenario.
+The integration test writes accounts and bookings. Never point it at production. See [verification scope](docs/VERIFICATION.md) and the [workflow](.github/workflows/ci.yml) for the exact checks.
 
 ## Operational notes
 
@@ -173,15 +192,19 @@ For port conflicts, change `POSTGRES_PORT`/`REDIS_PORT` in the root `.env`, upda
 
 Start with [Portfolio Facts](docs/PORTFOLIO_FACTS.md) for release history, [Verification](docs/VERIFICATION.md) for test boundaries, [Staging Setup](docs/staging/SETUP.md) and [Runbook](docs/staging/RUNBOOK.md) for operator instructions, and the [Venue Runbook](docs/runbooks/venues.md) for provider setup.
 
+## License
+
+Copyright © 2026 Edward Hwang. All rights reserved. The source is publicly visible for portfolio and evaluation purposes under the existing [proprietary license](LICENSE). Public visibility does not make it open source; use, modification, and redistribution require the copyright holder's prior written permission.
+
 ## Limitations
+
+This section covers what the App Store listing, the recorded screenshots, and the checks in this repository do not establish.
 
 - The App Store listing and recorded screenshots are release evidence; they do not guarantee current backend availability. No always-on public backend demo is provided.
 - This repository does not establish download or active-user metrics.
+- A green CI run does not verify external Apple/Google/Expo services, production load, or every concurrency/recovery scenario.
+- Apple, Google, and Expo integrations sit outside the local test boundary.
 - Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment.
 - Chat history pagination/reconnection, failure-safe photo replacement, and concurrent booking transitions still need hardening. Existing checks should not be read as guarantees for these cases.
 - Optional integrations (Google Calendar, Expo push, Google Places) need provider configuration and separate delivery verification.
 - Older staging notes are historical records, not a current availability report.
-
-## License
-
-Copyright © 2026 Edward Hwang. All rights reserved. The source is publicly visible for portfolio and evaluation purposes under the existing [proprietary license](LICENSE). Public visibility does not make it open source; use, modification, and redistribution require the copyright holder's prior written permission.
