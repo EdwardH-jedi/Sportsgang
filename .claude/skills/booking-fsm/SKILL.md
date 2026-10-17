@@ -12,8 +12,9 @@ triggers: [booking, 예약, 상태 전이, FSM, state machine, transition]
 ## Valid states and transitions
 
 ```
-pending_partner → confirmed     (partner accepts)
-pending_partner → declined      (partner declines)
+proposed        → confirmed     (partner accepts)
+proposed        → declined      (partner declines)
+proposed        → cancelled     (proposer withdraws)
 confirmed       → completed     (session happened)
 confirmed       → cancelled     (either party cancels)
 confirmed       → no_show       (partner didn't show)
