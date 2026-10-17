@@ -40,6 +40,27 @@ class GoogleCalendarToken(Base):
     connected_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
 
 
+class GoogleOAuthState(Base):
+    """One-time server-side binding for a Google OAuth authorization request."""
+
+    __tablename__ = "google_oauth_states"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    state_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    code_verifier: Mapped[str] = mapped_column(String(128), nullable=False)
+    redirect_uri: Mapped[str] = mapped_column(String(512), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
+
+    __table_args__ = (UniqueConstraint("state_hash", name="uq_google_oauth_states_state_hash"),)
+
+
 class CalendarBookingSync(Base):
     """
     Tracks the sync state between a Protin booking and a Google Calendar event.

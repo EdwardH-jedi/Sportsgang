@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import CheckConstraint, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -26,6 +26,7 @@ class DiscoveryAction(Base):
             "sport",
             name="uq_discovery_actions_actor_target_sport",
         ),
+        CheckConstraint("actor_id <> target_id", name="ck_discovery_actions_distinct_users"),
     )
 
 
@@ -46,4 +47,5 @@ class Match(Base):
             "sport",
             name="uq_matches_canonical_pair_sport",
         ),
+        CheckConstraint("user1_id <> user2_id", name="ck_matches_distinct_users"),
     )

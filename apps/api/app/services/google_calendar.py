@@ -2,7 +2,7 @@
 Google Calendar integration service.
 
 OAuth flow (mobile-initiated):
-  1. GET /users/me/google-calendar/auth-url  → returns {url} with state=<user_id>
+  1. GET /users/me/google-calendar/auth-url creates a one-time state binding
   2. Mobile opens URL in browser (expo-web-browser)
   3. Google redirects to GET /users/me/google-calendar/callback?code=...&state=...
   4. API exchanges code for tokens, stores them, returns JSON success
@@ -13,26 +13,27 @@ Sync:
   - POST /bookings/{id}/sync-google-calendar syncs for the calling user
   - update/cancel propagation via the same sync endpoint (idempotent by sync record)
 
-Production notes:
-  - Encrypt access_token + refresh_token at rest before shipping
-  - Rotate the OAuth client secret regularly
-  - Validate the state parameter with HMAC in production
+OAuth state and PKCE are enforced by the server. Access and refresh tokens are
+encrypted at rest by the model type.
 """
 
 from __future__ import annotations
 
 import base64
-from datetime import datetime, timezone
+import hashlib
+import secrets
+from datetime import datetime, timedelta, timezone
+from urllib.parse import urlencode
 from uuid import UUID
 
 import httpx
 from fastapi import HTTPException, status
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
 from app.models.booking import Booking
-from app.models.google_calendar import CalendarBookingSync, GoogleCalendarToken
+from app.models.google_calendar import CalendarBookingSync, GoogleCalendarToken, GoogleOAuthState
 from app.schemas.google_calendar import (
     GoogleCalendarStatus,
     SyncBookingResponse,
@@ -42,6 +43,7 @@ _GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 _GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 _GOOGLE_CALENDAR_API = "https://www.googleapis.com/calendar/v3"
 _SCOPES = "https://www.googleapis.com/auth/calendar.events"
+_OAUTH_STATE_TTL = timedelta(minutes=10)
 
 
 # ---------------------------------------------------------------------------
@@ -49,32 +51,74 @@ _SCOPES = "https://www.googleapis.com/auth/calendar.events"
 # ---------------------------------------------------------------------------
 
 
-def build_auth_url(user_id: UUID) -> str:
+def _state_hash(state: str) -> str:
+    return hashlib.sha256(state.encode("ascii")).hexdigest()
+
+
+def _pkce_challenge(verifier: str) -> str:
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+async def create_auth_url(db: AsyncSession, user_id: UUID) -> str:
     settings = get_settings()
     if not settings.google_client_id:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Google Calendar integration is not configured on this server.",
         )
-    # state = base64-encoded user_id — not CSRF-safe; replace with signed JWT in production
-    state = base64.urlsafe_b64encode(str(user_id).encode()).decode()
-    params = (
-        f"client_id={settings.google_client_id}"
-        f"&redirect_uri={settings.google_redirect_uri}"
-        f"&response_type=code"
-        f"&scope={_SCOPES}"
-        f"&access_type=offline"
-        f"&prompt=consent"
-        f"&state={state}"
+    state = secrets.token_urlsafe(32)
+    code_verifier = secrets.token_urlsafe(64)
+    db.add(
+        GoogleOAuthState(
+            state_hash=_state_hash(state),
+            user_id=user_id,
+            code_verifier=code_verifier,
+            redirect_uri=settings.google_redirect_uri,
+            expires_at=datetime.now(tz=timezone.utc) + _OAUTH_STATE_TTL,
+        )
+    )
+    await db.commit()
+    params = urlencode(
+        {
+            "client_id": settings.google_client_id,
+            "redirect_uri": settings.google_redirect_uri,
+            "response_type": "code",
+            "scope": _SCOPES,
+            "access_type": "offline",
+            "prompt": "consent",
+            "state": state,
+            "code_challenge": _pkce_challenge(code_verifier),
+            "code_challenge_method": "S256",
+        }
     )
     return f"{_GOOGLE_AUTH_URL}?{params}"
 
 
-def _decode_state(state: str) -> UUID:
-    try:
-        return UUID(base64.urlsafe_b64decode(state).decode())
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid state parameter")
+async def _consume_oauth_state(db: AsyncSession, state: str) -> tuple[UUID, str]:
+    """Atomically consume a valid state and return its user binding and PKCE verifier."""
+    if not state or len(state) > 256:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired OAuth state")
+
+    settings = get_settings()
+    now = datetime.now(tz=timezone.utc)
+    stmt = (
+        update(GoogleOAuthState)
+        .where(
+            GoogleOAuthState.state_hash == _state_hash(state),
+            GoogleOAuthState.consumed_at.is_(None),
+            GoogleOAuthState.expires_at > now,
+            GoogleOAuthState.redirect_uri == settings.google_redirect_uri,
+        )
+        .values(consumed_at=now)
+        .returning(GoogleOAuthState.user_id, GoogleOAuthState.code_verifier)
+    )
+    consumed = (await db.execute(stmt)).one_or_none()
+    if consumed is None:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired OAuth state")
+    await db.commit()
+    return consumed.user_id, consumed.code_verifier
 
 
 # ---------------------------------------------------------------------------
@@ -88,7 +132,7 @@ async def handle_oauth_callback(
     state: str,
 ) -> GoogleCalendarStatus:
     settings = get_settings()
-    user_id = _decode_state(state)
+    user_id, code_verifier = await _consume_oauth_state(db, state)
 
     async with httpx.AsyncClient() as client:
         resp = await client.post(
@@ -99,6 +143,7 @@ async def handle_oauth_callback(
                 "client_secret": settings.google_client_secret,
                 "redirect_uri": settings.google_redirect_uri,
                 "grant_type": "authorization_code",
+                "code_verifier": code_verifier,
             },
         )
 

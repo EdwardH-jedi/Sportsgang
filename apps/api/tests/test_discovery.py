@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from typing import AsyncGenerator
 from unittest.mock import AsyncMock
+from uuid import UUID
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.base import Base
@@ -205,6 +207,55 @@ async def test_record_action_requires_auth(client: AsyncClient) -> None:
         },
     )
     assert r.status_code in (401, 403)
+
+
+async def test_record_action_rejects_self_target_and_persists_nothing(client: AsyncClient) -> None:
+    from sqlalchemy import func, select
+
+    from app.models.match import DiscoveryAction, Match
+
+    token, user_id = await _register_with_id(client, "disc_self_action@example.com")
+    response = await client.post(
+        "/discovery/actions",
+        json={"target_user_id": user_id, "action": "like", "sport": "gym"},
+        headers=_auth(token),
+    )
+    assert response.status_code == 422
+
+    async with _TestSession() as session:
+        action_count = (
+            await session.execute(
+                select(func.count())
+                .select_from(DiscoveryAction)
+                .where(
+                    DiscoveryAction.actor_id == UUID(user_id),
+                    DiscoveryAction.target_id == UUID(user_id),
+                )
+            )
+        ).scalar_one()
+        match_count = (
+            await session.execute(
+                select(func.count())
+                .select_from(Match)
+                .where(
+                    Match.user1_id == UUID(user_id),
+                    Match.user2_id == UUID(user_id),
+                )
+            )
+        ).scalar_one()
+    assert action_count == 0
+    assert match_count == 0
+
+
+async def test_database_rejects_self_match(client: AsyncClient) -> None:
+    from app.models.match import Match
+
+    _, user_id = await _register_with_id(client, "disc_self_match_db@example.com")
+    async with _TestSession() as session:
+        session.add(Match(user1_id=UUID(user_id), user2_id=UUID(user_id), sport="gym", status="active"))
+        with pytest.raises(IntegrityError):
+            await session.commit()
+        await session.rollback()
 
 
 async def test_record_action_returns_shape(client: AsyncClient) -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, Integer, String, func
+from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -54,6 +54,8 @@ class HonorEvent(Base):
     )
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
 
+    __table_args__ = (UniqueConstraint("user_id", "booking_id", "reason", name="uq_honor_events_user_booking_reason"),)
+
 
 class RankEvent(Base):
     """
@@ -75,3 +77,5 @@ class RankEvent(Base):
         ForeignKey("bookings.id", ondelete="SET NULL"), nullable=True, index=True
     )
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
+
+    __table_args__ = (UniqueConstraint("user_id", "booking_id", "reason", name="uq_rank_events_user_booking_reason"),)

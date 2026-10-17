@@ -60,8 +60,10 @@ def _check_transition(
 # ---------------------------------------------------------------------------
 
 
-async def _get_booking_or_404(db: AsyncSession, booking_id: UUID) -> Booking:
+async def _get_booking_or_404(db: AsyncSession, booking_id: UUID, *, for_update: bool = False) -> Booking:
     stmt = select(Booking).where(Booking.id == booking_id)
+    if for_update:
+        stmt = stmt.with_for_update()
     b = (await db.execute(stmt)).scalar_one_or_none()
     if b is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found")
@@ -112,6 +114,12 @@ async def create_booking(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Cannot book on an inactive match",
+        )
+
+    if m.user1_id == m.user2_id:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="A booking requires two distinct participants",
         )
 
     partner_id = m.user2_id if m.user1_id == current_user_id else m.user1_id
@@ -218,8 +226,13 @@ async def transition_booking(
     new_status: str,
     current_user_id: UUID,
 ) -> BookingResponse:
-    b = await _get_booking_or_404(db, booking_id)
+    b = await _get_booking_or_404(db, booking_id, for_update=True)
     await _assert_booking_participant(b, current_user_id)
+    if b.proposer_id == b.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="A booking requires two distinct participants",
+        )
     _check_transition(b, new_status, current_user_id)
     previous_status = b.status
     b.status = new_status

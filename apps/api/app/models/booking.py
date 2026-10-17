@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -35,3 +35,8 @@ class Booking(Base):
     status: Mapped[str] = mapped_column(String(20), default="proposed", nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("proposer_id <> partner_id", name="ck_bookings_distinct_users"),
+        CheckConstraint("starts_at < ends_at", name="ck_bookings_valid_time_range"),
+    )
