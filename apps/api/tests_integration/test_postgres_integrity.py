@@ -1,0 +1,167 @@
+"""PostgreSQL-only concurrency and atomic-consumption regression tests."""
+
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import os
+from datetime import datetime, timedelta, timezone
+
+import pytest
+import pytest_asyncio
+from fastapi import HTTPException
+from sqlalchemy import delete, func, select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from app.core.config import get_settings
+from app.models.booking import Booking
+from app.models.google_calendar import GoogleOAuthState
+from app.models.match import Match
+from app.models.rank import HonorEvent, RankEvent
+from app.models.user import User
+from app.services.bookings import transition_booking
+from app.services.google_calendar import _consume_oauth_state
+
+# Run separately from the SQLite unit suite, after `alembic upgrade head`,
+# against the PostgreSQL database configured in the environment.
+pytestmark = [
+    # The module-level asyncpg pool must be created, used and disposed on one
+    # event loop. pytest-asyncio otherwise gives each test a function loop.
+    pytest.mark.asyncio(loop_scope="module"),
+]
+
+_engine = create_async_engine(get_settings().async_postgres_url, pool_pre_ping=True)
+_Session = async_sessionmaker(_engine, class_=AsyncSession, expire_on_commit=False)
+
+
+@pytest_asyncio.fixture(scope="module", loop_scope="module", autouse=True)
+async def _dispose_engine():
+    yield
+    await _engine.dispose()
+
+
+async def _seed_booking(*, status: str, ended: bool) -> tuple[object, object, object]:
+    async with _Session() as session:
+        first = User(email=f"pg-first-{os.urandom(6).hex()}@example.com", hashed_password="x")
+        second = User(email=f"pg-second-{os.urandom(6).hex()}@example.com", hashed_password="x")
+        session.add_all([first, second])
+        await session.flush()
+        match = Match(user1_id=first.id, user2_id=second.id, sport="tennis", status="active")
+        session.add(match)
+        await session.flush()
+        if ended:
+            ends_at = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
+            starts_at = ends_at - timedelta(minutes=30)
+        else:
+            starts_at = datetime.now(tz=timezone.utc) + timedelta(days=1)
+            ends_at = starts_at + timedelta(hours=1)
+        booking = Booking(
+            match_id=match.id,
+            proposer_id=first.id,
+            partner_id=second.id,
+            sport="tennis",
+            starts_at=starts_at,
+            ends_at=ends_at,
+            status=status,
+        )
+        session.add(booking)
+        await session.commit()
+        return first.id, second.id, booking.id
+
+
+async def _run_transition(booking_id, status: str, actor_id) -> int:
+    async with _Session() as session:
+        try:
+            await transition_booking(session, booking_id, status, actor_id)
+            return 200
+        except HTTPException as exc:
+            await session.rollback()
+            return exc.status_code
+
+
+async def _cleanup_users(*user_ids) -> None:
+    async with _Session() as session:
+        await session.execute(delete(User).where(User.id.in_(user_ids)))
+        await session.commit()
+
+
+async def test_concurrent_double_completion_awards_once() -> None:
+    proposer_id, partner_id, booking_id = await _seed_booking(status="confirmed", ended=True)
+    try:
+        results = await asyncio.gather(
+            _run_transition(booking_id, "completed", proposer_id),
+            _run_transition(booking_id, "completed", partner_id),
+        )
+        assert sorted(results) == [200, 422]
+
+        async with _Session() as session:
+            booking_status = (
+                await session.execute(select(Booking.status).where(Booking.id == booking_id))
+            ).scalar_one()
+            honor_count = (
+                await session.execute(
+                    select(func.count()).select_from(HonorEvent).where(HonorEvent.booking_id == booking_id)
+                )
+            ).scalar_one()
+            rank_count = (
+                await session.execute(
+                    select(func.count()).select_from(RankEvent).where(RankEvent.booking_id == booking_id)
+                )
+            ).scalar_one()
+        assert booking_status == "completed"
+        assert honor_count == 2
+        assert rank_count == 2
+    finally:
+        await _cleanup_users(proposer_id, partner_id)
+
+
+async def test_concurrent_confirm_vs_decline_has_one_winner() -> None:
+    proposer_id, partner_id, booking_id = await _seed_booking(status="proposed", ended=False)
+    try:
+        results = await asyncio.gather(
+            _run_transition(booking_id, "confirmed", partner_id),
+            _run_transition(booking_id, "declined", partner_id),
+        )
+        assert sorted(results) == [200, 422]
+        async with _Session() as session:
+            final_status = (await session.execute(select(Booking.status).where(Booking.id == booking_id))).scalar_one()
+        assert final_status in {"confirmed", "declined"}
+    finally:
+        await _cleanup_users(proposer_id, partner_id)
+
+
+async def test_oauth_state_concurrent_consumption_has_one_winner(monkeypatch) -> None:
+    from app.services import google_calendar
+
+    user_a, user_b, _ = await _seed_booking(status="proposed", ended=False)
+    raw_state = "concurrent-state-" + os.urandom(24).hex()
+    redirect_uri = "https://example.test/oauth/callback"
+    monkeypatch.setattr(
+        google_calendar,
+        "get_settings",
+        lambda: type("Settings", (), {"google_redirect_uri": redirect_uri})(),
+    )
+    async with _Session() as session:
+        session.add(
+            GoogleOAuthState(
+                state_hash=hashlib.sha256(raw_state.encode()).hexdigest(),
+                user_id=user_a,
+                code_verifier="verifier-" + os.urandom(32).hex(),
+                redirect_uri=redirect_uri,
+                expires_at=datetime.now(tz=timezone.utc) + timedelta(minutes=5),
+            )
+        )
+        await session.commit()
+
+    async def consume() -> int:
+        async with _Session() as session:
+            try:
+                await _consume_oauth_state(session, raw_state)
+                return 200
+            except HTTPException as exc:
+                return exc.status_code
+
+    try:
+        assert sorted(await asyncio.gather(consume(), consume())) == [200, 400]
+    finally:
+        await _cleanup_users(user_a, user_b)

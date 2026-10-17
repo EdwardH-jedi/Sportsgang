@@ -18,9 +18,10 @@ router = APIRouter(prefix="/users/me/google-calendar", tags=["google-calendar"])
 @router.get("/auth-url")
 async def get_auth_url(
     current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     """Returns the Google OAuth URL. Mobile opens this in expo-web-browser."""
-    url = gcal_service.build_auth_url(current_user.id)
+    url = await gcal_service.create_auth_url(db, current_user.id)
     return {"url": url}
 
 
@@ -33,7 +34,8 @@ async def oauth_callback(
     """
     Google redirects here after the user grants consent.
     Stores the tokens and returns a minimal HTML success page.
-    This endpoint is not authenticated — user identity comes from the state parameter.
+    This endpoint is unauthenticated because Google redirects the browser here.
+    User identity comes only from a short-lived, one-time server-side state binding.
     """
     await gcal_service.handle_oauth_callback(db, code, state)
     html = """

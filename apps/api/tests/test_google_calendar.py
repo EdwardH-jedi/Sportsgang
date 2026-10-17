@@ -6,9 +6,11 @@ and Calendar event creation are mocked via httpx.
 
 from __future__ import annotations
 
-import base64
+import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator
+from urllib.parse import parse_qs, urlparse
+from uuid import UUID
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -134,8 +136,7 @@ async def test_auth_url_unconfigured_returns_503(client: AsyncClient) -> None:
 
 
 async def test_oauth_callback_stores_tokens(client: AsyncClient) -> None:
-    _, user_id = await _register(client, "gcal_cb@example.com")
-    state = base64.urlsafe_b64encode(user_id.encode()).decode()
+    token, _ = await _register(client, "gcal_cb@example.com")
 
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -156,10 +157,107 @@ async def test_oauth_callback_stores_tokens(client: AsyncClient) -> None:
         )
         mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
 
+        auth_url = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+        state = parse_qs(urlparse(auth_url.json()["url"]).query)["state"][0]
         r = await client.get(f"/users/me/google-calendar/callback?code=testcode&state={state}")
 
     assert r.status_code == 200
     assert "connected" in r.text.lower()
+
+
+async def test_oauth_url_uses_random_state_and_pkce(client: AsyncClient) -> None:
+    token, user_id = await _register(client, "gcal_pkce@example.com")
+    with patch("app.services.google_calendar.get_settings") as mock_settings:
+        mock_settings.return_value = MagicMock(
+            google_client_id="test-id",
+            google_client_secret="test-secret",
+            google_redirect_uri="http://localhost/callback",
+        )
+        response = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+
+    query = parse_qs(urlparse(response.json()["url"]).query)
+    assert query["state"][0] != user_id
+    assert len(query["state"][0]) >= 32
+    assert query["code_challenge_method"] == ["S256"]
+    assert len(query["code_challenge"][0]) >= 43
+
+
+async def test_oauth_state_is_one_time_and_bound_to_issuing_user(client: AsyncClient) -> None:
+    from sqlalchemy import select
+
+    from app.models.google_calendar import GoogleCalendarToken
+
+    token_a, user_a = await _register(client, "gcal_state_a@example.com")
+    token_b, user_b = await _register(client, "gcal_state_b@example.com")
+    mock_response = MagicMock(status_code=200)
+    mock_response.json.return_value = {
+        "access_token": "state-access",
+        "refresh_token": "state-refresh",
+        "expires_in": 3600,
+    }
+
+    with patch("app.services.google_calendar.get_settings") as mock_settings, patch("httpx.AsyncClient") as mock_http:
+        mock_settings.return_value = MagicMock(
+            google_client_id="test-id",
+            google_client_secret="test-secret",
+            google_redirect_uri="http://localhost/callback",
+        )
+        mock_http.return_value.__aenter__ = AsyncMock(
+            return_value=MagicMock(post=AsyncMock(return_value=mock_response))
+        )
+        mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
+        auth_url = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token_a))
+        state = parse_qs(urlparse(auth_url.json()["url"]).query)["state"][0]
+
+        first = await client.get(
+            f"/users/me/google-calendar/callback?code=first&state={state}",
+            headers=_auth(token_b),
+        )
+        replay = await client.get(f"/users/me/google-calendar/callback?code=second&state={state}")
+
+    assert first.status_code == 200
+    assert replay.status_code == 400
+    async with _TestSession() as session:
+        bound_users = set((await session.execute(select(GoogleCalendarToken.user_id))).scalars().all())
+    assert UUID(user_a) in bound_users
+    assert UUID(user_b) not in bound_users
+
+
+async def test_oauth_state_rejects_unknown_expired_and_redirect_mismatch(client: AsyncClient) -> None:
+    from sqlalchemy import select
+
+    from app.models.google_calendar import GoogleOAuthState
+
+    token, _ = await _register(client, "gcal_state_invalid@example.com")
+    settings = MagicMock(
+        google_client_id="test-id",
+        google_client_secret="test-secret",
+        google_redirect_uri="http://localhost/callback",
+    )
+    with patch("app.services.google_calendar.get_settings", return_value=settings):
+        unknown = await client.get("/users/me/google-calendar/callback?code=x&state=unknown")
+        assert unknown.status_code == 400
+
+        expired_url = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+        expired_state = parse_qs(urlparse(expired_url.json()["url"]).query)["state"][0]
+        async with _TestSession() as session:
+            row = (
+                await session.execute(
+                    select(GoogleOAuthState).where(
+                        GoogleOAuthState.state_hash == hashlib.sha256(expired_state.encode()).hexdigest()
+                    )
+                )
+            ).scalar_one()
+            row.expires_at = datetime.now(tz=timezone.utc) - timedelta(seconds=1)
+            await session.commit()
+        expired = await client.get(f"/users/me/google-calendar/callback?code=x&state={expired_state}")
+        assert expired.status_code == 400
+
+        mismatch_url = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+        mismatch_state = parse_qs(urlparse(mismatch_url.json()["url"]).query)["state"][0]
+        settings.google_redirect_uri = "http://localhost/changed-callback"
+        mismatch = await client.get(f"/users/me/google-calendar/callback?code=x&state={mismatch_state}")
+        assert mismatch.status_code == 400
 
 
 async def test_sync_booking_requires_confirmed_status(client: AsyncClient) -> None:
@@ -354,8 +452,7 @@ async def test_oauth_callback_stores_encrypted_tokens(client: AsyncClient) -> No
 
     from app.models.google_calendar import GoogleCalendarToken
 
-    _, user_id = await _register(client, "gcal_enc@example.com")
-    state = base64.urlsafe_b64encode(user_id.encode()).decode()
+    token, user_id = await _register(client, "gcal_enc@example.com")
 
     raw_access = "ya29.test-access-encrypted"
     raw_refresh = "1//test-refresh-encrypted"
@@ -379,6 +476,8 @@ async def test_oauth_callback_stores_encrypted_tokens(client: AsyncClient) -> No
         )
         mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
 
+        auth_url = await client.get("/users/me/google-calendar/auth-url", headers=_auth(token))
+        state = parse_qs(urlparse(auth_url.json()["url"]).query)["state"][0]
         r = await client.get(f"/users/me/google-calendar/callback?code=testcode&state={state}")
 
     assert r.status_code == 200

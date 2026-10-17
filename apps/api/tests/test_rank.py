@@ -210,6 +210,34 @@ async def test_completed_booking_creates_positive_honor_event(client: AsyncClien
     assert body_b["sports"][0]["sessions_completed"] == 1
 
 
+async def test_duplicate_completion_cannot_duplicate_rewards(client: AsyncClient) -> None:
+    from sqlalchemy import func, select
+
+    from app.models.rank import HonorEvent, RankEvent
+
+    token_a, uid_a, token_b, _uid_b, match_id = await _matched_pair(
+        client, "rank_retry_a@example.com", "rank_retry_b@example.com", sport="tennis"
+    )
+    booking_id = await _create_booking(client, token_a, match_id, sport="tennis")
+    await _confirm(client, token_b, booking_id)
+    assert (await client.post(f"/bookings/{booking_id}/complete", headers=_auth(token_a))).status_code == 200
+    assert (await client.post(f"/bookings/{booking_id}/complete", headers=_auth(token_a))).status_code == 422
+
+    async with _TestSession() as session:
+        honor_count = (
+            await session.execute(
+                select(func.count()).select_from(HonorEvent).where(HonorEvent.booking_id == UUID(booking_id))
+            )
+        ).scalar_one()
+        rank_count = (
+            await session.execute(
+                select(func.count()).select_from(RankEvent).where(RankEvent.booking_id == UUID(booking_id))
+            )
+        ).scalar_one()
+    assert honor_count == 2
+    assert rank_count == 2
+
+
 async def test_no_show_creates_negative_honor_for_other_and_actor(client: AsyncClient) -> None:
     """
     The user who *calls* no_show takes a smaller penalty (anti-abuse). The

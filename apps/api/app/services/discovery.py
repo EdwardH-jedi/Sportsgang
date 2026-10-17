@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from fastapi import HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -158,6 +159,12 @@ async def record_action(
     action: str,
     sport: str,
 ) -> RecordActionResponse:
+    if actor_id == target_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="You cannot perform a discovery action on yourself",
+        )
+
     # Upsert: update existing action or insert new one
     existing_stmt = select(DiscoveryAction).where(
         and_(
