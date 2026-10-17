@@ -125,7 +125,7 @@ Detailed area-by-area tables follow.
 |---|---|---|---|
 | iOS `bundleIdentifier` | configured | `apps/mobile/app.config.js:49` -> `ios.bundleIdentifier = "com.edh1223.protin"` | Use this exact string when creating the App Store Connect app record. |
 | Android `package` matches | configured | `apps/mobile/app.config.js:61` -> `android.package = "com.edh1223.protin"` | None. |
-| App name / slug / version | configured | `app.config.js` -> `name: "Protin"`, `slug: "protin"`, `version: "1.0.0"`, `ios.buildNumber: "1"` | Bump `version` only for user-visible release; `autoIncrement` handles build number on production profile. |
+| App name / slug / version | configured | `app.config.js` -> `name: "SportsGang"`, `slug: "protin"`, `version: "1.0.0"`, `ios.buildNumber: "1"` | Bump `version` only for user-visible release; `autoIncrement` handles build number on production profile. |
 | ASC app record uses same bundle | configured | App Store Connect app record created 2026-05-07 with public name `SportsGang`, Bundle ID `com.edh1223.protin`. ASC App ID `6767027447` captured. | None. |
 | APNs capability enabled on the bundle ID | Apple-side setup required | Not verifiable from the repo | Enable "Push Notifications" on the bundle ID in the Apple Developer portal once the app record exists. |
 

@@ -1,9 +1,8 @@
 /**
  * Event ("battle" / "game") domain types.
  *
- * Distinct from Booking (1:1 partner session) and Tournament
- * (multi-round structured competition). One host opens an event,
- * other users join up to capacity.
+ * Distinct from Booking (1:1 partner session). One host opens an
+ * event, other users join up to capacity.
  */
 
 import type { ISODateString, UUID } from './common';

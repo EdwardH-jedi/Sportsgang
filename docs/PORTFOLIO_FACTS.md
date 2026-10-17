@@ -7,8 +7,9 @@ the repository / technical project name.
 
 ## One-line description
 
-Peer sports matchmaking on mobile — find opponents by sport, issue challenges, book
-nearby courts, and track results through a ranking and honour system.
+Peer sports matchmaking on mobile — find opponents by sport, issue challenges,
+coordinate sessions with an attached venue, and track results through a ranking and
+honour system.
 
 ## Release outcome
 
@@ -34,8 +35,9 @@ repository, so no adoption numbers are claimed here.
 
 Finding a workout or sports partner at your level, at a time and venue that works, is
 mostly ad-hoc (group chats, notice boards). SportsGang makes it a first-class product flow:
-discover a compatible partner for a specific sport, challenge them, book a venue for
-the session, and build a track record through results, rank, and honour.
+discover a compatible partner for a specific sport, challenge them, coordinate a
+session with a venue attached, and build a track record through results, rank, and
+honour.
 
 ## Stack
 
@@ -124,6 +126,8 @@ defined in the shared-types package.
 - API unit tests run against in-memory SQLite. A separate PostgreSQL/Redis CI
   integration job exercises the Alembic chain and the booking journey; see
   [verification scope](VERIFICATION.md). This is not a production load test.
+- Bookings coordinate sessions between participants, with a venue attached. They do
+  not reserve a facility's inventory or process a court payment.
 - Media (profile photos) is stored on local disk; cloud object storage is a
   production TODO.
 - Opponent discovery filters by sport and profile compatibility, not by geographic
@@ -133,13 +137,13 @@ defined in the shared-types package.
 
 "SportsGang is a peer sports matchmaking app I built end-to-end: an Expo/React Native
 TypeScript app on top of an async FastAPI backend with PostgreSQL and Redis. You can
-discover opponents by sport, challenge them, book nearby venues, chat, and track
-results through a ranking and honour system. I took the iOS release through Apple App
-Review as SportsGang v1.0; after one App Completeness review issue, I built a
-reproducible production review-data workflow, resubmitted, and the app was approved
-for distribution about eight weeks after the first commit. The repo has around 620
-backend tests and 750 mobile tests with CI covering lint, typecheck, both suites, and
-a Docker build."
+discover opponents by sport, challenge them, coordinate sessions at nearby venues,
+chat, and track results through a ranking and honour system. I took the iOS release
+through Apple App Review as SportsGang v1.0; after one App Completeness review issue,
+I built a reproducible production review-data workflow, resubmitted, and the app was
+approved for distribution about eight weeks after the first commit. As of 2026-10-17
+the repo has 686 backend tests and 722 mobile tests, with CI covering lint, typecheck,
+both suites, and a Docker build."
 
 ## 2-minute technical version
 
@@ -147,12 +151,13 @@ a Docker build."
 service, and a shared TypeScript types package that acts as the API contract.
 
 The backend is fully async — SQLAlchemy 2 async sessions over asyncpg, async Redis —
-with 15 Alembic migrations covering the schema history. The domain is modelled around
-matches: a sport-scoped discovery feed with compatibility scoring produces mutual-like
-matches, matches carry chat threads and bookings, and bookings run through an explicit
-finite state machine so every transition and its side effects — like scheduled push
-notifications — are validated in one place. On top of that there are 1-v-1 challenges
-with results, group events with attendance tracking, and a rank/honour system.
+with 16 Alembic migrations (as of 2026-10-17) forming a linear chain, 0001→0016, that
+covers the schema history. The domain is modelled around matches: a sport-scoped
+discovery feed with compatibility scoring produces mutual-like matches, matches carry
+chat threads and bookings, and bookings run through an explicit finite state machine
+so every transition and its side effects — like scheduled push notifications — are
+validated in one place. On top of that there are 1-v-1 challenges with results, group
+events with attendance tracking, and a rank/honour system.
 
 Two integrations I'd highlight are venue search, which merges a seeded database with
 Google Places while deduplicating by name and haversine distance, and Google Calendar
@@ -167,7 +172,7 @@ and pending/confirmed bookings — and verified it against the deployed HTTPS AP
 Apple then accepted v1.0 and approved it for distribution on 13 May 2026, roughly 56
 days after the first commit.
 
-Quality-wise, the repository has about 620 pytest tests and roughly 750 Jest tests,
+Quality-wise, as of 2026-10-17 the repository has 686 pytest tests and 722 Jest tests,
 plus GitHub Actions for linting, typechecking, both suites, and the Docker build.
 I don't claim download or active-user numbers because those metrics are not tracked in
 the repository."
