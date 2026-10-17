@@ -44,8 +44,7 @@ EVENT_ATTENDANCE_SELF_STATUSES: frozenset[str] = frozenset({"attended", "excused
 class Event(Base):
     """
     Group event ("battle" / "game") that one host opens and other users
-    can join. Distinct from ``Booking`` (1:1 partner session) and
-    ``Tournament`` (multi-round structured competition).
+    can join. Distinct from ``Booking`` (1:1 partner session).
     """
 
     __tablename__ = "events"

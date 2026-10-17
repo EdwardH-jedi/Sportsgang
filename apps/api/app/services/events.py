@@ -1,10 +1,9 @@
 """
 Event (group "battle" / "game") service.
 
-Distinct from Booking (1:1 partner session) and Tournament (multi-round
-structured competition). The data model leaves clean extension points
-for the future Report/Block and Attendance/No-show streams (status,
-soft-leave audit trail, visibility flag).
+Distinct from Booking (1:1 partner session). The data model leaves clean
+extension points for the future Report/Block and Attendance/No-show
+streams (status, soft-leave audit trail, visibility flag).
 """
 
 from __future__ import annotations
