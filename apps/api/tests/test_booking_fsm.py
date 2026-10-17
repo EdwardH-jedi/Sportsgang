@@ -1,25 +1,26 @@
 """Pure unit tests for the booking state machine — no database, no HTTP.
 
-test_bookings.py exercises the FSM through the API. These tests call
-app/services/bookings.py::_check_transition directly so the full
-(from_status, to_status) matrix is pinned down, and drive
-transition_booking with mocked I/O to show that a repeated confirm has no
-side effects.
+test_bookings.py exercises the FSM through the API. These tests drive the
+public service function, app/services/bookings.py::transition_booking, for
+every (from_status, to_status, participant) combination. The session is an
+AsyncMock and the response, rank and notification helpers are monkeypatched,
+so each test checks what a caller observes: the status code, the booking's
+resulting status, and how many side effects ran.
 
 Documented behaviour (see _TRANSITIONS and the FSM comment in
 test_bookings.py):
   proposed   -> confirmed (partner) | declined (partner) | cancelled (proposer)
   confirmed  -> cancelled | completed | no_show (either participant)
-Any other (from, to) pair is rejected with 422
-"Cannot transition from '<from>' to '<to>'"; an allowed transition attempted
-by the wrong participant is rejected with 403.
+Any other (from, to) pair is rejected with 422; an allowed transition
+attempted by the wrong participant is rejected with 403. A rejected
+transition leaves the booking unchanged and runs no side effects.
 """
 
 from __future__ import annotations
 
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
-from uuid import uuid4
+from unittest.mock import AsyncMock, MagicMock
+from uuid import UUID, uuid4
 
 import pytest
 from fastapi import HTTPException
@@ -41,32 +42,83 @@ ALLOWED: dict[tuple[str, str], str] = {
 
 INVALID = [(src, dst) for src in STATUSES for dst in STATUSES if (src, dst) not in ALLOWED]
 
+# Notifications a successful transition schedules: the other participant hears
+# about confirm/decline/cancel, and a confirm adds a reminder for each participant.
+NOTIFICATIONS = {"confirmed": 3, "declined": 1, "cancelled": 1, "completed": 0, "no_show": 0}
+
+# (rank transitions recorded, notifications scheduled, commits)
+NO_SIDE_EFFECTS = (0, 0, 0)
+
 PROPOSER_ID = uuid4()
 PARTNER_ID = uuid4()
 ACTORS = {"proposer": PROPOSER_ID, "partner": PARTNER_ID}
 
 
-def _booking(status: str) -> Booking:
+def _booking(status: str, *, partner_id: UUID = PARTNER_ID) -> Booking:
     return Booking(
         id=uuid4(),
         proposer_id=PROPOSER_ID,
-        partner_id=PARTNER_ID,
+        partner_id=partner_id,
         sport="tennis",
         status=status,
     )
 
 
-def _assert_rejected(booking: Booking, new_status: str, actor: str, code: int, detail: str) -> None:
-    before = booking.status
-    with pytest.raises(HTTPException) as exc:
-        bookings_service._check_transition(booking, new_status, ACTORS[actor])
-    assert exc.value.status_code == code
-    assert exc.value.detail == detail
-    assert booking.status == before
+@pytest.fixture
+def service(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
+    """transition_booking with its I/O replaced; the FSM itself runs for real."""
+    svc = SimpleNamespace(
+        db=AsyncMock(),
+        loaded=MagicMock(),
+        record_transition=AsyncMock(),
+        schedule_notification=AsyncMock(),
+    )
+    # The booking lookup is the only query left once the helpers below are mocked.
+    svc.db.execute.return_value = svc.loaded
+    monkeypatch.setattr(
+        bookings_service, "_build_partner_card", AsyncMock(return_value=SimpleNamespace(display_name="Sam"))
+    )
+    monkeypatch.setattr(bookings_service, "_to_response", AsyncMock(return_value=SimpleNamespace()))
+    monkeypatch.setattr(bookings_service.rank_service, "record_booking_transition", svc.record_transition)
+    monkeypatch.setattr(bookings_service.notif_service, "schedule_booking_notification", svc.schedule_notification)
+    return svc
+
+
+async def _transition(service: SimpleNamespace, booking: Booking | None, new_status: str, actor: str) -> int:
+    """Call transition_booking; return 200 on success, else the rejection's status code."""
+    service.loaded.scalar_one_or_none.return_value = booking
+    booking_id = booking.id if booking is not None else uuid4()
+    try:
+        await bookings_service.transition_booking(service.db, booking_id, new_status, ACTORS[actor])
+    except HTTPException as exc:
+        return exc.status_code
+    return 200
+
+
+def _side_effects(service: SimpleNamespace) -> tuple[int, int, int]:
+    return (
+        service.record_transition.await_count,
+        service.schedule_notification.await_count,
+        service.db.commit.await_count,
+    )
+
+
+async def _assert_applied(service: SimpleNamespace, src: str, dst: str, actor: str) -> None:
+    booking = _booking(src)
+    assert await _transition(service, booking, dst, actor) == 200
+    assert booking.status == dst
+    assert _side_effects(service) == (1, NOTIFICATIONS[dst], 1)
+
+
+async def _assert_rejected(service: SimpleNamespace, src: str, dst: str, actor: str, code: int) -> None:
+    booking = _booking(src)
+    assert await _transition(service, booking, dst, actor) == code
+    assert booking.status == src
+    assert _side_effects(service) == NO_SIDE_EFFECTS
 
 
 # ---------------------------------------------------------------------------
-# Every invalid transition → 422 with the documented message, for either actor
+# Every invalid transition → 422 for either participant, nothing changes
 # ---------------------------------------------------------------------------
 
 
@@ -76,26 +128,46 @@ def test_invalid_matrix_is_the_complement_of_the_documented_table() -> None:
 
 @pytest.mark.parametrize("actor", ["proposer", "partner"])
 @pytest.mark.parametrize(("src", "dst"), INVALID, ids=[f"{s}->{d}" for s, d in INVALID])
-def test_invalid_transition_raises_422(src: str, dst: str, actor: str) -> None:
-    _assert_rejected(_booking(src), dst, actor, 422, f"Cannot transition from '{src}' to '{dst}'")
+async def test_invalid_transition_is_rejected_with_422(
+    service: SimpleNamespace, src: str, dst: str, actor: str
+) -> None:
+    await _assert_rejected(service, src, dst, actor, 422)
+
+
+# ---------------------------------------------------------------------------
+# Every documented transition, by each participant
+# ---------------------------------------------------------------------------
+
+# (from, to, actor, permitted): the permitted participant moves the booking;
+# the other participant is rejected with 403.
+DOCUMENTED_CASES = [
+    (src, dst, actor, allowed_by in ("either", actor))
+    for (src, dst), allowed_by in ALLOWED.items()
+    for actor in ("proposer", "partner")
+]
+
+
+@pytest.mark.parametrize(
+    ("src", "dst", "actor", "permitted"),
+    DOCUMENTED_CASES,
+    ids=[f"{s}->{d}-{a}" for s, d, a, _ in DOCUMENTED_CASES],
+)
+async def test_documented_transition_by_each_participant(
+    service: SimpleNamespace, src: str, dst: str, actor: str, permitted: bool
+) -> None:
+    if permitted:
+        await _assert_applied(service, src, dst, actor)
+    else:
+        await _assert_rejected(service, src, dst, actor, 403)
 
 
 # ---------------------------------------------------------------------------
 # no_show and cancel from every state, by each participant
 # ---------------------------------------------------------------------------
 
-# Expected outcome per (from_status, actor): None = allowed, else (status_code, detail).
-_PROPOSER_ONLY = (403, "Only the proposer can perform this transition")
-
-
-def _not_allowed(src: str, dst: str) -> tuple[int, str]:
-    return (422, f"Cannot transition from '{src}' to '{dst}'")
-
-
+# Expected outcome per (from_status, actor): None = applied, else the status code.
 NO_SHOW_CASES = [
-    (src, actor, None if src == "confirmed" else _not_allowed(src, "no_show"))
-    for src in STATUSES
-    for actor in ("proposer", "partner")
+    (src, actor, None if src == "confirmed" else 422) for src in STATUSES for actor in ("proposer", "partner")
 ]
 
 CANCEL_CASES = [
@@ -104,9 +176,9 @@ CANCEL_CASES = [
         actor,
         None
         if src == "confirmed" or (src == "proposed" and actor == "proposer")
-        else _PROPOSER_ONLY
+        else 403
         if src == "proposed"
-        else _not_allowed(src, "cancelled"),
+        else 422,
     )
     for src in STATUSES
     for actor in ("proposer", "partner")
@@ -114,21 +186,19 @@ CANCEL_CASES = [
 
 
 @pytest.mark.parametrize(("src", "actor", "expected"), NO_SHOW_CASES, ids=[f"{s}-{a}" for s, a, _ in NO_SHOW_CASES])
-def test_no_show_from_each_state(src: str, actor: str, expected: tuple[int, str] | None) -> None:
-    booking = _booking(src)
+async def test_no_show_from_each_state(service: SimpleNamespace, src: str, actor: str, expected: int | None) -> None:
     if expected is None:
-        bookings_service._check_transition(booking, "no_show", ACTORS[actor])
+        await _assert_applied(service, src, "no_show", actor)
     else:
-        _assert_rejected(booking, "no_show", actor, *expected)
+        await _assert_rejected(service, src, "no_show", actor, expected)
 
 
 @pytest.mark.parametrize(("src", "actor", "expected"), CANCEL_CASES, ids=[f"{s}-{a}" for s, a, _ in CANCEL_CASES])
-def test_cancel_from_each_state(src: str, actor: str, expected: tuple[int, str] | None) -> None:
-    booking = _booking(src)
+async def test_cancel_from_each_state(service: SimpleNamespace, src: str, actor: str, expected: int | None) -> None:
     if expected is None:
-        bookings_service._check_transition(booking, "cancelled", ACTORS[actor])
+        await _assert_applied(service, src, "cancelled", actor)
     else:
-        _assert_rejected(booking, "cancelled", actor, *expected)
+        await _assert_rejected(service, src, "cancelled", actor, expected)
 
 
 # ---------------------------------------------------------------------------
@@ -136,44 +206,32 @@ def test_cancel_from_each_state(src: str, actor: str, expected: tuple[int, str] 
 # ---------------------------------------------------------------------------
 
 
-def test_double_confirm_is_rejected_by_the_fsm() -> None:
+async def test_double_confirm_has_no_repeated_side_effects(service: SimpleNamespace) -> None:
     booking = _booking("proposed")
-    bookings_service._check_transition(booking, "confirmed", PARTNER_ID)
-    booking.status = "confirmed"
 
-    _assert_rejected(booking, "confirmed", "partner", 422, "Cannot transition from 'confirmed' to 'confirmed'")
-
-
-async def test_double_confirm_has_no_repeated_side_effects(monkeypatch: pytest.MonkeyPatch) -> None:
-    booking = _booking("proposed")
-    db = AsyncMock()
-    record_transition = AsyncMock()
-    schedule_notification = AsyncMock()
-    response = object()
-
-    monkeypatch.setattr(bookings_service, "_get_booking_or_404", AsyncMock(return_value=booking))
-    monkeypatch.setattr(
-        bookings_service, "_build_partner_card", AsyncMock(return_value=SimpleNamespace(display_name="Sam"))
-    )
-    monkeypatch.setattr(bookings_service, "_to_response", AsyncMock(return_value=response))
-    monkeypatch.setattr(bookings_service.rank_service, "record_booking_transition", record_transition)
-    monkeypatch.setattr(bookings_service.notif_service, "schedule_booking_notification", schedule_notification)
-
-    first = await bookings_service.transition_booking(db, booking.id, "confirmed", PARTNER_ID)
-
-    assert first is response
+    assert await _transition(service, booking, "confirmed", "partner") == 200
     assert booking.status == "confirmed"
-    assert record_transition.await_count == 1
-    # booking_confirmed to the proposer + a reminder for each participant.
-    assert schedule_notification.await_count == 3
-    assert db.commit.await_count == 1
+    after_first = _side_effects(service)
+    assert after_first == (1, NOTIFICATIONS["confirmed"], 1)
 
-    with pytest.raises(HTTPException) as exc:
-        await bookings_service.transition_booking(db, booking.id, "confirmed", PARTNER_ID)
-
-    assert exc.value.status_code == 422
-    assert exc.value.detail == "Cannot transition from 'confirmed' to 'confirmed'"
+    assert await _transition(service, booking, "confirmed", "partner") == 422
     assert booking.status == "confirmed"
-    assert record_transition.await_count == 1
-    assert schedule_notification.await_count == 3
-    assert db.commit.await_count == 1
+    assert _side_effects(service) == after_first
+
+
+# ---------------------------------------------------------------------------
+# Guards before the FSM: missing booking, single-participant booking
+# ---------------------------------------------------------------------------
+
+
+async def test_transition_on_missing_booking_is_404(service: SimpleNamespace) -> None:
+    assert await _transition(service, None, "confirmed", "partner") == 404
+    assert _side_effects(service) == NO_SIDE_EFFECTS
+
+
+async def test_booking_without_two_distinct_participants_cannot_transition(service: SimpleNamespace) -> None:
+    # proposed -> cancelled by the proposer is otherwise allowed, so this 422 comes from the guard.
+    booking = _booking("proposed", partner_id=PROPOSER_ID)
+    assert await _transition(service, booking, "cancelled", "proposer") == 422
+    assert booking.status == "proposed"
+    assert _side_effects(service) == NO_SIDE_EFFECTS
