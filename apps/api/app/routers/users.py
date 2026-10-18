@@ -145,33 +145,43 @@ async def replace_profile_photos(
 ) -> ProfilePhotosResponse:
     """Replace the current user's profile photos.
 
-    Accepts 2-4 multipart files. Existing photo rows for this profile are
-    deleted, the uploads are persisted to local media storage, and new rows
-    are written in upload order. ``avatar_url`` on the profile is synced to
-    the first photo URL so existing avatar consumers keep working.
+    Accepts 2-4 non-empty multipart files. The uploads are written to local
+    media storage first; then, in one transaction, the profile's photo rows
+    are replaced in upload order and ``avatar_url`` is synced to the first
+    photo URL so existing avatar consumers keep working. The previous files
+    are deleted only after that commit, so a failed upload or commit leaves
+    the previous photos, rows and ``avatar_url`` in place.
     """
     if not (PROFILE_PHOTO_MIN <= len(files) <= PROFILE_PHOTO_MAX):
         raise HTTPException(
             status_code=422,
             detail=f"Must upload {PROFILE_PHOTO_MIN}-{PROFILE_PHOTO_MAX} photos",
         )
+    if any(media_storage.is_empty(upload) for upload in files):
+        raise HTTPException(status_code=422, detail="Photos must not be empty")
 
     result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
     profile = result.scalar_one_or_none()
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
 
-    await db.execute(delete(ProfilePhoto).where(ProfilePhoto.profile_id == profile.id))
-
-    media_storage.clear_user_photos(current_user.id)
+    previous_urls = media_storage.list_user_photos(current_user.id)
     urls = media_storage.save_user_photos(current_user.id, files)
 
-    new_photos = [ProfilePhoto(profile_id=profile.id, photo_url=url, position=index) for index, url in enumerate(urls)]
-    db.add_all(new_photos)
+    try:
+        await db.execute(delete(ProfilePhoto).where(ProfilePhoto.profile_id == profile.id))
+        new_photos = [
+            ProfilePhoto(profile_id=profile.id, photo_url=url, position=index) for index, url in enumerate(urls)
+        ]
+        db.add_all(new_photos)
+        profile.avatar_url = urls[0]
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        media_storage.delete_user_photos(current_user.id, urls)
+        raise
 
-    profile.avatar_url = urls[0]
-
-    await db.commit()
+    media_storage.delete_user_photos(current_user.id, previous_urls)
     for photo in new_photos:
         await db.refresh(photo)
     await db.refresh(profile)
