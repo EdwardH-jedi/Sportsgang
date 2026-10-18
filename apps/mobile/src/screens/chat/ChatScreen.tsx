@@ -3,6 +3,8 @@ import {
   ActionSheetIOS,
   ActivityIndicator,
   Alert,
+  AppState,
+  type AppStateStatus,
   Dimensions,
   FlatList,
   Keyboard,
@@ -113,6 +115,12 @@ function timelineKey(entry: TimelineEntry): string {
 }
 
 const PROPOSAL_FETCH_STATUSES = 'proposed,confirmed,declined';
+
+// WebSocket reconnect backoff: 1s, 2s, 4s, 8s, 8s, then wait for the app to
+// come back to the foreground.
+const RECONNECT_BASE_DELAY_MS = 1000;
+const RECONNECT_MAX_DELAY_MS = 8000;
+const RECONNECT_MAX_ATTEMPTS = 5;
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -387,27 +395,104 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   );
 
   // ── Real-time WebSocket connection ──────────────────────────────────────────
+  // A dropped socket (network change, server restart, app suspended in the
+  // background) is retried with capped backoff, and returning to the
+  // foreground reconnects at once. Every reconnect refetches the history so
+  // messages sent while disconnected show up.
+  const [isReconnecting, setIsReconnecting] = useState(false);
+  // Read through a ref so a new fetchMessages identity doesn't tear the
+  // socket down.
+  const fetchMessagesRef = useRef(fetchMessages);
+  useEffect(() => {
+    fetchMessagesRef.current = fetchMessages;
+  }, [fetchMessages]);
+
   useEffect(() => {
     if (!token) return;
-    const wsBase = BASE_URL.replace(/^http/, 'ws');
-    const ws = new WebSocket(`${wsBase}/matches/${matchId}/ws?token=${token}`);
-    wsRef.current = ws;
+    const wsUrl = `${BASE_URL.replace(/^http/, 'ws')}/matches/${matchId}/ws?token=${token}`;
+    let disposed = false;
+    let dropped = false;
+    let rejected = false;
+    let attempts = 0;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-    ws.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data as string) as Message;
-        // Use the shared dedupe helper so this path matches sendMessage and
-        // fetchMessages — a single source of truth means a race between the
-        // POST response and a WS echo of the same id can never duplicate.
-        setMessages((prev) => dedupeMessagesById([...prev, incoming]));
-        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
-      } catch {
-        // ignore malformed frames
-      }
+    const connect = () => {
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        if (disposed) return;
+        attempts = 0;
+        if (dropped) {
+          dropped = false;
+          setIsReconnecting(false);
+          void fetchMessagesRef.current();
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const incoming = JSON.parse(event.data as string) as Message;
+          // Use the shared dedupe helper so this path matches sendMessage and
+          // fetchMessages — a single source of truth means a race between the
+          // POST response and a WS echo of the same id can never duplicate.
+          setMessages((prev) => dedupeMessagesById([...prev, incoming]));
+          setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
+        } catch {
+          // ignore malformed frames
+        }
+      };
+
+      // React Native fires `close` after `error`, so this covers failed
+      // connects as well as drops.
+      ws.onclose = (event) => {
+        if (disposed || wsRef.current !== ws) return;
+        wsRef.current = null;
+        // 1008 / 4xxx: the server rejected the token or the match. Retrying
+        // can't succeed until the token changes, which re-runs this effect.
+        const code = event.code ?? 0;
+        if (code === 1008 || code >= 4000) {
+          rejected = true;
+          setIsReconnecting(false);
+          return;
+        }
+        dropped = true;
+        setIsReconnecting(true);
+        if (attempts >= RECONNECT_MAX_ATTEMPTS) return;
+        const delay = Math.min(RECONNECT_BASE_DELAY_MS * 2 ** attempts, RECONNECT_MAX_DELAY_MS);
+        attempts += 1;
+        retryTimer = setTimeout(() => {
+          retryTimer = null;
+          connect();
+        }, delay);
+      };
     };
 
+    const onAppStateChange = (state: AppStateStatus) => {
+      if (state !== 'active' || disposed || rejected) return;
+      const current = wsRef.current;
+      if (
+        current &&
+        (current.readyState === WebSocket.OPEN || current.readyState === WebSocket.CONNECTING)
+      ) {
+        return;
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      attempts = 0;
+      connect();
+    };
+
+    connect();
+    const appStateSub = AppState.addEventListener('change', onAppStateChange);
+
     return () => {
-      ws.close();
+      disposed = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      appStateSub.remove();
+      wsRef.current?.close();
       wsRef.current = null;
     };
   }, [matchId, token]);
@@ -640,6 +725,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
               </View>
             }
           />
+          {isReconnecting ? (
+            <Text style={styles.reconnectingText} accessibilityLiveRegion="polite">
+              Reconnecting…
+            </Text>
+          ) : null}
           <View
             style={[
               styles.inputRow,
@@ -891,6 +981,12 @@ const styles = StyleSheet.create({
   },
   bubbleTextOther: {
     color: colors.textPrimary,
+  },
+  reconnectingText: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    paddingVertical: spacing.xs,
   },
   inputRow: {
     flexDirection: 'row',
