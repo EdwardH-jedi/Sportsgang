@@ -169,7 +169,10 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       one succeeds, the other gets the FSM 409/400, one notification set is sent. Use two
       sessions + `asyncio.gather`. Then drop "concurrent booking transitions" from README
       Limitations in the same PR.
-- [ ] **S10 `test/api-service-coverage`** — measured 2026-10-19 with `--cov=app`:
+- [x] **S10 `test/api-service-coverage`** — PR #23, CI green. Gap was a coverage artifact (no
+      greenlet tracing), not mocking or missing tests: with `concurrency = greenlet,thread` in
+      `pyproject.toml` the six modules are 87–100% (94%), all of `app/` 92%. No per-module PRs
+      needed; 44 uncovered lines listed in #23 for the owner. Original: measured 2026-10-19 with `--cov=app`:
       `services/challenges.py` 31%, `services/events.py` 38%, `routers/users.py` 39%,
       `services/matches.py` 45%, `services/safety.py` 53%, `services/discovery.py` 54%.
       First confirm the repo's own coverage command agrees (the audit quoted 93% overall; if
