@@ -148,9 +148,9 @@ async def replace_profile_photos(
     Accepts 2-4 non-empty multipart files. The uploads are written to local
     media storage first; then, in one transaction, the profile's photo rows
     are replaced in upload order and ``avatar_url`` is synced to the first
-    photo URL so existing avatar consumers keep working. The previous files
-    are deleted only after that commit, so a failed upload or commit leaves
-    the previous photos, rows and ``avatar_url`` in place.
+    photo URL so existing avatar consumers keep working. The replaced rows'
+    files are deleted only after that commit, so a failed upload or commit
+    leaves the previous photos, rows and ``avatar_url`` in place.
     """
     if not (PROFILE_PHOTO_MIN <= len(files) <= PROFILE_PHOTO_MAX):
         raise HTTPException(
@@ -160,13 +160,20 @@ async def replace_profile_photos(
     if any(media_storage.is_empty(upload) for upload in files):
         raise HTTPException(status_code=422, detail="Photos must not be empty")
 
-    result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    # Read once: a rollback below expires current_user along with the session.
+    user_id = current_user.id
+
+    # The row lock serialises concurrent replaces for one profile (PostgreSQL;
+    # SQLite ignores it), so each request deletes only the photos it replaced.
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == user_id).with_for_update())
     profile = result.scalar_one_or_none()
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    previous_urls = list(
+        (await db.execute(select(ProfilePhoto.photo_url).where(ProfilePhoto.profile_id == profile.id))).scalars()
+    )
 
-    previous_urls = media_storage.list_user_photos(current_user.id)
-    urls = media_storage.save_user_photos(current_user.id, files)
+    urls = media_storage.save_user_photos(user_id, files)
 
     try:
         await db.execute(delete(ProfilePhoto).where(ProfilePhoto.profile_id == profile.id))
@@ -178,10 +185,10 @@ async def replace_profile_photos(
         await db.commit()
     except Exception:
         await db.rollback()
-        media_storage.delete_user_photos(current_user.id, urls)
+        media_storage.delete_user_photos(user_id, urls)
         raise
 
-    media_storage.delete_user_photos(current_user.id, previous_urls)
+    media_storage.delete_user_photos(user_id, previous_urls)
     for photo in new_photos:
         await db.refresh(photo)
     await db.refresh(profile)

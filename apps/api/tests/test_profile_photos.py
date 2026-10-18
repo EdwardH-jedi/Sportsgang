@@ -8,6 +8,7 @@ from typing import AsyncGenerator
 from unittest.mock import AsyncMock
 
 import pytest
+from fastapi import Depends
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -74,8 +75,10 @@ async def photo_client(tmp_path, monkeypatch) -> AsyncGenerator[tuple[AsyncClien
         await session.commit()
         await session.refresh(profile)
 
-    async def _override_current_user() -> User:
-        return user
+    async def _override_current_user(db: AsyncSession = Depends(get_db)) -> User:
+        # Load the user through the request's session, as get_current_user does,
+        # so a rollback in the route expires it exactly as in production.
+        return await db.get(User, user.id)
 
     app.dependency_overrides[get_db] = _override_get_db
     app.dependency_overrides[get_redis] = _override_get_redis
@@ -295,3 +298,19 @@ async def test_commit_failure_keeps_previous_photos(photo_client, tmp_path, monk
         await client.put("/users/me/photos", files=_files(3))
 
     assert await _photo_state(tmp_path, user, profile) == before
+
+
+async def test_replace_only_deletes_the_photos_it_replaced(photo_client, tmp_path) -> None:
+    # A file no photo row points at (e.g. another replace's upload that has not
+    # committed yet) is not this request's to delete.
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+    stray = Path(tmp_path) / "media" / "profile_photos" / str(user.id) / "00_in-flight.jpg"
+    stray.write_bytes(b"\xff\xd8\xff\xe0another-upload")
+
+    r = await client.put("/users/me/photos", files=_files(2))
+    assert r.status_code == 200, r.text
+
+    on_disk, row_urls, _ = await _photo_state(tmp_path, user, profile)
+    assert on_disk == sorted([stray.name, *(url.rsplit("/", 1)[-1] for url in row_urls)])
+    assert not set(before[0]) & set(on_disk)

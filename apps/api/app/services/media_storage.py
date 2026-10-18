@@ -51,14 +51,6 @@ def is_empty(upload: UploadFile) -> bool:
     return size == 0
 
 
-def list_user_photos(user_id: UUID) -> list[str]:
-    """Public URLs of the photo files currently stored for the user."""
-    user_dir = _user_dir(user_id)
-    if not user_dir.is_dir():
-        return []
-    return [_url(user_id, path.name) for path in sorted(user_dir.iterdir()) if path.is_file()]
-
-
 def delete_user_photos(user_id: UUID, urls: Iterable[str]) -> None:
     """Best-effort removal of the user's photo files named by ``urls``."""
     user_dir = _user_dir(user_id)
