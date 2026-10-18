@@ -216,6 +216,20 @@ jest.mock('../theme', () => ({
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('ProfileScreen', () => {
+  // The first async render in a worker pays a one-off warm-up cost (react-test-renderer
+  // and the RN mocks initialising). On a loaded CI runner or with a cold transform cache it
+  // exceeded Jest's 5000 ms limit and failed whichever test happened to render first
+  // (seen once in CI on #14; reproduced locally at ~7.6 s). Pay it here, with its own
+  // limit, so no individual test absorbs it.
+  beforeAll(async () => {
+    mockProfile = { displayName: 'Warm Up', suburb: null, bio: null };
+    mockFetchProfile.mockResolvedValue(undefined);
+    mockApiGet.mockResolvedValue({ connected: false });
+    const { getByText, unmount } = render(<ProfileScreen />);
+    await waitFor(() => getByText('Warm Up'), { timeout: 20000 });
+    unmount();
+  }, 30000);
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockProfile = null;
