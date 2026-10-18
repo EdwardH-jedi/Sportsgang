@@ -45,6 +45,10 @@ interface MessageListResponse {
   offset: number;
 }
 
+// GET /matches/:id/messages pages oldest-first (created_at ASC + offset), so
+// the newest page starts at total - MESSAGE_PAGE_SIZE.
+const MESSAGE_PAGE_SIZE = 50;
+
 // Booking shape returned by GET /bookings (camelCased by lib/api). Only the
 // fields the in-chat proposal card needs are listed; the BookingDetail
 // screen owns the wider shape.
@@ -69,6 +73,10 @@ interface BookingListResponse {
 type TimelineEntry =
   | { kind: 'message'; createdAt: string; message: Message }
   | { kind: 'proposal'; createdAt: string; proposal: BookingItem };
+
+function timelineKey(entry: TimelineEntry): string {
+  return entry.kind === 'message' ? `m-${entry.message.id}` : `p-${entry.proposal.id}`;
+}
 
 const PROPOSAL_FETCH_STATUSES = 'proposed,confirmed,declined';
 
@@ -226,15 +234,30 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     );
   }, [matchId]);
 
+  // Offset of the oldest loaded message in the server's oldest-first order;
+  // above 0 means there is earlier history to load.
+  const [oldestOffset, setOldestOffset] = useState<number | null>(null);
+  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+  // Set when earlier messages are prepended so the list doesn't jump back to
+  // the bottom; cleared once something is appended at the end.
+  const holdAutoScrollRef = useRef(false);
+  const lastTimelineKeyRef = useRef<string | null>(null);
+
+  const fetchLatestMessages = useCallback(async () => {
+    // The first page tells us `total`; if there is more than one page, the
+    // newest one starts at total - MESSAGE_PAGE_SIZE.
+    const url = `/matches/${matchId}/messages?limit=${MESSAGE_PAGE_SIZE}`;
+    const first = await api.get<MessageListResponse>(url);
+    if (first.total <= MESSAGE_PAGE_SIZE) return first;
+    return api.get<MessageListResponse>(`${url}&offset=${first.total - MESSAGE_PAGE_SIZE}`);
+  }, [matchId]);
+
   const fetchMessages = useCallback(async () => {
     try {
       // Run both fetches in parallel so a slow /bookings doesn't delay the
       // text history (and vice-versa). Either failing surfaces a single
       // friendly error.
-      const [msgRes] = await Promise.all([
-        api.get<MessageListResponse>(`/matches/${matchId}/messages?limit=100`),
-        fetchProposals(),
-      ]);
+      const [msgRes] = await Promise.all([fetchLatestMessages(), fetchProposals()]);
       // Merge instead of replace: a WS-received message could have landed in
       // state while this fetch was in-flight (slow network, partner sent
       // mid-load). dedupeMessagesById keeps the FIRST occurrence so the
@@ -242,12 +265,37 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       // WS messages survive at the end. Defensive against duplicate rows in
       // the response too.
       setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
+      // A refetch must not forget earlier pages the user already loaded.
+      setOldestOffset((prev) => (prev === null ? msgRes.offset : Math.min(prev, msgRes.offset)));
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
       setIsLoading(false);
     }
-  }, [matchId, fetchProposals]);
+  }, [fetchLatestMessages, fetchProposals]);
+
+  const loadOlderMessages = useCallback(async () => {
+    if (isLoadingOlder || !oldestOffset) return;
+    const offset = Math.max(0, oldestOffset - MESSAGE_PAGE_SIZE);
+    setIsLoadingOlder(true);
+    try {
+      const older = await api.get<MessageListResponse>(
+        `/matches/${matchId}/messages?limit=${oldestOffset - offset}&offset=${offset}`
+      );
+      holdAutoScrollRef.current = true;
+      // Same dedupe as every other path, so an overlap with a WS-delivered or
+      // already-loaded message can't render twice.
+      setMessages((prev) => dedupeMessagesById([...older.items, ...prev]));
+      setOldestOffset(offset);
+    } catch (err) {
+      Alert.alert(
+        "Couldn't load earlier messages",
+        err instanceof Error ? err.message : 'Please try again.'
+      );
+    } finally {
+      setIsLoadingOlder(false);
+    }
+  }, [isLoadingOlder, oldestOffset, matchId]);
 
   useEffect(() => {
     fetchMessages();
@@ -476,9 +524,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
           <FlatList
             ref={listRef}
             data={timeline}
-            keyExtractor={(item) =>
-              item.kind === 'message' ? `m-${item.message.id}` : `p-${item.proposal.id}`
-            }
+            keyExtractor={timelineKey}
             renderItem={({ item }) => {
               if (item.kind === 'message') {
                 return (
@@ -511,9 +557,39 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             style={styles.flex}
             contentContainerStyle={styles.messageList}
             showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
+            // Keep the first message on screen in place when earlier ones are
+            // prepended (index 0 is the "Load earlier" header).
+            maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
+            onContentSizeChange={() => {
+              const last = timeline[timeline.length - 1];
+              const lastKey = last ? timelineKey(last) : null;
+              if (lastKey !== lastTimelineKeyRef.current) {
+                lastTimelineKeyRef.current = lastKey;
+                holdAutoScrollRef.current = false;
+              }
+              if (!holdAutoScrollRef.current) {
+                listRef.current?.scrollToEnd({ animated: false });
+              }
+            }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
+            ListHeaderComponent={
+              oldestOffset ? (
+                <Pressable
+                  onPress={loadOlderMessages}
+                  disabled={isLoadingOlder}
+                  accessibilityRole="button"
+                  accessibilityLabel="Load earlier messages"
+                  style={({ pressed }) => [styles.loadEarlier, pressed && styles.pressed]}
+                >
+                  {isLoadingOlder ? (
+                    <ActivityIndicator size="small" color={colors.accent} />
+                  ) : (
+                    <Text style={styles.loadEarlierText}>Load earlier messages</Text>
+                  )}
+                </Pressable>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyText}>
@@ -718,6 +794,16 @@ const styles = StyleSheet.create({
     // crash into the input on real devices.
     paddingBottom: spacing.lg,
     gap: spacing.xs,
+  },
+  loadEarlier: {
+    alignSelf: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  loadEarlierText: {
+    ...typography.bodySmall,
+    color: colors.accent,
   },
   proposalRow: {
     // Full-bleed card wrapper: cancels the bubble's 75% maxWidth so the

@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { Alert } from 'react-native';
+import { Alert, FlatList } from 'react-native';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 
 import { ChatScreen } from '../screens/chat/ChatScreen';
@@ -240,7 +240,7 @@ describe('ChatScreen', () => {
     mockApiGet.mockResolvedValue(emptyMessageResponse);
     renderChatScreen();
     await waitFor(() => {
-      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=100');
+      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=50');
     });
   });
 
@@ -1226,4 +1226,134 @@ describe('ChatScreen', () => {
       });
     });
   });
+
+  // ── History pagination ─────────────────────────────────────────────────────
+  // GET /matches/:id/messages pages oldest-first, so the screen reads `total`
+  // from the first page, loads the newest page, and "Load earlier messages"
+  // walks back one page at a time. FlatList only renders a window of rows in
+  // the test renderer, so these read the list's `data` prop.
+
+  describe('history pagination', () => {
+    const historyMessage = (i: number) => ({
+      id: `h-${i}`,
+      matchId: 'match-1',
+      senderId: 'partner-456',
+      body: `History ${i}`,
+      createdAt: new Date(Date.UTC(2026, 3, 8, 8, 0, i)).toISOString(),
+    });
+    const page = (from: number, to: number, offset: number) => ({
+      items: Array.from({ length: to - from }, (_, k) => historyMessage(from + k)),
+      total: 120,
+      limit: 50,
+      offset,
+    });
+    const ids = (from: number, to: number) => Array.from({ length: to - from }, (_, k) => `h-${from + k}`);
+
+    // 120 messages: the first page is 0-49 and the newest page 70-119.
+    function mockLongHistory(overrides: Record<string, unknown> = {}) {
+      const responses: Record<string, unknown> = {
+        '/matches/match-1/messages?limit=50': page(0, 50, 0),
+        '/matches/match-1/messages?limit=50&offset=70': page(70, 120, 70),
+        '/matches/match-1/messages?limit=50&offset=20': page(20, 70, 20),
+        '/matches/match-1/messages?limit=20&offset=0': page(0, 20, 0),
+        ...overrides,
+      };
+      mockApiGet.mockImplementation((url: string) => {
+        if (url.startsWith('/bookings')) return Promise.resolve(emptyListResponse);
+        const response = responses[url];
+        if (response === undefined) return Promise.reject(new Error(`unexpected GET ${url}`));
+        return response instanceof Error ? Promise.reject(response) : Promise.resolve(response);
+      });
+    }
+
+    const messageIds = (UNSAFE_getByType: any): string[] =>
+      UNSAFE_getByType(FlatList)
+        .props.data.filter((entry: any) => entry.kind === 'message')
+        .map((entry: any) => entry.message.id);
+
+    it('loads the newest page first when the history is longer than one page', async () => {
+      mockLongHistory();
+      const { UNSAFE_getByType, findByLabelText } = renderChatScreen();
+
+      await findByLabelText('Load earlier messages');
+      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=50&offset=70');
+      expect(messageIds(UNSAFE_getByType)).toEqual(ids(70, 120));
+    });
+
+    it('prepends earlier pages without duplicates until the start of the history', async () => {
+      // The previous page overlaps message 70, which is already on screen.
+      mockLongHistory({ '/matches/match-1/messages?limit=50&offset=20': page(20, 71, 20) });
+      const { UNSAFE_getByType, findByLabelText, getByLabelText, queryByLabelText } = renderChatScreen();
+      await findByLabelText('Load earlier messages');
+
+      // A live message lands before the user scrolls back.
+      act(() => {
+        mockWsInstances[0].onmessage?.({ data: JSON.stringify(historyMessage(120)) });
+      });
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=50&offset=20');
+      expect(messageIds(UNSAFE_getByType)).toEqual(ids(20, 121));
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      expect(mockApiGet).toHaveBeenCalledWith('/matches/match-1/messages?limit=20&offset=0');
+      expect(messageIds(UNSAFE_getByType)).toEqual(ids(0, 121));
+      expect(queryByLabelText('Load earlier messages')).toBeNull();
+    });
+
+    it('makes one request and shows no "Load earlier" control when the history fits in one page', async () => {
+      mockApiGet.mockResolvedValue({ items: sampleMessages, total: 2, limit: 50, offset: 0 });
+      const { findByText, queryByLabelText } = renderChatScreen();
+
+      await findByText('Hey! Want to train tomorrow?');
+      expect(queryByLabelText('Load earlier messages')).toBeNull();
+      // messages + bookings; no second messages request for a tail page.
+      expect(mockApiGet).toHaveBeenCalledTimes(2);
+    });
+
+    it('stays put when earlier messages are prepended and follows the bottom again on a new message', async () => {
+      mockLongHistory();
+      const { UNSAFE_getByType, findByLabelText, getByLabelText } = renderChatScreen();
+      await findByLabelText('Load earlier messages');
+      const scrollToEnd = jest
+        .spyOn(UNSAFE_getByType(FlatList).instance, 'scrollToEnd')
+        .mockImplementation(() => {});
+
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 4000);
+      expect(scrollToEnd).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 8000);
+      expect(scrollToEnd).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        mockWsInstances[0].onmessage?.({ data: JSON.stringify(historyMessage(120)) });
+      });
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 8100);
+      expect(scrollToEnd).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps the control and shows an alert when loading earlier messages fails', async () => {
+      const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+      mockLongHistory({ '/matches/match-1/messages?limit=50&offset=20': new Error('Network down') });
+      const { UNSAFE_getByType, findByLabelText, getByLabelText } = renderChatScreen();
+      await findByLabelText('Load earlier messages');
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith("Couldn't load earlier messages", 'Network down');
+      expect(getByLabelText('Load earlier messages')).toBeTruthy();
+      expect(messageIds(UNSAFE_getByType)).toEqual(ids(70, 120));
+      alertSpy.mockRestore();
+    });
+  });
+
 });
