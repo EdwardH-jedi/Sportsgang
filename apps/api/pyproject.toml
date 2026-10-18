@@ -12,7 +12,7 @@ dependencies = [
   "asyncpg>=0.30.0,<1.0.0",
   "alembic>=1.14.0,<2.0.0",
   "redis>=5.2.0,<6.0.0",
-  "cryptography>=46.0.6,<50.0.0",
+  "cryptography>=46.0.6,<51.0.0",
   "passlib[bcrypt]>=1.7.4,<2.0.0",
   # Pin bcrypt<4: passlib 1.7 reads `bcrypt.__about__.__version__`, which
   # bcrypt 4.x removed. Without this pin every /auth/login and /auth/register
