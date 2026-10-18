@@ -141,8 +141,8 @@ discover opponents by sport, challenge them, coordinate sessions at nearby venue
 chat, and track results through a ranking and honour system. I took the iOS release
 through Apple App Review as SportsGang v1.0; after one App Completeness review issue,
 I built a reproducible production review-data workflow, resubmitted, and the app was
-approved for distribution about eight weeks after the first commit. As of 2026-10-17
-the repo has 686 backend tests and 722 mobile tests, with CI covering lint, typecheck,
+approved for distribution about eight weeks after the first commit. As of 2026-10-18
+the repo has 706 backend tests and 722 mobile tests, with CI covering lint, typecheck,
 both suites, and a Docker build."
 
 ## 2-minute technical version
@@ -151,7 +151,7 @@ both suites, and a Docker build."
 service, and a shared TypeScript types package that acts as the API contract.
 
 The backend is fully async — SQLAlchemy 2 async sessions over asyncpg, async Redis —
-with 16 Alembic migrations (as of 2026-10-17) forming a linear chain, 0001→0016, that
+with 17 Alembic migrations (as of 2026-10-18) forming a linear chain, 0001→0017, that
 covers the schema history. The domain is modelled around matches: a sport-scoped
 discovery feed with compatibility scoring produces mutual-like matches, matches carry
 chat threads and bookings, and bookings run through an explicit finite state machine
@@ -172,7 +172,7 @@ and pending/confirmed bookings — and verified it against the deployed HTTPS AP
 Apple then accepted v1.0 and approved it for distribution on 13 May 2026, roughly 56
 days after the first commit.
 
-Quality-wise, as of 2026-10-17 the repository has 686 pytest tests and 722 Jest tests,
+Quality-wise, as of 2026-10-18 the repository has 706 pytest tests and 722 Jest tests,
 plus GitHub Actions for linting, typechecking, both suites, and the Docker build.
 I don't claim download or active-user numbers because those metrics are not tracked in
 the repository."
