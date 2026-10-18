@@ -39,6 +39,11 @@ dev-dependencies = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 
+[tool.coverage.run]
+# SQLAlchemy's async engine switches greenlets on DB calls; without this,
+# coverage.py under-reports code that runs after them.
+concurrency = ["greenlet", "thread"]
+
 [tool.ruff]
 line-length = 120
 target-version = "py312"
