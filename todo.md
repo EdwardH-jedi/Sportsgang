@@ -3,7 +3,7 @@
 Single source of truth for what is in scope *right now*. Read this first when resuming
 after a pause. Update it in the same commit as the work.
 
-_Last updated: 2026-10-19 00:20 (Sydney)._
+_Last updated: 2026-10-19 03:15 (Sydney)._
 
 ## Working rules (apply to every session on this repo)
 
@@ -40,10 +40,15 @@ _Last updated: 2026-10-19 00:20 (Sydney)._
 
 ## Resume here
 - **State:** Scope 1 merged 2026-10-18 (#16 `081eedc`, #17 `558f52a`, #18 `9808341`).
-  #15 (S3) is still a draft. Scope 2 is written below; nothing in it is started yet.
-- **Next step (owner):** decide #15.
-- **Next step (Claude):** Scope 3, S8 → S16, under the "Overnight protocol" in that section.
-  S7 is a split only — do not start any S7 item without the owner's go-ahead.
+  #15 (S3) is still a draft. Scope 2: S5 in PR #19, S6 in PR #20 (draft). Scope 3 ran
+  overnight 2026-10-19: S8–S15 are PRs #21–#28, all open, CI green, Codex-reviewed, **none
+  merged**; S10d/S10e closed by S10's measurement; report in `docs/overnight/2026-10-19.md`.
+- **Next step (owner):** review/merge #21–#28 (order and decisions in the report's "Needs the
+  owner"); #22/#24/#25/#26 each edit README Limitations line 209, so delete that bullet once
+  all four are in. #19 already conflicts with `main` in `todo.md` (it was cut before Scope 3
+  landed): keep `main`'s text and take #19's S5/S6 ticks. Decide #15/#20; go-ahead for S7.
+- **Next step (Claude):** nothing scoped. S7 is a split only — do not start any S7 item without
+  the owner's go-ahead.
 - **Environment limits:**
   - The linked-computer shell has no `gh`, no `docker`, no GitHub push credentials, and its
     `apps/api/.venv` may be built for another OS. Do **not** `uv sync` over it.
@@ -54,7 +59,12 @@ _Last updated: 2026-10-19 00:20 (Sydney)._
   - The Mac CLI session (Claude Code in the local checkout) does have `gh` and push, and its
     `apps/api/.venv` is native arm64: `cd apps/api && uv run --frozen pytest tests -q` →
     706 passed in ~2 min (2026-10-19). PR creation still goes through `gh api … /pulls`.
-  - PostgreSQL/Redis integration (`apps/api/tests_integration/`) only runs in CI; no local docker.
+  - PostgreSQL/Redis integration (`apps/api/tests_integration/`) runs in CI. On the Mac it can
+    also run locally: start OrbStack (`orb start`), run throwaway `postgres:16-alpine` (55432) and
+    `redis:7-alpine` (56379) with the CI job's env, flush Redis between runs (registration is
+    rate-limited), remove the containers after. S5, S9 and S11 did this.
+  - Codex CLI is installed on the Mac (`/opt/homebrew/bin/codex`); the review prompt is in
+    `.claude/hooks/codex-review.sh`.
   - A stop hook may warn "unpushed commits / no remote branch" on a freshly pushed branch in
     the shallow clone. Check `git ls-remote origin <branch>` first; if it matches HEAD, it's
     a false alarm — just `git push -u origin <branch>`.
@@ -131,6 +141,10 @@ jump, and split the Expo SDK upgrade into one-sitting pieces. Only S5 and S6 get
 - Go-ahead for S7 (each hop is a major-version change).
 - `LICENSE` choice.
 - Deleting stale remote branches (52 remote refs; list in a PR comment first, delete only on approval).
+- Scope 3 PRs #21–#28: merge, plus the decisions listed in `docs/overnight/2026-10-19.md`
+  (#24 empty-upload 422 and orphan-file trade-offs, #26 device scroll check and page size 50,
+  S14 picker/default/submit-revalidation, S10's 44 uncovered lines, #21's mutation-doc append
+  after #19).
 
 ## Scope 3 — "overnight hardening" (tests, bug fixes, UX gaps the README admits to)
 Goal: turn the README's "still need hardening" sentence and the S5 mutation findings into
@@ -154,7 +168,9 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
   CI polling, status lines and PR bodies.
 
 ### A. Security / correctness tests (API, no behaviour change)
-- [ ] **S8 `test/booking-participant-guard`** — F1 from S5: `transition_booking`'s participant
+- [x] **S8 `test/booking-participant-guard`** — PR #21, CI green. +41 FSM tests (747 api);
+      outsider gets **404** on all 36 pairs (current behaviour; the text below said 403). G4/S4/S6
+      re-run: all killed (36/5/1 failed after Codex's widening). Mutation-doc append waits for #19 (doc not on `main`). Original: F1 from S5: `transition_booking`'s participant
       check (`_assert_booking_participant`, `services/bookings.py:73`) has no test; deleting
       it keeps the whole suite green. Add unit tests: a third user gets 403 on every transition
       (cancel/complete/no-show/confirm/decline) of a proposed and a confirmed booking, and the
@@ -162,14 +178,19 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       recorded in `docs/review/BOOKING_FSM_MUTATION_2026-10-19.md` (notification recipient and
       reminder display name) with assertions on *who* receives what. Re-run those three mutants
       by hand in a throwaway worktree and append the result to that doc.
-- [ ] **S9 `test/booking-concurrent-transitions`** — `with_for_update()` exists at
+- [x] **S9 `test/booking-concurrent-transitions`** — PR #22, CI green. Premise was stale (#13's two
+      PG tests already kill `for_update=False`); added cancel-vs-complete by different actors with
+      notification/honor/rank asserts, loser 422. Mutant fails 3/3 locally. README line dropped. Original: `with_for_update()` exists at
       `services/bookings.py:66` but nothing exercises it. Add a PostgreSQL integration test in
       `apps/api/tests_integration/` (runs in CI's PostgreSQL/Redis job): two concurrent
       `transition_booking` calls on one confirmed booking (e.g. cancel vs complete) → exactly
       one succeeds, the other gets the FSM 409/400, one notification set is sent. Use two
       sessions + `asyncio.gather`. Then drop "concurrent booking transitions" from README
       Limitations in the same PR.
-- [ ] **S10 `test/api-service-coverage`** — measured 2026-10-19 with `--cov=app`:
+- [x] **S10 `test/api-service-coverage`** — PR #23, CI green. Gap was a coverage artifact (no
+      greenlet tracing), not mocking or missing tests: with `concurrency = greenlet,thread` in
+      `pyproject.toml` the six modules are 87–100% (94%), all of `app/` 92%. No per-module PRs
+      needed; 44 uncovered lines listed in #23 for the owner. Original: measured 2026-10-19 with `--cov=app`:
       `services/challenges.py` 31%, `services/events.py` 38%, `routers/users.py` 39%,
       `services/matches.py` 45%, `services/safety.py` 53%, `services/discovery.py` 54%.
       First confirm the repo's own coverage command agrees (the audit quoted 93% overall; if
@@ -180,7 +201,12 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       except a bug found by a test, which gets its own commit and a note here.
 
 ### B. Bug fix (API)
-- [ ] **S11 `fix/photo-replace-failure-safe`** — `routers/users.py:140-179` deletes the
+- [x] **S11 `fix/photo-replace-failure-safe`** — PR #24, CI green. New files written beside old
+      (unique names), rows + `avatar_url` in one commit, replaced rows' files deleted after it under a
+      profile row lock; empty upload → 422. Codex fixes: rollback-safe user id, no dir sweep, keep new
+      files if the commit outcome is unknown, response built before commit. +7 unit (713 api) + 1 PG
+      test (lock: 3/3 fail without).
+      README line dropped. Original: `routers/users.py:140-179` deletes the
       `ProfilePhoto` rows and calls `media_storage.clear_user_photos()` **before**
       `save_user_photos()`; if saving fails (bad file, disk error) the user is left with no
       photos and a dangling `avatar_url`. Fix: validate + write new files to a temp location
@@ -190,7 +216,10 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       and in the DB. Drop "failure-safe photo replacement" from README Limitations.
 
 ### C. UX gaps (mobile; no API contract change)
-- [ ] **S12 `feat/chat-reconnect`** — `ChatScreen.tsx:303` opens the WebSocket with no
+- [x] **S12 `feat/chat-reconnect`** — PR #25, CI green. Backoff 1/2/4/8/8 s, foreground reconnect,
+      gap refetch via `fetchMessages`, "Reconnecting…" line, no retry on 1008/4xxx, clean unmount.
+      failed refetch keeps the chat on screen (Codex). +8 RNTL tests in a new file (730 mobile), 7 fail
+      on `main`. README word dropped. Original: `ChatScreen.tsx:303` opens the WebSocket with no
       `onclose`/`onerror` handling, no reconnect, and no app-foreground handling, so a
       backgrounded app silently stops receiving messages. Add: reconnect with capped
       backoff (1s→2s→4s→8s, max 5 tries), re-fetch the latest page on reconnect to fill the
@@ -198,13 +227,19 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       while disconnected, and clean teardown on unmount. RNTL tests with a fake WebSocket:
       close → reconnect called with backoff, foreground → reconnect, unmount → no leak.
       Drop "chat reconnection" from README Limitations.
-- [ ] **S13 `feat/chat-history-pagination`** — API already supports `limit`/`offset`
+- [x] **S13 `feat/chat-history-pagination`** — PR #26, CI green. Client loaded the *oldest* 100
+      (API is ASC + offset); now newest page first via `total`, "Load earlier messages" header (not
+      `onStartReached`: fires at offset 0 on mount), dedupe, scroll hold (set before the spinner,
+      per Codex), fetch error cleared on success. +7 tests (729 mobile).
+      Auto-merges with #25 except README. Original: API already supports `limit`/`offset`
       (`routers/chat.py:53`); the client only loads the latest page. Add load-older on
       scroll-to-top (or a "Load earlier" button if `onStartReached` is unreliable on this
       RN version), preserve scroll position, dedupe by message id against WS arrivals. RNTL
       test: initial 50, pull → next 50 prepended, no duplicates. Drop "chat history
       pagination" from README Limitations (the whole sentence should be gone after S9/S11/S12/S13).
-- [ ] **S14 `feat/booking-datetime-picker`** — KNOWN_ISSUES NB-005: `BookingComposerScreen`
+- [x] **S14 `feat/booking-datetime-picker`** — PR #27 (docs only), CI green. Already shipped
+      2026-05-05 (`a5b187b`, `e80456f`: calendar grid + time wheel, past blocked, local no-`Z`); NB-005
+      marked resolved. Native datetimepicker swap and "next whole hour" default left to owner. Original: KNOWN_ISSUES NB-005: `BookingComposerScreen`
       takes date/time as free text (`YYYY-MM-DD`, `HH:MM`). Replace with
       `@react-native-community/datetimepicker` (check the SDK-54 compatible version with
       `npx expo install`; if it needs a major that `expo install` doesn't pick, stop and mark
@@ -212,22 +247,24 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       `Z`). Default to the next whole hour; disallow past times in the UI; keep the existing
       server-side validation untouched. Update the existing composer tests; mark NB-005
       resolved in KNOWN_ISSUES.
-- [ ] **S15 `test/onboarding-screen`** — `screens/auth/OnboardingScreen.tsx` (9 lines) is the
+- [x] **S15 `test/onboarding-screen`** — PR #28, CI green. Dead (`export {}`, no imports, no
+      route): deleted. All 27 remaining screens have a test; PORTFOLIO_FACTS has no screen-test
+      sentence, so untouched. Original: `screens/auth/OnboardingScreen.tsx` (9 lines) is the
       only screen without a test. If it's a pure redirect/wrapper, add a 1-case test; if it's
       dead (not in any navigator), delete it and its route. Either way, every screen then has
       a test; note the count in `docs/PORTFOLIO_FACTS.md` only if a sentence there already
       talks about screen tests.
 
 ### D. Finish
-- [ ] **S16 `docs/scope3-report`** — `docs/overnight/2026-10-19.md` in the same shape as the
+- [x] **S16 `docs/scope3-report`** — `docs/overnight/2026-10-19.md`, docs-only commit on `main`. Original: `docs/overnight/2026-10-19.md` in the same shape as the
       2026-10-17 report: per-item outcome, PR numbers, what was blocked and why, test-count
       deltas, and the README Limitations lines removed. Update "Resume here" and the Scope 3
       checkboxes. Docs-only commit on `main` is fine for this one.
 
 ## Later (not scoped)
 - S7a–S7i Expo SDK upgrade — owner's go-ahead required.
-- S10d/S10e: `services/challenges.py` and `services/events.py` coverage (largest, lowest-value
-  since both features are flag-light in the product).
+- ~~S10d/S10e~~: closed by S10's measurement (with greenlet tracing, challenges 93% and events
+  94%, both above the 80% target; see #23).
 - Decide #15 (cryptography) and #20 (metro/image-size) — owner.
 
 ## Log
@@ -239,3 +276,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
   status/report tasks only; stop at a clean point when tokens run low.
 - 2026-10-18 — Owner merged #16, #17, #18. #15 stays draft.
 - 2026-10-19 — Scope 2 written: S5, S6, S7 split into S7a–S7i. Dropped the stale `.venv` item.
+- 2026-10-19 — Scope 3 overnight run: S8 #21, S9 #22, S10 #23, S11 #24, S12 #25, S13 #26,
+  S14 #27, S15 #28, all CI green and Codex-reviewed, none merged. Premises corrected: S8 (404),
+  S9 (lock already tested), S10 (coverage artifact), S13 (oldest page), S14 (already shipped).
+  S16: report `docs/overnight/2026-10-19.md`.
