@@ -335,3 +335,31 @@ async def test_replace_only_deletes_the_photos_it_replaced(photo_client, tmp_pat
     on_disk, row_urls, _ = await _photo_state(tmp_path, user, profile)
     assert on_disk == sorted([stray.name, *(url.rsplit("/", 1)[-1] for url in row_urls)])
     assert not set(before[0]) & set(on_disk)
+
+
+async def test_replace_still_answers_when_a_newer_replace_lands_right_after_its_commit(
+    photo_client, tmp_path, monkeypatch
+) -> None:
+    # Once the first replace commits, its row lock is gone: a second replace
+    # can delete the first one's rows before the first builds its response.
+    client, user, profile = photo_client
+    await _upload_initial_photos(client, tmp_path, user, profile)
+    real_commit = AsyncSession.commit
+    newer: dict = {}
+
+    async def commit_then_newer_replace(self) -> None:
+        await real_commit(self)
+        if not newer:
+            newer["started"] = True
+            newer["response"] = await client.put("/users/me/photos", files=_files(2))
+
+    monkeypatch.setattr(AsyncSession, "commit", commit_then_newer_replace)
+    r = await client.put("/users/me/photos", files=_files(3))
+
+    assert r.status_code == 200, r.text
+    assert len(r.json()["photos"]) == 3
+    assert newer["response"].status_code == 200
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert row_urls == [p["photo_url"] for p in newer["response"].json()["photos"]]
+    assert avatar_url == row_urls[0]
+    assert on_disk == sorted(url.rsplit("/", 1)[-1] for url in row_urls)

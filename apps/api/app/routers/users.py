@@ -184,6 +184,9 @@ async def replace_profile_photos(
         db.add_all(new_photos)
         profile.avatar_url = urls[0]
         await db.flush()
+        # Snapshot the response while the row lock is held: once committed, a
+        # newer replace may delete these rows before this request returns.
+        response = ProfilePhotosResponse(photos=new_photos, avatar_url=profile.avatar_url)
     except Exception:
         await db.rollback()
         media_storage.delete_user_photos(user_id, urls)
@@ -194,11 +197,7 @@ async def replace_profile_photos(
     await db.commit()
 
     media_storage.delete_user_photos(user_id, previous_urls)
-    for photo in new_photos:
-        await db.refresh(photo)
-    await db.refresh(profile)
-
-    return ProfilePhotosResponse(photos=new_photos, avatar_url=profile.avatar_url)
+    return response
 
 
 @router.delete("/me/sport-profiles/{sport}", status_code=status.HTTP_204_NO_CONTENT)
