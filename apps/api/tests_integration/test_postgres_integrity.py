@@ -243,8 +243,16 @@ async def test_concurrent_photo_replacements_serialise_and_leave_no_dangling_fil
             response = await replace_profile_photos(files=uploads, current_user=current_user, db=session)
             return [photo.photo_url for photo in response.photos]
 
+    async def warm_connection() -> None:
+        async with _Session() as session:
+            await session.execute(select(func.now()))
+            await asyncio.sleep(0.05)
+
     try:
         await replace("initial")
+        # Two pooled connections up front, so neither request spends its
+        # first await connecting while the other runs to completion.
+        await asyncio.gather(warm_connection(), warm_connection())
         first, second = await asyncio.gather(replace("a"), replace("b"))
 
         async with _Session() as session:
