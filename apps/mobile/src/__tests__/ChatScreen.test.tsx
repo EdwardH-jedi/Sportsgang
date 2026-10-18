@@ -1354,6 +1354,58 @@ describe('ChatScreen', () => {
       expect(messageIds(UNSAFE_getByType)).toEqual(ids(70, 120));
       alertSpy.mockRestore();
     });
+
+    it('holds the scroll position while the earlier page is still loading', async () => {
+      mockLongHistory();
+      const { UNSAFE_getByType, findByLabelText, getByLabelText } = renderChatScreen();
+      await findByLabelText('Load earlier messages');
+      const loadPage = mockApiGet.getMockImplementation()!;
+      let resolveOlder!: (value: unknown) => void;
+      mockApiGet.mockImplementation((url: string) =>
+        url === '/matches/match-1/messages?limit=50&offset=20'
+          ? new Promise((resolve) => {
+              resolveOlder = resolve;
+            })
+          : loadPage(url)
+      );
+      const scrollToEnd = jest
+        .spyOn(UNSAFE_getByType(FlatList).instance, 'scrollToEnd')
+        .mockImplementation(() => {});
+      // Initial layout: the list settles at the bottom.
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 4000);
+      expect(scrollToEnd).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        fireEvent.press(getByLabelText('Load earlier messages'));
+      });
+      // The spinner replacing the button label resizes the content.
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 4010);
+      expect(scrollToEnd).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        resolveOlder(page(20, 70, 20));
+      });
+      fireEvent(UNSAFE_getByType(FlatList), 'contentSizeChange', 400, 8000);
+      expect(scrollToEnd).toHaveBeenCalledTimes(1);
+      expect(messageIds(UNSAFE_getByType)).toEqual(ids(20, 120));
+    });
+  });
+
+
+  it('shows the chat again once "Try again" succeeds', async () => {
+    mockApiGet
+      .mockRejectedValueOnce(new Error('Connection refused'))
+      .mockResolvedValue({ items: sampleMessages, total: 2, limit: 50, offset: 0 });
+    const { getByText, findByText, queryByText } = renderChatScreen();
+    await waitFor(() => getByText('Try again'));
+
+    await act(async () => {
+      fireEvent.press(getByText('Try again'));
+    });
+
+    await findByText('Hey! Want to train tomorrow?');
+    expect(queryByText('Connection refused')).toBeNull();
+    expect(queryByText('Try again')).toBeNull();
   });
 
 });

@@ -267,6 +267,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
       // A refetch must not forget earlier pages the user already loaded.
       setOldestOffset((prev) => (prev === null ? msgRes.offset : Math.min(prev, msgRes.offset)));
+      setFetchError(null);
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
@@ -276,13 +277,15 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
 
   const loadOlderMessages = useCallback(async () => {
     if (isLoadingOlder || !oldestOffset) return;
+    // Hold before the spinner replaces the button: that resize is a content
+    // size change too. Stays held on failure; the reader is still up here.
+    holdAutoScrollRef.current = true;
     const offset = Math.max(0, oldestOffset - MESSAGE_PAGE_SIZE);
     setIsLoadingOlder(true);
     try {
       const older = await api.get<MessageListResponse>(
         `/matches/${matchId}/messages?limit=${oldestOffset - offset}&offset=${offset}`
       );
-      holdAutoScrollRef.current = true;
       // Same dedupe as every other path, so an overlap with a WS-delivered or
       // already-loaded message can't render twice.
       setMessages((prev) => dedupeMessagesById([...older.items, ...prev]));
