@@ -31,10 +31,8 @@ None confirmed at time of writing. Update as issues are found.
 ### NB-004 — ~~Chat does not auto-refresh~~ — RESOLVED (Wave 10)
 **Resolved**: WebSocket-based real-time messaging shipped. Server: `apps/api/app/routers/chat.py` (`_ConnectionManager` + `/matches/{id}/ws`). Client: `apps/mobile/src/screens/ChatScreen.tsx` opens an authenticated `ws://` connection on mount. Manual refresh no longer required.
 
-### NB-005 — Booking time input is manual text
-**Symptom**: BookingComposer requires manual YYYY-MM-DD and HH:MM input. No date picker.
-**Workaround**: Follow the format exactly. Invalid formats show an error before submission.
-**Owner**: Mobile — future wave
+### NB-005 — ~~Booking time input is manual text~~ — RESOLVED (2026-05-05, `a5b187b` + `e80456f`)
+**Resolved**: BookingComposer has no free-text date or time field. The date comes from a calendar grid with past days disabled (`apps/mobile/src/components/CalendarPicker.tsx`), start and end times from a wheel (`apps/mobile/src/components/TimeWheelPicker.tsx`), and a same-day start in the past is blocked before submit ("Choose a future start time."). `startsAt`/`endsAt` are still sent as local `YYYY-MM-DDTHH:MM:00` with no `Z` (W7-003); server-side validation is unchanged. Covered by `BookingComposerScreen.test.tsx`, `CalendarPicker.test.tsx` and `sessionTime.test.ts`.
 
 ### NB-006 — Chat does not show `sport` from BookingComposer on older matches
 **Symptom**: Matches created before Wave 7 where the `Chat` navigation was opened may not have `sport` in params.
