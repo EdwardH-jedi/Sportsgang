@@ -214,3 +214,57 @@ async def test_oauth_state_concurrent_consumption_has_one_winner(monkeypatch) ->
         assert sorted(await asyncio.gather(consume(), consume())) == [200, 400]
     finally:
         await _cleanup_users(user_a, user_b)
+
+
+async def test_concurrent_photo_replacements_serialise_and_leave_no_dangling_files(tmp_path, monkeypatch) -> None:
+    import io
+
+    from fastapi import UploadFile
+
+    from app.models.profile import ProfilePhoto, UserProfile
+    from app.routers.users import replace_profile_photos
+    from app.services import media_storage
+
+    # Without the profile row lock both requests read the same "previous"
+    # rows, and the second insert hits uq_profile_photos_profile_position.
+    monkeypatch.setattr(media_storage, "_profile_photos_root", lambda: tmp_path / "profile_photos")
+    async with _Session() as session:
+        user = User(email=f"pg-photos-{os.urandom(6).hex()}@example.com", hashed_password="x")
+        session.add(user)
+        await session.flush()
+        session.add(UserProfile(user_id=user.id, display_name="Photo User"))
+        await session.commit()
+        user_id = user.id
+
+    async def replace(tag: str) -> list[str]:
+        uploads = [UploadFile(io.BytesIO(f"{tag}-{i}".encode()), filename=f"{tag}{i}.jpg") for i in range(2)]
+        async with _Session() as session:
+            current_user = await session.get(User, user_id)
+            response = await replace_profile_photos(files=uploads, current_user=current_user, db=session)
+            return [photo.photo_url for photo in response.photos]
+
+    try:
+        await replace("initial")
+        first, second = await asyncio.gather(replace("a"), replace("b"))
+
+        async with _Session() as session:
+            profile = (await session.execute(select(UserProfile).where(UserProfile.user_id == user_id))).scalar_one()
+            rows = list(
+                (
+                    await session.execute(
+                        select(ProfilePhoto.photo_url)
+                        .where(ProfilePhoto.profile_id == profile.id)
+                        .order_by(ProfilePhoto.position)
+                    )
+                ).scalars()
+            )
+        on_disk = sorted(path.name for path in (tmp_path / "profile_photos" / str(user_id)).iterdir())
+
+        assert rows in (first, second)
+        assert profile.avatar_url == rows[0]
+        assert on_disk == sorted(url.rsplit("/", 1)[-1] for url in rows)
+    finally:
+        async with _Session() as session:
+            await session.execute(delete(UserProfile).where(UserProfile.user_id == user_id))
+            await session.execute(delete(User).where(User.id == user_id))
+            await session.commit()

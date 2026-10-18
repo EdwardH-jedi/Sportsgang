@@ -286,18 +286,39 @@ async def test_write_failure_on_second_file_keeps_previous_photos(photo_client, 
     assert await _photo_state(tmp_path, user, profile) == before
 
 
-async def test_commit_failure_keeps_previous_photos(photo_client, tmp_path, monkeypatch) -> None:
+async def test_flush_failure_keeps_previous_photos_and_removes_the_new_files(
+    photo_client, tmp_path, monkeypatch
+) -> None:
     client, user, profile = photo_client
     before = await _upload_initial_photos(client, tmp_path, user, profile)
 
+    async def failing_flush(self, objects=None) -> None:
+        raise RuntimeError("constraint violated")
+
+    monkeypatch.setattr(AsyncSession, "flush", failing_flush)
+    with pytest.raises(RuntimeError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    assert await _photo_state(tmp_path, user, profile) == before
+
+
+async def test_commit_failure_keeps_previous_photos_and_the_new_files(photo_client, tmp_path, monkeypatch) -> None:
+    # The commit may have reached the database before failing, so the new
+    # uploads stay on disk rather than risk rows pointing at deleted files.
+    client, user, profile = photo_client
+    before_files, before_rows, before_avatar = await _upload_initial_photos(client, tmp_path, user, profile)
+
     async def failing_commit(self) -> None:
-        raise RuntimeError("database unavailable")
+        raise RuntimeError("connection lost")
 
     monkeypatch.setattr(AsyncSession, "commit", failing_commit)
     with pytest.raises(RuntimeError):
         await client.put("/users/me/photos", files=_files(3))
 
-    assert await _photo_state(tmp_path, user, profile) == before
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert (row_urls, avatar_url) == (before_rows, before_avatar)
+    assert set(before_files) <= set(on_disk)
+    assert len(on_disk) == len(before_files) + 3
 
 
 async def test_replace_only_deletes_the_photos_it_replaced(photo_client, tmp_path) -> None:

@@ -150,7 +150,8 @@ async def replace_profile_photos(
     are replaced in upload order and ``avatar_url`` is synced to the first
     photo URL so existing avatar consumers keep working. The replaced rows'
     files are deleted only after that commit, so a failed upload or commit
-    leaves the previous photos, rows and ``avatar_url`` in place.
+    leaves the previous photos, rows and ``avatar_url`` in place (a failed
+    commit may leave the new files on disk, unreferenced).
     """
     if not (PROFILE_PHOTO_MIN <= len(files) <= PROFILE_PHOTO_MAX):
         raise HTTPException(
@@ -182,11 +183,15 @@ async def replace_profile_photos(
         ]
         db.add_all(new_photos)
         profile.avatar_url = urls[0]
-        await db.commit()
+        await db.flush()
     except Exception:
         await db.rollback()
         media_storage.delete_user_photos(user_id, urls)
         raise
+    # A commit that raises may still have landed (e.g. the connection dropped
+    # before the reply), so the new files are not deleted on that path: at
+    # worst they are left unreferenced, never referenced and missing.
+    await db.commit()
 
     media_storage.delete_user_photos(user_id, previous_urls)
     for photo in new_photos:
