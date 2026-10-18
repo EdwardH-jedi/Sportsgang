@@ -224,6 +224,23 @@ describe('ChatScreen WebSocket reconnect', () => {
     expect(messageFetches()).toBe(2);
   });
 
+  it('keeps the chat on screen when the refetch after a reconnect fails', async () => {
+    mockHistory([message('1', 'Before the drop')]);
+    const { getByPlaceholderText, getByText, queryByText } = await renderConnected();
+
+    act(() => latestSocket().drop());
+    mockApiGet.mockRejectedValue(new Error('Network request failed'));
+    act(() => jest.advanceTimersByTime(1000));
+    await act(async () => {
+      latestSocket().open();
+    });
+
+    expect(messageFetches()).toBe(2);
+    expect(getByText('Before the drop')).toBeTruthy();
+    expect(getByPlaceholderText('Message…')).toBeTruthy();
+    expect(queryByText('Try again')).toBeNull();
+  });
+
   it('reconnects as soon as the app returns to the foreground', async () => {
     await renderConnected();
     const { onChange } = appStateListener();

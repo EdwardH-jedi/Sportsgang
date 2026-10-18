@@ -622,7 +622,9 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
         <View style={styles.centred}>
           <ActivityIndicator size="large" color={colors.accent} />
         </View>
-      ) : fetchError ? (
+      ) : fetchError && timeline.length === 0 ? (
+        // Full-screen error only when there is nothing to show. A failed
+        // background refetch (e.g. after a reconnect) keeps the chat on screen.
         <View style={styles.centred}>
           <Text style={styles.errorText}>{fetchError}</Text>
           <Pressable style={styles.retryButton} onPress={fetchMessages}>
