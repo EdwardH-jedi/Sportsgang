@@ -244,14 +244,17 @@ async def test_booking_without_two_distinct_participants_cannot_transition(servi
 
 
 # ---------------------------------------------------------------------------
-# Non-participants: every documented transition is a 404, nothing changes
+# Non-participants: every (from, to) pair is a 404, nothing changes
 # ---------------------------------------------------------------------------
 
+ALL_PAIRS = [(src, dst) for src in STATUSES for dst in STATUSES]
 
-@pytest.mark.parametrize(("src", "dst"), list(ALLOWED), ids=[f"{s}->{d}" for s, d in ALLOWED])
+
+@pytest.mark.parametrize(("src", "dst"), ALL_PAIRS, ids=[f"{s}->{d}" for s, d in ALL_PAIRS])
 async def test_non_participant_cannot_transition(service: SimpleNamespace, src: str, dst: str) -> None:
-    # 404 rather than 403 so an outsider cannot tell the booking exists. The
-    # confirmed -> * edges are "either"; only the participant check stops them.
+    # 404 rather than 403 or 422 so an outsider cannot tell the booking exists
+    # or what state it is in. The confirmed -> * edges are "either"; only the
+    # participant check stops them.
     await _assert_rejected(service, src, dst, "outsider", 404)
 
 
