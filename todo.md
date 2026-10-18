@@ -212,7 +212,9 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       `Z`). Default to the next whole hour; disallow past times in the UI; keep the existing
       server-side validation untouched. Update the existing composer tests; mark NB-005
       resolved in KNOWN_ISSUES.
-- [ ] **S15 `test/onboarding-screen`** — `screens/auth/OnboardingScreen.tsx` (9 lines) is the
+- [x] **S15 `test/onboarding-screen`** — PR #28, CI green. Dead (`export {}`, no imports, no
+      route): deleted. All 27 remaining screens have a test; PORTFOLIO_FACTS has no screen-test
+      sentence, so untouched. Original: `screens/auth/OnboardingScreen.tsx` (9 lines) is the
       only screen without a test. If it's a pure redirect/wrapper, add a 1-case test; if it's
       dead (not in any navigator), delete it and its route. Either way, every screen then has
       a test; note the count in `docs/PORTFOLIO_FACTS.md` only if a sentence there already
