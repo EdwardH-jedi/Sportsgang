@@ -162,7 +162,9 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       recorded in `docs/review/BOOKING_FSM_MUTATION_2026-10-19.md` (notification recipient and
       reminder display name) with assertions on *who* receives what. Re-run those three mutants
       by hand in a throwaway worktree and append the result to that doc.
-- [ ] **S9 `test/booking-concurrent-transitions`** — `with_for_update()` exists at
+- [x] **S9 `test/booking-concurrent-transitions`** — PR #22, CI green. Premise was stale (#13's two
+      PG tests already kill `for_update=False`); added cancel-vs-complete by different actors with
+      notification/honor/rank asserts, loser 422. Mutant fails 3/3 locally. README line dropped. Original: `with_for_update()` exists at
       `services/bookings.py:66` but nothing exercises it. Add a PostgreSQL integration test in
       `apps/api/tests_integration/` (runs in CI's PostgreSQL/Redis job): two concurrent
       `transition_booking` calls on one confirmed booking (e.g. cancel vs complete) → exactly
