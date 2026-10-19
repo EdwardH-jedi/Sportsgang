@@ -3,7 +3,7 @@
 Single source of truth for what is in scope *right now*. Read this first when resuming
 after a pause. Update it in the same commit as the work.
 
-_Last updated: 2026-10-19 13:45 (Sydney)._
+_Last updated: 2026-10-19 15:15 (Sydney)._
 
 ## Working rules (apply to every session on this repo)
 
@@ -39,17 +39,19 @@ _Last updated: 2026-10-19 13:45 (Sydney)._
 - Major-version dependency jumps, `LICENSE`, deleting remote branches, anything irreversible.
 
 ## Resume here
-- **State:** Scope 1 merged; #22, #23, #28 merged. Scope 4 (R1–R6) done 2026-10-19: each Codex
-  finding repaired on its existing PR (#19, #24, #26, #25, #27), CI green, nothing merged. R6
-  re-verified them merged together with #21 (756 api, 746 mobile, 6 PG/Redis integration)
-  and Codex's four failed probes now pass; see "Re-verification" in `docs/overnight/2026-10-19.md`.
-  R1–R5 are ticked on their PR branches, so they show `[ ]` here until those merge.
-- **Owner, merge (in this order):** #27, #21, #19, #24, #26, #25. **#21 is not merged** and
-  conflicts with `main` in `todo.md` only (its S8 line); rebase it taking `main`'s `todo.md`
-  first. #25 is stacked on #26: merge #26, GitHub retargets #25 to `main`, then merge #25.
+- **State:** Scope 1 merged; #22, #23, #28 merged; Scope 4's #27, #19, #24, #26 merged
+  2026-10-19. R1–R6 done and ticked; see "Re-verification" in `docs/overnight/2026-10-19.md`.
+  #21 rebased onto `main` 2026-10-19 (`todo.md` = `main`'s; now test-only), CI green, open.
+- **#25 was not merged:** GitHub closed it (03:59Z) when #26's branch, its base, was deleted on
+  merge. The WebSocket reconnect (S12) and R2's reconnect half live only on
+  `feat/chat-reconnect` (`d90c44d`); `main` has R2's #26 half, and README says there is no
+  reconnect. To land it: `git rebase --onto origin/main 5df02c0 feat/chat-reconnect` (drops
+  #26's pre-squash commits), then a new PR to `main`. S12/R2 stay ticked for the repair.
+- **Owner, merge:** #21, then the replacement PR for #25 once it exists.
 - **Owner, decide:** #20 metro (pulls transitive majors — recommend keep draft until the
   SDK 55 hop S7c removes the need), #15 cryptography (recommend merge: audit clean, 706 pass).
-- **Next step (Claude):** nothing in Scope 4. S7 needs the owner's go-ahead.
+- **Next step (Claude):** open the replacement PR for #25 when the owner says so. S7 needs the
+  owner's go-ahead.
 - **Environment limits:**
   - The linked-computer shell has no `gh`, no `docker`, no GitHub push credentials, and its
     `apps/api/.venv` may be built for another OS. Do **not** `uv sync` over it.
@@ -146,10 +148,10 @@ jump, and split the Expo SDK upgrade into one-sitting pieces. Only S5 and S6 get
 - Go-ahead for S7 (each hop is a major-version change).
 - `LICENSE` choice.
 - Deleting stale remote branches (52 remote refs; list in a PR comment first, delete only on approval).
-- Scope 3/4 PRs: merge #27, #21, #19, #24, #26, #25 (order and #21's rebase under "Resume
-  here"), plus the decisions in `docs/overnight/2026-10-19.md` "Re-verification" (#24
-  empty-upload 422 and unreferenced files on an unknown-outcome commit, #26 device scroll check
-  and page size 50, S10's 44 uncovered lines). S14's picker question is decided (in-house).
+- Scope 3/4 PRs: merge #21 and the replacement for #25 (see "Resume here"), plus the
+  decisions in `docs/overnight/2026-10-19.md` "Re-verification" (#24 empty-upload 422 and
+  unreferenced files on an unknown-outcome commit, #26 device scroll check and page size 50,
+  S10's 44 uncovered lines). S14's picker question is decided (in-house).
 
 ## Scope 3 — "overnight hardening" (tests, bug fixes, UX gaps the README admits to)
 Goal: turn the README's "still need hardening" sentence and the S5 mutation findings into
@@ -289,7 +291,11 @@ used, so the finding cannot silently return.
       S6 → 1/140 (the figures Codex reproduced on #21's head), keeping the historical 28/31 as
       historical. Force-push #19 (it is a docs branch; note the rewrite in a PR comment). This
       closes S8's missing criterion without touching #21.
-- [ ] **R2 `fix/chat-gap-recovery`** (B1, BLOCKER) — the real bug: with #25+#26, 100 persisted
+- [x] **R2 `fix/chat-gap-recovery`** (B1, BLOCKER) — #26: loaded `[start,end)` runs replace
+      `oldestOffset`; "Load earlier" fills the slice below the newest run first. #25 (now stacked on
+      #26): reconnect pages back ≤10 pages until it joins; a bigger or failed gap shows "Some messages
+      may be missing" inline. Codex's test + cap + failed-page: 3 fail on `25950f2`+`189dd41`, pass
+      now (740 mobile). Original: the real bug: with #25+#26, 100 persisted
       messages, 70 arrive while disconnected → reconnect fetches only the newest 50 (ids 120–169),
       `Math.min` keeps `oldestOffset=50`, "Load earlier" then fetches 0–49 and disappears;
       **ids 100–119 are unreachable forever.** Fix in the #26 branch first: replace the single
@@ -379,3 +385,6 @@ used, so the finding cannot silently return.
 - 2026-10-19 — Scope 4: R1 #19, R2 #26+#25 (#25 now stacked on #26), R3 #24, R4 #27 (re-titled;
   in-house pickers kept), R5 #26+#25 README. R6 combined re-verification green; Codex's four
   failed probes pass. S8/S11–S14 ticked. Nothing merged; #21 found still open.
+- 2026-10-19 — Owner merged #27, #19, #24, #26. #25 auto-closed unmerged (base branch deleted).
+  #21 rebased onto `main` keeping `main`'s `todo.md`; CI green. R2 ticked on `main` (R1/R3/R4/R5
+  arrived ticked with their PRs).
