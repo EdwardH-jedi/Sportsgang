@@ -2,6 +2,8 @@
 
 **Result: 28 of 31 mutants killed. Three survive every suite: a non-participant transition (G4), the notification recipient (S4) and the reminder names (S6).**
 
+That result is historical (tests at `d3429a9`). Section 6 re-runs the three survivors against the tests #21 adds: all three are killed.
+
 Code under test: `apps/api/app/services/bookings.py` at `d3429a9` (`main`; the file last changed in `6761aa5`, #13). Suites: the unit suite `apps/api/tests` (706 tests, DB and Redis mocked) and, for unit-suite survivors only, the integration suite `apps/api/tests_integration` (4 tests on PostgreSQL 16 + Redis 7, as in the CI `integration` job). Nothing here changes code; the findings below are recorded, not fixed.
 
 ## 1. Method
@@ -69,3 +71,15 @@ Those correspond to E1 + A3, A2, T5 and S2 here. All are still killed; counts di
 ## 5. Re-running
 
 Recreate the worktree at the commit under test (`git worktree add --detach <dir> <sha>`, then `uv sync --frozen` in `<dir>/apps/api`), apply each mutation in section 2 as a single replacement, run phases 1–3 as in section 1, and restore the file between mutants. For phase 3, start `postgres:16-alpine` (user/password `protin`, db `protin_ci`) and `redis:7-alpine`, and set `APP_ENV=local`, `SECRET_KEY`, `POSTGRES_URL` and `REDIS_URL` as in `.github/workflows/ci.yml`.
+
+## 6. Re-run after #21 (2026-10-19)
+
+The three survivors, re-run against #21's head `6ab26f0` (`tests/test_booking_fsm.py`, 141 tests; `bookings.py` unchanged since `d3429a9`). Same method as section 1, phase 1 only, in a throwaway detached worktree, file restored after each mutant. The table in section 2 stays as it was: it records what the suite at `d3429a9` caught.
+
+| ID | Mutation | Result on `6ab26f0` | Killed by |
+|---|---|---|---|
+| G4 | `await _assert_booking_participant(b, current_user_id)` in `transition_booking` → `pass` | **killed**, 36 failed / 105 passed | `fsm::test_non_participant_cannot_transition` (all 36 source/destination pairs) |
+| S4 | `other_id = … else b.proposer_id` → `other_id = current_user_id` | **killed**, 5 failed / 136 passed | `fsm::test_transition_notifies_the_other_participant_by_the_actors_name`, `fsm::test_confirm_notifies_proposer_and_reminds_each_participant_of_the_other` |
+| S6 | reminder names swapped | **killed**, 1 failed / 140 passed | `fsm::test_confirm_notifies_proposer_and_reminds_each_participant_of_the_other` |
+
+Codex's independent verification of #21 (2026-10-19) reported the same three counts. With #21 merged, 31 of 31 mutants are killed: 30 by the unit suite, G5 by the PostgreSQL integration tests. F1 and F2 above are closed by #21.
