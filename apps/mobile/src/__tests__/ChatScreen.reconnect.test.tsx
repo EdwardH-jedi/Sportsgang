@@ -11,8 +11,8 @@
  */
 
 import React from 'react';
-import { AppState } from 'react-native';
-import { act, render, waitFor } from '@testing-library/react-native';
+import { AppState, FlatList } from 'react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { ChatScreen } from '../screens/chat/ChatScreen';
 
@@ -295,5 +295,124 @@ describe('ChatScreen WebSocket reconnect', () => {
     expect(FakeWebSocket.instances).toHaveLength(1);
     expect(subscription.remove).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(messageFetches()).toBe(1));
+  });
+});
+
+// ─── Gap recovery (Codex B1) ──────────────────────────────────────────────────
+// Codex's independent regression, kept as written: 100 messages loaded (the
+// newest page is 50-99), the socket drops while 70 more arrive, then every id
+// 0-169 must be reachable through "Load earlier messages". Before the repair,
+// ids 100-119 were never fetched and the control disappeared anyway.
+
+describe('ChatScreen reconnect gap recovery', () => {
+  const msg = (i: number) => ({
+    id: `h-${i}`,
+    matchId: 'match-1',
+    senderId: 'partner-456',
+    body: `Message ${i}`,
+    createdAt: new Date(Date.UTC(2026, 3, 8, 8, 0, i)).toISOString(),
+  });
+  let total = 100;
+  // Pages oldest-first with limit/offset, like GET /matches/:id/messages.
+  function history() {
+    mockApiGet.mockImplementation((url: string) => {
+      if (url.startsWith('/bookings')) return Promise.resolve({ items: [], total: 0 });
+      const limit = Number(/limit=(\d+)/.exec(url)?.[1] ?? 50);
+      const offset = Number(/offset=(\d+)/.exec(url)?.[1] ?? 0);
+      return Promise.resolve({
+        items: Array.from({ length: Math.min(limit, total - offset) }, (_, k) => msg(offset + k)),
+        total,
+        limit,
+        offset,
+      });
+    });
+  }
+  const ids = (u: any): string[] =>
+    u.UNSAFE_getByType(FlatList)
+      .props.data.filter((x: any) => x.kind === 'message')
+      .map((x: any) => x.message.id);
+  const range = (from: number, to: number) => Array.from({ length: to - from }, (_, i) => `h-${from + i}`);
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    FakeWebSocket.instances = [];
+    mockApiGet.mockReset();
+    (AppState.addEventListener as jest.Mock).mockClear();
+    total = 100;
+    history();
+  });
+
+  afterEach(() => jest.useRealTimers());
+
+  it('makes all messages reachable after reconnect misses more than one page', async () => {
+    const u = await renderConnected();
+    await act(async () => {});
+    expect(ids(u)).toEqual(range(50, 100));
+    act(() => latestSocket().drop());
+    total = 170;
+    act(() => jest.advanceTimersByTime(1000));
+    await act(async () => latestSocket().open());
+    for (let i = 0; i < 5 && u.queryByLabelText('Load earlier messages'); i++)
+      await act(async () => {
+        fireEvent.press(u.getByLabelText('Load earlier messages'));
+      });
+    expect(u.queryByLabelText('Load earlier messages')).toBeNull();
+    expect(ids(u)).toEqual(range(0, 170));
+  });
+
+  // FlatList only renders its first rows here, so these start from a short
+  // history to keep the gap row on screen, and read its position from `data`.
+  const entries = (u: any): string[] =>
+    u.UNSAFE_getByType(FlatList).props.data.map((x: any) => (x.kind === 'gap' ? 'gap' : x.message.id));
+  const pressLoadEarlier = async (u: any) => {
+    for (let i = 0; i < 5 && u.queryByLabelText('Load earlier messages'); i++)
+      await act(async () => {
+        fireEvent.press(u.getByLabelText('Load earlier messages'));
+      });
+  };
+
+  it('stops paging back after 10 pages and leaves the rest as a loadable gap', async () => {
+    total = 5;
+    const u = await renderConnected();
+    await act(async () => {});
+    act(() => latestSocket().drop());
+    total = 600;
+    act(() => jest.advanceTimersByTime(1000));
+    await act(async () => latestSocket().open());
+
+    // 1 request for the first load; 2 for the newest page on reconnect + 9 back.
+    expect(messageFetches()).toBe(12);
+    expect(entries(u)).toEqual([...range(0, 5), 'gap', ...range(100, 600)]);
+    expect(u.getByText('Some messages may be missing')).toBeTruthy();
+
+    await pressLoadEarlier(u);
+    expect(entries(u)).toEqual(range(0, 600));
+    expect(u.queryByText('Some messages may be missing')).toBeNull();
+    expect(u.queryByLabelText('Load earlier messages')).toBeNull();
+  });
+
+  it('keeps a gap loadable when a page back fails during the reconnect', async () => {
+    total = 5;
+    const u = await renderConnected();
+    await act(async () => {});
+    const serve = mockApiGet.getMockImplementation()!;
+    mockApiGet.mockImplementation((url: string) =>
+      url === '/matches/match-1/messages?limit=50&offset=20'
+        ? Promise.reject(new Error('Network request failed'))
+        : serve(url)
+    );
+    act(() => latestSocket().drop());
+    total = 120;
+    act(() => jest.advanceTimersByTime(1000));
+    await act(async () => latestSocket().open());
+
+    expect(entries(u)).toEqual([...range(0, 5), 'gap', ...range(70, 120)]);
+    expect(u.getByText('Some messages may be missing')).toBeTruthy();
+    expect(u.queryByText('Try again')).toBeNull();
+
+    mockApiGet.mockImplementation(serve);
+    await pressLoadEarlier(u);
+    expect(entries(u)).toEqual(range(0, 120));
+    expect(u.queryByText('Some messages may be missing')).toBeNull();
   });
 });

@@ -51,23 +51,38 @@ interface MessageListResponse {
 // the newest page starts at total - MESSAGE_PAGE_SIZE.
 const MESSAGE_PAGE_SIZE = 50;
 
+// A reconnect pages back from the newest page until it reaches the messages
+// already loaded, fetching at most this many pages. A bigger gap stays in the
+// list as "Some messages may be missing" and loads on demand.
+const GAP_FILL_MAX_PAGES = 10;
+
 // A run of loaded messages as [start, end) offsets in that oldest-first
 // order. History is append-only, so an offset keeps naming the same message.
+// `firstId` is the message at `start`, where a gap above the run is shown.
 interface LoadedRange {
   start: number;
   end: number;
+  firstId: string;
 }
 
-/** Adds [start, end) to the sorted runs, merging any it overlaps or touches. */
-function addLoadedRange(ranges: LoadedRange[], start: number, end: number): LoadedRange[] {
-  if (end <= start) return ranges;
-  let merged: LoadedRange = { start, end };
+/** Adds a fetched page to the sorted runs, merging any it overlaps or touches. */
+function addLoadedPage(ranges: LoadedRange[], page: MessageListResponse): LoadedRange[] {
+  if (page.items.length === 0) return ranges;
+  let merged: LoadedRange = {
+    start: page.offset,
+    end: page.offset + page.items.length,
+    firstId: page.items[0].id,
+  };
   const rest: LoadedRange[] = [];
   for (const r of ranges) {
     if (r.end < merged.start || r.start > merged.end) {
       rest.push(r);
     } else {
-      merged = { start: Math.min(r.start, merged.start), end: Math.max(r.end, merged.end) };
+      merged = {
+        start: Math.min(r.start, merged.start),
+        end: Math.max(r.end, merged.end),
+        firstId: r.start < merged.start ? r.firstId : merged.firstId,
+      };
     }
   }
   return [...rest, merged].sort((a, b) => a.start - b.start);
@@ -78,7 +93,7 @@ function addLoadedRange(ranges: LoadedRange[], start: number, end: number): Load
  * run, down to the run before it (a gap a refetch left behind) or to the start
  * of the history. Null once everything below the newest run is loaded.
  */
-function earlierPage(ranges: LoadedRange[]): LoadedRange | null {
+function earlierPage(ranges: LoadedRange[]): { start: number; end: number } | null {
   const newest = ranges[ranges.length - 1];
   if (!newest || newest.start === 0) return null;
   const floor = ranges.length > 1 ? ranges[ranges.length - 2].end : 0;
@@ -108,9 +123,11 @@ interface BookingListResponse {
  */
 type TimelineEntry =
   | { kind: 'message'; createdAt: string; message: Message }
-  | { kind: 'proposal'; createdAt: string; proposal: BookingItem };
+  | { kind: 'proposal'; createdAt: string; proposal: BookingItem }
+  | { kind: 'gap'; createdAt: string };
 
 function timelineKey(entry: TimelineEntry): string {
+  if (entry.kind === 'gap') return 'gap';
   return entry.kind === 'message' ? `m-${entry.message.id}` : `p-${entry.proposal.id}`;
 }
 
@@ -280,6 +297,12 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   // of the newest page after more messages arrived can leave a gap above the
   // runs already on screen, and that gap must stay loadable.
   const [loadedRanges, setLoadedRanges] = useState<LoadedRange[]>([]);
+  // Read by fetchMessages without making it depend on (and refetch on) every
+  // page load.
+  const loadedRangesRef = useRef(loadedRanges);
+  useEffect(() => {
+    loadedRangesRef.current = loadedRanges;
+  }, [loadedRanges]);
   const nextEarlierPage = earlierPage(loadedRanges);
   const [isLoadingOlder, setIsLoadingOlder] = useState(false);
   // Set when earlier messages are prepended so the list doesn't jump back to
@@ -297,6 +320,8 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   }, [matchId]);
 
   const fetchMessages = useCallback(async () => {
+    // End of the newest run already loaded; none on the first load.
+    const joinAt = loadedRangesRef.current[loadedRangesRef.current.length - 1]?.end;
     try {
       // Run both fetches in parallel so a slow /bookings doesn't delay the
       // text history (and vice-versa). Either failing surfaces a single
@@ -309,16 +334,35 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       // WS messages survive at the end. Defensive against duplicate rows in
       // the response too.
       setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
-      setLoadedRanges((prev) =>
-        addLoadedRange(prev, msgRes.offset, msgRes.offset + msgRes.items.length)
-      );
+      setLoadedRanges((prev) => addLoadedPage(prev, msgRes));
       setFetchError(null);
+
+      // After a reconnect, more than a page may have arrived while the socket
+      // was down: page back until the newest page joins what was loaded.
+      let floor = msgRes.offset;
+      let pages = 1;
+      while (joinAt !== undefined && floor > joinAt && pages < GAP_FILL_MAX_PAGES) {
+        const start = Math.max(joinAt, floor - MESSAGE_PAGE_SIZE);
+        let page: MessageListResponse;
+        try {
+          page = await api.get<MessageListResponse>(
+            `/matches/${matchId}/messages?limit=${floor - start}&offset=${start}`
+          );
+        } catch {
+          // Leave the rest as a visible gap; "Load earlier" fills it.
+          break;
+        }
+        setMessages((prev) => dedupeMessagesById([...page.items, ...prev]));
+        setLoadedRanges((prev) => addLoadedPage(prev, page));
+        floor = start;
+        pages += 1;
+      }
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
       setIsLoading(false);
     }
-  }, [fetchLatestMessages, fetchProposals]);
+  }, [fetchLatestMessages, fetchProposals, matchId]);
 
   const loadOlderMessages = useCallback(async () => {
     if (isLoadingOlder || !nextEarlierPage) return;
@@ -334,9 +378,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       // Same dedupe as every other path, so an overlap with a WS-delivered or
       // already-loaded message can't render twice.
       setMessages((prev) => dedupeMessagesById([...older.items, ...prev]));
-      setLoadedRanges((prev) =>
-        addLoadedRange(prev, older.offset, older.offset + older.items.length)
-      );
+      setLoadedRanges((prev) => addLoadedPage(prev, older));
     } catch (err) {
       Alert.alert(
         "Couldn't load earlier messages",
@@ -521,8 +563,15 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       }
       return a.createdAt < b.createdAt ? -1 : 1;
     });
+    // A gap a reconnect couldn't fill sits right above the newest run.
+    const newest = loadedRanges[loadedRanges.length - 1];
+    if (loadedRanges.length > 1 && newest) {
+      const at = entries.findIndex((e) => e.kind === 'message' && e.message.id === newest.firstId);
+      if (at !== -1) entries.splice(at, 0, { kind: 'gap', createdAt: entries[at].createdAt });
+    }
     return entries;
-  }, [messages, proposals]);
+  }, [messages, proposals, loadedRanges]);
+  const hasGapRow = timeline.some((e) => e.kind === 'gap');
 
   const sendMessage = useCallback(async () => {
     const body = draft.trim();
@@ -552,6 +601,22 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       setIsSending(false);
     }
   }, [draft, isSending, matchId]);
+
+  const loadEarlierButton = (
+    <Pressable
+      onPress={loadOlderMessages}
+      disabled={isLoadingOlder}
+      accessibilityRole="button"
+      accessibilityLabel="Load earlier messages"
+      style={({ pressed }) => [styles.loadEarlier, pressed && styles.pressed]}
+    >
+      {isLoadingOlder ? (
+        <ActivityIndicator size="small" color={colors.accent} />
+      ) : (
+        <Text style={styles.loadEarlierText}>Load earlier messages</Text>
+      )}
+    </Pressable>
+  );
 
   return (
     <Screen padded={false}>
@@ -655,6 +720,14 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             data={timeline}
             keyExtractor={timelineKey}
             renderItem={({ item }) => {
+              if (item.kind === 'gap') {
+                return (
+                  <View style={styles.gapRow}>
+                    <Text style={styles.gapText}>Some messages may be missing</Text>
+                    {loadEarlierButton}
+                  </View>
+                );
+              }
               if (item.kind === 'message') {
                 return (
                   <MessageBubble
@@ -702,23 +775,9 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
-            ListHeaderComponent={
-              nextEarlierPage ? (
-                <Pressable
-                  onPress={loadOlderMessages}
-                  disabled={isLoadingOlder}
-                  accessibilityRole="button"
-                  accessibilityLabel="Load earlier messages"
-                  style={({ pressed }) => [styles.loadEarlier, pressed && styles.pressed]}
-                >
-                  {isLoadingOlder ? (
-                    <ActivityIndicator size="small" color={colors.accent} />
-                  ) : (
-                    <Text style={styles.loadEarlierText}>Load earlier messages</Text>
-                  )}
-                </Pressable>
-              ) : null
-            }
+            // One "Load earlier" control: in the gap row while there is one,
+            // otherwise at the top.
+            ListHeaderComponent={nextEarlierPage && !hasGapRow ? loadEarlierButton : null}
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyText}>
@@ -938,6 +997,14 @@ const styles = StyleSheet.create({
   loadEarlierText: {
     ...typography.bodySmall,
     color: colors.accent,
+  },
+  gapRow: {
+    alignItems: 'center',
+    marginVertical: spacing.sm,
+  },
+  gapText: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
   proposalRow: {
     // Full-bleed card wrapper: cancels the bubble's 75% maxWidth so the
