@@ -87,13 +87,17 @@ Goal: leave `main` clean and the portfolio facts accurate after the 2026-10-17/1
 Goal: record the booking-FSM mutation evidence, clear the `image-size` high without a major
 jump, and split the Expo SDK upgrade into one-sitting pieces. Only S5 and S6 get implemented.
 
-- [ ] **S5 `docs/fsm-mutation-record`** — docs only. Re-run a hand-written mutation check of the
+- [x] **S5 `docs/fsm-mutation-record`** — PR #19. `docs/review/BOOKING_FSM_MUTATION_2026-10-19.md`:
+      31 mutants at `d3429a9`, **28 killed** (27 unit, G5 by PG integration); G4/S4/S6 survived →
+      S8. Section 6 (R1) re-runs them on #21's head: 36/5/1 failed, all killed. Original: docs only. Re-run a hand-written mutation check of the
       booking FSM in `apps/api/app/services/bookings.py` (`_TRANSITIONS` edges and actors, the
       participant/actor guards, notification/reminder/rank side effects) against current `main`
       and record it in `docs/review/` next to the historical results from #10 and #14. Mutants
       run in a throwaway worktree, never on the branch. A surviving mutant is recorded as a
       finding, not fixed here — a test for it is a separate S-item.
-- [ ] **S6 `fix/image-size-advisory`** — clear GHSA-5p2g-fcmc-qvqq and GHSA-w3rx-r6r6-pgpr (high,
+- [~] **S6 `fix/image-size-advisory`** — blocked: PR #20 (draft) drops `image-size`, but metro 0.83.8
+      moves its own deps across majors — accepts 1→2, mime-types 2→3, negotiator 0→1, and
+      hermes-parser/hermes-estree 0.32→0.35 (Codex B3). Owner decides. Original: clear GHSA-5p2g-fcmc-qvqq and GHSA-w3rx-r6r6-pgpr (high,
       `image-size@1.2.1` ← `metro@0.83.3` ← `@expo/metro@54.2.0` ← `expo@54.0.37`, all latest
       for SDK 54). No 1.x fix exists (fixed in 2.0.3), so an `image-size` override is a major
       jump and is out. Route: root `overrides` moving the whole metro family 0.83.3 → 0.83.8
@@ -273,7 +277,10 @@ below cites its finding. Same Overnight protocol as Scope 3: branch per item, CI
 merges, `[~] blocked:` and move on if stuck. Each repair must add the exact regression Codex
 used, so the finding cannot silently return.
 
-- [ ] **R1 `docs/mutation-record-rebase`** (F3 + F4) — rebase #19 onto current `main`, resolving
+- [x] **R1 `docs/mutation-record-rebase`** (F3 + F4) — #19 rebuilt on `main` (`c03d014`) and
+      force-pushed; merges cleanly (was: `todo.md` conflict). Section 6 appended; G4/S4/S6 re-run
+      on `6ab26f0` by hand: 36/105, 5/136, 1/140, matching Codex. S6 kept `[~]` per Codex B3.
+      Original: rebase #19 onto current `main`, resolving
       `todo.md` by keeping `main`'s text (only take #19's S5/S6 ticks). In the same branch append
       a "Re-run after #21 (2026-10-19)" table to
       `docs/review/BOOKING_FSM_MUTATION_2026-10-19.md`: G4 → 36 failed/105 passed, S4 → 5/136,
