@@ -49,6 +49,40 @@ interface MessageListResponse {
 // the newest page starts at total - MESSAGE_PAGE_SIZE.
 const MESSAGE_PAGE_SIZE = 50;
 
+// A run of loaded messages as [start, end) offsets in that oldest-first
+// order. History is append-only, so an offset keeps naming the same message.
+interface LoadedRange {
+  start: number;
+  end: number;
+}
+
+/** Adds [start, end) to the sorted runs, merging any it overlaps or touches. */
+function addLoadedRange(ranges: LoadedRange[], start: number, end: number): LoadedRange[] {
+  if (end <= start) return ranges;
+  let merged: LoadedRange = { start, end };
+  const rest: LoadedRange[] = [];
+  for (const r of ranges) {
+    if (r.end < merged.start || r.start > merged.end) {
+      rest.push(r);
+    } else {
+      merged = { start: Math.min(r.start, merged.start), end: Math.max(r.end, merged.end) };
+    }
+  }
+  return [...rest, merged].sort((a, b) => a.start - b.start);
+}
+
+/**
+ * The page "Load earlier" fetches next: the slice directly below the newest
+ * run, down to the run before it (a gap a refetch left behind) or to the start
+ * of the history. Null once everything below the newest run is loaded.
+ */
+function earlierPage(ranges: LoadedRange[]): LoadedRange | null {
+  const newest = ranges[ranges.length - 1];
+  if (!newest || newest.start === 0) return null;
+  const floor = ranges.length > 1 ? ranges[ranges.length - 2].end : 0;
+  return { start: Math.max(floor, newest.start - MESSAGE_PAGE_SIZE), end: newest.start };
+}
+
 // Booking shape returned by GET /bookings (camelCased by lib/api). Only the
 // fields the in-chat proposal card needs are listed; the BookingDetail
 // screen owns the wider shape.
@@ -234,9 +268,11 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     );
   }, [matchId]);
 
-  // Offset of the oldest loaded message in the server's oldest-first order;
-  // above 0 means there is earlier history to load.
-  const [oldestOffset, setOldestOffset] = useState<number | null>(null);
+  // Which offsets are loaded. A single oldest offset isn't enough: a refetch
+  // of the newest page after more messages arrived can leave a gap above the
+  // runs already on screen, and that gap must stay loadable.
+  const [loadedRanges, setLoadedRanges] = useState<LoadedRange[]>([]);
+  const nextEarlierPage = earlierPage(loadedRanges);
   const [isLoadingOlder, setIsLoadingOlder] = useState(false);
   // Set when earlier messages are prepended so the list doesn't jump back to
   // the bottom; cleared once something is appended at the end.
@@ -265,8 +301,9 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
       // WS messages survive at the end. Defensive against duplicate rows in
       // the response too.
       setMessages((prev) => dedupeMessagesById([...msgRes.items, ...prev]));
-      // A refetch must not forget earlier pages the user already loaded.
-      setOldestOffset((prev) => (prev === null ? msgRes.offset : Math.min(prev, msgRes.offset)));
+      setLoadedRanges((prev) =>
+        addLoadedRange(prev, msgRes.offset, msgRes.offset + msgRes.items.length)
+      );
       setFetchError(null);
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Failed to load messages.');
@@ -276,20 +313,22 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
   }, [fetchLatestMessages, fetchProposals]);
 
   const loadOlderMessages = useCallback(async () => {
-    if (isLoadingOlder || !oldestOffset) return;
+    if (isLoadingOlder || !nextEarlierPage) return;
     // Hold before the spinner replaces the button: that resize is a content
     // size change too. Stays held on failure; the reader is still up here.
     holdAutoScrollRef.current = true;
-    const offset = Math.max(0, oldestOffset - MESSAGE_PAGE_SIZE);
+    const { start, end } = nextEarlierPage;
     setIsLoadingOlder(true);
     try {
       const older = await api.get<MessageListResponse>(
-        `/matches/${matchId}/messages?limit=${oldestOffset - offset}&offset=${offset}`
+        `/matches/${matchId}/messages?limit=${end - start}&offset=${start}`
       );
       // Same dedupe as every other path, so an overlap with a WS-delivered or
       // already-loaded message can't render twice.
       setMessages((prev) => dedupeMessagesById([...older.items, ...prev]));
-      setOldestOffset(offset);
+      setLoadedRanges((prev) =>
+        addLoadedRange(prev, older.offset, older.offset + older.items.length)
+      );
     } catch (err) {
       Alert.alert(
         "Couldn't load earlier messages",
@@ -298,7 +337,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
     } finally {
       setIsLoadingOlder(false);
     }
-  }, [isLoadingOlder, oldestOffset, matchId]);
+  }, [isLoadingOlder, nextEarlierPage, matchId]);
 
   useEffect(() => {
     fetchMessages();
@@ -577,7 +616,7 @@ export function ChatScreen({ route, navigation }: ChatScreenProps) {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
             ListHeaderComponent={
-              oldestOffset ? (
+              nextEarlierPage ? (
                 <Pressable
                   onPress={loadOlderMessages}
                   disabled={isLoadingOlder}
