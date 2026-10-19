@@ -278,7 +278,11 @@ used, so the finding cannot silently return.
       S6 → 1/140 (the figures Codex reproduced on #21's head), keeping the historical 28/31 as
       historical. Force-push #19 (it is a docs branch; note the rewrite in a PR comment). This
       closes S8's missing criterion without touching #21.
-- [ ] **R2 `fix/chat-gap-recovery`** (B1, BLOCKER) — the real bug: with #25+#26, 100 persisted
+- [x] **R2 `fix/chat-gap-recovery`** (B1, BLOCKER) — #26: loaded `[start,end)` runs replace
+      `oldestOffset`; "Load earlier" fills the slice below the newest run first. #25 (now stacked on
+      #26): reconnect pages back ≤10 pages until it joins; a bigger or failed gap shows "Some messages
+      may be missing" inline. Codex's test + cap + failed-page: 3 fail on `25950f2`+`189dd41`, pass
+      now (740 mobile). Original: the real bug: with #25+#26, 100 persisted
       messages, 70 arrive while disconnected → reconnect fetches only the newest 50 (ids 120–169),
       `Math.min` keeps `oldestOffset=50`, "Load earlier" then fetches 0–49 and disappears;
       **ids 100–119 are unreachable forever.** Fix in the #26 branch first: replace the single
