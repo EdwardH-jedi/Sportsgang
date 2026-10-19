@@ -87,27 +87,20 @@ export function snapMinuteTo15(minute: number): number {
 // ─── Default values ──────────────────────────────────────────────────────────
 
 /**
- * Tomorrow's date in local time.
- *
- * Date-stable across CI clock drift: callers that just want to "open the
- * screen and submit" get a valid future default regardless of when the
- * test runs.
+ * The default session start: the next whole hour after `now`, in local
+ * time. From 23:00 on it rolls into tomorrow at 00:00.
  */
-export function defaultDate(now: Date = new Date()): DateString {
-  const tomorrow = new Date(
+export function nextWholeHour(now: Date = new Date()): { date: DateString; time: TimeString } {
+  const next = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() + 1,
-    0,
+    now.getDate(),
+    now.getHours() + 1,
     0,
     0,
     0
   );
-  return toDateString(tomorrow);
-}
-
-export function defaultStartTime(): TimeString {
-  return '09:00';
+  return { date: toDateString(next), time: joinTime(next.getHours(), 0) };
 }
 
 /** Start + 1 hour, clamped to same-day. */
@@ -253,7 +246,8 @@ interface ValidationArgs {
  * Rules (v1):
  * - end strictly after start (same-day)
  * - duration in [MIN_SESSION_MINUTES, MAX_SESSION_MINUTES]
- * - if date is today, start must be at or after `now`
+ * - start must be at or after `now` (any date: a start picked earlier can
+ *   pass while the screen stays open)
  */
 export function computeValidationError({
   date,
@@ -278,11 +272,10 @@ export function computeValidationError({
     return `Sessions can be up to ${MAX_SESSION_MINUTES / 60} hours long.`;
   }
 
-  // Same-day past-time check. Compare in local time only — the backend has
-  // a 1-hour past tolerance, so requiring `>= now` on the client gives a
-  // safe margin even after the picker close + submit round-trip.
-  const today = toDateString(now);
-  if (date === today && startDate < now) {
+  // Past-start check, in local time. The backend has a 1-hour past
+  // tolerance, so requiring `>= now` on the client gives a safe margin even
+  // after the submit round-trip.
+  if (startDate < now) {
     return 'Choose a future start time.';
   }
 

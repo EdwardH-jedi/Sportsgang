@@ -31,10 +31,8 @@ None confirmed at time of writing. Update as issues are found.
 ### NB-004 — ~~Chat does not auto-refresh~~ — RESOLVED (Wave 10)
 **Resolved**: WebSocket-based real-time messaging shipped. Server: `apps/api/app/routers/chat.py` (`_ConnectionManager` + `/matches/{id}/ws`). Client: `apps/mobile/src/screens/ChatScreen.tsx` opens an authenticated `ws://` connection on mount. Manual refresh no longer required.
 
-### NB-005 — Booking time input is manual text
-**Symptom**: BookingComposer requires manual YYYY-MM-DD and HH:MM input. No date picker.
-**Workaround**: Follow the format exactly. Invalid formats show an error before submission.
-**Owner**: Mobile — future wave
+### NB-005 — ~~Booking time input is manual text~~ — RESOLVED (pickers 2026-05-05, `a5b187b` + `e80456f`; default and submit check in #27)
+**Resolved**: BookingComposer has no free-text date or time field. The date comes from a calendar grid with past days disabled (`apps/mobile/src/components/CalendarPicker.tsx`), start and end times from a wheel (`apps/mobile/src/components/TimeWheelPicker.tsx`). The form opens on the next whole hour → one hour later (from 23:00 it rolls into 00:00 tomorrow). A start that is already past, on any day, disables Send ("Choose a future start time."), and the check runs again at submit, so a start that passes while the screen stays open is not sent, even inside the server's 1-hour past tolerance. `startsAt`/`endsAt` are still sent as local `YYYY-MM-DDTHH:MM:00` with no `Z` (W7-003); server-side validation is unchanged. The in-house pickers stay; `@react-native-community/datetimepicker` was not adopted (owner decision, 2026-10-19). Covered by `BookingComposerScreen.test.tsx`, `CalendarPicker.test.tsx` and `sessionTime.test.ts`.
 
 ### NB-006 — Chat does not show `sport` from BookingComposer on older matches
 **Symptom**: Matches created before Wave 7 where the `Chat` navigation was opened may not have `sport` in params.

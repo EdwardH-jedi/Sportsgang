@@ -305,7 +305,12 @@ used, so the finding cannot silently return.
       Run the lock mutant 5× — must fail 5/5.
       (c) Add a note line in `todo.md` S11 that lock release happens at commit, before old-file
       cleanup (Codex NOTE on `todo.md:205`).
-- [ ] **R4 `feat/booking-composer-submit-guard`** (B2, on the #27 branch, becomes code) — keep
+- [x] **R4 `feat/booking-composer-submit-guard`** (B2, on the #27 branch, becomes code) — #27
+      rebased, re-titled. **Decision (owner, 2026-10-19): keep the in-house CalendarPicker /
+      TimeWheelPicker; no `@react-native-community/datetimepicker`.** Default = `nextWholeHour()`
+      (23:00+ → 00:00 tomorrow); validation no longer memoised, past start flagged on any date,
+      re-checked at submit (no API call, existing error shown). Codex's 2 tests fail on `bc365a0`,
+      pass now; 728 mobile, also TZ=UTC on Node 20. Original: keep
       the in-house `CalendarPicker`/`TimeWheelPicker` (owner call: a native module adds nothing
       user-visible; record this decision in the item). Implement the two unmet criteria:
       default start = **next whole hour** from now (not tomorrow 09:00), and **re-validate at

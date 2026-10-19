@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -20,11 +20,10 @@ import { api } from '../../lib/api';
 import {
   combineToLocalDate,
   computeValidationError,
-  defaultDate,
-  defaultStartTime,
   formatDateLabel,
   formatTimeLabel,
   mapBackendError,
+  nextWholeHour,
   plusOneHour,
   type DateString,
   type TimeString,
@@ -40,11 +39,12 @@ import { NearbyCourtsModal } from './NearbyCourtsModal';
 export function BookingComposerScreen({ route, navigation }: BookingComposerScreenProps) {
   const { matchId, sport } = route.params;
 
-  // Date-stable defaults: tomorrow 09:00 → 10:00. Ensures the screen opens
-  // in a valid, submittable state regardless of the device clock.
-  const [date, setDate] = useState<DateString>(() => defaultDate());
-  const [startTime, setStartTime] = useState<TimeString>(() => defaultStartTime());
-  const [endTime, setEndTime] = useState<TimeString>(() => plusOneHour(defaultStartTime()));
+  // Default: the next whole hour → one hour later, so the screen opens in a
+  // valid, submittable state.
+  const [initialStart] = useState(() => nextWholeHour());
+  const [date, setDate] = useState<DateString>(initialStart.date);
+  const [startTime, setStartTime] = useState<TimeString>(initialStart.time);
+  const [endTime, setEndTime] = useState<TimeString>(() => plusOneHour(initialStart.time));
   const [location, setLocation] = useState('');
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [isVenuePickerOpen, setIsVenuePickerOpen] = useState(false);
@@ -61,13 +61,12 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
   // once the user actually opens the picker — never on composer mount.
   const venueLocation = useVenueLocation({ enabled: isVenuePickerOpen });
 
-  // Validation is derived from the picker state on every render so the
-  // submit button + inline error always reflect the current selection
-  // without an imperative validate-on-submit step.
-  const validationError = useMemo(
-    () => computeValidationError({ date, startTime, endTime }),
-    [date, startTime, endTime]
-  );
+  // Validation is derived on every render (not memoised on the picker
+  // state), so the submit button + inline error reflect the current
+  // selection and the current time.
+  const validationError = computeValidationError({ date, startTime, endTime });
+  // Re-renders the screen so the check above runs against the clock again.
+  const [, revalidate] = useReducer((n: number) => n + 1, 0);
 
   const canSubmit = !validationError && !isSubmitting;
 
@@ -88,6 +87,12 @@ export function BookingComposerScreen({ route, navigation }: BookingComposerScre
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
+    // The start may have passed since the last render (the screen stayed
+    // open): check again now and show the error instead of sending.
+    if (computeValidationError({ date, startTime, endTime })) {
+      revalidate();
+      return;
+    }
     setSubmitError(null);
     setIsSubmitting(true);
     try {

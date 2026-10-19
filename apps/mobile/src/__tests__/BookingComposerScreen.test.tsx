@@ -14,10 +14,9 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 
 import { BookingComposerScreen } from '../screens/bookings/BookingComposerScreen';
 import {
-  defaultDate,
-  defaultStartTime,
   formatDateLabel,
   formatTimeLabel,
+  nextWholeHour,
   plusOneHour,
 } from '../lib/sessionTime';
 
@@ -205,14 +204,19 @@ function renderComposer(opts: { route?: any; navigation?: any } = {}) {
   return { ...utils, navigation, route };
 }
 
+// The suite runs on a fixed local clock (Date only; timers stay real), so
+// the default start is the next whole hour: 09:00 → 10:00 on 2026-10-19.
+const NOW = new Date(2026, 9, 19, 8, 30, 0);
+const DEFAULT_START = nextWholeHour(NOW);
+
 /** Default startsAt the screen sends when the user submits without touching the pickers. */
 function expectedStartsAt(): string {
-  return `${defaultDate()}T${defaultStartTime()}:00`;
+  return `${DEFAULT_START.date}T${DEFAULT_START.time}:00`;
 }
 
 /** Default endsAt — start + 1 hour. */
 function expectedEndsAt(): string {
-  return `${defaultDate()}T${plusOneHour(defaultStartTime())}:00`;
+  return `${DEFAULT_START.date}T${plusOneHour(DEFAULT_START.time)}:00`;
 }
 
 function pad2(n: number): string {
@@ -249,6 +253,11 @@ function pickTime(
 describe('BookingComposerScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers({ now: NOW, advanceTimers: true });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   // ── Rendering ──────────────────────────────────────────────────────────────
@@ -263,10 +272,10 @@ describe('BookingComposerScreen', () => {
     expect(getByLabelText('Choose date')).toBeTruthy();
     expect(getByLabelText('Choose start time')).toBeTruthy();
     expect(getByLabelText('Choose end time')).toBeTruthy();
-    // Friendly default labels: tomorrow + 09:00 → 10:00 in the local locale.
-    expect(getByText(formatDateLabel(defaultDate()))).toBeTruthy();
-    expect(getByText(formatTimeLabel(defaultStartTime()))).toBeTruthy();
-    expect(getByText(formatTimeLabel(plusOneHour(defaultStartTime())))).toBeTruthy();
+    // Friendly default labels: the next whole hour → +1h in the local locale.
+    expect(getByText(formatDateLabel(DEFAULT_START.date))).toBeTruthy();
+    expect(getByText(formatTimeLabel(DEFAULT_START.time))).toBeTruthy();
+    expect(getByText(formatTimeLabel(plusOneHour(DEFAULT_START.time)))).toBeTruthy();
   });
 
   it('renders the optional venue + notes inputs', () => {
@@ -362,8 +371,8 @@ describe('BookingComposerScreen', () => {
     expect(mockApiPost).toHaveBeenCalledWith(
       '/bookings',
       expect.objectContaining({
-        startsAt: `${defaultDate()}T23:00:00`,
-        endsAt: `${defaultDate()}T23:45:00`,
+        startsAt: `${DEFAULT_START.date}T23:00:00`,
+        endsAt: `${DEFAULT_START.date}T23:45:00`,
       })
     );
   });
@@ -391,6 +400,41 @@ describe('BookingComposerScreen', () => {
     pickTime(getByLabelText, 'end', 9, 15);
     expect(getByText('Sessions must be at least 30 minutes long.')).toBeTruthy();
     expect(getByLabelText('Send proposal').props.accessibilityState?.disabled).toBe(true);
+  });
+
+  it('defaults to 00:00 → 01:00 tomorrow once it is past 23:00', async () => {
+    jest.setSystemTime(new Date(2026, 9, 19, 23, 30, 0));
+    mockApiPost.mockResolvedValue({ id: 'b1' });
+    const { getByLabelText } = renderComposer();
+
+    await act(async () => {
+      fireEvent.press(getByLabelText('Send proposal'));
+    });
+    expect(mockApiPost).toHaveBeenCalledWith(
+      '/bookings',
+      expect.objectContaining({ startsAt: '2026-10-20T00:00:00', endsAt: '2026-10-20T01:00:00' })
+    );
+  });
+
+  it('checks the start again at submit: a start that passed while open shows the error, not a request', async () => {
+    const { getByLabelText, getByText, queryByText } = renderComposer();
+    expect(queryByText('Choose a future start time.')).toBeNull();
+
+    // 09:05: five minutes past the default 09:00 start. The server would
+    // still accept it (1-hour tolerance); the client must not send it.
+    act(() => jest.setSystemTime(new Date(2026, 9, 19, 9, 5, 0)));
+    await act(async () => {
+      fireEvent.press(getByLabelText('Send proposal'));
+    });
+
+    expect(mockApiPost).not.toHaveBeenCalled();
+    expect(getByText('Choose a future start time.')).toBeTruthy();
+    expect(getByLabelText('Send proposal').props.accessibilityState?.disabled).toBe(true);
+
+    // Picking a later start clears it.
+    pickTime(getByLabelText, 'start', 10, 0);
+    expect(queryByText('Choose a future start time.')).toBeNull();
+    expect(getByLabelText('Send proposal').props.accessibilityState?.disabled).toBe(false);
   });
 
   it('opens a calendar grid for date selection (no manual text entry)', () => {
@@ -651,5 +695,31 @@ describe('BookingComposerScreen', () => {
       fireEvent.press(getByLabelText('Send proposal'));
     });
     expect(mockApiPost).toHaveBeenCalledWith('/bookings', expect.objectContaining({ sport: 'golf' }));
+  });
+});
+
+// ─── Original S14 acceptance (Codex B2) ──────────────────────────────────────
+// Codex's independent regressions, kept as written: at 10:30 local the
+// default proposal starts at 11:00 today, and a start that has passed while
+// the screen stayed open is not sent.
+
+describe('review original S14 acceptance', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 9, 19, 10, 30, 0));
+    mockApiPost.mockReset();
+    mockApiPost.mockResolvedValue({ id: 'b1' });
+  });
+  afterEach(() => jest.useRealTimers());
+  it('defaults to the next whole hour', async () => {
+    const u = renderComposer();
+    await act(async () => fireEvent.press(u.getByLabelText('Send proposal')));
+    expect(mockApiPost.mock.calls[0][1].startsAt).toBe('2026-10-19T11:00:00');
+  });
+  it('does not submit a selected time after it has become past', async () => {
+    const u = renderComposer();
+    act(() => jest.setSystemTime(new Date(2026, 9, 20, 9, 1, 0)));
+    await act(async () => fireEvent.press(u.getByLabelText('Send proposal')));
+    expect(mockApiPost).not.toHaveBeenCalled();
   });
 });
