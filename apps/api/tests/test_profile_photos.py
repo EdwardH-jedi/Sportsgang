@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import shutil
 from pathlib import Path
 from typing import AsyncGenerator
@@ -319,6 +320,46 @@ async def test_commit_failure_keeps_previous_photos_and_the_new_files(photo_clie
     assert (row_urls, avatar_url) == (before_rows, before_avatar)
     assert set(before_files) <= set(on_disk)
     assert len(on_disk) == len(before_files) + 3
+
+
+async def test_cancellation_before_commit_keeps_previous_photos_and_removes_the_new_files(
+    photo_client, tmp_path, monkeypatch
+) -> None:
+    # Codex's regression (F1): CancelledError is a BaseException, so an
+    # `except Exception` cleanup never ran and all three uploads stayed on disk.
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    async def cancelled_flush(self, objects=None):
+        raise asyncio.CancelledError()
+
+    monkeypatch.setattr(AsyncSession, "flush", cancelled_flush)
+    with pytest.raises(asyncio.CancelledError):
+        await client.put("/users/me/photos", files=_files(3))
+    after = await _photo_state(tmp_path, user, profile)
+    assert after[1:] == before[1:]
+    assert after[0] == before[0], "cancelled request leaked its new uploads"
+
+
+async def test_commit_that_lands_then_raises_keeps_every_referenced_file(photo_client, tmp_path, monkeypatch) -> None:
+    # A lost commit acknowledgement: the rows did change, so the new files
+    # must stay; the old ones stay too, unreferenced (no reconciliation job).
+    client, user, profile = photo_client
+    before_files, _, _ = await _upload_initial_photos(client, tmp_path, user, profile)
+    real_commit = AsyncSession.commit
+
+    async def commit_then_fail(self) -> None:
+        await real_commit(self)
+        raise RuntimeError("commit ack lost")
+
+    monkeypatch.setattr(AsyncSession, "commit", commit_then_fail)
+    with pytest.raises(RuntimeError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert len(row_urls) == 3 and avatar_url == row_urls[0]
+    assert set(url.rsplit("/", 1)[-1] for url in row_urls) <= set(on_disk)
+    assert set(before_files) <= set(on_disk)
 
 
 async def test_replace_only_deletes_the_photos_it_replaced(photo_client, tmp_path) -> None:

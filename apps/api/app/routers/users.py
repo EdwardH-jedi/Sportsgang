@@ -148,10 +148,16 @@ async def replace_profile_photos(
     Accepts 2-4 non-empty multipart files. The uploads are written to local
     media storage first; then, in one transaction, the profile's photo rows
     are replaced in upload order and ``avatar_url`` is synced to the first
-    photo URL so existing avatar consumers keep working. The replaced rows'
-    files are deleted only after that commit, so a failed upload or commit
-    leaves the previous photos, rows and ``avatar_url`` in place (a failed
-    commit may leave the new files on disk, unreferenced).
+    photo URL so existing avatar consumers keep working.
+
+    Failure before the commit (a bad write, a flush error, cancellation)
+    rolls back and deletes the new files: the previous photos, rows and
+    ``avatar_url`` are unchanged. If the commit itself raises, its outcome
+    is unknown — it may have landed (rows and ``avatar_url`` now point at
+    the new files) or not (they still point at the old ones) — so both sets
+    of files are kept and one set is left on disk unreferenced; nothing
+    reconciles it later. After a successful commit the replaced files are
+    deleted.
     """
     if not (PROFILE_PHOTO_MIN <= len(files) <= PROFILE_PHOTO_MAX):
         raise HTTPException(
@@ -187,9 +193,12 @@ async def replace_profile_photos(
         # Snapshot the response while the row lock is held: once committed, a
         # newer replace may delete these rows before this request returns.
         response = ProfilePhotosResponse(photos=new_photos, avatar_url=profile.avatar_url)
-    except Exception:
-        await db.rollback()
+    except BaseException:
+        # Cancellation (a client disconnect, a shutdown) included. Nothing is
+        # committed yet, so the new files are unreferenced: delete them before
+        # awaiting the rollback, which a repeated cancel could interrupt.
         media_storage.delete_user_photos(user_id, urls)
+        await db.rollback()
         raise
     # A commit that raises may still have landed (e.g. the connection dropped
     # before the reply), so the new files are not deleted on that path: at

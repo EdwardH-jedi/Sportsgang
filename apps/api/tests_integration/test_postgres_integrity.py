@@ -220,13 +220,17 @@ async def test_concurrent_photo_replacements_serialise_and_leave_no_dangling_fil
     import io
 
     from fastapi import UploadFile
+    from sqlalchemy import text
 
     from app.models.profile import ProfilePhoto, UserProfile
     from app.routers.users import replace_profile_photos
     from app.services import media_storage
 
-    # Without the profile row lock both requests read the same "previous"
-    # rows, and the second insert hits uq_profile_photos_profile_position.
+    # The profile row lock is what serialises two replaces. Request A stops
+    # while it holds the lock; request B must then be seen waiting on a row
+    # lock in PostgreSQL, never reading the profile first. Without the lock B
+    # can't block on anything A holds, so it reads the profile and this fails
+    # every time, not only when the scheduler happens to overlap them.
     monkeypatch.setattr(media_storage, "_profile_photos_root", lambda: tmp_path / "profile_photos")
     async with _Session() as session:
         user = User(email=f"pg-photos-{os.urandom(6).hex()}@example.com", hashed_password="x")
@@ -236,24 +240,60 @@ async def test_concurrent_photo_replacements_serialise_and_leave_no_dangling_fil
         await session.commit()
         user_id = user.id
 
+    a_holds_lock = asyncio.Event()
+    release_a = asyncio.Event()
+    b_read_profile = asyncio.Event()
+    real_execute = AsyncSession.execute
+
+    async def execute(self, statement, *args, **kwargs):
+        result = await real_execute(self, statement, *args, **kwargs)
+        descriptions = getattr(statement, "column_descriptions", None)
+        entity = descriptions[0].get("entity") if descriptions else None
+        tag = self.info.get("tag")
+        if tag == "a" and entity is ProfilePhoto:
+            # A has read (and locked) the profile and its previous photos.
+            a_holds_lock.set()
+            await release_a.wait()
+        elif tag == "b" and entity is UserProfile:
+            b_read_profile.set()
+        return result
+
     async def replace(tag: str) -> list[str]:
         uploads = [UploadFile(io.BytesIO(f"{tag}-{i}".encode()), filename=f"{tag}{i}.jpg") for i in range(2)]
         async with _Session() as session:
+            session.info["tag"] = tag
             current_user = await session.get(User, user_id)
             response = await replace_profile_photos(files=uploads, current_user=current_user, db=session)
             return [photo.photo_url for photo in response.photos]
 
-    async def warm_connection() -> None:
+    async def lock_waiters() -> int:
         async with _Session() as session:
-            await session.execute(select(func.now()))
-            await asyncio.sleep(0.05)
+            return (
+                await session.execute(
+                    text(
+                        "SELECT count(*) FROM pg_stat_activity WHERE datname = current_database() "
+                        "AND wait_event_type = 'Lock' AND query ILIKE '%FOR UPDATE%'"
+                    )
+                )
+            ).scalar_one()
 
+    tasks: list[asyncio.Task] = []
     try:
         await replace("initial")
-        # Two pooled connections up front, so neither request spends its
-        # first await connecting while the other runs to completion.
-        await asyncio.gather(warm_connection(), warm_connection())
-        first, second = await asyncio.gather(replace("a"), replace("b"))
+        monkeypatch.setattr(AsyncSession, "execute", execute)
+        tasks.append(asyncio.create_task(replace("a")))
+        await asyncio.wait_for(a_holds_lock.wait(), timeout=10)
+        tasks.append(asyncio.create_task(replace("b")))
+
+        async def b_blocked_on_the_lock() -> None:
+            while not await lock_waiters():
+                assert not b_read_profile.is_set(), "B read the profile while A held its row lock"
+                await asyncio.sleep(0.01)
+
+        await asyncio.wait_for(b_blocked_on_the_lock(), timeout=10)
+        assert not b_read_profile.is_set(), "B read the profile while A held its row lock"
+        release_a.set()
+        first, second = await asyncio.gather(*tasks)
 
         async with _Session() as session:
             profile = (await session.execute(select(UserProfile).where(UserProfile.user_id == user_id))).scalar_one()
@@ -268,10 +308,13 @@ async def test_concurrent_photo_replacements_serialise_and_leave_no_dangling_fil
             )
         on_disk = sorted(path.name for path in (tmp_path / "profile_photos" / str(user_id)).iterdir())
 
-        assert rows in (first, second)
+        # B ran after A committed, so B's photos are the ones left.
+        assert rows == second and rows != first
         assert profile.avatar_url == rows[0]
         assert on_disk == sorted(url.rsplit("/", 1)[-1] for url in rows)
     finally:
+        release_a.set()
+        await asyncio.gather(*tasks, return_exceptions=True)
         async with _Session() as session:
             await session.execute(delete(UserProfile).where(UserProfile.user_id == user_id))
             await session.execute(delete(User).where(User.id == user_id))
