@@ -3,7 +3,7 @@
 Single source of truth for what is in scope *right now*. Read this first when resuming
 after a pause. Update it in the same commit as the work.
 
-_Last updated: 2026-10-19 13:00 (Sydney)._
+_Last updated: 2026-10-19 13:45 (Sydney)._
 
 ## Working rules (apply to every session on this repo)
 
@@ -39,15 +39,17 @@ _Last updated: 2026-10-19 13:00 (Sydney)._
 - Major-version dependency jumps, `LICENSE`, deleting remote branches, anything irreversible.
 
 ## Resume here
-- **State:** Scope 1 merged. Scope 3 ran overnight 2026-10-19 (PRs #21–#28, CI green, none
-  merged). An independent Codex verification (reviews/codex-scope3-verify-2026-10-19.md, local
-  only; summary under "Scope 4") returned **REQUEST_CHANGES**: 5 of the 8 Scope 3 ticks were
-  overstated and one real bug was found in the #25+#26 combination. Those ticks are now `[~]`.
-- **Owner, merge now (verified safe):** #23, #28, #22, #21 — in that order.
-- **Owner, decide:** #20 metro (pulls 3 transitive majors — recommend keep draft until the
+- **State:** Scope 1 merged; #22, #23, #28 merged. Scope 4 (R1–R6) done 2026-10-19: each Codex
+  finding repaired on its existing PR (#19, #24, #26, #25, #27), CI green, nothing merged. R6
+  re-verified them merged together with #21 (756 api, 746 mobile, 6 PG/Redis integration)
+  and Codex's four failed probes now pass; see "Re-verification" in `docs/overnight/2026-10-19.md`.
+  R1–R5 are ticked on their PR branches, so they show `[ ]` here until those merge.
+- **Owner, merge (in this order):** #27, #21, #19, #24, #26, #25. **#21 is not merged** and
+  conflicts with `main` in `todo.md` only (its S8 line); rebase it taking `main`'s `todo.md`
+  first. #25 is stacked on #26: merge #26, GitHub retargets #25 to `main`, then merge #25.
+- **Owner, decide:** #20 metro (pulls transitive majors — recommend keep draft until the
   SDK 55 hop S7c removes the need), #15 cryptography (recommend merge: audit clean, 706 pass).
-- **Next step (Claude):** Scope 4, R1 → R6, under the Overnight protocol. R1 first because
-  R5 depends on it.
+- **Next step (Claude):** nothing in Scope 4. S7 needs the owner's go-ahead.
 - **Environment limits:**
   - The linked-computer shell has no `gh`, no `docker`, no GitHub push credentials, and its
     `apps/api/.venv` may be built for another OS. Do **not** `uv sync` over it.
@@ -140,10 +142,10 @@ jump, and split the Expo SDK upgrade into one-sitting pieces. Only S5 and S6 get
 - Go-ahead for S7 (each hop is a major-version change).
 - `LICENSE` choice.
 - Deleting stale remote branches (52 remote refs; list in a PR comment first, delete only on approval).
-- Scope 3 PRs #21–#28: merge, plus the decisions listed in `docs/overnight/2026-10-19.md`
-  (#24 empty-upload 422 and orphan-file trade-offs, #26 device scroll check and page size 50,
-  S14 picker/default/submit-revalidation, S10's 44 uncovered lines, #21's mutation-doc append
-  after #19).
+- Scope 3/4 PRs: merge #27, #21, #19, #24, #26, #25 (order and #21's rebase under "Resume
+  here"), plus the decisions in `docs/overnight/2026-10-19.md` "Re-verification" (#24
+  empty-upload 422 and unreferenced files on an unknown-outcome commit, #26 device scroll check
+  and page size 50, S10's 44 uncovered lines). S14's picker question is decided (in-house).
 
 ## Scope 3 — "overnight hardening" (tests, bug fixes, UX gaps the README admits to)
 Goal: turn the README's "still need hardening" sentence and the S5 mutation findings into
@@ -167,7 +169,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
   CI polling, status lines and PR bodies.
 
 ### A. Security / correctness tests (API, no behaviour change)
-- [~] **S8 `test/booking-participant-guard`** — PARTIAL (Codex F3: mutation-doc append missing → R1)
+- [x] **S8 `test/booking-participant-guard`** — tests in #21; mutation-doc append in #19 (R1). Re-verified.
   Original tick: — PR #21, CI green. +41 FSM tests (747 api);
       outsider gets **404** on all 36 pairs (current behaviour; the text below said 403). G4/S4/S6
       re-run: all killed (36/5/1 failed after Codex's widening). Mutation-doc append waits for #19 (doc not on `main`). Original: F1 from S5: `transition_booking`'s participant
@@ -201,7 +203,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       except a bug found by a test, which gets its own commit and a note here.
 
 ### B. Bug fix (API)
-- [~] **S11 `fix/photo-replace-failure-safe`** — PARTIAL (Codex F1/F2 → R3)
+- [x] **S11 `fix/photo-replace-failure-safe`** — #24, repaired by R3 (Codex F1/F2). Re-verified.
   Original tick: — PR #24, CI green. New files written beside old
       (unique names), rows + `avatar_url` in one commit, replaced rows' files deleted after it under a
       profile row lock; empty upload → 422. Codex fixes: rollback-safe user id, no dir sweep, keep new
@@ -217,7 +219,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       and in the DB. Drop "failure-safe photo replacement" from README Limitations.
 
 ### C. UX gaps (mobile; no API contract change)
-- [~] **S12 `feat/chat-reconnect`** — PARTIAL (Codex B1 → R2)
+- [x] **S12 `feat/chat-reconnect`** — #25 (stacked on #26), repaired by R2 (Codex B1). Re-verified.
   Original tick: — PR #25, CI green. Backoff 1/2/4/8/8 s, foreground reconnect,
       gap refetch via `fetchMessages`, "Reconnecting…" line, no retry on 1008/4xxx, clean unmount.
       failed refetch keeps the chat on screen (Codex). +8 RNTL tests in a new file (730 mobile), 7 fail
@@ -229,7 +231,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       while disconnected, and clean teardown on unmount. RNTL tests with a fake WebSocket:
       close → reconnect called with backoff, foreground → reconnect, unmount → no leak.
       Drop "chat reconnection" from README Limitations.
-- [~] **S13 `feat/chat-history-pagination`** — PARTIAL (Codex B1 → R2)
+- [x] **S13 `feat/chat-history-pagination`** — #26, repaired by R2 + R5 (Codex B1). Re-verified.
   Original tick: — PR #26, CI green. Client loaded the *oldest* 100
       (API is ASC + offset); now newest page first via `total`, "Load earlier messages" header (not
       `onStartReached`: fires at offset 0 on mount), dedupe, scroll hold (set before the spinner,
@@ -240,7 +242,7 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       RN version), preserve scroll position, dedupe by message id against WS arrivals. RNTL
       test: initial 50, pull → next 50 prepended, no duplicates. Drop "chat history
       pagination" from README Limitations (the whole sentence should be gone after S9/S11/S12/S13).
-- [~] **S14 `feat/booking-datetime-picker`** — PARTIAL (Codex B2 → R4)
+- [x] **S14 `feat/booking-datetime-picker`** — #27, repaired by R4 (Codex B2). Re-verified.
   Original tick: — PR #27 (docs only), CI green. Already shipped
       2026-05-05 (`a5b187b`, `e80456f`: calendar grid + time wheel, past blocked, local no-`Z`); NB-005
       marked resolved. Native datetimepicker swap and "next whole hour" default left to owner. Original: KNOWN_ISSUES NB-005: `BookingComposerScreen`
@@ -318,7 +320,10 @@ used, so the finding cannot silently return.
       replace whose DB commit outcome is unknown may leave unreferenced files on disk (no
       reconciliation job); (3) native scroll stability of chat history is RNTL-verified only.
       Put this in #26 (the last of the four to merge) so the bullet is coherent at every point.
-- [ ] **R6 `chore/scope3-reverify`** — after R1–R5: in a throwaway worktree merge
+- [x] **R6 `chore/scope3-reverify`** — done 2026-10-19, docs-only on `main`. Merged #27, #21, #19,
+      #24, #26, #25 onto `c03d014` (#21 and #27 added: #21 isn't merged; S14's probe needs #27).
+      746 mobile, 756 api, 6 PG/Redis; all four Codex probes pass. Original: after R1–R5: in a
+      throwaway worktree merge
       #23,#28,#21,#22,#19,#24,#26,#25 in that order, run typecheck/lint/jest/pytest/
       tests_integration (real PG+Redis), and re-run Codex's four failed independent probes
       (70-message gap, cancellation, lock mutant ×5, next-hour/elapsed-start). All must pass.
@@ -348,3 +353,6 @@ used, so the finding cannot silently return.
   S16: report `docs/overnight/2026-10-19.md`.
 - 2026-10-19 — Codex independent verification of Scope 1–3: REQUEST_CHANGES. S8/S11/S12/S13/S14
   downgraded to [~]; Scope 4 (R1–R6) written. #23/#28/#22/#21 cleared for merge.
+- 2026-10-19 — Scope 4: R1 #19, R2 #26+#25 (#25 now stacked on #26), R3 #24, R4 #27 (re-titled;
+  in-house pickers kept), R5 #26+#25 README. R6 combined re-verification green; Codex's four
+  failed probes pass. S8/S11–S14 ticked. Nothing merged; #21 found still open.
