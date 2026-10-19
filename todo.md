@@ -3,7 +3,7 @@
 Single source of truth for what is in scope *right now*. Read this first when resuming
 after a pause. Update it in the same commit as the work.
 
-_Last updated: 2026-10-19 03:15 (Sydney)._
+_Last updated: 2026-10-19 13:00 (Sydney)._
 
 ## Working rules (apply to every session on this repo)
 
@@ -39,16 +39,15 @@ _Last updated: 2026-10-19 03:15 (Sydney)._
 - Major-version dependency jumps, `LICENSE`, deleting remote branches, anything irreversible.
 
 ## Resume here
-- **State:** Scope 1 merged 2026-10-18 (#16 `081eedc`, #17 `558f52a`, #18 `9808341`).
-  #15 (S3) is still a draft. Scope 2: S5 in PR #19, S6 in PR #20 (draft). Scope 3 ran
-  overnight 2026-10-19: S8–S15 are PRs #21–#28, all open, CI green, Codex-reviewed, **none
-  merged**; S10d/S10e closed by S10's measurement; report in `docs/overnight/2026-10-19.md`.
-- **Next step (owner):** review/merge #21–#28 (order and decisions in the report's "Needs the
-  owner"); #22/#24/#25/#26 each edit README Limitations line 209, so delete that bullet once
-  all four are in. #19 already conflicts with `main` in `todo.md` (it was cut before Scope 3
-  landed): keep `main`'s text and take #19's S5/S6 ticks. Decide #15/#20; go-ahead for S7.
-- **Next step (Claude):** nothing scoped. S7 is a split only — do not start any S7 item without
-  the owner's go-ahead.
+- **State:** Scope 1 merged. Scope 3 ran overnight 2026-10-19 (PRs #21–#28, CI green, none
+  merged). An independent Codex verification (reviews/codex-scope3-verify-2026-10-19.md, local
+  only; summary under "Scope 4") returned **REQUEST_CHANGES**: 5 of the 8 Scope 3 ticks were
+  overstated and one real bug was found in the #25+#26 combination. Those ticks are now `[~]`.
+- **Owner, merge now (verified safe):** #23, #28, #22, #21 — in that order.
+- **Owner, decide:** #20 metro (pulls 3 transitive majors — recommend keep draft until the
+  SDK 55 hop S7c removes the need), #15 cryptography (recommend merge: audit clean, 706 pass).
+- **Next step (Claude):** Scope 4, R1 → R6, under the Overnight protocol. R1 first because
+  R5 depends on it.
 - **Environment limits:**
   - The linked-computer shell has no `gh`, no `docker`, no GitHub push credentials, and its
     `apps/api/.venv` may be built for another OS. Do **not** `uv sync` over it.
@@ -168,7 +167,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
   CI polling, status lines and PR bodies.
 
 ### A. Security / correctness tests (API, no behaviour change)
-- [x] **S8 `test/booking-participant-guard`** — PR #21, CI green. +41 FSM tests (747 api);
+- [~] **S8 `test/booking-participant-guard`** — PARTIAL (Codex F3: mutation-doc append missing → R1)
+  Original tick: — PR #21, CI green. +41 FSM tests (747 api);
       outsider gets **404** on all 36 pairs (current behaviour; the text below said 403). G4/S4/S6
       re-run: all killed (36/5/1 failed after Codex's widening). Mutation-doc append waits for #19 (doc not on `main`). Original: F1 from S5: `transition_booking`'s participant
       check (`_assert_booking_participant`, `services/bookings.py:73`) has no test; deleting
@@ -201,7 +201,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       except a bug found by a test, which gets its own commit and a note here.
 
 ### B. Bug fix (API)
-- [x] **S11 `fix/photo-replace-failure-safe`** — PR #24, CI green. New files written beside old
+- [~] **S11 `fix/photo-replace-failure-safe`** — PARTIAL (Codex F1/F2 → R3)
+  Original tick: — PR #24, CI green. New files written beside old
       (unique names), rows + `avatar_url` in one commit, replaced rows' files deleted after it under a
       profile row lock; empty upload → 422. Codex fixes: rollback-safe user id, no dir sweep, keep new
       files if the commit outcome is unknown, response built before commit. +7 unit (713 api) + 1 PG
@@ -216,7 +217,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       and in the DB. Drop "failure-safe photo replacement" from README Limitations.
 
 ### C. UX gaps (mobile; no API contract change)
-- [x] **S12 `feat/chat-reconnect`** — PR #25, CI green. Backoff 1/2/4/8/8 s, foreground reconnect,
+- [~] **S12 `feat/chat-reconnect`** — PARTIAL (Codex B1 → R2)
+  Original tick: — PR #25, CI green. Backoff 1/2/4/8/8 s, foreground reconnect,
       gap refetch via `fetchMessages`, "Reconnecting…" line, no retry on 1008/4xxx, clean unmount.
       failed refetch keeps the chat on screen (Codex). +8 RNTL tests in a new file (730 mobile), 7 fail
       on `main`. README word dropped. Original: `ChatScreen.tsx:303` opens the WebSocket with no
@@ -227,7 +229,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       while disconnected, and clean teardown on unmount. RNTL tests with a fake WebSocket:
       close → reconnect called with backoff, foreground → reconnect, unmount → no leak.
       Drop "chat reconnection" from README Limitations.
-- [x] **S13 `feat/chat-history-pagination`** — PR #26, CI green. Client loaded the *oldest* 100
+- [~] **S13 `feat/chat-history-pagination`** — PARTIAL (Codex B1 → R2)
+  Original tick: — PR #26, CI green. Client loaded the *oldest* 100
       (API is ASC + offset); now newest page first via `total`, "Load earlier messages" header (not
       `onStartReached`: fires at offset 0 on mount), dedupe, scroll hold (set before the spinner,
       per Codex), fetch error cleared on success. +7 tests (729 mobile).
@@ -237,7 +240,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       RN version), preserve scroll position, dedupe by message id against WS arrivals. RNTL
       test: initial 50, pull → next 50 prepended, no duplicates. Drop "chat history
       pagination" from README Limitations (the whole sentence should be gone after S9/S11/S12/S13).
-- [x] **S14 `feat/booking-datetime-picker`** — PR #27 (docs only), CI green. Already shipped
+- [~] **S14 `feat/booking-datetime-picker`** — PARTIAL (Codex B2 → R4)
+  Original tick: — PR #27 (docs only), CI green. Already shipped
       2026-05-05 (`a5b187b`, `e80456f`: calendar grid + time wheel, past blocked, local no-`Z`); NB-005
       marked resolved. Native datetimepicker swap and "next whole hour" default left to owner. Original: KNOWN_ISSUES NB-005: `BookingComposerScreen`
       takes date/time as free text (`YYYY-MM-DD`, `HH:MM`). Replace with
@@ -261,11 +265,73 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       deltas, and the README Limitations lines removed. Update "Resume here" and the Scope 3
       checkboxes. Docs-only commit on `main` is fine for this one.
 
+## Scope 4 — "repair after verification" (fix what Codex proved, then merge Scope 3)
+Source: Codex independent verification 2026-10-19 (batch verdict REQUEST_CHANGES). Every item
+below cites its finding. Same Overnight protocol as Scope 3: branch per item, CI green, no
+merges, `[~] blocked:` and move on if stuck. Each repair must add the exact regression Codex
+used, so the finding cannot silently return.
+
+- [ ] **R1 `docs/mutation-record-rebase`** (F3 + F4) — rebase #19 onto current `main`, resolving
+      `todo.md` by keeping `main`'s text (only take #19's S5/S6 ticks). In the same branch append
+      a "Re-run after #21 (2026-10-19)" table to
+      `docs/review/BOOKING_FSM_MUTATION_2026-10-19.md`: G4 → 36 failed/105 passed, S4 → 5/136,
+      S6 → 1/140 (the figures Codex reproduced on #21's head), keeping the historical 28/31 as
+      historical. Force-push #19 (it is a docs branch; note the rewrite in a PR comment). This
+      closes S8's missing criterion without touching #21.
+- [ ] **R2 `fix/chat-gap-recovery`** (B1, BLOCKER) — the real bug: with #25+#26, 100 persisted
+      messages, 70 arrive while disconnected → reconnect fetches only the newest 50 (ids 120–169),
+      `Math.min` keeps `oldestOffset=50`, "Load earlier" then fetches 0–49 and disappears;
+      **ids 100–119 are unreachable forever.** Fix in the #26 branch first: replace the single
+      `oldestOffset` with explicit loaded ranges (list of [start,end) offsets or a Set of ids +
+      total), and never hide "Load earlier" while any interior range is missing. Then rebase #25
+      onto #26 and change its reconnect refetch to page **backwards from the latest page until
+      it overlaps an already-loaded id** (cap at e.g. 10 pages; beyond that, keep the gap
+      visible with a "Some messages may be missing — load earlier" state). Add Codex's exact
+      combined regression (100 → disconnect → +70 → reconnect → every id 0–169 reachable via
+      "Load earlier") to `ChatScreen.reconnect.test.tsx`. Update both PR bodies; #25's body must
+      say it is stacked on #26.
+- [ ] **R3 `fix/photo-replace-cancel-and-lock`** (F1 + F2, on the #24 branch) —
+      (a) `asyncio.CancelledError` at flush leaves all new files on disk: catch
+      `BaseException` for the pre-commit window, roll back, delete the new files, re-raise.
+      Keep the post-commit-ambiguous case as is (files retained) but fix the endpoint docstring
+      to say exactly that. Test: inject `CancelledError` at `AsyncSession.flush`, assert the
+      three new files are gone and old rows/avatar intact.
+      (b) The PG lock regression passes 2/3 runs with `.with_for_update()` removed. Make overlap
+      deterministic: first request holds its transaction after the profile read on an
+      `asyncio.Event`; assert the second request is blocked at that read (timeout → it must NOT
+      have progressed); release; without the lock the second progresses and the test fails.
+      Run the lock mutant 5× — must fail 5/5.
+      (c) Add a note line in `todo.md` S11 that lock release happens at commit, before old-file
+      cleanup (Codex NOTE on `todo.md:205`).
+- [ ] **R4 `feat/booking-composer-submit-guard`** (B2, on the #27 branch, becomes code) — keep
+      the in-house `CalendarPicker`/`TimeWheelPicker` (owner call: a native module adds nothing
+      user-visible; record this decision in the item). Implement the two unmet criteria:
+      default start = **next whole hour** from now (not tomorrow 09:00), and **re-validate at
+      submit** that start is not in the past (and not within the server's 1-hour grace in a way
+      that would be rejected), showing the existing error instead of calling the API. Tests with
+      a fixed clock: at 10:30 local the default payload is `T11:00:00`; advance the fake clock
+      past the chosen start while mounted → Send does not call the API. Server contract untouched.
+      Re-title #27 and update KNOWN_ISSUES wording.
+- [ ] **R5 `docs/readme-limitations-precise`** (after R2/R3 land in their PRs) — do not delete
+      the README hardening bullet; replace it with precise remaining limitations: (1) chat
+      reconnect recovers gaps up to N pages, larger gaps are flagged not auto-filled; (2) a photo
+      replace whose DB commit outcome is unknown may leave unreferenced files on disk (no
+      reconciliation job); (3) native scroll stability of chat history is RNTL-verified only.
+      Put this in #26 (the last of the four to merge) so the bullet is coherent at every point.
+- [ ] **R6 `chore/scope3-reverify`** — after R1–R5: in a throwaway worktree merge
+      #23,#28,#21,#22,#19,#24,#26,#25 in that order, run typecheck/lint/jest/pytest/
+      tests_integration (real PG+Redis), and re-run Codex's four failed independent probes
+      (70-message gap, cancellation, lock mutant ×5, next-hour/elapsed-start). All must pass.
+      Record results in `docs/overnight/2026-10-19.md` under "Re-verification", docs-only on
+      `main`. Then `[x]` S8/S11/S12/S13/S14 here with the repairing PR numbers.
+
 ## Later (not scoped)
 - S7a–S7i Expo SDK upgrade — owner's go-ahead required.
 - ~~S10d/S10e~~: closed by S10's measurement (with greenlet tracing, challenges 93% and events
   94%, both above the 80% target; see #23).
-- Decide #15 (cryptography) and #20 (metro/image-size) — owner.
+- Decide #15 (cryptography) and #20 (metro/image-size) — owner. Codex B3: #20 pulls accepts 1→2,
+  mime-types 2→3, negotiator 0→1 (transitive majors); keep draft unless the no-major rule is
+  explicitly waived.
 
 ## Log
 - 2026-10-18 — scope created. S1 (#16): coverage/tsbuildinfo ignored, todo.md added.
@@ -280,3 +346,5 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
   S14 #27, S15 #28, all CI green and Codex-reviewed, none merged. Premises corrected: S8 (404),
   S9 (lock already tested), S10 (coverage artifact), S13 (oldest page), S14 (already shipped).
   S16: report `docs/overnight/2026-10-19.md`.
+- 2026-10-19 — Codex independent verification of Scope 1–3: REQUEST_CHANGES. S8/S11/S12/S13/S14
+  downgraded to [~]; Scope 4 (R1–R6) written. #23/#28/#22/#21 cleared for merge.
