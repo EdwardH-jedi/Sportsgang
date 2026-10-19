@@ -312,7 +312,11 @@ used, so the finding cannot silently return.
       a fixed clock: at 10:30 local the default payload is `T11:00:00`; advance the fake clock
       past the chosen start while mounted → Send does not call the API. Server contract untouched.
       Re-title #27 and update KNOWN_ISSUES wording.
-- [ ] **R5 `docs/readme-limitations-precise`** (after R2/R3 land in their PRs) — do not delete
+- [x] **R5 `docs/readme-limitations-precise`** (after R2/R3 land in their PRs) — #26 replaces the
+      bullet with three precise ones (no reconnect yet; unknown-outcome photo commit leaves
+      unreferenced files; scroll hold is RNTL-only); #25 (stacked) swaps the first for the
+      10-page gap limit. #24/#25 no longer edit README, so no README conflicts. Merge #24 before
+      #26. Original: do not delete
       the README hardening bullet; replace it with precise remaining limitations: (1) chat
       reconnect recovers gaps up to N pages, larger gaps are flagged not auto-filled; (2) a photo
       replace whose DB commit outcome is unknown may leave unreferenced files on disk (no

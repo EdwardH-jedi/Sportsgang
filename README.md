@@ -206,6 +206,8 @@ This section covers what the App Store listing, the recorded screenshots, and th
 - Apple, Google, and Expo integrations sit outside the local test boundary.
 - Bookings coordinate sessions between participants. They do not reserve a facility's inventory or process a court payment.
 - Tournament endpoints were removed in [#6](https://github.com/EdwardH-jedi/Sportsgang/pull/6) rather than left unfinished; the app has no tournament feature.
-- Chat reconnection and failure-safe photo replacement still need hardening. Existing checks should not be read as guarantees for these cases.
+- A dropped chat WebSocket is not reconnected; live messages stop until the chat is reopened.
+- If a profile-photo replace fails at the database commit with an unknown outcome, one set of photo files is left on disk, unreferenced. Nothing reconciles them later.
+- Chat history keeps the reader's place when earlier messages load. That is verified in component tests (React Native Testing Library) only, not on a device.
 - Optional integrations (Google Calendar, Expo push, Google Places) need provider configuration and separate delivery verification.
 - Older staging notes are historical records, not a current availability report.
