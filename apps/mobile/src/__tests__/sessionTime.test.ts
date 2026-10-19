@@ -11,13 +11,12 @@ import {
   computeValidationError,
   dateOptions,
   daysInMonth,
-  defaultDate,
-  defaultStartTime,
   firstWeekdayOfMonth,
   isPastDate,
   joinTime,
   mapBackendError,
   monthLabel,
+  nextWholeHour,
   plusOneHour,
   shiftMonth,
   snapMinuteTo15,
@@ -56,14 +55,18 @@ describe('plusOneHour', () => {
   });
 });
 
-describe('defaultDate', () => {
-  it('returns tomorrow in local time', () => {
-    const now = new Date(2026, 5, 1, 14, 0, 0); // 2026-06-01 14:00 local
-    expect(defaultDate(now)).toBe('2026-06-02');
+describe('nextWholeHour', () => {
+  it('returns the next whole hour today', () => {
+    const now = new Date(2026, 9, 19, 10, 30, 0); // 2026-10-19 10:30 local
+    expect(nextWholeHour(now)).toEqual({ date: '2026-10-19', time: '11:00' });
   });
-  it('rolls month boundary correctly', () => {
-    const now = new Date(2026, 0, 31, 14, 0, 0); // 2026-01-31
-    expect(defaultDate(now)).toBe('2026-02-01');
+  it('moves on a full hour when now is already on the hour', () => {
+    const now = new Date(2026, 9, 19, 10, 0, 0);
+    expect(nextWholeHour(now)).toEqual({ date: '2026-10-19', time: '11:00' });
+  });
+  it('rolls into tomorrow (and the month boundary) after 23:00', () => {
+    const now = new Date(2026, 0, 31, 23, 15, 0); // 2026-01-31 23:15
+    expect(nextWholeHour(now)).toEqual({ date: '2026-02-01', time: '00:00' });
   });
 });
 
@@ -186,6 +189,18 @@ describe('computeValidationError', () => {
     ).toBeNull();
   });
 
+  it('flags a start on an earlier day as past (the screen stayed open overnight)', () => {
+    const now = new Date(2026, 5, 2, 8, 0, 0); // 2026-06-02 08:00 local
+    expect(
+      computeValidationError({
+        date: '2026-06-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        now,
+      })
+    ).toBe('Choose a future start time.');
+  });
+
   it('does not flag a tomorrow date as past', () => {
     const now = new Date(2026, 5, 1, 14, 0, 0);
     expect(
@@ -233,11 +248,11 @@ describe('mapBackendError', () => {
 });
 
 describe('default helpers compose into a valid session', () => {
-  it('default date + start + end is a 1-hour future session', () => {
-    const date = defaultDate();
-    const start = defaultStartTime();
-    const end = plusOneHour(start);
-    expect(computeValidationError({ date, startTime: start, endTime: end })).toBeNull();
+  it('the next whole hour + 1h is a valid future session', () => {
+    const now = new Date(2026, 9, 19, 10, 30, 0);
+    const { date, time } = nextWholeHour(now);
+    const end = plusOneHour(time);
+    expect(computeValidationError({ date, startTime: time, endTime: end, now })).toBeNull();
   });
 });
 
