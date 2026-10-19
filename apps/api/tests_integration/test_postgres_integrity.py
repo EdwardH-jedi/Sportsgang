@@ -17,6 +17,7 @@ from app.core.config import get_settings
 from app.models.booking import Booking
 from app.models.google_calendar import GoogleOAuthState
 from app.models.match import Match
+from app.models.notification import NotificationEvent
 from app.models.rank import HonorEvent, RankEvent
 from app.models.user import User
 from app.services.bookings import transition_booking
@@ -126,6 +127,54 @@ async def test_concurrent_confirm_vs_decline_has_one_winner() -> None:
         async with _Session() as session:
             final_status = (await session.execute(select(Booking.status).where(Booking.id == booking_id))).scalar_one()
         assert final_status in {"confirmed", "declined"}
+    finally:
+        await _cleanup_users(proposer_id, partner_id)
+
+
+async def test_concurrent_cancel_vs_complete_has_one_winner_and_one_side_effect_set() -> None:
+    # Two different "either" edges out of confirmed, by different participants:
+    # the row lock must serialise them so only the winner's side effects land.
+    proposer_id, partner_id, booking_id = await _seed_booking(status="confirmed", ended=True)
+    try:
+        results = await asyncio.gather(
+            _run_transition(booking_id, "cancelled", proposer_id),
+            _run_transition(booking_id, "completed", partner_id),
+        )
+        assert sorted(results) == [200, 422]
+
+        async with _Session() as session:
+            final_status = (await session.execute(select(Booking.status).where(Booking.id == booking_id))).scalar_one()
+            notifications = [
+                tuple(row)
+                for row in await session.execute(
+                    select(NotificationEvent.notification_type, NotificationEvent.user_id).where(
+                        NotificationEvent.booking_id == booking_id
+                    )
+                )
+            ]
+            honor = [
+                tuple(row)
+                for row in await session.execute(
+                    select(HonorEvent.reason, HonorEvent.user_id).where(HonorEvent.booking_id == booking_id)
+                )
+            ]
+            rank_count = (
+                await session.execute(
+                    select(func.count()).select_from(RankEvent).where(RankEvent.booking_id == booking_id)
+                )
+            ).scalar_one()
+
+        if final_status == "cancelled":
+            assert results == [200, 422]
+            assert notifications == [("booking_cancelled", partner_id)]
+            assert honor == [("late_cancellation", proposer_id)]
+            assert rank_count == 0
+        else:
+            assert final_status == "completed"
+            assert results == [422, 200]
+            assert notifications == []
+            assert sorted(honor) == sorted([("session_completed", proposer_id), ("session_completed", partner_id)])
+            assert rank_count == 2
     finally:
         await _cleanup_users(proposer_id, partner_id)
 
