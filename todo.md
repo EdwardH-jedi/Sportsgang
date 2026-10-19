@@ -213,6 +213,8 @@ merged, tested fixes, in one unattended run. Every item below was checked agains
       profile row lock; empty upload → 422. Codex fixes: rollback-safe user id, no dir sweep, keep new
       files if the commit outcome is unknown, response built before commit. +7 unit (713 api) + 1 PG
       test (lock: 3/3 fail without).
+      Note (Codex, R3c): the row lock is released at commit, *before* the replaced files are
+      deleted; the file cleanup is not under the lock.
       README line dropped. Original: `routers/users.py:140-179` deletes the
       `ProfilePhoto` rows and calls `media_storage.clear_user_photos()` **before**
       `save_user_photos()`; if saving fails (bad file, disk error) the user is left with no
@@ -299,7 +301,12 @@ used, so the finding cannot silently return.
       combined regression (100 → disconnect → +70 → reconnect → every id 0–169 reachable via
       "Load earlier") to `ChatScreen.reconnect.test.tsx`. Update both PR bodies; #25's body must
       say it is stacked on #26.
-- [ ] **R3 `fix/photo-replace-cancel-and-lock`** (F1 + F2, on the #24 branch) —
+- [x] **R3 `fix/photo-replace-cancel-and-lock`** (F1 + F2, on the #24 branch) — #24 rebased on
+      `main`. (a) `except BaseException` before commit: delete new files, roll back, re-raise;
+      Codex's cancel test fails on `da7e204`, passes now; docstring states the ambiguous-commit case.
+      (b) A holds the lock on an Event; B must show in `pg_stat_activity` as a lock waiter before it
+      reads the profile. Green 5/5; lock mutant **fails 5/5**. (c) note added under S11. README
+      edit dropped from #24 (#26 owns the bullet, R5). 715 api + 6 PG integration. Original:
       (a) `asyncio.CancelledError` at flush leaves all new files on disk: catch
       `BaseException` for the pre-commit window, roll back, delete the new files, re-raise.
       Keep the post-commit-ambiguous case as is (files retained) but fix the endpoint docstring

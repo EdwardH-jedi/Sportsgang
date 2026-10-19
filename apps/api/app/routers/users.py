@@ -145,38 +145,68 @@ async def replace_profile_photos(
 ) -> ProfilePhotosResponse:
     """Replace the current user's profile photos.
 
-    Accepts 2-4 multipart files. Existing photo rows for this profile are
-    deleted, the uploads are persisted to local media storage, and new rows
-    are written in upload order. ``avatar_url`` on the profile is synced to
-    the first photo URL so existing avatar consumers keep working.
+    Accepts 2-4 non-empty multipart files. The uploads are written to local
+    media storage first; then, in one transaction, the profile's photo rows
+    are replaced in upload order and ``avatar_url`` is synced to the first
+    photo URL so existing avatar consumers keep working.
+
+    Failure before the commit (a bad write, a flush error, cancellation)
+    rolls back and deletes the new files: the previous photos, rows and
+    ``avatar_url`` are unchanged. If the commit itself raises, its outcome
+    is unknown — it may have landed (rows and ``avatar_url`` now point at
+    the new files) or not (they still point at the old ones) — so both sets
+    of files are kept and one set is left on disk unreferenced; nothing
+    reconciles it later. After a successful commit the replaced files are
+    deleted.
     """
     if not (PROFILE_PHOTO_MIN <= len(files) <= PROFILE_PHOTO_MAX):
         raise HTTPException(
             status_code=422,
             detail=f"Must upload {PROFILE_PHOTO_MIN}-{PROFILE_PHOTO_MAX} photos",
         )
+    if any(media_storage.is_empty(upload) for upload in files):
+        raise HTTPException(status_code=422, detail="Photos must not be empty")
 
-    result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    # Read once: a rollback below expires current_user along with the session.
+    user_id = current_user.id
+
+    # The row lock serialises concurrent replaces for one profile (PostgreSQL;
+    # SQLite ignores it), so each request deletes only the photos it replaced.
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == user_id).with_for_update())
     profile = result.scalar_one_or_none()
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    previous_urls = list(
+        (await db.execute(select(ProfilePhoto.photo_url).where(ProfilePhoto.profile_id == profile.id))).scalars()
+    )
 
-    await db.execute(delete(ProfilePhoto).where(ProfilePhoto.profile_id == profile.id))
+    urls = media_storage.save_user_photos(user_id, files)
 
-    media_storage.clear_user_photos(current_user.id)
-    urls = media_storage.save_user_photos(current_user.id, files)
-
-    new_photos = [ProfilePhoto(profile_id=profile.id, photo_url=url, position=index) for index, url in enumerate(urls)]
-    db.add_all(new_photos)
-
-    profile.avatar_url = urls[0]
-
+    try:
+        await db.execute(delete(ProfilePhoto).where(ProfilePhoto.profile_id == profile.id))
+        new_photos = [
+            ProfilePhoto(profile_id=profile.id, photo_url=url, position=index) for index, url in enumerate(urls)
+        ]
+        db.add_all(new_photos)
+        profile.avatar_url = urls[0]
+        await db.flush()
+        # Snapshot the response while the row lock is held: once committed, a
+        # newer replace may delete these rows before this request returns.
+        response = ProfilePhotosResponse(photos=new_photos, avatar_url=profile.avatar_url)
+    except BaseException:
+        # Cancellation (a client disconnect, a shutdown) included. Nothing is
+        # committed yet, so the new files are unreferenced: delete them before
+        # awaiting the rollback, which a repeated cancel could interrupt.
+        media_storage.delete_user_photos(user_id, urls)
+        await db.rollback()
+        raise
+    # A commit that raises may still have landed (e.g. the connection dropped
+    # before the reply), so the new files are not deleted on that path: at
+    # worst they are left unreferenced, never referenced and missing.
     await db.commit()
-    for photo in new_photos:
-        await db.refresh(photo)
-    await db.refresh(profile)
 
-    return ProfilePhotosResponse(photos=new_photos, avatar_url=profile.avatar_url)
+    media_storage.delete_user_photos(user_id, previous_urls)
+    return response
 
 
 @router.delete("/me/sport-profiles/{sport}", status_code=status.HTTP_204_NO_CONTENT)

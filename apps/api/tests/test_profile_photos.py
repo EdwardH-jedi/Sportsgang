@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
+import shutil
 from pathlib import Path
 from typing import AsyncGenerator
 from unittest.mock import AsyncMock
 
 import pytest
+from fastapi import Depends
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -73,8 +76,10 @@ async def photo_client(tmp_path, monkeypatch) -> AsyncGenerator[tuple[AsyncClien
         await session.commit()
         await session.refresh(profile)
 
-    async def _override_current_user() -> User:
-        return user
+    async def _override_current_user(db: AsyncSession = Depends(get_db)) -> User:
+        # Load the user through the request's session, as get_current_user does,
+        # so a rollback in the route expires it exactly as in production.
+        return await db.get(User, user.id)
 
     app.dependency_overrides[get_db] = _override_get_db
     app.dependency_overrides[get_redis] = _override_get_redis
@@ -209,3 +214,193 @@ async def test_upsert_profile_response_includes_persisted_photos(photo_client) -
     assert r.status_code == 200, r.text
     body = r.json()
     assert [p["photo_url"] for p in body["photos"]] == uploaded_urls
+
+
+# ---------------------------------------------------------------------------
+# Failure safety: a replace that fails leaves the previous photos intact
+# ---------------------------------------------------------------------------
+
+
+async def _photo_state(tmp_path, user: User, profile: UserProfile) -> tuple[list[str], list[str], str | None]:
+    """(file names on disk, photo row URLs in order, avatar_url) for the user."""
+    user_dir = Path(tmp_path) / "media" / "profile_photos" / str(user.id)
+    on_disk = sorted(p.name for p in user_dir.iterdir()) if user_dir.exists() else []
+    async with _TestSession() as session:
+        rows = await session.execute(
+            select(ProfilePhoto.photo_url).where(ProfilePhoto.profile_id == profile.id).order_by(ProfilePhoto.position)
+        )
+        avatar_url = (
+            await session.execute(select(UserProfile.avatar_url).where(UserProfile.id == profile.id))
+        ).scalar_one()
+        return on_disk, list(rows.scalars().all()), avatar_url
+
+
+async def _upload_initial_photos(client: AsyncClient, tmp_path, user: User, profile: UserProfile):
+    r = await client.put("/users/me/photos", files=_files(2))
+    assert r.status_code == 200, r.text
+    before = await _photo_state(tmp_path, user, profile)
+    assert len(before[0]) == 2 and len(before[1]) == 2 and before[2] == before[1][0]
+    return before
+
+
+async def test_replace_deletes_the_previous_files_from_disk(photo_client, tmp_path) -> None:
+    client, user, profile = photo_client
+    await _upload_initial_photos(client, tmp_path, user, profile)
+
+    r = await client.put("/users/me/photos", files=_files(3))
+    assert r.status_code == 200, r.text
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert on_disk == sorted(url.rsplit("/", 1)[-1] for url in row_urls)
+    assert len(on_disk) == 3
+    assert avatar_url == row_urls[0]
+
+
+async def test_empty_file_is_rejected_and_previous_photos_survive(photo_client, tmp_path) -> None:
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    files = _files(3)
+    files[1] = ("files", ("photo1.jpg", b"", "image/jpeg"))
+    r = await client.put("/users/me/photos", files=files)
+
+    assert r.status_code == 422
+    assert "empty" in r.json()["detail"]
+    assert await _photo_state(tmp_path, user, profile) == before
+
+
+async def test_write_failure_on_second_file_keeps_previous_photos(photo_client, tmp_path, monkeypatch) -> None:
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    real_copy = shutil.copyfileobj
+
+    def copy_failing_on_second_upload(src, dst, *args, **kwargs):
+        # Uploads are written as {index:02d}_{uuid}{suffix}; fail the second one.
+        if Path(getattr(dst, "name", "")).name.startswith("01_"):
+            raise OSError(28, "No space left on device")
+        return real_copy(src, dst, *args, **kwargs)
+
+    monkeypatch.setattr(shutil, "copyfileobj", copy_failing_on_second_upload)
+    with pytest.raises(OSError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    assert await _photo_state(tmp_path, user, profile) == before
+
+
+async def test_flush_failure_keeps_previous_photos_and_removes_the_new_files(
+    photo_client, tmp_path, monkeypatch
+) -> None:
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    async def failing_flush(self, objects=None) -> None:
+        raise RuntimeError("constraint violated")
+
+    monkeypatch.setattr(AsyncSession, "flush", failing_flush)
+    with pytest.raises(RuntimeError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    assert await _photo_state(tmp_path, user, profile) == before
+
+
+async def test_commit_failure_keeps_previous_photos_and_the_new_files(photo_client, tmp_path, monkeypatch) -> None:
+    # The commit may have reached the database before failing, so the new
+    # uploads stay on disk rather than risk rows pointing at deleted files.
+    client, user, profile = photo_client
+    before_files, before_rows, before_avatar = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    async def failing_commit(self) -> None:
+        raise RuntimeError("connection lost")
+
+    monkeypatch.setattr(AsyncSession, "commit", failing_commit)
+    with pytest.raises(RuntimeError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert (row_urls, avatar_url) == (before_rows, before_avatar)
+    assert set(before_files) <= set(on_disk)
+    assert len(on_disk) == len(before_files) + 3
+
+
+async def test_cancellation_before_commit_keeps_previous_photos_and_removes_the_new_files(
+    photo_client, tmp_path, monkeypatch
+) -> None:
+    # Codex's regression (F1): CancelledError is a BaseException, so an
+    # `except Exception` cleanup never ran and all three uploads stayed on disk.
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+
+    async def cancelled_flush(self, objects=None):
+        raise asyncio.CancelledError()
+
+    monkeypatch.setattr(AsyncSession, "flush", cancelled_flush)
+    with pytest.raises(asyncio.CancelledError):
+        await client.put("/users/me/photos", files=_files(3))
+    after = await _photo_state(tmp_path, user, profile)
+    assert after[1:] == before[1:]
+    assert after[0] == before[0], "cancelled request leaked its new uploads"
+
+
+async def test_commit_that_lands_then_raises_keeps_every_referenced_file(photo_client, tmp_path, monkeypatch) -> None:
+    # A lost commit acknowledgement: the rows did change, so the new files
+    # must stay; the old ones stay too, unreferenced (no reconciliation job).
+    client, user, profile = photo_client
+    before_files, _, _ = await _upload_initial_photos(client, tmp_path, user, profile)
+    real_commit = AsyncSession.commit
+
+    async def commit_then_fail(self) -> None:
+        await real_commit(self)
+        raise RuntimeError("commit ack lost")
+
+    monkeypatch.setattr(AsyncSession, "commit", commit_then_fail)
+    with pytest.raises(RuntimeError):
+        await client.put("/users/me/photos", files=_files(3))
+
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert len(row_urls) == 3 and avatar_url == row_urls[0]
+    assert set(url.rsplit("/", 1)[-1] for url in row_urls) <= set(on_disk)
+    assert set(before_files) <= set(on_disk)
+
+
+async def test_replace_only_deletes_the_photos_it_replaced(photo_client, tmp_path) -> None:
+    # A file no photo row points at (e.g. another replace's upload that has not
+    # committed yet) is not this request's to delete.
+    client, user, profile = photo_client
+    before = await _upload_initial_photos(client, tmp_path, user, profile)
+    stray = Path(tmp_path) / "media" / "profile_photos" / str(user.id) / "00_in-flight.jpg"
+    stray.write_bytes(b"\xff\xd8\xff\xe0another-upload")
+
+    r = await client.put("/users/me/photos", files=_files(2))
+    assert r.status_code == 200, r.text
+
+    on_disk, row_urls, _ = await _photo_state(tmp_path, user, profile)
+    assert on_disk == sorted([stray.name, *(url.rsplit("/", 1)[-1] for url in row_urls)])
+    assert not set(before[0]) & set(on_disk)
+
+
+async def test_replace_still_answers_when_a_newer_replace_lands_right_after_its_commit(
+    photo_client, tmp_path, monkeypatch
+) -> None:
+    # Once the first replace commits, its row lock is gone: a second replace
+    # can delete the first one's rows before the first builds its response.
+    client, user, profile = photo_client
+    await _upload_initial_photos(client, tmp_path, user, profile)
+    real_commit = AsyncSession.commit
+    newer: dict = {}
+
+    async def commit_then_newer_replace(self) -> None:
+        await real_commit(self)
+        if not newer:
+            newer["started"] = True
+            newer["response"] = await client.put("/users/me/photos", files=_files(2))
+
+    monkeypatch.setattr(AsyncSession, "commit", commit_then_newer_replace)
+    r = await client.put("/users/me/photos", files=_files(3))
+
+    assert r.status_code == 200, r.text
+    assert len(r.json()["photos"]) == 3
+    assert newer["response"].status_code == 200
+    on_disk, row_urls, avatar_url = await _photo_state(tmp_path, user, profile)
+    assert row_urls == [p["photo_url"] for p in newer["response"].json()["photos"]]
+    assert avatar_url == row_urls[0]
+    assert on_disk == sorted(url.rsplit("/", 1)[-1] for url in row_urls)
