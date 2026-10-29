@@ -5,14 +5,15 @@ public service function, app/services/bookings.py::transition_booking, for
 every (from_status, to_status, participant) combination. The session is an
 AsyncMock and the response, rank and notification helpers are monkeypatched,
 so each test checks what a caller observes: the status code, the booking's
-resulting status, and how many side effects ran.
+resulting status, how many side effects ran, and who each notification goes to.
 
 Documented behaviour (see _TRANSITIONS and the FSM comment in
 test_bookings.py):
   proposed   -> confirmed (partner) | declined (partner) | cancelled (proposer)
   confirmed  -> cancelled | completed | no_show (either participant)
 Any other (from, to) pair is rejected with 422; an allowed transition
-attempted by the wrong participant is rejected with 403. A rejected
+attempted by the wrong participant is rejected with 403; any transition
+attempted by someone who is not a participant is rejected with 404. A rejected
 transition leaves the booking unchanged and runs no side effects.
 """
 
@@ -51,7 +52,10 @@ NO_SIDE_EFFECTS = (0, 0, 0)
 
 PROPOSER_ID = uuid4()
 PARTNER_ID = uuid4()
-ACTORS = {"proposer": PROPOSER_ID, "partner": PARTNER_ID}
+OUTSIDER_ID = uuid4()
+ACTORS = {"proposer": PROPOSER_ID, "partner": PARTNER_ID, "outsider": OUTSIDER_ID}
+# Distinct display names so a notification naming the wrong person is visible.
+NAMES = {PROPOSER_ID: "Pat", PARTNER_ID: "Quinn", OUTSIDER_ID: "Olly"}
 
 
 def _booking(status: str, *, partner_id: UUID = PARTNER_ID) -> Booking:
@@ -76,7 +80,9 @@ def service(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
     # The booking lookup is the only query left once the helpers below are mocked.
     svc.db.execute.return_value = svc.loaded
     monkeypatch.setattr(
-        bookings_service, "_build_partner_card", AsyncMock(return_value=SimpleNamespace(display_name="Sam"))
+        bookings_service,
+        "_build_partner_card",
+        AsyncMock(side_effect=lambda _db, user_id, _sport: SimpleNamespace(display_name=NAMES[user_id])),
     )
     monkeypatch.setattr(bookings_service, "_to_response", AsyncMock(return_value=SimpleNamespace()))
     monkeypatch.setattr(bookings_service.rank_service, "record_booking_transition", svc.record_transition)
@@ -235,3 +241,62 @@ async def test_booking_without_two_distinct_participants_cannot_transition(servi
     assert await _transition(service, booking, "cancelled", "proposer") == 422
     assert booking.status == "proposed"
     assert _side_effects(service) == NO_SIDE_EFFECTS
+
+
+# ---------------------------------------------------------------------------
+# Non-participants: every (from, to) pair is a 404, nothing changes
+# ---------------------------------------------------------------------------
+
+ALL_PAIRS = [(src, dst) for src in STATUSES for dst in STATUSES]
+
+
+@pytest.mark.parametrize(("src", "dst"), ALL_PAIRS, ids=[f"{s}->{d}" for s, d in ALL_PAIRS])
+async def test_non_participant_cannot_transition(service: SimpleNamespace, src: str, dst: str) -> None:
+    # 404 rather than 403 or 422 so an outsider cannot tell the booking exists
+    # or what state it is in. The confirmed -> * edges are "either"; only the
+    # participant check stops them.
+    await _assert_rejected(service, src, dst, "outsider", 404)
+
+
+# ---------------------------------------------------------------------------
+# Who hears about a transition, and whose name each notification carries
+# ---------------------------------------------------------------------------
+
+
+def _notifications(service: SimpleNamespace) -> list[tuple[str, UUID, str]]:
+    """(type, recipient, display name) for each scheduled notification, in order."""
+    return [(call.args[2], call.args[3], call.args[4]) for call in service.schedule_notification.await_args_list]
+
+
+async def test_confirm_notifies_proposer_and_reminds_each_participant_of_the_other(
+    service: SimpleNamespace,
+) -> None:
+    assert await _transition(service, _booking("proposed"), "confirmed", "partner") == 200
+    assert _notifications(service) == [
+        ("booking_confirmed", PROPOSER_ID, NAMES[PARTNER_ID]),
+        ("reminder", PROPOSER_ID, NAMES[PARTNER_ID]),
+        ("reminder", PARTNER_ID, NAMES[PROPOSER_ID]),
+    ]
+
+
+# (from, to, actor) for every applied transition that notifies the other participant.
+OTHER_PARTICIPANT_CASES = [
+    ("proposed", "declined", "partner"),
+    ("proposed", "cancelled", "proposer"),
+    ("confirmed", "cancelled", "proposer"),
+    ("confirmed", "cancelled", "partner"),
+]
+
+
+@pytest.mark.parametrize(
+    ("src", "dst", "actor"),
+    OTHER_PARTICIPANT_CASES,
+    ids=[f"{s}->{d}-{a}" for s, d, a in OTHER_PARTICIPANT_CASES],
+)
+async def test_transition_notifies_the_other_participant_by_the_actors_name(
+    service: SimpleNamespace, src: str, dst: str, actor: str
+) -> None:
+    actor_id = ACTORS[actor]
+    other_id = PARTNER_ID if actor_id == PROPOSER_ID else PROPOSER_ID
+    assert await _transition(service, _booking(src), dst, actor) == 200
+    assert _notifications(service) == [(f"booking_{dst}", other_id, NAMES[actor_id])]
